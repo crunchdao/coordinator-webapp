@@ -17,6 +17,7 @@ import {
   Input,
 } from "@crunch-ui/core";
 import { Search } from "@crunch-ui/icons";
+import { AddColumnSheet } from "./addColumnSheet";
 
 export const LeaderboardTable: React.FC<{}> = ({}) => {
   const { leaderboard, leaderboardLoading } = useGetLeaderboard();
@@ -51,16 +52,21 @@ export const LeaderboardTable: React.FC<{}> = ({}) => {
   return (
     <Card displayCorners>
       <CardHeader>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <CardTitle>Leaderboard</CardTitle>
-          <div className="mb-4 relative">
-            <Input
-              type="text"
-              value={globalFilter}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search projects..."
-              className="w-full max-w-md"
-            />
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <Input
+                type="text"
+                value={globalFilter}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Search projects..."
+                className="max-w-md"
+                clearable
+                rightSlot={<Search className="text-muted-foreground" />}
+              />
+            </div>
+            <AddColumnSheet />
           </div>
         </div>
       </CardHeader>

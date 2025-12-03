@@ -1,10 +1,14 @@
 "use client";
 import { useMemo } from "react";
-import { CellContext, ColumnDef } from "@tanstack/react-table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@crunch-ui/core";
+import { ColumnDef } from "@tanstack/react-table";
+import {
+  PulseRing,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@crunch-ui/core";
 import { InfoCircle } from "@crunch-ui/icons";
 import { useQuery } from "@tanstack/react-query";
-import { PulseRing } from "@/modules/common/ui/pulseRing";
 import { Gauge } from "@/modules/chart/ui/gauge";
 import { LeaderboardPosition } from "../../domain/types";
 import { getLeaderboardColumns } from "../../infrastructure/services";
@@ -60,15 +64,15 @@ export const useLeaderboardTable = () => {
               )
             : column.display_name || "",
           meta: {
-            className:
-              column.type === "CHART"
-                ? "text-left"
-                : "text-right",
+            className: column.type === "CHART" ? "text-left" : "text-right",
           },
           cell: ({ getValue }) => {
             const value = getValue();
 
-            if (column.type === "CHART" && column.native_configuration?.type === "gauge") {
+            if (
+              column.type === "CHART" &&
+              column.native_configuration?.type === "gauge"
+            ) {
               return (
                 <Gauge
                   config={column.native_configuration}

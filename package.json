@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@crunch-ui/core": "^1.1.2",
+    "@crunch-ui/core": "^1.2.0",
     "@crunch-ui/icons": "^1.0.2",
     "@crunch-ui/tailwind-config": "^1.0.0",
     "@crunch-ui/utils": "^1.1.0",

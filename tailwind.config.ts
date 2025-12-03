@@ -13,6 +13,10 @@ const config: Pick<Config, "content" | "presets"> = {
         ...sharedConfig.theme,
         container: undefined,
       },
+      plugins: [
+        ...(sharedConfig.plugins ?? []),
+        require("tailwindcss-animate"),
+      ],
     },
   ],
 };
