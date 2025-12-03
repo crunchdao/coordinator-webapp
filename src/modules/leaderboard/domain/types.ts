@@ -1,21 +1,30 @@
-import { GaugeConfiguration } from "@/modules/chart/domain/types";
 import { z } from "zod";
+import { GaugeConfiguration } from "@/modules/chart/domain/types";
 import { 
-  createLeaderboardSchema, 
-  leaderboardColumnSchema, 
-  formatTypeSchema,
+  createLeaderboardColumnSchema,
   columnTypeSchema,
-  leaderboardPositionSchema 
+  formatTypeSchema
 } from "../application/schemas/createLeaderboardSchema";
 
-export type LeaderboardPosition = z.infer<typeof leaderboardPositionSchema>;
+export type LeaderboardPosition = Record<string, unknown>;
 
 export type FormatType = z.infer<typeof formatTypeSchema>;
 
 export type ColumnType = z.infer<typeof columnTypeSchema>;
 
-export type LeaderboardColumn = z.infer<typeof leaderboardColumnSchema>;
+export type LeaderboardColumn = {
+  id: number;
+  type: ColumnType;
+  property: string;
+  format: FormatType | null;
+  display_name: string | null;
+  tooltip: string | null;
+  native_configuration: GaugeConfiguration | null;
+  order: number;
+};
 
 export type Leaderboard = LeaderboardPosition[];
 
-export type CreateLeaderboard = z.infer<typeof createLeaderboardSchema>;
+export type CreateLeaderboardColumn = z.infer<
+  typeof createLeaderboardColumnSchema
+>;

@@ -20,14 +20,14 @@ export const AddColumnSheet: React.FC = () => {
           Add Column
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto pb-8">
         <SheetHeader>
           <SheetTitle>Add New Column</SheetTitle>
           <SheetDescription>
             Configure a new column for your leaderboard
           </SheetDescription>
         </SheetHeader>
-        <div className="mt-6">
+        <div className="px-4">
           <AddColumnForm />
         </div>
       </SheetContent>

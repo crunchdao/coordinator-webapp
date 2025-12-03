@@ -1,4 +1,11 @@
-import { z } from "zod";
-import { gaugeConfigurationSchema } from "@/modules/leaderboard/application/schemas/createLeaderboardSchema";
+export type GaugeConfiguration = {
+  type: "gauge";
+  percentage?: boolean;
+  seriesConfig?: GaugeSeriesConfig[];
+};
 
-export type GaugeConfiguration = z.infer<typeof gaugeConfigurationSchema>;
+export type GaugeSeriesConfig = {
+  name?: string;
+  color?: string;
+  label?: string;
+};
