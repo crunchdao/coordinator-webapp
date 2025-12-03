@@ -1,8 +1,8 @@
 import { LeaderboardColumn } from "./types";
 
-export const columns: LeaderboardColumn[] = [
+export const initialColumns: LeaderboardColumn[] = [
   {
-    id: 0,
+    id: 1,
     type: "PROJECT",
     property: "model_id",
     format: null,
@@ -15,7 +15,7 @@ export const columns: LeaderboardColumn[] = [
     order: 0,
   },
   {
-    id: 1,
+    id: 2,
     type: "VALUE",
     property: "score_recent",
     format: "decimal-1",
@@ -25,7 +25,7 @@ export const columns: LeaderboardColumn[] = [
     order: 20,
   },
   {
-    id: 2,
+    id: 3,
     type: "VALUE",
     property: "score_steady",
     format: "decimal-2",
@@ -35,7 +35,7 @@ export const columns: LeaderboardColumn[] = [
     order: 30,
   },
   {
-    id: 3,
+    id: 4,
     type: "VALUE",
     property: "score_anchor",
     format: "decimal-3",

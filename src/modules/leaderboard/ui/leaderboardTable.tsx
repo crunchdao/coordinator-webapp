@@ -66,7 +66,6 @@ export const LeaderboardTable: React.FC<{}> = ({}) => {
                 rightSlot={<Search className="text-muted-foreground" />}
               />
             </div>
-            <AddColumnSheet />
           </div>
         </div>
       </CardHeader>

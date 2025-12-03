@@ -31,7 +31,3 @@ export type LeaderboardColumn = {
 };
 
 export type Leaderboard = LeaderboardPosition[];
-
-export type CreateLeaderboardColumn = z.infer<
-  typeof createLeaderboardColumnSchema
->;

@@ -31,7 +31,9 @@ import {
 } from "@crunch-ui/icons";
 import { z } from "zod";
 import { createLeaderboardColumnSchema } from "../application/schemas/createLeaderboardSchema";
-import { ColumnType } from "../domain/types";
+import { ColumnType, LeaderboardColumn } from "../domain/types";
+import { useAddColumn } from "../application/hooks/useAddColumn";
+import { useUpdateColumn } from "../application/hooks/useUpdateColumn";
 
 type ColumnFormData = z.infer<typeof createLeaderboardColumnSchema>;
 
@@ -56,17 +58,63 @@ const columnTypes = [
   },
 ] as const;
 
-export const AddColumnForm: React.FC = () => {
+interface AddColumnFormProps {
+  onSuccess?: () => void;
+  editValues?: LeaderboardColumn;
+}
+
+export const AddColumnForm: React.FC<AddColumnFormProps> = ({ onSuccess, editValues }) => {
   const form = useForm<ColumnFormData>({
     resolver: zodResolver(createLeaderboardColumnSchema),
-    defaultValues: {
-      type: "VALUE",
-    },
+    defaultValues: editValues 
+      ? {
+          type: editValues.type,
+          property: editValues.property,
+          format: editValues.format,
+          display_name: editValues.display_name,
+          tooltip: editValues.tooltip,
+          native_configuration: editValues.native_configuration,
+          order: editValues.order,
+        }
+      : {
+          type: "VALUE",
+        },
   });
 
-  const submit = useCallback((data: ColumnFormData) => {
-    console.log(data);
-  }, []);
+  const { addColumn, addColumnLoading } = useAddColumn();
+  const { updateColumn, updateColumnLoading } = useUpdateColumn();
+  const isEditMode = !!editValues;
+
+  const submit = useCallback(
+    (data: ColumnFormData) => {
+      const cleanedData = {
+        ...data,
+        native_configuration: data.native_configuration || null,
+      };
+      
+      if (isEditMode && editValues) {
+        updateColumn(
+          { 
+            id: editValues.id, 
+            column: cleanedData as Omit<LeaderboardColumn, "id">
+          },
+          {
+            onSuccess: () => {
+              onSuccess?.();
+            },
+          }
+        );
+      } else {
+        addColumn(cleanedData, {
+          onSuccess: () => {
+            form.reset();
+            onSuccess?.();
+          },
+        });
+      }
+    },
+    [addColumn, updateColumn, form, onSuccess, isEditMode, editValues]
+  );
 
   const columnType = form.watch("type");
 
@@ -96,11 +144,17 @@ export const AddColumnForm: React.FC = () => {
       >
         <div className="space-y-2">
           <FormLabel>Column Type</FormLabel>
+          {isEditMode && (
+            <p className="text-sm text-muted-foreground">
+              Column type cannot be changed when editing
+            </p>
+          )}
           <ToggleGroup
             type="single"
             value={columnType}
             onValueChange={handleTypeChange}
             className="grid grid-cols-2 gap-4"
+            disabled={isEditMode}
           >
             {columnTypes.map(({ value, label, icon: Icon, description }) => (
               <ToggleGroupItem
@@ -128,7 +182,7 @@ export const AddColumnForm: React.FC = () => {
                   <FormItem>
                     <FormLabel>Property</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. score_recent" {...field} />
+                      <Input placeholder="e.g., score_recent" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -143,7 +197,7 @@ export const AddColumnForm: React.FC = () => {
                     <FormLabel>Display Name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Recent Score"
+                        placeholder="e.g., Recent Score"
                         {...field}
                         value={field.value || ""}
                       />
@@ -467,8 +521,12 @@ export const AddColumnForm: React.FC = () => {
         )}
 
         <div className="flex justify-end gap-4 pt-4">
-          <Button type="submit" disabled={!columnType}>
-            Add Column
+          <Button
+            type="submit"
+            disabled={!columnType || addColumnLoading || updateColumnLoading}
+            loading={addColumnLoading || updateColumnLoading}
+          >
+            {isEditMode ? "Update Column" : "Add Column"}
           </Button>
         </div>
       </form>

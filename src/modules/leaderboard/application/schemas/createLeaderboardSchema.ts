@@ -37,6 +37,6 @@ export const createLeaderboardColumnSchema = z.object({
   format: formatTypeSchema.nullable(),
   display_name: z.string().nullable(),
   tooltip: z.string().nullable(),
-  native_configuration: nativeConfigurationSchema.nullable(),
+  native_configuration: z.union([nativeConfigurationSchema, z.null()]).optional(),
   order: z.number().int().min(0),
 });
