@@ -26,10 +26,11 @@ export const useLeaderboardTable = () => {
     return leaderboardColumns.map((column) => {
       if (column.type === "PROJECT") {
         return {
+          id: `column_${column.id}`,
           accessorKey: column.property,
           header: column.display_name || "Project",
           cell: ({ row }) => {
-            const projectName = row.getValue(column.property) as string;
+            const projectName = row.original[column.property] as string;
             const statusProperty =
               column.native_configuration?.type === "project"
                 ? column.native_configuration.statusProperty
@@ -57,6 +58,7 @@ export const useLeaderboardTable = () => {
       }
 
       return {
+        id: `column_${column.id}`,
         accessorKey: column.property,
         header: column.tooltip
           ? () => (
@@ -74,8 +76,8 @@ export const useLeaderboardTable = () => {
         meta: {
           className: column.type === "CHART" ? "text-left" : "text-right",
         },
-        cell: ({ getValue }) => {
-          const value = getValue();
+        cell: ({ row }) => {
+          const value = row.original[column.property];
 
           if (
             column.type === "CHART" &&

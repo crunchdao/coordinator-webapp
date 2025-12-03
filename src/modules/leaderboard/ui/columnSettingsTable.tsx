@@ -18,6 +18,7 @@ import { getLeaderboardColumns } from "../infrastructure/services";
 import { DeleteColumnButton } from "./deleteColumnButton";
 import { AddColumnSheet } from "./addColumnSheet";
 import { EditColumnSheet } from "./editColumnSheet";
+import { ResetColumnsButton } from "./resetColumnsButton";
 import { Settings, Folder, Percentage, Chart } from "@crunch-ui/icons";
 import { ColumnType } from "../domain/types";
 
@@ -148,7 +149,8 @@ export const ColumnSettingsTable: React.FC = () => {
                 )}
               </TableBody>
             </Table>
-            <div className="flex justify-end items-center pt-4 border-t mt-4">
+            <div className="flex justify-end gap-3 items-center pt-4 border-t mt-4">
+              <ResetColumnsButton />
               <AddColumnSheet />
             </div>
           </div>

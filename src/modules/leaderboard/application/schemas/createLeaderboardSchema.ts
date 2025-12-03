@@ -34,9 +34,9 @@ const nativeConfigurationSchema = z.discriminatedUnion("type", [
 export const createLeaderboardColumnSchema = z.object({
   type: columnTypeSchema,
   property: z.string().min(1, "Property is required"),
-  format: formatTypeSchema.nullable(),
-  display_name: z.string().nullable(),
-  tooltip: z.string().nullable(),
+  format: formatTypeSchema.nullable().optional(),
+  display_name: z.string().min(1, "Display name is required"),
+  tooltip: z.string().nullable().optional(),
   native_configuration: z.union([nativeConfigurationSchema, z.null()]).optional(),
   order: z.number().int().min(0),
 });

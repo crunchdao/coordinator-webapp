@@ -24,7 +24,7 @@ export type LeaderboardColumn = {
   type: ColumnType;
   property: string;
   format: FormatType | null;
-  display_name: string | null;
+  display_name: string;
   tooltip: string | null;
   native_configuration: NativeConfiguration | null;
   order: number;

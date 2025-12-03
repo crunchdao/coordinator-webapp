@@ -63,10 +63,13 @@ interface AddColumnFormProps {
   editValues?: LeaderboardColumn;
 }
 
-export const AddColumnForm: React.FC<AddColumnFormProps> = ({ onSuccess, editValues }) => {
+export const AddColumnForm: React.FC<AddColumnFormProps> = ({
+  onSuccess,
+  editValues,
+}) => {
   const form = useForm<ColumnFormData>({
     resolver: zodResolver(createLeaderboardColumnSchema),
-    defaultValues: editValues 
+    defaultValues: editValues
       ? {
           type: editValues.type,
           property: editValues.property,
@@ -90,13 +93,15 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({ onSuccess, editVal
       const cleanedData = {
         ...data,
         native_configuration: data.native_configuration || null,
+        tooltip: data.tooltip || null,
+        format: data.format || null,
       };
-      
+
       if (isEditMode && editValues) {
         updateColumn(
-          { 
-            id: editValues.id, 
-            column: cleanedData as Omit<LeaderboardColumn, "id">
+          {
+            id: editValues.id,
+            column: cleanedData as Omit<LeaderboardColumn, "id">,
           },
           {
             onSuccess: () => {
@@ -196,11 +201,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({ onSuccess, editVal
                   <FormItem>
                     <FormLabel>Display Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="e.g., Recent Score"
-                        {...field}
-                        value={field.value || ""}
-                      />
+                      <Input placeholder="e.g., Recent Score" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -263,11 +264,25 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({ onSuccess, editVal
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="percentage">Percentage</SelectItem>
-                          <SelectItem value="integer">Integer</SelectItem>
-                          <SelectItem value="compact">Compact</SelectItem>
-                          <SelectItem value="decimal-2">2 Decimals</SelectItem>
-                          <SelectItem value="decimal-4">4 Decimals</SelectItem>
+                          <SelectItem value="percentage">
+                            Percentage (50,00%)
+                          </SelectItem>
+                          <SelectItem value="integer">
+                            Integer (1,000,000)
+                          </SelectItem>
+                          <SelectItem value="compact">Compact (1M)</SelectItem>
+                          <SelectItem value="decimal-1">
+                            1 Decimal (1.0)
+                          </SelectItem>
+                          <SelectItem value="decimal-2">
+                            2 Decimals (1.00)
+                          </SelectItem>
+                          <SelectItem value="decimal-3">
+                            3 Decimals (1.000)
+                          </SelectItem>
+                          <SelectItem value="decimal-4">
+                            4 Decimals (1.0000)
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
