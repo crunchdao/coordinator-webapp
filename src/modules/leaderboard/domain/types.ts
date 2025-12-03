@@ -12,6 +12,13 @@ export type FormatType = z.infer<typeof formatTypeSchema>;
 
 export type ColumnType = z.infer<typeof columnTypeSchema>;
 
+export type ProjectConfiguration = {
+  type: "project";
+  statusProperty?: string;
+};
+
+export type NativeConfiguration = GaugeConfiguration | ProjectConfiguration;
+
 export type LeaderboardColumn = {
   id: number;
   type: ColumnType;
@@ -19,7 +26,7 @@ export type LeaderboardColumn = {
   format: FormatType | null;
   display_name: string | null;
   tooltip: string | null;
-  native_configuration: GaugeConfiguration | null;
+  native_configuration: NativeConfiguration | null;
   order: number;
 };
 

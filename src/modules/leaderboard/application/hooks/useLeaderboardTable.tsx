@@ -24,26 +24,33 @@ export const useLeaderboardTable = () => {
     if (!leaderboardColumns) return [];
 
     return leaderboardColumns
-      .filter((col) => col.type !== "STATUS")
       .map((column) => {
         if (column.type === "PROJECT") {
           return {
             accessorKey: column.property,
-            header: "Project",
+            header: column.display_name || "Project",
             cell: ({ row }) => {
-              const modelId = row.getValue(column.property) as string;
-              const status = row.original.status as string;
-              const modelActive = status === "active";
+              const projectName = row.getValue(column.property) as string;
+              const statusProperty = column.native_configuration?.type === "project" 
+                ? column.native_configuration.statusProperty 
+                : undefined;
+              
+              if (statusProperty) {
+                const status = row.original[statusProperty] as string | boolean;
+                const isActive = typeof status === "boolean" ? status : status === "active";
 
-              return (
-                <span>
-                  <PulseRing
-                    active={modelActive}
-                    className={!modelActive ? "invisible" : undefined}
-                  />
-                  {modelId}
-                </span>
-              );
+                return (
+                  <span className="flex items-center gap-2">
+                    <PulseRing
+                      active={isActive}
+                      className={!isActive ? "invisible" : undefined}
+                    />
+                    {projectName}
+                  </span>
+                );
+              }
+
+              return <span>{projectName}</span>;
             },
           };
         }

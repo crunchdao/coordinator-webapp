@@ -7,7 +7,7 @@ export const formatTypeSchema = z.union([
   z.string().regex(/^decimal-\d+$/),
 ]);
 
-export const columnTypeSchema = z.enum(["PROJECT", "VALUE", "STATUS", "CHART"]);
+export const columnTypeSchema = z.enum(["PROJECT", "VALUE", "CHART"]);
 
 const gaugeSeriesConfigSchema = z.object({
   name: z.string().optional(),
@@ -21,12 +21,22 @@ const gaugeConfigurationSchema = z.object({
   seriesConfig: z.array(gaugeSeriesConfigSchema).optional(),
 });
 
+const projectConfigurationSchema = z.object({
+  type: z.literal("project"),
+  statusProperty: z.string().optional(),
+});
+
+const nativeConfigurationSchema = z.discriminatedUnion("type", [
+  gaugeConfigurationSchema,
+  projectConfigurationSchema,
+]);
+
 export const createLeaderboardColumnSchema = z.object({
   type: columnTypeSchema,
   property: z.string().min(1, "Property is required"),
   format: formatTypeSchema.nullable(),
   display_name: z.string().nullable(),
   tooltip: z.string().nullable(),
-  native_configuration: gaugeConfigurationSchema.nullable(),
+  native_configuration: nativeConfigurationSchema.nullable(),
   order: z.number().int().min(0),
 });

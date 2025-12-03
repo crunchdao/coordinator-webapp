@@ -1,6 +1,7 @@
 "use client";
 import {
   Button,
+  Card,
   Checkbox,
   Form,
   FormControl,
@@ -48,12 +49,6 @@ const columnTypes = [
     description: "Numeric metrics",
   },
   {
-    value: "STATUS",
-    label: "Status",
-    icon: Activity,
-    description: "Active/Inactive states",
-  },
-  {
     value: "CHART",
     label: "Chart",
     icon: Chart,
@@ -77,9 +72,18 @@ export const AddColumnForm: React.FC = () => {
 
   const handleTypeChange = (value: ColumnType) => {
     if (value) {
-      form.reset({
+      const resetData: Partial<ColumnFormData> = {
         type: value,
-      });
+      };
+
+      if (value === "PROJECT") {
+        resetData.native_configuration = {
+          type: "project",
+          statusProperty: undefined,
+        };
+      }
+
+      form.reset(resetData);
     }
   };
 
@@ -102,7 +106,7 @@ export const AddColumnForm: React.FC = () => {
               <ToggleGroupItem
                 key={value}
                 value={value}
-                className="flex flex-col items-center justify-center h-24 p-4 data-[state=on]:border-primary"
+                className="flex flex-col items-center justify-center h-24 p-4 border data-[state=on]:border-primary bg-card"
               >
                 <Icon className="w-6 h-6 mb-2" />
                 <span className="text-sm font-medium">{label}</span>
@@ -124,7 +128,7 @@ export const AddColumnForm: React.FC = () => {
                   <FormItem>
                     <FormLabel>Property</FormLabel>
                     <FormControl>
-                      <Input placeholder="score_recent" {...field} />
+                      <Input placeholder="e.g. score_recent" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -142,6 +146,45 @@ export const AddColumnForm: React.FC = () => {
                         placeholder="Recent Score"
                         {...field}
                         value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tooltip"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tooltip (optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Column Explations"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="order"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Order</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value) || 0)
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -178,52 +221,28 @@ export const AddColumnForm: React.FC = () => {
                   )}
                 />
               )}
+              {columnType === "PROJECT" && (
+                <FormField
+                  control={form.control}
+                  name="native_configuration.statusProperty"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Status Property (optional)</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="e.g., is_active"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
-              <FormField
-                control={form.control}
-                name="tooltip"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tooltip</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Optional tooltip text..."
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="order"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Order</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value) || 0)
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {columnType === "CHART" && (
-              <div className="space-y-4 border-t pt-4">
-                <h5 className="text-sm font-medium">Chart Configuration</h5>
-
-                <div className="grid grid-cols-2 gap-4">
+              {columnType === "CHART" && (
+                <>
                   <FormField
                     control={form.control}
                     name="native_configuration.type"
@@ -282,165 +301,170 @@ export const AddColumnForm: React.FC = () => {
                       )}
                     />
                   )}
-                </div>
 
-                {form.watch("native_configuration.type") === "gauge" && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <FormLabel>Series Configuration</FormLabel>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          const currentConfig = form.getValues(
-                            "native_configuration"
-                          );
-                          if (currentConfig && currentConfig.type === "gauge") {
-                            form.setValue(
-                              "native_configuration",
-                              {
-                                ...currentConfig,
-                                seriesConfig: [
-                                  ...(currentConfig.seriesConfig || []),
-                                  { name: "", color: "", label: "" },
-                                ],
-                              },
-                              { shouldValidate: true }
+                  {form.watch("native_configuration.type") === "gauge" && (
+                    <Card className="col-span-2 space-y-4 p-4">
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Series Configuration</FormLabel>
+                        <Button
+                          type="button"
+                          variant="primary"
+                          size="sm"
+                          onClick={() => {
+                            const currentConfig = form.getValues(
+                              "native_configuration"
                             );
-                          }
-                        }}
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Series
-                      </Button>
-                    </div>
-
-                    {form
-                      .watch("native_configuration.seriesConfig")
-                      ?.map((_, seriesIndex) => (
-                        <div
-                          key={seriesIndex}
-                          className="p-3 space-y-3 border rounded"
+                            if (
+                              currentConfig &&
+                              currentConfig.type === "gauge"
+                            ) {
+                              form.setValue(
+                                "native_configuration",
+                                {
+                                  ...currentConfig,
+                                  seriesConfig: [
+                                    ...(currentConfig.seriesConfig || []),
+                                    { name: "", color: "", label: "" },
+                                  ],
+                                },
+                                { shouldValidate: true }
+                              );
+                            }
+                          }}
                         >
-                          <div className="flex justify-between items-center">
-                            <h6 className="text-xs font-medium">
-                              Series {seriesIndex + 1}
-                            </h6>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                const currentConfig = form.getValues(
-                                  "native_configuration"
-                                );
-                                if (
-                                  currentConfig &&
-                                  currentConfig.type === "gauge" &&
-                                  currentConfig.seriesConfig
-                                ) {
-                                  const newSeries =
-                                    currentConfig.seriesConfig.filter(
-                                      (_, i) => i !== seriesIndex
-                                    );
-                                  form.setValue(
-                                    "native_configuration",
-                                    {
-                                      ...currentConfig,
-                                      seriesConfig: newSeries,
-                                    },
-                                    { shouldValidate: true }
+                          <Plus />
+                          Add Series
+                        </Button>
+                      </div>
+
+                      {form
+                        .watch("native_configuration.seriesConfig")
+                        ?.map((_, seriesIndex) => (
+                          <div
+                            key={seriesIndex}
+                            className="p-3 space-y-3 border rounded"
+                          >
+                            <div className="flex justify-between items-center">
+                              <h6 className="text-xs font-medium">
+                                Serie {seriesIndex + 1}
+                              </h6>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => {
+                                  const currentConfig = form.getValues(
+                                    "native_configuration"
                                   );
-                                }
-                              }}
-                            >
-                              <Trash className="w-3 h-3" />
-                            </Button>
+                                  if (
+                                    currentConfig &&
+                                    currentConfig.type === "gauge" &&
+                                    currentConfig.seriesConfig
+                                  ) {
+                                    const newSeries =
+                                      currentConfig.seriesConfig.filter(
+                                        (_, i) => i !== seriesIndex
+                                      );
+                                    form.setValue(
+                                      "native_configuration",
+                                      {
+                                        ...currentConfig,
+                                        seriesConfig: newSeries,
+                                      },
+                                      { shouldValidate: true }
+                                    );
+                                  }
+                                }}
+                              >
+                                <Trash className="w-3 h-3" />
+                              </Button>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-2">
+                              <FormField
+                                control={form.control}
+                                name={`native_configuration.seriesConfig.${seriesIndex}.name`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-xs">
+                                      Name
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Series name"
+                                        {...field}
+                                        value={field.value || ""}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name={`native_configuration.seriesConfig.${seriesIndex}.color`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-xs">
+                                      Color
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value || ""}
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="orange">
+                                            Orange
+                                          </SelectItem>
+                                          <SelectItem value="yellow">
+                                            Yellow
+                                          </SelectItem>
+                                          <SelectItem value="green">
+                                            Green
+                                          </SelectItem>
+                                          <SelectItem value="red">
+                                            Red
+                                          </SelectItem>
+                                          <SelectItem value="blue">
+                                            Blue
+                                          </SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name={`native_configuration.seriesConfig.${seriesIndex}.label`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-xs">
+                                      Label
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Display label"
+                                        {...field}
+                                        value={field.value || ""}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
                           </div>
-
-                          <div className="grid grid-cols-3 gap-2">
-                            <FormField
-                              control={form.control}
-                              name={`native_configuration.seriesConfig.${seriesIndex}.name`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-xs">
-                                    Name
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Series name"
-                                      {...field}
-                                      value={field.value || ""}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name={`native_configuration.seriesConfig.${seriesIndex}.color`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-xs">
-                                    Color
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Select
-                                      onValueChange={field.onChange}
-                                      value={field.value || ""}
-                                    >
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="Select..." />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="orange">
-                                          Orange
-                                        </SelectItem>
-                                        <SelectItem value="yellow">
-                                          Yellow
-                                        </SelectItem>
-                                        <SelectItem value="green">
-                                          Green
-                                        </SelectItem>
-                                        <SelectItem value="red">Red</SelectItem>
-                                        <SelectItem value="blue">
-                                          Blue
-                                        </SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name={`native_configuration.seriesConfig.${seriesIndex}.label`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-xs">
-                                    Label
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Display label"
-                                      {...field}
-                                      value={field.value || ""}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                )}
-              </div>
-            )}
+                        ))}
+                    </Card>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         )}
 
