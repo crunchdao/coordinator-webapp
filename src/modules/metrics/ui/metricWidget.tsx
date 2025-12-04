@@ -1,15 +1,16 @@
 "use client";
+import { useState, useEffect } from "react";
 import {
   Spinner,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-  Button,
 } from "@crunch-ui/core";
 import { InfoCircle } from "@crunch-ui/icons";
 import {
   Widget,
   LineChartDefinition,
+  GaugeDefinition,
   GetMetricDataParams,
   MetricItem,
 } from "../domain/types";
@@ -17,8 +18,8 @@ import { useMetricData } from "../application/hooks/useMetricData";
 import { LineChart } from "@/modules/chart/ui/lineChart";
 import { IframeWidget } from "./iframeWidget";
 import { MetricFilters } from "./metricFilter";
-import { useState, useCallback, useEffect } from "react";
 import uniqBy from "lodash.uniqby";
+import { Gauge } from "@/modules/chart/ui/gauge";
 
 interface MetricWidgetProps {
   widget: Widget;
@@ -47,11 +48,11 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({
       data.length > 0 &&
       !filtersInitialized
     ) {
-      const chartDef = widget as LineChartDefinition;
+      const widgetWithConfig = widget as LineChartDefinition | GaugeDefinition;
       const initialFilters: Record<string, string | string[]> = {};
 
-      if (chartDef.nativeConfiguration.filterConfig) {
-        chartDef.nativeConfiguration.filterConfig.forEach((filter) => {
+      if (widgetWithConfig.nativeConfiguration.filterConfig) {
+        widgetWithConfig.nativeConfiguration.filterConfig.forEach((filter) => {
           if (filter.autoSelectFirst) {
             const filteredData = data.filter(
               (row: MetricItem) =>
@@ -90,13 +91,13 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({
 
   const hasFilters =
     widget.type === "CHART" &&
-    ((widget as LineChartDefinition).nativeConfiguration?.filterConfig
-      ?.length ?? 0) > 0;
+    ((widget as LineChartDefinition | GaugeDefinition).nativeConfiguration
+      ?.filterConfig?.length ?? 0) > 0;
 
   return (
     <div>
-      {widget.type !== "IFRAME" && (
-        <div className="flex items-end justify-between mb-2">
+      <div className="flex items-end justify-between mb-2">
+        {widget.displayName && (
           <h3 className="title-sm">
             {widget.displayName}
             {widget.tooltip && (
@@ -108,12 +109,15 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({
               </Tooltip>
             )}
           </h3>
+        )}
+        {(widget as LineChartDefinition | GaugeDefinition).nativeConfiguration
+          .filterConfig && (
           <div className="flex items-end gap-3 flex-wrap">
             {hasFilters && data && (
               <MetricFilters
                 filters={
-                  (widget as LineChartDefinition).nativeConfiguration
-                    .filterConfig!
+                  (widget as LineChartDefinition | GaugeDefinition)
+                    .nativeConfiguration.filterConfig!
                 }
                 data={data}
                 onFilterChange={handleFilterChange}
@@ -121,8 +125,8 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({
               />
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <div>
         {isLoading ? (
           <div className="flex justify-center items-center h-[400px]">
@@ -133,12 +137,20 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({
             <p>Failed to load data</p>
           </div>
         ) : widget.type === "CHART" && data ? (
-          <LineChart
-            data={data}
-            definition={widget as LineChartDefinition}
-            projectIdProperty="model_id"
-            selectedFilters={selectedFilters}
-          />
+          (widget as GaugeDefinition).nativeConfiguration.type === "gauge" ? (
+            <Gauge
+              config={(widget as GaugeDefinition).nativeConfiguration}
+              data={data}
+              selectedFilters={selectedFilters}
+            />
+          ) : (
+            <LineChart
+              data={data}
+              definition={widget as LineChartDefinition}
+              projectIdProperty="model_id"
+              selectedFilters={selectedFilters}
+            />
+          )
         ) : widget.type === "IFRAME" ? (
           <IframeWidget
             displayName={widget.displayName}

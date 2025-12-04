@@ -32,6 +32,7 @@ export type GaugeConfiguration = {
   type: "gauge";
   percentage?: boolean;
   seriesConfig?: GaugeSeriesConfig[];
+  filterConfig?: FilterConfig[];
 };
 
 export type GaugeSeriesConfig = {

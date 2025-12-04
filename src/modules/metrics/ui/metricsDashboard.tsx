@@ -18,14 +18,16 @@ export const MetricsDashboard: React.FC = () => {
 
   const metricParams = useMemo<GetMetricDataParams | null>(() => {
     if (!leaderboard || leaderboard.length === 0) return null;
-    
-    const modelIds = leaderboard.map((item) => String(item.model_id || "")).filter(Boolean);
-    
+
+    const modelIds = leaderboard
+      .map((item) => String(item.model_id || ""))
+      .filter(Boolean);
+
     // Default to last 30 days
     const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - 30);
-    
+
     return {
       modelIds,
       start: start.toISOString(),
@@ -46,7 +48,9 @@ export const MetricsDashboard: React.FC = () => {
   }
 
   if (!metricParams) {
-    return <p className="text-muted-foreground">No models found in leaderboard</p>;
+    return (
+      <p className="text-muted-foreground">No models found in leaderboard</p>
+    );
   }
 
   return (
@@ -54,7 +58,7 @@ export const MetricsDashboard: React.FC = () => {
       <CardHeader>
         <CardTitle>Metrics Dashboard</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-8">
         {widgets.map((widget) => (
           <MetricWidget key={widget.id} widget={widget} params={metricParams} />
         ))}
