@@ -9,23 +9,20 @@ import {
   TooltipTrigger,
 } from "@crunch-ui/core";
 import { InfoCircle } from "@crunch-ui/icons";
-import zoomPlugin from "chartjs-plugin-zoom";
 import uniqBy from "lodash.uniqby";
 import { formatYAxisValue, RANDOM_COLORS } from "../application/utils";
 import {
   LineChartDefinition,
   MetricItem,
 } from "@/modules/metrics/domain/types";
-import { MetricFilters } from "@/modules/metrics/ui/metricFilter";
 
-Chart.register(zoomPlugin);
 
 interface LineChartProps {
   data: MetricItem[];
   definition: LineChartDefinition;
-  displayName: string;
   projectIdProperty: string;
   getLabel?: (id: string | number) => string;
+  selectedFilters?: Record<string, string | string[]>;
 }
 
 interface DatasetWithOriginalLabel {
@@ -73,50 +70,13 @@ function calculateEvolution(dataPoints: MetricItem[]): string | null {
 export const LineChart: React.FC<LineChartProps> = ({
   data,
   definition,
-  displayName,
   projectIdProperty,
   getLabel = (id) => String(id),
+  selectedFilters = {},
 }) => {
   const chartRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstanceRef = useRef<Chart | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
-
-  const getInitialFilters = useCallback(() => {
-    const initialFilters: Record<string, string | string[]> = {};
-
-    if (definition.nativeConfiguration.filterConfig && data.length > 0) {
-      definition.nativeConfiguration.filterConfig.forEach((filter) => {
-        if (filter.autoSelectFirst) {
-          const uniqueValues = uniqBy(
-            data.filter(
-              (row) =>
-                row[filter.property] !== null &&
-                row[filter.property] !== undefined
-            ),
-            filter.property
-          )
-            .map((row) => String(row[filter.property]))
-            .sort();
-
-          if (uniqueValues.length > 0) {
-            initialFilters[filter.property] = uniqueValues[0];
-          }
-        }
-      });
-    }
-
-    return initialFilters;
-  }, [data, definition.nativeConfiguration.filterConfig]);
-
-  const [selectedFilters, setSelectedFilters] =
-    useState<Record<string, string | string[]>>(getInitialFilters);
-
-  const handleFilterChange = (property: string, value: string | string[]) => {
-    setSelectedFilters((prev) => ({
-      ...prev,
-      [property]: value,
-    }));
-  };
 
   const shouldShowRow = useCallback(
     (row: MetricItem) => {
@@ -143,6 +103,9 @@ export const LineChart: React.FC<LineChartProps> = ({
     if (chartRef.current && data.length > 0) {
       const ctx = chartRef.current.getContext("2d");
       if (ctx) {
+        import("chartjs-plugin-zoom").then((module) => {
+          Chart.register(module.default);
+        });
         const computedStyle = getComputedStyle(document.documentElement);
         const gridColor = computedStyle.getPropertyValue("--background").trim();
         const ticksColor = computedStyle
@@ -489,50 +452,26 @@ export const LineChart: React.FC<LineChartProps> = ({
     }
   };
 
-  const tooltip = definition.nativeConfiguration.tooltip;
-  const hasFilters =
-    definition.nativeConfiguration.filterConfig &&
-    definition.nativeConfiguration.filterConfig.length > 0;
+  if (!data || data.length === 0) {
+    return (
+      <p className="body text-center text-muted-foreground">
+        No data available
+      </p>
+    );
+  }
 
   return (
     <div>
-      <div className="flex items-end justify-between mb-2">
-        <h3 className="title-sm">
-          {displayName}
-          {tooltip && (
-            <Tooltip>
-              <TooltipTrigger className="ml-3">
-                <InfoCircle />
-              </TooltipTrigger>
-              <TooltipContent>{tooltip}</TooltipContent>
-            </Tooltip>
-          )}
-        </h3>
-        <div className="flex items-end gap-3 flex-wrap">
-          {isZoomed && (
-            <Button onClick={handleResetZoom} variant="secondary">
-              Reset zoom
-            </Button>
-          )}
-          {hasFilters && (
-            <MetricFilters
-              filters={definition.nativeConfiguration.filterConfig!}
-              data={data}
-              onFilterChange={handleFilterChange}
-              selectedFilters={selectedFilters}
-            />
-          )}
-        </div>
-      </div>
-      {!data || data.length === 0 ? (
-        <p className="body text-center text-muted-foreground">
-          No data available
-        </p>
-      ) : (
-        <div style={{ height: "400px", position: "relative" }}>
-          <canvas ref={chartRef} />
+      {isZoomed && (
+        <div className="flex justify-end mb-2">
+          <Button onClick={handleResetZoom} variant="secondary" size="sm">
+            Reset zoom
+          </Button>
         </div>
       )}
+      <div style={{ height: "400px", position: "relative" }}>
+        <canvas ref={chartRef} />
+      </div>
     </div>
   );
 };
