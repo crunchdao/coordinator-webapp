@@ -294,7 +294,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
               {columnType === "PROJECT" && (
                 <FormField
                   control={form.control}
-                  name="native_configuration.statusProperty"
+                  name="nativeConfiguration.statusProperty"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Status Property (optional)</FormLabel>
@@ -317,7 +317,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="native_configuration.type"
+                    name="nativeConfiguration.type"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Chart Type</FormLabel>
@@ -326,7 +326,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                             field.onChange(value);
                             if (value === "gauge") {
                               form.setValue(
-                                "native_configuration",
+                                "nativeConfiguration",
                                 {
                                   type: "gauge",
                                   percentage: false,
@@ -352,10 +352,10 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                     )}
                   />
 
-                  {form.watch("native_configuration.type") === "gauge" && (
+                  {form.watch("nativeConfiguration.type") === "gauge" && (
                     <FormField
                       control={form.control}
-                      name="native_configuration.percentage"
+                      name="nativeConfiguration.percentage"
                       render={({ field }) => (
                         <FormItem className="flex items-center space-x-2 space-y-0">
                           <FormControl>
@@ -375,7 +375,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                   )}
                 </div>
 
-                {form.watch("native_configuration.type") === "gauge" && (
+                {form.watch("nativeConfiguration.type") === "gauge" && (
                   <Card className="space-y-4 p-4">
                     <div className="flex items-center justify-between">
                       <FormLabel>Series Configuration</FormLabel>
@@ -385,11 +385,11 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                         size="sm"
                         onClick={() => {
                           const currentConfig = form.getValues(
-                            "native_configuration"
+                            "nativeConfiguration"
                           );
                           if (currentConfig && currentConfig.type === "gauge") {
                             form.setValue(
-                              "native_configuration",
+                              "nativeConfiguration",
                               {
                                 ...currentConfig,
                                 seriesConfig: [
@@ -408,7 +408,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                     </div>
 
                     {form
-                      .watch("native_configuration.seriesConfig")
+                      .watch("nativeConfiguration.seriesConfig")
                       ?.map((_, seriesIndex) => (
                         <div
                           key={seriesIndex}
@@ -424,7 +424,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                               size="sm"
                               onClick={() => {
                                 const currentConfig = form.getValues(
-                                  "native_configuration"
+                                  "nativeConfiguration"
                                 );
                                 if (
                                   currentConfig &&
@@ -436,7 +436,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                                       (_, i) => i !== seriesIndex
                                     );
                                   form.setValue(
-                                    "native_configuration",
+                                    "nativeConfiguration",
                                     {
                                       ...currentConfig,
                                       seriesConfig: newSeries,
@@ -453,7 +453,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                           <div className="grid grid-cols-3 gap-2">
                             <FormField
                               control={form.control}
-                              name={`native_configuration.seriesConfig.${seriesIndex}.name`}
+                              name={`nativeConfiguration.seriesConfig.${seriesIndex}.name`}
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel className="text-xs">
@@ -472,7 +472,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
 
                             <FormField
                               control={form.control}
-                              name={`native_configuration.seriesConfig.${seriesIndex}.color`}
+                              name={`nativeConfiguration.seriesConfig.${seriesIndex}.color`}
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel className="text-xs">
@@ -509,7 +509,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
 
                             <FormField
                               control={form.control}
-                              name={`native_configuration.seriesConfig.${seriesIndex}.label`}
+                              name={`nativeConfiguration.seriesConfig.${seriesIndex}.label`}
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel className="text-xs">

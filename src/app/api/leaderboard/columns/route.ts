@@ -54,24 +54,24 @@ async function readColumns(): Promise<LeaderboardColumn[]> {
   try {
     const data = await fs.readFile(CONFIG_FILE, "utf-8");
     const columns = JSON.parse(data);
-    
-    // Convert snake_case to camelCase if old format detected
-    const hasSnakeCase = columns.some((col: any) => 
-      'display_name' in col || 'native_configuration' in col
+
+    const hasSnakeCase = columns.some(
+      (col: any) => "display_name" in col || "native_configuration" in col
     );
-    
+
     if (hasSnakeCase) {
       const updatedColumns = columns.map((col: any) => ({
         ...col,
         displayName: col.displayName || col.display_name,
-        nativeConfiguration: col.nativeConfiguration || col.native_configuration,
+        nativeConfiguration:
+          col.nativeConfiguration || col.native_configuration,
         display_name: undefined,
         native_configuration: undefined,
       }));
       await writeColumns(updatedColumns);
       return updatedColumns;
     }
-    
+
     return columns;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     const columns = await readColumns();
     const newColumn: LeaderboardColumn = {
       ...columnData,
-      id: Math.max(...columns.map(c => c.id), 0) + 1,
+      id: Math.max(...columns.map((c) => c.id), 0) + 1,
     };
     const updatedColumns = [...columns, newColumn];
     await writeColumns(updatedColumns);

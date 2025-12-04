@@ -32,7 +32,7 @@ export const EditColumnSheet: React.FC<EditColumnSheetProps> = ({ column }) => {
           <SheetTitle>Edit Column</SheetTitle>
           <SheetDescription>
             Update the configuration for "
-            {column.display_name || column.property}"
+            {column.displayName || column.property}"
           </SheetDescription>
         </SheetHeader>
         <div className="px-4">
