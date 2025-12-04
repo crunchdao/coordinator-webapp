@@ -35,8 +35,8 @@ export const createLeaderboardColumnSchema = z.object({
   type: columnTypeSchema,
   property: z.string().min(1, "Property is required"),
   format: formatTypeSchema.nullable().optional(),
-  display_name: z.string().min(1, "Display name is required"),
+  displayName: z.string().min(1, "Display name is required"),
   tooltip: z.string().nullable().optional(),
-  native_configuration: z.union([nativeConfigurationSchema, z.null()]).optional(),
+  nativeConfiguration: z.union([nativeConfigurationSchema, z.null()]).optional(),
   order: z.number().int().min(0),
 });

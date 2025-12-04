@@ -6,9 +6,9 @@ export const initialColumns: LeaderboardColumn[] = [
     type: "PROJECT",
     property: "model_id",
     format: null,
-    display_name: "Model",
+    displayName: "Model",
     tooltip: null,
-    native_configuration: {
+    nativeConfiguration: {
       type: "project",
       statusProperty: "status",
     },
@@ -19,9 +19,9 @@ export const initialColumns: LeaderboardColumn[] = [
     type: "VALUE",
     property: "score_recent",
     format: "decimal-1",
-    display_name: "Recent Score",
+    displayName: "Recent Score",
     tooltip: "The score of the player over the last 24 hours.",
-    native_configuration: null,
+    nativeConfiguration: null,
     order: 20,
   },
   {
@@ -29,9 +29,9 @@ export const initialColumns: LeaderboardColumn[] = [
     type: "VALUE",
     property: "score_steady",
     format: "decimal-2",
-    display_name: "Steady Score",
+    displayName: "Steady Score",
     tooltip: "The score of the player over the last 72 hours.",
-    native_configuration: null,
+    nativeConfiguration: null,
     order: 30,
   },
   {
@@ -39,9 +39,9 @@ export const initialColumns: LeaderboardColumn[] = [
     type: "VALUE",
     property: "score_anchor",
     format: "decimal-3",
-    display_name: "Recent Score",
+    displayName: "Recent Score",
     tooltip: "The score of the player over the last 7 days.",
-    native_configuration: null,
+    nativeConfiguration: null,
     order: 40,
   },
 ];

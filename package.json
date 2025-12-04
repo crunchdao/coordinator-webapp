@@ -17,7 +17,10 @@
     "@tanstack/react-query": "^5.90.11",
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.13.2",
+    "chart.js": "^4.5.1",
+    "chartjs-plugin-zoom": "^2.2.0",
     "geist": "^1.5.1",
+    "lodash.uniqby": "^4.7.0",
     "next": "16.0.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -26,6 +29,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/lodash.uniqby": "^4.7.9",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -33,5 +37,6 @@
     "eslint-config-next": "16.0.6",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

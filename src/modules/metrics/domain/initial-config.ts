@@ -1,0 +1,101 @@
+import { MetricDefinition } from "./types";
+
+export const initialConfig: MetricDefinition[] = [
+  {
+    id: 1,
+    type: "CHART",
+    name: "score",
+    displayName: "Score Metrics",
+    tooltip: null,
+    order: 10,
+    nativeConfiguration: {
+      xAxis: {
+        name: "performed_at",
+      },
+      yAxis: {
+        names: ["score_recent", "score_steady", "score_anchor"],
+        format: "decimal:2",
+      },
+      seriesConfig: {
+        score_anchor: {
+          label: "Anchor Score",
+        },
+        score_recent: {
+          label: "Recent Score",
+        },
+        score_steady: {
+          label: "Steady Score",
+        },
+      },
+      displayEvolution: false,
+    },
+  },
+  {
+    id: 2,
+    type: "CHART",
+    name: "predictions",
+    displayName: "Predictions",
+    tooltip: null,
+    order: 30,
+    nativeConfiguration: {
+      xAxis: { name: "performed_at" },
+      yAxis: { name: "score_value", format: "decimal:2" },
+      alertConfig: {
+        reasonField: "score_failed_reason",
+        field: "score_success",
+      },
+      filterConfig: [
+        {
+          type: "select",
+          label: "Asset",
+          property: "asset",
+          autoSelectFirst: true,
+        },
+        {
+          type: "select",
+          label: "Horizon",
+          property: "horizon",
+          autoSelectFirst: true,
+        },
+      ],
+      groupByProperty: "param",
+      displayEvolution: false,
+    },
+  },
+  {
+    id: 3,
+    type: "CHART",
+    name: "params",
+    displayName: "Rolling score by parameters",
+    tooltip: null,
+    order: 20,
+    nativeConfiguration: {
+      xAxis: { name: "performed_at" },
+      yAxis: {
+        names: ["score_recent", "score_steady", "score_anchor"],
+        format: "decimal:2",
+      },
+      filterConfig: [
+        {
+          type: "select",
+          label: "Asset",
+          property: "asset",
+          autoSelectFirst: true,
+        },
+        {
+          type: "select",
+          label: "Horizon",
+          property: "horizon",
+          autoSelectFirst: true,
+        },
+      ],
+      seriesConfig: {
+        score_anchor: { label: "Anchor Score" },
+        score_recent: { label: "Recent Score" },
+        score_steady: { label: "Steady Score" },
+      },
+      groupByProperty: "param",
+      displayEvolution: false,
+    },
+  },
+];

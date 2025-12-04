@@ -1,12 +1,13 @@
 import { GeistSans } from "geist/font/sans";
 import { cn } from "@crunch-ui/utils";
-import { Toaster } from "@crunch-ui/core";
+import { Legals, Toaster } from "@crunch-ui/core";
 import localFont from "next/font/local";
 import "./globals.css";
 import ReactQuery from "./react-query";
 import type { Metadata } from "next";
 import Providers from "./providers";
 import "./globals.css";
+import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 
 const departure = localFont({
   src: "../../public/fonts/DepartureMono/DepartureMono-Regular.woff2",
@@ -38,14 +39,16 @@ export default async function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "h-screen flex !pointer-events-auto",
+          "h-screen flex flex-col !pointer-events-auto",
           GeistSans.variable,
           departure.variable
         )}
       >
         <ReactQuery>
           <Providers>
-            {children}
+            <BasicNavbar />
+            <div>{children}</div>
+            <Legals className="mx-auto mt-auto" />
             <Toaster />
           </Providers>
         </ReactQuery>

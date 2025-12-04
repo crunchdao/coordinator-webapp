@@ -115,7 +115,7 @@ export const ColumnSettingsTable: React.FC = () => {
                       <TableCell>
                         <div className="flex flex-col gap-0.5">
                           <span className="font-medium text-sm">
-                            {column.display_name || column.property}
+                            {column.displayName || column.property}
                           </span>
                           {column.tooltip && (
                             <span className="body-sm text-muted-foreground line-clamp-1">

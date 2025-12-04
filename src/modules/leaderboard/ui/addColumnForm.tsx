@@ -74,9 +74,9 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
           type: editValues.type,
           property: editValues.property,
           format: editValues.format,
-          display_name: editValues.display_name,
+          displayName: editValues.displayName,
           tooltip: editValues.tooltip,
-          native_configuration: editValues.native_configuration,
+          nativeConfiguration: editValues.nativeConfiguration,
           order: editValues.order,
         }
       : {
@@ -92,7 +92,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
     (data: ColumnFormData) => {
       const cleanedData = {
         ...data,
-        native_configuration: data.native_configuration || null,
+        nativeConfiguration: data.nativeConfiguration || null,
         tooltip: data.tooltip || null,
         format: data.format || null,
       };
@@ -130,7 +130,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
       };
 
       if (value === "PROJECT") {
-        resetData.native_configuration = {
+        resetData.nativeConfiguration = {
           type: "project",
           statusProperty: undefined,
         };
@@ -196,7 +196,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
 
               <FormField
                 control={form.control}
-                name="display_name"
+                name="displayName"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Display Name</FormLabel>

@@ -28,12 +28,12 @@ export const useLeaderboardTable = () => {
         return {
           id: `column_${column.id}`,
           accessorKey: column.property,
-          header: column.display_name || "Project",
+          header: column.displayName || "Project",
           cell: ({ row }) => {
             const projectName = row.original[column.property] as string;
             const statusProperty =
-              column.native_configuration?.type === "project"
-                ? column.native_configuration.statusProperty
+              column.nativeConfiguration?.type === "project"
+                ? column.nativeConfiguration.statusProperty
                 : undefined;
 
             if (statusProperty) {
@@ -63,7 +63,7 @@ export const useLeaderboardTable = () => {
         header: column.tooltip
           ? () => (
               <div>
-                {column.display_name}&nbsp;
+                {column.displayName}&nbsp;
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
@@ -72,7 +72,7 @@ export const useLeaderboardTable = () => {
                 </Tooltip>
               </div>
             )
-          : column.display_name || "",
+          : column.displayName || "",
         meta: {
           className: column.type === "CHART" ? "text-left" : "text-right",
         },
@@ -81,11 +81,11 @@ export const useLeaderboardTable = () => {
 
           if (
             column.type === "CHART" &&
-            column.native_configuration?.type === "gauge"
+            column.nativeConfiguration?.type === "gauge"
           ) {
             return (
               <Gauge
-                config={column.native_configuration}
+                config={column.nativeConfiguration}
                 data={value as Record<string, number>}
               />
             );
