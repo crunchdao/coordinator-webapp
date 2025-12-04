@@ -18,6 +18,8 @@ import { MetricType } from "../domain/types";
 import { useGetWidgets } from "../application/hooks/useGetWidgets";
 import { DeleteWidgetButton } from "./deleteWidgetButton";
 import { ResetWidgetsButton } from "./resetWidgetsButton";
+import { AddWidgetSheet } from "./addWidgetSheet";
+import { EditWidgetSheet } from "./editWidgetSheet";
 
 const getIcon = (type: MetricType) => {
   switch (type) {
@@ -123,7 +125,7 @@ export const MetricSettingsTable: React.FC = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
-                          {/*<EditColumnSheet column={widget} />*/}
+                          <EditWidgetSheet widget={widget} />
                           <DeleteWidgetButton
                             widgetId={widget.id}
                             widgetName={widget.displayName || widget.name}
@@ -137,7 +139,7 @@ export const MetricSettingsTable: React.FC = () => {
             </Table>
             <div className="flex justify-end gap-3 items-center pt-4 border-t mt-4">
               <ResetWidgetsButton />
-              {/*<AddColumnSheet />*/}
+              <AddWidgetSheet />
             </div>
           </div>
         </AccordionContent>

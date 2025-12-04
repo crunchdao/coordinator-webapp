@@ -8,7 +8,7 @@ export const useAddWidget = () => {
   const mutation = useMutation({
     mutationFn: (widget: Omit<Widget, "id">) => addMetricWidget(widget),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["metricWidgets"] });
+      queryClient.invalidateQueries({ queryKey: ["widgets"] });
     },
   });
   return {

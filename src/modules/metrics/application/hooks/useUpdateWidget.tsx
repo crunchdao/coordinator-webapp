@@ -10,7 +10,7 @@ export const useUpdateWidget = () => {
     mutationFn: ({ id, column }: { id: number; column: Omit<Widget, "id"> }) =>
       updateWidget(id, column),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["metrics"] });
+      queryClient.invalidateQueries({ queryKey: ["widgets"] });
       toast({ title: "Metric Widgets updated successfully" });
     },
     onError: () => {

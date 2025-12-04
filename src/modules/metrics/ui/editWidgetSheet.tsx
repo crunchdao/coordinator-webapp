@@ -1,23 +1,23 @@
 "use client";
+import { useState } from "react";
 import {
+  Button,
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  Button,
 } from "@crunch-ui/core";
 import { Edit } from "@crunch-ui/icons";
-import { AddColumnForm } from "./addColumnForm";
-import { useState } from "react";
-import { LeaderboardColumn } from "../domain/types";
+import { AddWidgetForm } from "./addWidgetForm";
+import { Widget } from "../domain/types";
 
-interface EditColumnSheetProps {
-  column: LeaderboardColumn;
+interface EditWidgetSheetProps {
+  widget: Widget;
 }
 
-export const EditColumnSheet: React.FC<EditColumnSheetProps> = ({ column }) => {
+export const EditWidgetSheet: React.FC<EditWidgetSheetProps> = ({ widget }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -29,14 +29,13 @@ export const EditColumnSheet: React.FC<EditColumnSheetProps> = ({ column }) => {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-2xl overflow-y-auto pb-8">
         <SheetHeader>
-          <SheetTitle>Edit Column</SheetTitle>
+          <SheetTitle>Edit Widget</SheetTitle>
           <SheetDescription>
-            Update the configuration for "
-            {column.displayName || column.property}"
+            Update the configuration for "{widget.displayName || widget.name}"
           </SheetDescription>
         </SheetHeader>
         <div className="px-4">
-          <AddColumnForm onSuccess={() => setOpen(false)} editValues={column} />
+          <AddWidgetForm editValues={widget} onSubmit={() => setOpen(false)} />
         </div>
       </SheetContent>
     </Sheet>

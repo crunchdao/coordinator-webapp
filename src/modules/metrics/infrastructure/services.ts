@@ -8,7 +8,7 @@ export const getMetricsWidgets = async (): Promise<Widget[]> => {
   return response.data;
 };
 
-export const addMetricsWidget = async (
+export const addMetricWidget = async (
   widget: Omit<Widget, "id">
 ): Promise<Widget> => {
   const response = await configApiClient.post(
@@ -18,7 +18,7 @@ export const addMetricsWidget = async (
   return response.data;
 };
 
-export const updateMetricsWidget = async (
+export const updateWidget = async (
   id: number,
   widget: Omit<Widget, "id">
 ): Promise<Widget> => {
