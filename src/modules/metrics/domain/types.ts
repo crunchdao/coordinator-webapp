@@ -16,6 +16,7 @@ export type BaseDefinition = {
   displayName: string;
   tooltip?: string | null;
   order: number;
+  endpointUrl: string;
 };
 
 export type LineChartDefinition = BaseDefinition & {
@@ -26,13 +27,15 @@ export type GaugeDefinition = BaseDefinition & {
   nativeConfiguration: GaugeConfiguration | null;
 };
 
-export type IframeChartDefinition = BaseDefinition & {
-  nativeConfiguration: {
-    url: string;
-  };
-};
+export type IframeChartDefinition = BaseDefinition;
 
-export type MetricDefinition =
+export type Widget =
   | LineChartDefinition
   | GaugeDefinition
   | IframeChartDefinition;
+
+export interface GetMetricDataParams {
+  modelIds: string[];
+  start: string;
+  end: string;
+}

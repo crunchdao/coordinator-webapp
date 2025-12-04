@@ -1,6 +1,6 @@
-import { MetricDefinition } from "./types";
+import { Widget } from "./types";
 
-export const initialConfig: MetricDefinition[] = [
+export const initialConfig: Widget[] = [
   {
     id: 1,
     type: "CHART",
@@ -8,6 +8,7 @@ export const initialConfig: MetricDefinition[] = [
     displayName: "Score Metrics",
     tooltip: null,
     order: 10,
+    endpointUrl: "/reports/models/global",
     nativeConfiguration: {
       xAxis: {
         name: "performed_at",
@@ -37,6 +38,7 @@ export const initialConfig: MetricDefinition[] = [
     displayName: "Predictions",
     tooltip: null,
     order: 30,
+    endpointUrl: "/reports/predictions",
     nativeConfiguration: {
       xAxis: { name: "performed_at" },
       yAxis: { name: "score_value", format: "decimal:2" },
@@ -69,6 +71,7 @@ export const initialConfig: MetricDefinition[] = [
     displayName: "Rolling score by parameters",
     tooltip: null,
     order: 20,
+    endpointUrl: "/reports/models/params",
     nativeConfiguration: {
       xAxis: { name: "performed_at" },
       yAxis: {

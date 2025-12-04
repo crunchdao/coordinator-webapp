@@ -1,13 +1,9 @@
-import { LeaderboardTable } from "@/modules/leaderboard/ui/leaderboardTable";
-import { ColumnSettingsTable } from "@/modules/leaderboard/ui/columnSettingsTable";
+import { MetricsDashboard } from "@/modules/metrics/ui/metricsDashboard";
 
-export default function ChartsConfiguration() {
+export default function MetricsPage() {
   return (
-    <>
-      <div className="mx-auto w-full max-w-7xl space-y-6">
-        <ColumnSettingsTable />
-        <LeaderboardTable />
-      </div>
-    </>
+    <div className="mx-auto w-full max-w-7xl space-y-6">
+      <MetricsDashboard />
+    </div>
   );
 }

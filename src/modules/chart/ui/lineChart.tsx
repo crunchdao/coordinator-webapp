@@ -149,7 +149,6 @@ export const LineChart: React.FC<LineChartProps> = ({
           .getPropertyValue("--muted-foreground")
           .trim();
 
-
         const groupByProperty = definition.nativeConfiguration.groupByProperty;
 
         const groupedData = data.reduce((acc, row) => {
