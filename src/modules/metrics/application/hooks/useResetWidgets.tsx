@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
-import { resetWidgets } from "../../infrastructure/services";
+import { resetMetricsWidgets } from "../../infrastructure/services";
 
 export const useResetWidgets = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: resetWidgets,
+    mutationFn: resetMetricsWidgets,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["widgets"] });
       toast({ title: "Metric widgets reset to default successfully" });
