@@ -6,6 +6,7 @@ export type FilterConfig = {
 };
 
 export type LineChartConfiguration = {
+  type: "line";
   xAxis: { name: string };
   yAxis:
     | { name: string; format?: string }

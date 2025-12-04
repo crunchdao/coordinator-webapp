@@ -10,6 +10,7 @@ export const initialConfig: Widget[] = [
     order: 10,
     endpointUrl: "/reports/models/global",
     nativeConfiguration: {
+      type: "line",
       xAxis: {
         name: "performed_at",
       },
@@ -40,6 +41,7 @@ export const initialConfig: Widget[] = [
     order: 30,
     endpointUrl: "/reports/predictions",
     nativeConfiguration: {
+      type: "line",
       xAxis: { name: "performed_at" },
       yAxis: { name: "score_value", format: "decimal:2" },
       alertConfig: {
@@ -73,6 +75,7 @@ export const initialConfig: Widget[] = [
     order: 20,
     endpointUrl: "/reports/models/params",
     nativeConfiguration: {
+      type: "line",
       xAxis: { name: "performed_at" },
       yAxis: {
         names: ["score_recent", "score_steady", "score_anchor"],

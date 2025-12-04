@@ -21,14 +21,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import {
-  Plus,
-  Trash,
-  Folder,
-  Activity,
-  Chart,
-  Percentage,
-} from "@crunch-ui/icons";
+import { Plus, Trash, Folder, Chart, Percentage } from "@crunch-ui/icons";
 import { z } from "zod";
 import { createLeaderboardColumnSchema } from "../application/schemas/createLeaderboardSchema";
 import { ColumnType, LeaderboardColumn } from "../domain/types";

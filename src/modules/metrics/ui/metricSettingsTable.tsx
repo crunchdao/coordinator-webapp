@@ -13,13 +13,20 @@ import {
   Badge,
   Spinner,
 } from "@crunch-ui/core";
-import { Settings, Folder, Percentage, Chart } from "@crunch-ui/icons";
+import {
+  Settings,
+  Folder,
+  Percentage,
+  Chart,
+  ExternalLink,
+} from "@crunch-ui/icons";
 import { MetricType } from "../domain/types";
 import { useGetWidgets } from "../application/hooks/useGetWidgets";
 import { DeleteWidgetButton } from "./deleteWidgetButton";
 import { ResetWidgetsButton } from "./resetWidgetsButton";
 import { AddWidgetSheet } from "./addWidgetSheet";
 import { EditWidgetSheet } from "./editWidgetSheet";
+import Link from "next/link";
 
 const getIcon = (type: MetricType) => {
   switch (type) {
@@ -66,7 +73,7 @@ export const MetricSettingsTable: React.FC = () => {
                 <TableRow>
                   <TableHead>Widget Name</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead>???</TableHead>
+                  <TableHead>Url</TableHead>
                   <TableHead>Order</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -117,7 +124,23 @@ export const MetricSettingsTable: React.FC = () => {
                         </div>
                       </TableCell>
                       <TableCell>{getColumnTypeBadge(widget.type)}</TableCell>
-                      <TableCell>????</TableCell>
+                      <TableCell>
+                        {widget.endpointUrl ? (
+                          <Link
+                            href={
+                              process.env.NEXT_PUBLIC_API_URL +
+                              widget.endpointUrl
+                            }
+                          >
+                            <Badge variant="secondary" size="sm">
+                              {widget.endpointUrl}{" "}
+                              <ExternalLink className="ml-2" />
+                            </Badge>
+                          </Link>
+                        ) : (
+                          "N/A"
+                        )}
+                      </TableCell>
                       <TableCell>
                         <span className="text-sm text-muted-foreground tabular-nums">
                           {widget.order}
