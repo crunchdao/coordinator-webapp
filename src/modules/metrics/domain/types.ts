@@ -20,11 +20,11 @@ export type BaseDefinition = {
 };
 
 export type LineChartDefinition = BaseDefinition & {
-  nativeConfiguration: LineChartConfiguration | null;
+  nativeConfiguration: LineChartConfiguration;
 };
 
 export type GaugeDefinition = BaseDefinition & {
-  nativeConfiguration: GaugeConfiguration | null;
+  nativeConfiguration: GaugeConfiguration;
 };
 
 export type IframeChartDefinition = BaseDefinition;
