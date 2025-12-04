@@ -13,16 +13,6 @@
     "order": 0
   },
   {
-    "id": 2,
-    "type": "VALUE",
-    "property": "score_recent",
-    "format": "decimal-1",
-    "display_name": "Recent Score",
-    "tooltip": "The score of the player over the last 24 hours.",
-    "native_configuration": null,
-    "order": 20
-  },
-  {
     "id": 3,
     "type": "VALUE",
     "property": "score_steady",
@@ -41,15 +31,5 @@
     "tooltip": "The score of the player over the last 7 days.",
     "native_configuration": null,
     "order": 40
-  },
-  {
-    "type": "VALUE",
-    "property": "score_recent",
-    "format": "compact",
-    "display_name": "testaze",
-    "tooltip": null,
-    "native_configuration": null,
-    "order": 1,
-    "id": 5
   }
 ]

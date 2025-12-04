@@ -50,11 +50,53 @@ export async function GET() {
   }
 }
 
+async function readColumns(): Promise<LeaderboardColumn[]> {
+  try {
+    const data = await fs.readFile(CONFIG_FILE, "utf-8");
+    return JSON.parse(data);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+      await ensureConfigDir();
+      await fs.writeFile(
+        CONFIG_FILE,
+        JSON.stringify(initialColumns, null, 2),
+        "utf-8"
+      );
+      return initialColumns;
+    }
+    throw error;
+  }
+}
+
+async function writeColumns(columns: LeaderboardColumn[]): Promise<void> {
+  await ensureConfigDir();
+  await fs.writeFile(CONFIG_FILE, JSON.stringify(columns, null, 2), "utf-8");
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const columnData: Omit<LeaderboardColumn, "id"> = await request.json();
+    const columns = await readColumns();
+    const newColumn: LeaderboardColumn = {
+      ...columnData,
+      id: Math.max(...columns.map(c => c.id), 0) + 1,
+    };
+    const updatedColumns = [...columns, newColumn];
+    await writeColumns(updatedColumns);
+    return NextResponse.json(newColumn);
+  } catch (error) {
+    console.error("Error creating column:", error);
+    return NextResponse.json(
+      { error: "Failed to create column" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function PUT(request: NextRequest) {
   try {
-    await ensureConfigDir();
     const columns: LeaderboardColumn[] = await request.json();
-    await fs.writeFile(CONFIG_FILE, JSON.stringify(columns, null, 2), "utf-8");
+    await writeColumns(columns);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error writing configuration:", error);
