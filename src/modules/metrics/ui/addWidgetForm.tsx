@@ -15,8 +15,11 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@crunch-ui/core";
-import { Chart, Link } from "@crunch-ui/icons";
+import { Chart, Link, InfoCircle } from "@crunch-ui/icons";
 import { useAddWidget } from "../application/hooks/useAddWidget";
 import { useUpdateWidget } from "../application/hooks/useUpdateWidget";
 import { useGetWidgets } from "../application/hooks/useGetWidgets";
@@ -70,12 +73,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             ...base,
             chartType: "line",
             xAxisName: config.xAxis.name,
-            yAxisNames:
-              "names" in config.yAxis
-                ? config.yAxis.names
-                : "name" in config.yAxis && config.yAxis.name
-                ? [config.yAxis.name]
-                : [],
+            yAxisSeries: config.yAxis.series,
             displayEvolution: config.displayEvolution,
             displayLegend: config.displayLegend,
             yAxisFormat: config.yAxis.format,
@@ -95,7 +93,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
       tooltip: "",
       order: (widgets?.length || 0) + 1,
       endpointUrl: "",
-      yAxisNames: [],
+      yAxisSeries: [],
     };
   };
 
@@ -144,17 +142,14 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
           nativeConfiguration: {
             type: "line",
             xAxis: { name: data.xAxisName || "" },
-            yAxis:
-              data.yAxisNames && data.yAxisNames.length > 0
-                ? data.yAxisNames.length === 1
-                  ? { name: data.yAxisNames[0], format: data.yAxisFormat }
-                  : { names: data.yAxisNames, format: data.yAxisFormat }
-                : { name: "", format: data.yAxisFormat },
+            yAxis: {
+              series: data.yAxisSeries || [],
+              format: data.yAxisFormat,
+            },
             displayEvolution: data.displayEvolution || false,
             displayLegend:
               data.displayLegend !== false ? data.displayLegend : undefined,
             filterConfig: data.filterConfig,
-            seriesConfig: data.seriesConfig,
             groupByProperty: data.groupByProperty,
             alertConfig:
               data.alertField && data.alertReasonField
@@ -260,7 +255,17 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             name="displayName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Display Name</FormLabel>
+                <FormLabel>
+                  Display Name
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      A user-friendly name that will be displayed as the widget's title
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="e.g., Revenue Chart" />
                 </FormControl>
@@ -274,7 +279,17 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             name="endpointUrl"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Endpoint URL</FormLabel>
+                <FormLabel>
+                  Endpoint URL
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      The API endpoint that returns data in JSON format. For charts, it should return an array of objects
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -291,7 +306,17 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             name="tooltip"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tooltip (Optional)</FormLabel>
+                <FormLabel>
+                  Tooltip (Optional)
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Additional help text shown when users hover over the widget title
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -308,7 +333,17 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             name="order"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Order</FormLabel>
+                <FormLabel>
+                  Order
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Position of the widget in the dashboard (lower numbers appear first)
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
                 <FormControl>
                   <Input
                     {...field}

@@ -9,8 +9,11 @@ import {
   Input,
   Checkbox,
   Button,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@crunch-ui/core";
-import { Plus, SmallCross } from "@crunch-ui/icons";
+import { Plus, SmallCross, InfoCircle } from "@crunch-ui/icons";
 import { WidgetFormData } from "../application/schemas/widgetFormSchema";
 import { FilterConfigEditor } from "./filterConfigEditor";
 
@@ -28,7 +31,18 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
         name="xAxisName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>X Axis Property</FormLabel>
+            <FormLabel>
+              X Axis Property
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Property name for the X axis, typically a timestamp field
+                  (e.g., "performed_at")
+                </TooltipContent>
+              </Tooltip>
+            </FormLabel>
             <FormControl>
               <Input {...field} placeholder="e.g., performed_at" />
             </FormControl>
@@ -39,56 +53,101 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
 
       <FormField
         control={form.control}
-        name="yAxisNames"
+        name="yAxisSeries"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Y Axis Properties</FormLabel>
+            <FormLabel>
+              Y Axis Series
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Define one or more data series. Each series needs a property
+                  name from your data, and can have a custom label and color
+                </TooltipContent>
+              </Tooltip>
+            </FormLabel>
             <div className="space-y-2">
-              {field.value?.map((name, index) => (
-                <div key={index} className="flex gap-2">
+              {field.value?.map((series, index) => (
+                <div key={index} className="space-y-2 border rounded-lg p-3">
+                  <div className="flex justify-between items-start">
+                    <span className="text-sm font-medium">
+                      Series {index + 1}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon-sm"
+                      onClick={() => {
+                        const newValues = field.value?.filter(
+                          (_, i) => i !== index
+                        );
+                        field.onChange(newValues);
+                      }}
+                      disabled={(field.value?.length || 0) <= 1}
+                    >
+                      <SmallCross className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      value={series.name}
+                      onChange={(e) => {
+                        const newValues = [...(field.value || [])];
+                        newValues[index] = {
+                          ...newValues[index],
+                          name: e.target.value,
+                        };
+                        field.onChange(newValues);
+                      }}
+                      placeholder="Property name (e.g., score_recent)"
+                    />
+                    <Input
+                      value={series.label || ""}
+                      onChange={(e) => {
+                        const newValues = [...(field.value || [])];
+                        newValues[index] = {
+                          ...newValues[index],
+                          label: e.target.value,
+                        };
+                        field.onChange(newValues);
+                      }}
+                      placeholder="Display label (e.g., Recent Score)"
+                    />
+                  </div>
                   <Input
-                    value={name}
+                    value={series.color || ""}
                     onChange={(e) => {
                       const newValues = [...(field.value || [])];
-                      newValues[index] = e.target.value;
+                      newValues[index] = {
+                        ...newValues[index],
+                        color: e.target.value,
+                      };
                       field.onChange(newValues);
                     }}
-                    placeholder="e.g., score_recent"
+                    placeholder="Color (optional, e.g., #FF6B6B)"
                   />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => {
-                      const newValues = field.value?.filter(
-                        (_, i) => i !== index
-                      );
-                      field.onChange(newValues);
-                    }}
-                    disabled={(field.value?.length || 0) <= 1}
-                  >
-                    <SmallCross />
-                  </Button>
                 </div>
               ))}
               {(!field.value || field.value.length === 0) && (
-                <Input
-                  placeholder="e.g., score_recent"
-                  onChange={(e) => {
-                    field.onChange([e.target.value]);
-                  }}
-                />
+                <div className="text-sm text-muted-foreground">
+                  No series defined. Add at least one Y axis series.
+                </div>
               )}
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  field.onChange([...(field.value || []), ""]);
+                  field.onChange([
+                    ...(field.value || []),
+                    { name: "", label: "" },
+                  ]);
                 }}
               >
-                <Plus />
-                Add Y Axis
+                <Plus className="h-4 w-4 mr-2" />
+                Add Series
               </Button>
             </div>
             <FormMessage />
@@ -101,7 +160,18 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
         name="yAxisFormat"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Y Axis Format (applies to all Y axes)</FormLabel>
+            <FormLabel>
+              Y Axis Format (applies to all Y axes)
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Format for Y axis values: "decimal:2" (2 decimal places),
+                  "percentage" (show as %), or "currency" ($)
+                </TooltipContent>
+              </Tooltip>
+            </FormLabel>
             <FormControl>
               <Input {...field} placeholder="e.g., decimal:2" />
             </FormControl>
@@ -116,7 +186,19 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
           name="groupByProperty"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Group By Property</FormLabel>
+              <FormLabel>
+                Group By Property
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Create separate series based on unique values of this
+                    property (e.g., group by "param" to show different
+                    parameters)
+                  </TooltipContent>
+                </Tooltip>
+              </FormLabel>
               <FormControl>
                 <Input {...field} placeholder="e.g., param" />
               </FormControl>
@@ -138,7 +220,18 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormLabel className="font-normal">Display Evolution</FormLabel>
+              <FormLabel>
+                Display Evolution
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Show percentage change from first to last value in the
+                    legend (e.g., +12.5%)
+                  </TooltipContent>
+                </Tooltip>
+              </FormLabel>
             </FormItem>
           )}
         />
@@ -154,7 +247,7 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <FormLabel className="font-normal">Display Legend</FormLabel>
+              <FormLabel>Display Legend</FormLabel>
             </FormItem>
           )}
         />
@@ -162,14 +255,34 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
 
       {/* Alert Configuration */}
       <div className="space-y-4 border-t pt-4">
-        <h4 className="text-sm font-medium">Alert Configuration (Optional)</h4>
+        <h4 className="text-sm font-medium">
+          Alert Configuration (Optional)
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+            </TooltipTrigger>
+            <TooltipContent>
+              Configure alerts based on data points. When alert conditions are met, the chart will highlight affected areas
+            </TooltipContent>
+          </Tooltip>
+        </h4>
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="alertField"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Alert Field</FormLabel>
+                <FormLabel>
+                  Alert Field
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Field containing alert status (e.g., "score_success"). When false/0, triggers visual alert
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="e.g., score_success" />
                 </FormControl>
@@ -183,7 +296,17 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
             name="alertReasonField"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Alert Reason Field</FormLabel>
+                <FormLabel>
+                  Alert Reason Field
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Field containing the reason for the alert (e.g., "score_failed_reason")
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
                 <FormControl>
                   <Input {...field} placeholder="e.g., score_failed_reason" />
                 </FormControl>

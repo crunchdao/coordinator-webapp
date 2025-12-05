@@ -14,19 +14,12 @@ export const initialConfig: Widget[] = [
         name: "performed_at",
       },
       yAxis: {
-        names: ["score_recent", "score_steady", "score_anchor"],
+        series: [
+          { name: "score_recent", label: "Recent Score" },
+          { name: "score_steady", label: "Steady Score" },
+          { name: "score_anchor", label: "Anchor Score" },
+        ],
         format: "decimal:2",
-      },
-      seriesConfig: {
-        score_anchor: {
-          label: "Anchor Score",
-        },
-        score_recent: {
-          label: "Recent Score",
-        },
-        score_steady: {
-          label: "Steady Score",
-        },
       },
       displayEvolution: false,
     },
@@ -41,7 +34,10 @@ export const initialConfig: Widget[] = [
     nativeConfiguration: {
       type: "line",
       xAxis: { name: "performed_at" },
-      yAxis: { name: "score_value", format: "decimal:2" },
+      yAxis: {
+        series: [{ name: "score_value" }],
+        format: "decimal:2",
+      },
       alertConfig: {
         reasonField: "score_failed_reason",
         field: "score_success",
@@ -75,7 +71,11 @@ export const initialConfig: Widget[] = [
       type: "line",
       xAxis: { name: "performed_at" },
       yAxis: {
-        names: ["score_recent", "score_steady", "score_anchor"],
+        series: [
+          { name: "score_recent", label: "Recent Score" },
+          { name: "score_steady", label: "Steady Score" },
+          { name: "score_anchor", label: "Anchor Score" },
+        ],
         format: "decimal:2",
       },
       filterConfig: [
@@ -92,11 +92,6 @@ export const initialConfig: Widget[] = [
           autoSelectFirst: true,
         },
       ],
-      seriesConfig: {
-        score_anchor: { label: "Anchor Score" },
-        score_recent: { label: "Recent Score" },
-        score_steady: { label: "Steady Score" },
-      },
       groupByProperty: "param",
       displayEvolution: false,
     },

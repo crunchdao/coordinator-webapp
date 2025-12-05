@@ -5,12 +5,19 @@ export type FilterConfig = {
   autoSelectFirst?: boolean;
 };
 
+export type YAxisSeries = {
+  name: string;
+  label?: string;
+  color?: string;
+};
+
 export type LineChartConfiguration = {
   type: "line";
   xAxis: { name: string };
-  yAxis:
-    | { name: string; format?: string }
-    | { names: string[]; format?: string };
+  yAxis: {
+    series: YAxisSeries[];
+    format?: string;
+  };
   displayEvolution: boolean;
   displayLegend?: boolean;
   tooltip?: string;
@@ -20,13 +27,6 @@ export type LineChartConfiguration = {
     reasonField: string;
   };
   filterConfig?: FilterConfig[];
-  seriesConfig?: Record<
-    string,
-    {
-      color?: string;
-      label?: string;
-    }
-  >;
 };
 
 export type GaugeConfiguration = {

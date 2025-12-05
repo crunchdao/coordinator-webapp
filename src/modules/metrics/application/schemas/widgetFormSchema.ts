@@ -15,10 +15,11 @@ const gaugeSeriesConfigSchema = z.object({
   label: z.string().optional(),
 });
 
-// Schema for line chart series config
-const lineChartSeriesConfigSchema = z.object({
-  color: z.string().optional(),
+// Schema for Y axis series
+const yAxisSeriesSchema = z.object({
+  name: z.string().min(1, "Series name is required"),
   label: z.string().optional(),
+  color: z.string().optional(),
 });
 
 // Form data schema (flattened for form usage)
@@ -35,7 +36,7 @@ export const widgetFormDataSchema = z
 
     // Line chart fields
     xAxisName: z.string().optional(),
-    yAxisNames: z.array(z.string()).optional(),
+    yAxisSeries: z.array(yAxisSeriesSchema).optional(),
     yAxisFormat: z.string().optional(),
     displayEvolution: z.boolean().optional(),
     displayLegend: z.boolean().optional(),
@@ -49,8 +50,6 @@ export const widgetFormDataSchema = z
     // Common filter config
     filterConfig: z.array(filterConfigSchema).optional(),
 
-    // Series config (for line charts)
-    seriesConfig: z.record(z.string(), lineChartSeriesConfigSchema).optional(),
 
     // Gauge series config
     gaugeSeriesConfig: z.array(gaugeSeriesConfigSchema).optional(),
@@ -63,7 +62,7 @@ export const widgetFormDataSchema = z
       }
 
       if (data.chartType === "line") {
-        return !!data.xAxisName && !!data.yAxisNames && data.yAxisNames.length > 0;
+        return !!data.xAxisName && !!data.yAxisSeries && data.yAxisSeries.length > 0;
       }
     }
 

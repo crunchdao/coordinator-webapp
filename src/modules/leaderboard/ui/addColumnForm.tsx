@@ -358,9 +358,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                               className="w-4 h-4"
                             />
                           </FormControl>
-                          <FormLabel className="font-normal">
-                            Display as percentage
-                          </FormLabel>
+                          <FormLabel>Display as percentage</FormLabel>
                           <FormMessage />
                         </FormItem>
                       )}

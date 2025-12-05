@@ -7,8 +7,12 @@ import {
   FormControl,
   FormMessage,
   Checkbox,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@crunch-ui/core";
 import { WidgetFormData } from "../application/schemas/widgetFormSchema";
+import { InfoCircle } from "@crunch-ui/icons";
 import { FilterConfigEditor } from "./filterConfigEditor";
 
 interface GaugeFieldsProps {
@@ -31,8 +35,16 @@ export const GaugeFields: React.FC<GaugeFieldsProps> = ({ form }) => {
                 onCheckedChange={field.onChange}
               />
             </FormControl>
-            <FormLabel className="font-normal">
+            <FormLabel>
               Display as percentage
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  When enabled, the gauge value will be displayed as a percentage (0-100%)
+                </TooltipContent>
+              </Tooltip>
             </FormLabel>
           </FormItem>
         )}

@@ -1,8 +1,6 @@
 [
   {
-    "id": 1,
     "type": "CHART",
-    "name": "score",
     "displayName": "Score Metrics",
     "tooltip": null,
     "order": 10,
@@ -13,31 +11,31 @@
         "name": "performed_at"
       },
       "yAxis": {
-        "names": [
-          "score_recent",
-          "score_steady",
-          "score_anchor"
+        "series": [
+          {
+            "name": "score_recent",
+            "label": "Recent Score",
+            "color": "red"
+          },
+          {
+            "name": "score_steady",
+            "label": "Steady Score"
+          },
+          {
+            "name": "score_anchor",
+            "label": "Anchor Score",
+            "color": "#ea733D"
+          }
         ],
         "format": "decimal:2"
       },
-      "seriesConfig": {
-        "score_anchor": {
-          "label": "Anchor Score"
-        },
-        "score_recent": {
-          "label": "Recent Score"
-        },
-        "score_steady": {
-          "label": "Steady Score"
-        }
-      },
       "displayEvolution": false
-    }
+    },
+    "id": 1
   },
   {
     "id": 2,
     "type": "CHART",
-    "name": "predictions",
     "displayName": "Predictions",
     "tooltip": null,
     "order": 30,
@@ -48,7 +46,11 @@
         "name": "performed_at"
       },
       "yAxis": {
-        "name": "score_value",
+        "series": [
+          {
+            "name": "score_value"
+          }
+        ],
         "format": "decimal:2"
       },
       "alertConfig": {
@@ -76,7 +78,6 @@
   {
     "id": 3,
     "type": "CHART",
-    "name": "params",
     "displayName": "Rolling score by parameters",
     "tooltip": null,
     "order": 20,
@@ -87,10 +88,19 @@
         "name": "performed_at"
       },
       "yAxis": {
-        "names": [
-          "score_recent",
-          "score_steady",
-          "score_anchor"
+        "series": [
+          {
+            "name": "score_recent",
+            "label": "Recent Score"
+          },
+          {
+            "name": "score_steady",
+            "label": "Steady Score"
+          },
+          {
+            "name": "score_anchor",
+            "label": "Anchor Score"
+          }
         ],
         "format": "decimal:2"
       },
@@ -108,17 +118,6 @@
           "autoSelectFirst": true
         }
       ],
-      "seriesConfig": {
-        "score_anchor": {
-          "label": "Anchor Score"
-        },
-        "score_recent": {
-          "label": "Recent Score"
-        },
-        "score_steady": {
-          "label": "Steady Score"
-        }
-      },
       "groupByProperty": "param",
       "displayEvolution": false
     }

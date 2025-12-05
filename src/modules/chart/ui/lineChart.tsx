@@ -123,16 +123,15 @@ export const LineChart: React.FC<LineChartProps> = ({
         }, {} as Record<string, MetricItem[]>);
 
         const yAxisConfig = definition.nativeConfiguration.yAxis;
-        const yMetrics =
-          "names" in yAxisConfig ? yAxisConfig.names : [yAxisConfig.name];
+        const ySeries = yAxisConfig.series;
 
         const datasets = Object.entries(groupedData)
           .flatMap(([key, rows], groupIndex) => {
-            return yMetrics.map((metricName, metricIndex) => {
+            return ySeries.map((series, seriesIndex) => {
               const dataPoints = rows
                 .filter((row) => row[definition.nativeConfiguration.xAxis.name])
                 .map((row) => {
-                  const value = row[metricName];
+                  const value = row[series.name];
                   const xValue =
                     row[definition.nativeConfiguration.xAxis.name]!;
                   return {
@@ -142,14 +141,12 @@ export const LineChart: React.FC<LineChartProps> = ({
                 })
                 .sort((a, b) => a.x - b.x);
 
-              const seriesConfig = definition.nativeConfiguration.seriesConfig;
-              const metricConfig = seriesConfig?.[metricName];
               const colorIndex =
-                yMetrics.length > 1
-                  ? groupIndex * yMetrics.length + metricIndex
+                ySeries.length > 1
+                  ? groupIndex * ySeries.length + seriesIndex
                   : groupIndex;
               const color =
-                metricConfig?.color ||
+                series.color ||
                 RANDOM_COLORS[colorIndex % RANDOM_COLORS.length];
 
               let projectLabel;
@@ -161,10 +158,10 @@ export const LineChart: React.FC<LineChartProps> = ({
                 projectLabel = getLabel(key);
               }
 
-              const metricLabel = metricConfig?.label || metricName;
+              const metricLabel = series.label || series.name;
 
               const baseLabel =
-                yMetrics.length > 1
+                ySeries.length > 1
                   ? `${projectLabel} - ${metricLabel}`
                   : projectLabel;
 
@@ -230,15 +227,15 @@ export const LineChart: React.FC<LineChartProps> = ({
 
             if (isFilteredOut) return;
 
-            yMetrics.forEach((metricName) => {
-              const seriesKey = `${key}_${metricName}`;
+            ySeries.forEach((series) => {
+              const seriesKey = `${key}_${series.name}`;
               alertPoints[seriesKey] = [];
 
               rows.forEach((row) => {
                 const fieldValue = row[alertConfig.field];
                 if (fieldValue === true && row[alertConfig.reasonField]) {
                   const x = row[definition.nativeConfiguration.xAxis.name];
-                  const y = row[metricName];
+                  const y = row[series.name];
                   if (x) {
                     alertPoints[seriesKey].push({
                       x: new Date(x + "Z").getTime(),
@@ -431,7 +428,6 @@ export const LineChart: React.FC<LineChartProps> = ({
     data,
     projectIdProperty,
     getLabel,
-    definition.name,
     definition.nativeConfiguration,
     selectedFilters,
     shouldShowRow,

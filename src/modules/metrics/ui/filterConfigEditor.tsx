@@ -10,15 +10,20 @@ import {
   Checkbox,
   Button,
   Card,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@crunch-ui/core";
-import { Plus, Trash } from "@crunch-ui/icons";
+import { Plus, Trash, InfoCircle } from "@crunch-ui/icons";
 import { WidgetFormData } from "../application/schemas/widgetFormSchema";
 
 interface FilterConfigEditorProps {
   form: UseFormReturn<WidgetFormData>;
 }
 
-export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({ form }) => {
+export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({
+  form,
+}) => {
   const filters = form.watch("filterConfig") || [];
 
   const addFilter = () => {
@@ -45,13 +50,18 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({ form }) 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium">Filters Configuration</h4>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={addFilter}
-        >
+        <h4 className="text-sm font-medium">
+          Filters Configuration
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+            </TooltipTrigger>
+            <TooltipContent>
+              Define interactive dropdown filters that allow users to dynamically filter the displayed data
+            </TooltipContent>
+          </Tooltip>
+        </h4>
+        <Button type="button" variant="outline" size="sm" onClick={addFilter}>
           <Plus className="h-4 w-4 mr-2" />
           Add Filter
         </Button>
@@ -59,7 +69,7 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({ form }) 
 
       {filters.length === 0 ? (
         <div className="text-sm text-muted-foreground">
-          No filters configured. Click "Add Filter" to create one.
+          No filters configured. Click &quot;Add Filter&quot; to create one.
         </div>
       ) : (
         <div className="space-y-4">
@@ -84,12 +94,19 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({ form }) 
                     name={`filterConfig.${index}.property`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Property *</FormLabel>
+                        <FormLabel>
+                          Property *
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              The data field name that will be used for filtering (e.g., "asset", "param")
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
                         <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="e.g., asset"
-                          />
+                          <Input {...field} placeholder="e.g., asset" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -101,12 +118,19 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({ form }) 
                     name={`filterConfig.${index}.label`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Label *</FormLabel>
+                        <FormLabel>
+                          Label *
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              Display name for the filter shown in the UI (e.g., "Asset", "Parameter")
+                            </TooltipContent>
+                          </Tooltip>
+                        </FormLabel>
                         <FormControl>
-                          <Input
-                            {...field}
-                            placeholder="e.g., Asset"
-                          />
+                          <Input {...field} placeholder="e.g., Asset" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -125,8 +149,16 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({ form }) 
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <FormLabel className="font-normal">
+                      <FormLabel>
                         Auto-select first value
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Automatically select the first available filter option when the widget loads
+                          </TooltipContent>
+                        </Tooltip>
                       </FormLabel>
                     </FormItem>
                   )}
