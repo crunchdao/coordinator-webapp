@@ -12,9 +12,7 @@ import { Plus } from "@crunch-ui/icons";
 import { AddColumnForm } from "./addColumnForm";
 import { useState } from "react";
 
-export const AddColumnSheet: React.FC<{ className?: string }> = ({
-  className,
-}) => {
+export const AddColumnSheet: React.FC = () => {
   const [open, setOpen] = useState(false);
 
   return (

@@ -49,7 +49,6 @@ export const DataTable = <TData, TValue>({
   pagination,
   getSubRows,
   getRowLink,
-  getIsRowSelected,
 }: DataTableProps<TData, TValue>) => {
   const router = useRouter();
 

@@ -22,12 +22,7 @@ import { Chart, Folder } from "@crunch-ui/icons";
 import { useAddWidget } from "../application/hooks/useAddWidget";
 import { useUpdateWidget } from "../application/hooks/useUpdateWidget";
 import { useGetWidgets } from "../application/hooks/useGetWidgets";
-import {
-  Widget,
-  LineChartDefinition,
-  GaugeDefinition,
-  IframeChartDefinition,
-} from "../domain/types";
+import { Widget, LineChartDefinition, GaugeDefinition } from "../domain/types";
 import { useForm } from "react-hook-form";
 
 interface AddWidgetFormProps {
@@ -114,7 +109,6 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
   const chartType = form.watch("chartType");
 
   const handleSubmit = async (data: FormData) => {
-    // Basic validation
     if (!data.name || !data.displayName || !data.endpointUrl) {
       console.error("Missing required fields");
       return;

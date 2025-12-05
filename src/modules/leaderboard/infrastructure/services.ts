@@ -2,7 +2,6 @@ import apiClient from "@/utils/api";
 import configApiClient from "@/utils/config-api";
 import { Leaderboard, LeaderboardColumn } from "../domain/types";
 import { endpoints } from "./endpoints";
-import { initialColumns } from "../domain/initial-columns";
 
 export const getLeaderboard = async (): Promise<Leaderboard> => {
   const response = await apiClient.get(endpoints.getLeaderboard());

@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -13,20 +14,13 @@ import {
   Badge,
   Spinner,
 } from "@crunch-ui/core";
-import {
-  Settings,
-  Folder,
-  Percentage,
-  Chart,
-  ExternalLink,
-} from "@crunch-ui/icons";
+import { Settings, Folder, Chart, ExternalLink } from "@crunch-ui/icons";
 import { MetricType } from "../domain/types";
 import { useGetWidgets } from "../application/hooks/useGetWidgets";
 import { DeleteWidgetButton } from "./deleteWidgetButton";
 import { ResetWidgetsButton } from "./resetWidgetsButton";
 import { AddWidgetSheet } from "./addWidgetSheet";
 import { EditWidgetSheet } from "./editWidgetSheet";
-import Link from "next/link";
 
 const getIcon = (type: MetricType) => {
   switch (type) {

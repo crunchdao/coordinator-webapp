@@ -2,20 +2,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import "chartjs-adapter-date-fns";
-import {
-  Button,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@crunch-ui/core";
-import { InfoCircle } from "@crunch-ui/icons";
-import uniqBy from "lodash.uniqby";
+import { Button } from "@crunch-ui/core";
 import { formatYAxisValue, RANDOM_COLORS } from "../application/utils";
 import {
   LineChartDefinition,
   MetricItem,
 } from "@/modules/metrics/domain/types";
-
 
 interface LineChartProps {
   data: MetricItem[];

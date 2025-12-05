@@ -56,11 +56,11 @@ async function readColumns(): Promise<LeaderboardColumn[]> {
     const columns = JSON.parse(data);
 
     const hasSnakeCase = columns.some(
-      (col: any) => "display_name" in col || "native_configuration" in col
+      (col) => "display_name" in col || "native_configuration" in col
     );
 
     if (hasSnakeCase) {
-      const updatedColumns = columns.map((col: any) => ({
+      const updatedColumns = columns.map((col) => ({
         ...col,
         displayName: col.displayName || col.display_name,
         nativeConfiguration:

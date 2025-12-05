@@ -1,9 +1,8 @@
 import { z } from "zod";
 import { GaugeConfiguration } from "@/modules/chart/domain/types";
-import { 
-  createLeaderboardColumnSchema,
+import {
   columnTypeSchema,
-  formatTypeSchema
+  formatTypeSchema,
 } from "../application/schemas/createLeaderboardSchema";
 
 export type LeaderboardPosition = Record<string, unknown>;

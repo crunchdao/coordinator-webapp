@@ -17,9 +17,8 @@ import {
   Input,
 } from "@crunch-ui/core";
 import { Search } from "@crunch-ui/icons";
-import { AddColumnSheet } from "./addColumnSheet";
 
-export const LeaderboardTable: React.FC<{}> = ({}) => {
+export const LeaderboardTable: React.FC = () => {
   const { leaderboard, leaderboardLoading } = useGetLeaderboard();
   const columns = useLeaderboardTable();
   const [globalFilter, setGlobalFilter] = useState("");

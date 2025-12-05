@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import uniqBy from "lodash.uniqby";
 import {
   Spinner,
   Tooltip,
@@ -18,7 +19,6 @@ import { useMetricData } from "../application/hooks/useMetricData";
 import { LineChart } from "@/modules/chart/ui/lineChart";
 import { IframeWidget } from "./iframeWidget";
 import { MetricFilters } from "./metricFilter";
-import uniqBy from "lodash.uniqby";
 import { Gauge } from "@/modules/chart/ui/gauge";
 
 interface MetricWidgetProps {
@@ -36,51 +36,55 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({
     params
   );
 
-  const [selectedFilters, setSelectedFilters] = useState<
-    Record<string, string | string[]>
-  >({});
-  const [filtersInitialized, setFiltersInitialized] = useState(false);
+  const [selectedFilters, setSelectedFilters] =
+    useState<Record<string, string | string[]>>({});
+  const filtersInitializedRef = useRef(false);
+
+  const initialFilters = useMemo(() => {
+    if (widget.type !== "CHART" || !data || data.length === 0) {
+      return {};
+    }
+
+    const widgetWithConfig = widget as LineChartDefinition | GaugeDefinition;
+    if (!widgetWithConfig.nativeConfiguration.filterConfig) {
+      return {};
+    }
+
+    const filters: Record<string, string | string[]> = {};
+
+    widgetWithConfig.nativeConfiguration.filterConfig.forEach((filter) => {
+      if (filter.autoSelectFirst) {
+        const filteredData = data.filter(
+          (row: MetricItem) =>
+            row[filter.property] !== null && row[filter.property] !== undefined
+        );
+
+        const uniqueData = uniqBy(
+          filteredData,
+          (row: MetricItem) => row[filter.property]
+        );
+        const uniqueValues = uniqueData
+          .map((row) => String(row[filter.property]))
+          .sort();
+
+        if (uniqueValues.length > 0) {
+          filters[filter.property] = uniqueValues[0];
+        }
+      }
+    });
+
+    return filters;
+  }, [data, widget]);
 
   useEffect(() => {
-    if (
-      widget.type === "CHART" &&
-      data &&
-      data.length > 0 &&
-      !filtersInitialized
-    ) {
-      const widgetWithConfig = widget as LineChartDefinition | GaugeDefinition;
-      const initialFilters: Record<string, string | string[]> = {};
-
-      if (widgetWithConfig.nativeConfiguration.filterConfig) {
-        widgetWithConfig.nativeConfiguration.filterConfig.forEach((filter) => {
-          if (filter.autoSelectFirst) {
-            const filteredData = data.filter(
-              (row: MetricItem) =>
-                row[filter.property] !== null &&
-                row[filter.property] !== undefined
-            );
-
-            const uniqueData = uniqBy(
-              filteredData,
-              (row: MetricItem) => row[filter.property]
-            );
-            const uniqueValues = uniqueData
-              .map((row) => String(row[filter.property]))
-              .sort();
-
-            if (uniqueValues.length > 0) {
-              initialFilters[filter.property] = uniqueValues[0];
-            }
-          }
-        });
-      }
-
-      if (Object.keys(initialFilters).length > 0) {
+    if (!filtersInitializedRef.current && Object.keys(initialFilters).length > 0) {
+      filtersInitializedRef.current = true;
+      const timeoutId = setTimeout(() => {
         setSelectedFilters(initialFilters);
-      }
-      setFiltersInitialized(true);
+      }, 0);
+      return () => clearTimeout(timeoutId);
     }
-  }, [data, widget, filtersInitialized]);
+  }, [initialFilters]);
 
   const handleFilterChange = (property: string, value: string | string[]) => {
     setSelectedFilters((prev) => ({

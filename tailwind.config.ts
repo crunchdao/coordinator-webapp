@@ -1,5 +1,6 @@
 import sharedConfig from "@crunch-ui/tailwind-config";
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 const config: Pick<Config, "content" | "presets"> = {
   content: [
@@ -13,10 +14,7 @@ const config: Pick<Config, "content" | "presets"> = {
         ...sharedConfig.theme,
         container: undefined,
       },
-      plugins: [
-        ...(sharedConfig.plugins ?? []),
-        require("tailwindcss-animate"),
-      ],
+      plugins: [...(sharedConfig.plugins ?? []), tailwindcssAnimate],
     },
   ],
 };
