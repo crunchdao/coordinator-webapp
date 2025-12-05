@@ -10,14 +10,13 @@ import {
   Button,
   ToggleGroup,
   ToggleGroupItem,
-  Textarea,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@crunch-ui/core";
-import { Chart, Folder } from "@crunch-ui/icons";
+import { Chart, Link } from "@crunch-ui/icons";
 import { useAddWidget } from "../application/hooks/useAddWidget";
 import { useUpdateWidget } from "../application/hooks/useUpdateWidget";
 import { useGetWidgets } from "../application/hooks/useGetWidgets";
@@ -110,87 +109,82 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
   const chartType = form.watch("chartType");
 
   const handleSubmit = async (data: WidgetFormData) => {
-    try {
-      let widgetData: Omit<Widget, "id">;
+    let widgetData: Omit<Widget, "id">;
 
-      if (data.type === "IFRAME") {
+    if (data.type === "IFRAME") {
+      widgetData = {
+        type: "IFRAME",
+        displayName: data.displayName,
+        tooltip: data.tooltip || null,
+        order: data.order,
+        endpointUrl: data.endpointUrl,
+      };
+    } else {
+      if (data.chartType === "gauge") {
         widgetData = {
-          type: "IFRAME",
+          type: "CHART",
           displayName: data.displayName,
           tooltip: data.tooltip || null,
           order: data.order,
           endpointUrl: data.endpointUrl,
-        };
+          nativeConfiguration: {
+            type: "gauge",
+            percentage: data.percentage || false,
+            filterConfig: data.filterConfig,
+            seriesConfig: data.gaugeSeriesConfig,
+          },
+        } as Omit<GaugeDefinition, "id">;
+      } else if (data.chartType === "line") {
+        widgetData = {
+          type: "CHART",
+          displayName: data.displayName,
+          tooltip: data.tooltip || null,
+          order: data.order,
+          endpointUrl: data.endpointUrl,
+          nativeConfiguration: {
+            type: "line",
+            xAxis: { name: data.xAxisName || "" },
+            yAxis:
+              data.yAxisNames && data.yAxisNames.length > 0
+                ? data.yAxisNames.length === 1
+                  ? { name: data.yAxisNames[0], format: data.yAxisFormat }
+                  : { names: data.yAxisNames, format: data.yAxisFormat }
+                : { name: "", format: data.yAxisFormat },
+            displayEvolution: data.displayEvolution || false,
+            displayLegend:
+              data.displayLegend !== false ? data.displayLegend : undefined,
+            filterConfig: data.filterConfig,
+            seriesConfig: data.seriesConfig,
+            groupByProperty: data.groupByProperty,
+            alertConfig:
+              data.alertField && data.alertReasonField
+                ? {
+                    field: data.alertField,
+                    reasonField: data.alertReasonField,
+                  }
+                : undefined,
+          },
+        } as Omit<LineChartDefinition, "id">;
       } else {
-        if (data.chartType === "gauge") {
-          widgetData = {
-            type: "CHART",
-            displayName: data.displayName,
-            tooltip: data.tooltip || null,
-            order: data.order,
-            endpointUrl: data.endpointUrl,
-            nativeConfiguration: {
-              type: "gauge",
-              percentage: data.percentage || false,
-              filterConfig: data.filterConfig,
-              seriesConfig: data.gaugeSeriesConfig,
-            },
-          } as Omit<GaugeDefinition, "id">;
-        } else if (data.chartType === "line") {
-          widgetData = {
-            type: "CHART",
-            displayName: data.displayName,
-            tooltip: data.tooltip || null,
-            order: data.order,
-            endpointUrl: data.endpointUrl,
-            nativeConfiguration: {
-              type: "line",
-              xAxis: { name: data.xAxisName || "" },
-              yAxis:
-                data.yAxisNames && data.yAxisNames.length > 0
-                  ? data.yAxisNames.length === 1
-                    ? { name: data.yAxisNames[0], format: data.yAxisFormat }
-                    : { names: data.yAxisNames, format: data.yAxisFormat }
-                  : { name: "", format: data.yAxisFormat },
-              displayEvolution: data.displayEvolution || false,
-              displayLegend:
-                data.displayLegend !== false ? data.displayLegend : undefined,
-              filterConfig: data.filterConfig,
-              seriesConfig: data.seriesConfig,
-              groupByProperty: data.groupByProperty,
-              alertConfig:
-                data.alertField && data.alertReasonField
-                  ? {
-                      field: data.alertField,
-                      reasonField: data.alertReasonField,
-                    }
-                  : undefined,
-            },
-          } as Omit<LineChartDefinition, "id">;
-        } else {
-          return null;
-        }
+        return null;
       }
-
-      if (isEditMode && editValues) {
-        updateWidgets({
-          id: editValues.id,
-          column: widgetData,
-        });
-      } else {
-        addWidget(widgetData);
-      }
-
-      onSubmit();
-    } catch (error) {
-      console.error("Error submitting form:", error);
     }
+
+    if (isEditMode && editValues) {
+      updateWidgets({
+        id: editValues.id,
+        column: widgetData,
+      });
+    } else {
+      addWidget(widgetData);
+    }
+
+    onSubmit();
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        {/* Widget Type Selection */}
         <FormField
           control={form.control}
           name="type"
@@ -216,7 +210,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
                     value="IFRAME"
                     className="flex flex-col items-center justify-center h-24 p-4 border data-[state=on]:border-primary bg-card"
                   >
-                    <Folder className="w-6 h-6" />
+                    <Link className="w-6 h-6" />
                     Iframe
                   </ToggleGroupItem>
                 </ToggleGroup>
@@ -299,10 +293,9 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
               <FormItem>
                 <FormLabel>Tooltip (Optional)</FormLabel>
                 <FormControl>
-                  <Textarea
+                  <Input
                     {...field}
                     placeholder="Helpful description for users"
-                    rows={2}
                   />
                 </FormControl>
                 <FormMessage />

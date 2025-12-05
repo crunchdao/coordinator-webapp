@@ -4,7 +4,6 @@ export const initialConfig: Widget[] = [
   {
     id: 1,
     type: "CHART",
-    name: "score",
     displayName: "Score Metrics",
     tooltip: null,
     order: 10,
@@ -35,7 +34,6 @@ export const initialConfig: Widget[] = [
   {
     id: 2,
     type: "CHART",
-    name: "predictions",
     displayName: "Predictions",
     tooltip: null,
     order: 30,
@@ -69,7 +67,6 @@ export const initialConfig: Widget[] = [
   {
     id: 3,
     type: "CHART",
-    name: "params",
     displayName: "Rolling score by parameters",
     tooltip: null,
     order: 20,

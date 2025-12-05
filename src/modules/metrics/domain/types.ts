@@ -11,7 +11,6 @@ export type MetricItem = {
 
 export type BaseDefinition = {
   id: number;
-  name: string;
   type: MetricType;
   displayName: string;
   tooltip?: string | null;
