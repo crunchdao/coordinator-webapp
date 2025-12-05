@@ -35,7 +35,6 @@
     }
   },
   {
-    "id": 2,
     "type": "CHART",
     "name": "predictions",
     "displayName": "Predictions",
@@ -51,27 +50,28 @@
         "name": "score_value",
         "format": "decimal:2"
       },
-      "alertConfig": {
-        "reasonField": "score_failed_reason",
-        "field": "score_success"
-      },
+      "displayEvolution": false,
       "filterConfig": [
         {
-          "type": "select",
-          "label": "Asset",
           "property": "asset",
+          "label": "Asset",
+          "type": "select",
           "autoSelectFirst": true
         },
         {
-          "type": "select",
-          "label": "Horizon",
           "property": "horizon",
-          "autoSelectFirst": true
+          "label": "Horizon",
+          "type": "select",
+          "autoSelectFirst": false
         }
       ],
       "groupByProperty": "param",
-      "displayEvolution": false
-    }
+      "alertConfig": {
+        "field": "score_success",
+        "reasonField": "score_failed_reason"
+      }
+    },
+    "id": 2
   },
   {
     "id": 3,
@@ -122,5 +122,14 @@
       "groupByProperty": "param",
       "displayEvolution": false
     }
+  },
+  {
+    "type": "IFRAME",
+    "name": "iframe",
+    "displayName": "Test Iframe",
+    "tooltip": "This is a te'st",
+    "order": 40,
+    "endpointUrl": "https://lightning-chart.github.io/lcjs-showcase-renderingSpeed/",
+    "id": 4
   }
 ]

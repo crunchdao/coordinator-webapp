@@ -108,7 +108,7 @@ export const MetricSettingsTable: React.FC = () => {
                       <TableCell>
                         <div className="flex flex-col gap-0.5">
                           <span className="font-medium text-sm">
-                            {widget.displayName || widget.name}
+                            {widget.displayName}
                           </span>
                           {widget.tooltip && (
                             <span className="body-sm text-muted-foreground line-clamp-1">
@@ -145,7 +145,7 @@ export const MetricSettingsTable: React.FC = () => {
                           <EditWidgetSheet widget={widget} />
                           <DeleteWidgetButton
                             widgetId={widget.id}
-                            widgetName={widget.displayName || widget.name}
+                            widgetName={widget.displayName}
                           />
                         </div>
                       </TableCell>

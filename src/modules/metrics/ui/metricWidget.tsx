@@ -115,13 +115,13 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({
           </h3>
         )}
         {(widget as LineChartDefinition | GaugeDefinition).nativeConfiguration
-          .filterConfig && (
+          ?.filterConfig && (
           <div className="flex items-end gap-3 flex-wrap">
             {hasFilters && data && (
               <MetricFilters
                 filters={
                   (widget as LineChartDefinition | GaugeDefinition)
-                    .nativeConfiguration.filterConfig!
+                    .nativeConfiguration?.filterConfig || []
                 }
                 data={data}
                 onFilterChange={handleFilterChange}

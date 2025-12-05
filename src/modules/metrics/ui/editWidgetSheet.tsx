@@ -32,7 +32,7 @@ export const EditWidgetSheet: React.FC<EditWidgetSheetProps> = ({ widget }) => {
           <SheetTitle>Edit Widget</SheetTitle>
           <SheetDescription>
             Update the configuration for &ldquo;
-            {widget.displayName || widget.name}&ldquo;
+            {widget.displayName}&ldquo;
           </SheetDescription>
         </SheetHeader>
         <div className="px-4">

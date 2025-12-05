@@ -16,7 +16,6 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Checkbox,
 } from "@crunch-ui/core";
 import { Chart, Folder } from "@crunch-ui/icons";
 import { useAddWidget } from "../application/hooks/useAddWidget";
@@ -24,27 +23,17 @@ import { useUpdateWidget } from "../application/hooks/useUpdateWidget";
 import { useGetWidgets } from "../application/hooks/useGetWidgets";
 import { Widget, LineChartDefinition, GaugeDefinition } from "../domain/types";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  widgetFormDataSchema,
+  type WidgetFormData,
+} from "../application/schemas/widgetFormSchema";
+import { LineChartFields } from "./lineChartFields";
+import { GaugeFields } from "./gaugeFields";
 
 interface AddWidgetFormProps {
   onSubmit: () => void;
   editValues?: Widget;
-}
-
-interface FormData {
-  type: "CHART" | "IFRAME";
-  name: string;
-  displayName: string;
-  tooltip?: string;
-  order: number;
-  endpointUrl: string;
-  chartType?: "line" | "gauge";
-  // Line chart config
-  xAxisName?: string;
-  yAxisName?: string;
-  displayEvolution?: boolean;
-  displayLegend?: boolean;
-  // Gauge config
-  percentage?: boolean;
 }
 
 export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
@@ -58,11 +47,10 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
 
   const isLoading = addWidgetLoading || updateWidgetsLoading;
 
-  const getInitialValues = (): FormData => {
+  const getInitialValues = (): Partial<WidgetFormData> => {
     if (editValues) {
       const base = {
         type: editValues.type,
-        name: editValues.name,
         displayName: editValues.displayName,
         tooltip: editValues.tooltip || "",
         order: editValues.order,
@@ -76,15 +64,26 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             ...base,
             chartType: "gauge",
             percentage: config.percentage,
+            filterConfig: config.filterConfig,
           };
-        } else {
+        } else if (config.type === "line") {
           return {
             ...base,
             chartType: "line",
             xAxisName: config.xAxis.name,
-            yAxisName: "name" in config.yAxis ? config.yAxis.name : "",
+            yAxisNames:
+              "names" in config.yAxis
+                ? config.yAxis.names
+                : "name" in config.yAxis && config.yAxis.name
+                ? [config.yAxis.name]
+                : [],
             displayEvolution: config.displayEvolution,
             displayLegend: config.displayLegend,
+            yAxisFormat: config.yAxis.format,
+            groupByProperty: config.groupByProperty,
+            alertField: config.alertConfig?.field,
+            alertReasonField: config.alertConfig?.reasonField,
+            filterConfig: config.filterConfig,
           };
         }
       }
@@ -93,45 +92,39 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
 
     return {
       type: "CHART",
-      name: "",
       displayName: "",
       tooltip: "",
       order: (widgets?.length || 0) + 1,
       endpointUrl: "",
+      yAxisNames: [],
     };
   };
 
-  const form = useForm<FormData>({
+  const form = useForm<WidgetFormData>({
+    resolver: zodResolver(widgetFormDataSchema),
     defaultValues: getInitialValues(),
+    mode: "onChange",
   });
 
   const widgetType = form.watch("type");
   const chartType = form.watch("chartType");
 
-  const handleSubmit = async (data: FormData) => {
-    if (!data.name || !data.displayName || !data.endpointUrl) {
-      console.error("Missing required fields");
-      return;
-    }
-
+  const handleSubmit = async (data: WidgetFormData) => {
     try {
       let widgetData: Omit<Widget, "id">;
 
       if (data.type === "IFRAME") {
         widgetData = {
           type: "IFRAME",
-          name: data.name,
           displayName: data.displayName,
           tooltip: data.tooltip || null,
           order: data.order,
           endpointUrl: data.endpointUrl,
         };
       } else {
-        // CHART type
         if (data.chartType === "gauge") {
           widgetData = {
             type: "CHART",
-            name: data.name,
             displayName: data.displayName,
             tooltip: data.tooltip || null,
             order: data.order,
@@ -139,13 +132,13 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             nativeConfiguration: {
               type: "gauge",
               percentage: data.percentage || false,
+              filterConfig: data.filterConfig,
+              seriesConfig: data.gaugeSeriesConfig,
             },
           } as Omit<GaugeDefinition, "id">;
-        } else {
-          // Line chart
+        } else if (data.chartType === "line") {
           widgetData = {
             type: "CHART",
-            name: data.name,
             displayName: data.displayName,
             tooltip: data.tooltip || null,
             order: data.order,
@@ -153,11 +146,29 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             nativeConfiguration: {
               type: "line",
               xAxis: { name: data.xAxisName || "" },
-              yAxis: { name: data.yAxisName || "" },
+              yAxis:
+                data.yAxisNames && data.yAxisNames.length > 0
+                  ? data.yAxisNames.length === 1
+                    ? { name: data.yAxisNames[0], format: data.yAxisFormat }
+                    : { names: data.yAxisNames, format: data.yAxisFormat }
+                  : { name: "", format: data.yAxisFormat },
               displayEvolution: data.displayEvolution || false,
-              displayLegend: data.displayLegend || false,
+              displayLegend:
+                data.displayLegend !== false ? data.displayLegend : undefined,
+              filterConfig: data.filterConfig,
+              seriesConfig: data.seriesConfig,
+              groupByProperty: data.groupByProperty,
+              alertConfig:
+                data.alertField && data.alertReasonField
+                  ? {
+                      field: data.alertField,
+                      reasonField: data.alertReasonField,
+                    }
+                  : undefined,
             },
           } as Omit<LineChartDefinition, "id">;
+        } else {
+          return null;
         }
       }
 
@@ -252,20 +263,6 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
         <div className="space-y-4">
           <FormField
             control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Widget Name</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="e.g., revenue_chart" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="displayName"
             render={({ field }) => (
               <FormItem>
@@ -336,94 +333,12 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
 
         {/* Line Chart Configuration */}
         {widgetType === "CHART" && chartType === "line" && (
-          <div className="space-y-4 border-t pt-4">
-            <h3 className="font-medium">Line Chart Configuration</h3>
-
-            <FormField
-              control={form.control}
-              name="xAxisName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>X Axis Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="e.g., Date" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="yAxisName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Y Axis Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="e.g., Revenue" />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="displayEvolution"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    Display Evolution
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="displayLegend"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal">Display Legend</FormLabel>
-                </FormItem>
-              )}
-            />
-          </div>
+          <LineChartFields form={form} />
         )}
 
         {/* Gauge Configuration */}
         {widgetType === "CHART" && chartType === "gauge" && (
-          <div className="space-y-4 border-t pt-4">
-            <h3 className="font-medium">Gauge Configuration</h3>
-
-            <FormField
-              control={form.control}
-              name="percentage"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormLabel className="font-normal">
-                    Display as percentage
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-          </div>
+          <GaugeFields form={form} />
         )}
 
         <div className="flex justify-end gap-3 pt-6">
