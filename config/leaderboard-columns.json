@@ -13,16 +13,6 @@
     "order": 0
   },
   {
-    "id": 2,
-    "type": "VALUE",
-    "property": "score_recent",
-    "format": "decimal-1",
-    "displayName": "Recent Score",
-    "tooltip": "The score of the player over the last 24 hours.",
-    "nativeConfiguration": null,
-    "order": 20
-  },
-  {
     "id": 3,
     "type": "VALUE",
     "property": "score_steady",

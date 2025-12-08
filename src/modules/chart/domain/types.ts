@@ -1,3 +1,5 @@
+import { FormatType } from "@/modules/leaderboard/domain/types";
+
 export type FilterConfig = {
   property: string;
   label: string;
@@ -16,7 +18,7 @@ export type LineChartConfiguration = {
   xAxis: { name: string };
   yAxis: {
     series: YAxisSeries[];
-    format?: string;
+    format?: FormatType;
   };
   displayEvolution: boolean;
   displayLegend?: boolean;

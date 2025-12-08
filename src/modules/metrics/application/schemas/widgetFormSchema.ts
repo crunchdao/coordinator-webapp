@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+// Format type schema matching leaderboard format system
+export const formatTypeSchema = z.union([
+  z.literal("percentage"),
+  z.literal("integer"),
+  z.literal("compact"),
+  z.literal("decimal-1"),
+  z.literal("decimal-2"),
+  z.literal("decimal-3"),
+  z.literal("decimal-4"),
+]);
+
 // Schema for filter configuration (matching FilterConfig from chart/domain/types.ts)
 const filterConfigSchema = z.object({
   property: z.string().min(1, "Property is required"),
@@ -37,7 +48,7 @@ export const widgetFormDataSchema = z
     // Line chart fields
     xAxisName: z.string().optional(),
     yAxisSeries: z.array(yAxisSeriesSchema).optional(),
-    yAxisFormat: z.string().optional(),
+    yAxisFormat: formatTypeSchema.optional(),
     displayEvolution: z.boolean().optional(),
     displayLegend: z.boolean().optional(),
     groupByProperty: z.string().optional(),

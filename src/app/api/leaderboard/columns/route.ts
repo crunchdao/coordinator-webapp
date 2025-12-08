@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { LeaderboardColumn } from "@/modules/leaderboard/domain/types";
-import { initialColumns } from "@/modules/leaderboard/domain/initial-columns";
+import { initialColumns } from "@/modules/leaderboard/domain/initial-config";
 
 const CONFIG_FILE = path.join(
   process.cwd(),

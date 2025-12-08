@@ -1,4 +1,5 @@
 "use client";
+import { useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -6,24 +7,43 @@ import {
   CardTitle,
   Spinner,
 } from "@crunch-ui/core";
-import { useGetWidgets } from "../application/hooks/useGetWidgets";
 import { useGetLeaderboard } from "@/modules/leaderboard/application/hooks/useGetLeaderboard";
-import { MetricWidget } from "./metricWidget";
+import MultiSelectDropdown from "@/ui/multi-select-dropdown";
+import { LeaderboardPosition } from "@/modules/leaderboard/domain/types";
+import { useGetWidgets } from "../application/hooks/useGetWidgets";
 import { GetMetricDataParams } from "../domain/types";
-import { useMemo } from "react";
+import { MetricWidget } from "./metricWidget";
 
 export const MetricsDashboard: React.FC = () => {
   const { widgets, widgetsLoading } = useGetWidgets();
   const { leaderboard, leaderboardLoading } = useGetLeaderboard();
 
-  const metricParams = useMemo<GetMetricDataParams | null>(() => {
-    if (!leaderboard || leaderboard.length === 0) return null;
+  const [selectedModelIds, setSelectedModelIds] = useState<string[] | null>(
+    null
+  );
 
-    const modelIds = leaderboard
+  const selectedModels = useMemo(() => {
+    if (!leaderboard) return [];
+
+    if (selectedModelIds === null) {
+      return leaderboard;
+    }
+
+    return leaderboard.filter((item) =>
+      selectedModelIds.includes(String(item.model_id || ""))
+    );
+  }, [leaderboard, selectedModelIds]);
+
+  const handleSelectionChange = (models: LeaderboardPosition[]) => {
+    const ids = models.map((item) => String(item.model_id || ""));
+    setSelectedModelIds(ids);
+  };
+
+  const metricParams = useMemo<GetMetricDataParams>(() => {
+    const modelIds = selectedModels
       .map((item) => String(item.model_id || ""))
       .filter(Boolean);
 
-    // Default to last 30 days
     const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - 30);
@@ -33,7 +53,7 @@ export const MetricsDashboard: React.FC = () => {
       start: start.toISOString(),
       end: end.toISOString(),
     };
-  }, [leaderboard]);
+  }, [selectedModels]);
 
   if (widgetsLoading || leaderboardLoading) {
     return (
@@ -47,7 +67,7 @@ export const MetricsDashboard: React.FC = () => {
     return <p className="text-muted-foreground">No metrics configured</p>;
   }
 
-  if (!metricParams) {
+  if (!leaderboard || leaderboard.length === 0) {
     return (
       <p className="text-muted-foreground">No models found in leaderboard</p>
     );
@@ -56,7 +76,19 @@ export const MetricsDashboard: React.FC = () => {
   return (
     <Card displayCorners className="h-full">
       <CardHeader>
-        <CardTitle>Metrics Dashboard</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Metrics Dashboard</CardTitle>
+          {leaderboard && leaderboard.length > 0 && (
+            <MultiSelectDropdown
+              items={leaderboard}
+              values={selectedModels}
+              onValuesChange={handleSelectionChange}
+              triggerLabel="Models"
+              getItemKey={(item) => String(item.model_id || "")}
+              getItemLabel={(item) => String(item.model_id || "Unknown")}
+            />
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-8">
         {widgets.map((widget) => (

@@ -1,5 +1,6 @@
 [
   {
+    "id": 1,
     "type": "CHART",
     "displayName": "Score Metrics",
     "tooltip": null,
@@ -14,8 +15,7 @@
         "series": [
           {
             "name": "score_recent",
-            "label": "Recent Score",
-            "color": "red"
+            "label": "Recent Score"
           },
           {
             "name": "score_steady",
@@ -23,15 +23,13 @@
           },
           {
             "name": "score_anchor",
-            "label": "Anchor Score",
-            "color": "#ea733D"
+            "label": "Anchor Score"
           }
         ],
         "format": "decimal:2"
       },
       "displayEvolution": false
-    },
-    "id": 1
+    }
   },
   {
     "id": 2,
