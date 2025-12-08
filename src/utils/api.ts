@@ -5,12 +5,16 @@ import { toast } from "@crunch-ui/core";
 const IGNORED_ERROR_CODES: string[] = [];
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "http://localhost:8000",
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
 });
+
+export function updateApiBaseUrl(baseUrl: string) {
+  apiClient.defaults.baseURL = baseUrl;
+}
 
 apiClient.interceptors.response.use(
   function (response) {

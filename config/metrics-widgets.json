@@ -49,7 +49,7 @@
             "name": "score_value"
           }
         ],
-        "format": "decimal:2"
+        "format": "decimal-2"
       },
       "alertConfig": {
         "reasonField": "score_failed_reason",

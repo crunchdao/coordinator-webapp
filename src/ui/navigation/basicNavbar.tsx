@@ -1,7 +1,7 @@
-import { INTERNAL_LINKS } from "@/utils/routes";
-import { cn } from "@crunch-ui/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@crunch-ui/utils";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 export const BasicNavbar: React.FC = () => {
   const linkClassName =
@@ -28,6 +28,9 @@ export const BasicNavbar: React.FC = () => {
             </Link>
             <Link className={cn(linkClassName)} href={INTERNAL_LINKS.METRICS}>
               Metrics
+            </Link>
+            <Link className={cn(linkClassName)} href={INTERNAL_LINKS.SETTINGS}>
+              Settings
             </Link>
           </div>
         </div>
