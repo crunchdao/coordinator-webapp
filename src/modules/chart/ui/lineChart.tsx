@@ -3,7 +3,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Chart from "chart.js/auto";
 import "chartjs-adapter-date-fns";
 import { Button } from "@crunch-ui/core";
-import { formatYAxisValue, RANDOM_COLORS } from "../application/utils";
+import { RANDOM_COLORS } from "../application/utils";
+import { formatNumber } from "@/utils/numberFormatter";
 import {
   LineChartDefinition,
   MetricItem,
@@ -311,7 +312,7 @@ export const LineChart: React.FC<LineChartProps> = ({
                     const label =
                       dataset.originalLabel || context.dataset.label || "";
                     const value = context.parsed.y;
-                    const formattedValue = formatYAxisValue(
+                    const formattedValue = formatNumber(
                       value,
                       yAxisConfig.format
                     );
@@ -402,7 +403,7 @@ export const LineChart: React.FC<LineChartProps> = ({
                 ticks: {
                   color: `hsl(${ticksColor})`,
                   callback: function (value) {
-                    return formatYAxisValue(value, yAxisConfig.format);
+                    return formatNumber(value, yAxisConfig.format);
                   },
                 },
                 grid: {

@@ -47,35 +47,3 @@ export const RGBW_COLORS = {
   white: theme.colors.neutral[50],
 };
 
-export function formatYAxisValue(value: unknown, format?: string): string {
-  if (!format || value === null || value === undefined) {
-    return String(value);
-  }
-
-  const numValue = Number(value);
-  if (isNaN(numValue)) {
-    return String(value);
-  }
-
-  if (format === "percentage") {
-    return `${numValue}%`;
-  }
-
-  if (format.startsWith("currency:")) {
-    const symbol = format.substring(9);
-    return `${symbol}${numValue.toLocaleString()}`;
-  }
-
-  if (format.startsWith("decimal:")) {
-    const precision = parseInt(format.substring(8), 10);
-    if (!isNaN(precision)) {
-      return numValue.toFixed(precision);
-    }
-  }
-
-  if (format === "number") {
-    return numValue.toLocaleString();
-  }
-
-  return String(value);
-}

@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Gauge } from "@/modules/chart/ui/gauge";
 import { LeaderboardPosition } from "../../domain/types";
 import { getLeaderboardColumns } from "../../infrastructure/services";
-import { formatValue } from "../utils/formatter";
+import { formatNumber } from "@/utils/numberFormatter";
 
 export const useLeaderboardTable = () => {
   const { data: leaderboardColumns } = useQuery({
@@ -115,7 +115,7 @@ export const useLeaderboardTable = () => {
             );
           }
 
-          return formatValue(value, column.format);
+          return formatNumber(value, column.format);
         },
       };
     });

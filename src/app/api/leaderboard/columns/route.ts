@@ -55,23 +55,6 @@ async function readColumns(): Promise<LeaderboardColumn[]> {
     const data = await fs.readFile(CONFIG_FILE, "utf-8");
     const columns = JSON.parse(data);
 
-    const hasSnakeCase = columns.some(
-      (col) => "display_name" in col || "native_configuration" in col
-    );
-
-    if (hasSnakeCase) {
-      const updatedColumns = columns.map((col) => ({
-        ...col,
-        displayName: col.displayName || col.display_name,
-        nativeConfiguration:
-          col.nativeConfiguration || col.native_configuration,
-        display_name: undefined,
-        native_configuration: undefined,
-      }));
-      await writeColumns(updatedColumns);
-      return updatedColumns;
-    }
-
     return columns;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {

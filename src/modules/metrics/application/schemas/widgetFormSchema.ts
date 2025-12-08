@@ -1,15 +1,5 @@
 import { z } from "zod";
-
-// Format type schema matching leaderboard format system
-export const formatTypeSchema = z.union([
-  z.literal("percentage"),
-  z.literal("integer"),
-  z.literal("compact"),
-  z.literal("decimal-1"),
-  z.literal("decimal-2"),
-  z.literal("decimal-3"),
-  z.literal("decimal-4"),
-]);
+import { formatTypeSchema } from "@/utils/numberFormatter";
 
 // Schema for filter configuration (matching FilterConfig from chart/domain/types.ts)
 const filterConfigSchema = z.object({
