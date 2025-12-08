@@ -49,8 +49,8 @@ Line charts visualize time-series data with one or more Y-axis series.
     displayLegend?: boolean,     // Show/hide legend (default: true)
     groupByProperty?: string,    // Group data by this property
     alertConfig?: {              // Alert detection configuration
-      field: string,             // Boolean field to check for alerts
-      reasonField: string        // Field containing alert reason
+      field: string,             // Boolean field (true = alert triggered)
+      reasonField: string        // Field containing alert reason text
     },
     filterConfig?: Array<{       // Interactive filters
       property: string,          // Data property to filter
@@ -64,9 +64,11 @@ Line charts visualize time-series data with one or more Y-axis series.
 
 ### Y-Axis Formats
 
-- `"decimal:2"` - Format to 2 decimal places (e.g., 1.23456 → 1.23)
-- `"percentage"` - Display as percentage (e.g., 0.955 → 95.5%)
-- `"currency"` - Format as currency (e.g., 1234 → $1,234)
+- `"decimal-1"` to `"decimal-4"` - Format with fixed decimal places (e.g., 1.23456 → 1.23 for `"decimal-2"`)
+- `"percentage"` - Convert decimal to percentage (e.g., 0.955 → 95.50%)
+- `"integer"` - Round to integer with thousand separators (e.g., 1234.56 → 1,235)
+- `"compact"` - Compact notation (e.g., 1234 → 1.2K, 1234567 → 1.2M)
+- `"number"` - Standard number formatting with thousand separators (e.g., 1234.56 → 1,234.56)
 
 ### Example: Multi-Series Line Chart
 
@@ -88,7 +90,7 @@ Line charts visualize time-series data with one or more Y-axis series.
         { "name": "score_steady", "label": "Steady Score" },
         { "name": "score_anchor", "label": "Anchor Score", "color": "#3B82F6" }
       ],
-      "format": "decimal:2"
+      "format": "decimal-2"
     },
     "displayEvolution": false,
     "displayLegend": true,
@@ -153,26 +155,10 @@ Gauges display single numeric values with optional percentage formatting.
       autoSelectFirst?: boolean
     }>,
     seriesConfig?: Array<{       // Gauge series configuration
-      name?: string,
-      color?: string,
-      label?: string
+      name?: string,             // Data property name
+      color?: string,            // Color: "orange", "yellow", "green", "red"
+      label?: string             // Display label
     }>
-  }
-}
-```
-
-### Example: Simple Gauge
-
-```json
-{
-  "id": 3,
-  "type": "CHART",
-  "displayName": "Success Rate",
-  "order": 5,
-  "endpointUrl": "/reports/success-rate",
-  "nativeConfiguration": {
-    "type": "gauge",
-    "percentage": true
   }
 }
 ```
@@ -194,19 +180,6 @@ Iframe widgets embed external content (dashboards, reports, etc.).
 }
 ```
 
-### Example: Embedded Dashboard
-
-```json
-{
-  "id": 4,
-  "type": "IFRAME",
-  "displayName": "External Dashboard",
-  "tooltip": "Live metrics from Grafana",
-  "order": 40,
-  "endpointUrl": "https://grafana.example.com/d/dashboard-id/metrics"
-}
-```
-
 ## Advanced Features
 
 ### Grouping Data
@@ -225,55 +198,4 @@ Configure alerts to highlight data points that meet certain conditions:
 Add dropdown filters to allow users to slice data:
 - Filters automatically extract unique values from the dataset
 - Multiple filters can be combined
-- Use `autoSelectFirst: true` to pre-select the first value
-
-## Data Format
-
-All chart widgets expect data in this format:
-
-```typescript
-Array<{
-  [key: string]: string | number | null | boolean | undefined
-}>
-```
-
-Example data:
-```json
-[
-  {
-    "performed_at": "2024-01-01T00:00:00Z",
-    "score_recent": 0.95,
-    "score_steady": 0.93,
-    "asset": "BTC",
-    "param": "volatility"
-  },
-  {
-    "performed_at": "2024-01-02T00:00:00Z",
-    "score_recent": 0.97,
-    "score_steady": 0.94,
-    "asset": "BTC",
-    "param": "volatility"
-  }
-]
-```
-
-## Complete Configuration File
-
-Widgets are typically configured in `config/metrics-widgets.json`:
-
-```json
-[
-  {
-    "id": 1,
-    "type": "CHART",
-    "displayName": "Score Metrics",
-    "nativeConfiguration": { ... }
-  },
-  {
-    "id": 2,
-    "type": "IFRAME",
-    "displayName": "External Dashboard",
-    "endpointUrl": "https://..."
-  }
-]
-```
+- Set `autoSelectFirst: true` to automatically select the first available value, preventing too many series from being displayed.

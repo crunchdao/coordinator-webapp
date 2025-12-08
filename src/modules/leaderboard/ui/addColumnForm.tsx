@@ -17,11 +17,14 @@ import {
   SelectValue,
   ToggleGroup,
   ToggleGroupItem,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@crunch-ui/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { Plus, Trash, Folder, Chart, Percentage, User } from "@crunch-ui/icons";
+import { Plus, Trash, Folder, Chart, Percentage, User, InfoCircle } from "@crunch-ui/icons";
 import { z } from "zod";
 import { createLeaderboardColumnSchema } from "../application/schemas/createLeaderboardSchema";
 import { ColumnType, LeaderboardColumn } from "../domain/types";
@@ -184,7 +187,17 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                 name="property"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Property</FormLabel>
+                    <FormLabel>
+                      Property
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          The data field name to display in this column. Must match exactly with your data property.
+                        </TooltipContent>
+                      </Tooltip>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., score_recent" {...field} />
                     </FormControl>
@@ -198,7 +211,17 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                 name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Display Name</FormLabel>
+                    <FormLabel>
+                      Display Name
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          The text shown in the column header. This is what users will see.
+                        </TooltipContent>
+                      </Tooltip>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Recent Score" {...field} />
                     </FormControl>
@@ -230,7 +253,17 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                 name="order"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Order</FormLabel>
+                    <FormLabel>
+                      Order
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Column position from left to right. Lower numbers appear first. Use increments of 10 for easier reordering.
+                        </TooltipContent>
+                      </Tooltip>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -252,7 +285,17 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                   name="format"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Format</FormLabel>
+                      <FormLabel>
+                        Format
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            How numeric values are displayed. Percentage assumes decimal input (0.5 = 50%).
+                          </TooltipContent>
+                        </Tooltip>
+                      </FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value || undefined}
@@ -296,7 +339,17 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                   name="nativeConfiguration.statusProperty"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status Property (optional)</FormLabel>
+                      <FormLabel>
+                        Status Property (optional)
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Data field containing status (boolean or string). Shows a pulse indicator when true or "active".
+                          </TooltipContent>
+                        </Tooltip>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="e.g., is_active"
@@ -364,7 +417,17 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                               className="w-4 h-4"
                             />
                           </FormControl>
-                          <FormLabel>Display as percentage</FormLabel>
+                          <FormLabel>
+                            Display as percentage
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                Show values as percentages in the gauge tooltip
+                              </TooltipContent>
+                            </Tooltip>
+                          </FormLabel>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -375,7 +438,17 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                 {form.watch("nativeConfiguration.type") === "gauge" && (
                   <Card className="space-y-4 p-4">
                     <div className="flex items-center justify-between">
-                      <FormLabel>Series Configuration</FormLabel>
+                      <FormLabel>
+                        Series Configuration
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Configure the data series for your gauge. Each series represents a segment with its own color.
+                          </TooltipContent>
+                        </Tooltip>
+                      </FormLabel>
                       <Button
                         type="button"
                         variant="primary"
