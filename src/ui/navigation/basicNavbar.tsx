@@ -29,6 +29,9 @@ export const BasicNavbar: React.FC = () => {
             <Link className={cn(linkClassName)} href={INTERNAL_LINKS.METRICS}>
               Metrics
             </Link>
+            <Link className={cn(linkClassName)} href={INTERNAL_LINKS.LOGS}>
+              Logs
+            </Link>
             <Link className={cn(linkClassName)} href={INTERNAL_LINKS.SETTINGS}>
               Settings
             </Link>

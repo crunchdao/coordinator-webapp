@@ -38,6 +38,9 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
       endpoints: {
         leaderboard: "",
       },
+      container: {
+        name: "",
+      },
     },
   });
 
@@ -70,15 +73,13 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
                     <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    The base URL for your external API (e.g., http://localhost:8000)
+                    The base URL for your external API (e.g.,
+                    http://localhost:8000)
                   </TooltipContent>
                 </Tooltip>
               </FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="http://localhost:8000" 
-                  {...field} 
-                />
+                <Input placeholder="http://localhost:8000" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -97,14 +98,39 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
                     <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    The endpoint path for fetching leaderboard data (e.g., /reports/leaderboard)
+                    The endpoint path for fetching leaderboard data (e.g.,
+                    /reports/leaderboard)
                   </TooltipContent>
                 </Tooltip>
               </FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="/reports/leaderboard" 
-                  {...field} 
+                <Input placeholder="/reports/leaderboard" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="container.name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Container Name
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    The name of the container to stream logs from
+                  </TooltipContent>
+                </Tooltip>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="crunchdao-model-runner-condorgame-benchmarktracker"
+                  {...field}
                 />
               </FormControl>
               <FormMessage />

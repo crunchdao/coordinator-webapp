@@ -3,4 +3,7 @@ export interface GlobalSettings {
   endpoints: {
     leaderboard: string;
   };
+  container: {
+    name: string;
+  };
 }

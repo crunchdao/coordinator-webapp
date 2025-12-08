@@ -3,4 +3,5 @@ export const INTERNAL_LINKS = {
   LEADERBOARD: "/leaderboard",
   METRICS: "/metrics",
   SETTINGS: "/settings",
+  LOGS: "/logs",
 };

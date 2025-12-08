@@ -5,4 +5,7 @@ export const initialSettings: GlobalSettings = {
   endpoints: {
     leaderboard: "/reports/leaderboard",
   },
+  container: {
+    name: "crunchdao-model-runner-condorgame-benchmarktracker",
+  },
 };
