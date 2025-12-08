@@ -19,7 +19,7 @@ export const initialConfig: Widget[] = [
           { name: "score_steady", label: "Steady Score" },
           { name: "score_anchor", label: "Anchor Score" },
         ],
-        format: "decimal:2",
+        format: "decimal-2",
       },
       displayEvolution: false,
     },
@@ -36,7 +36,7 @@ export const initialConfig: Widget[] = [
       xAxis: { name: "performed_at" },
       yAxis: {
         series: [{ name: "score_value" }],
-        format: "decimal:2",
+        format: "decimal-2",
       },
       alertConfig: {
         reasonField: "score_failed_reason",

@@ -1,4 +1,4 @@
-import { FormatType } from "@/modules/leaderboard/domain/types";
+import { FormatType } from "@/utils/numberFormatter";
 
 export type FilterConfig = {
   property: string;

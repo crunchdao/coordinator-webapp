@@ -1,11 +1,7 @@
 import { z } from "zod";
+import { formatTypeSchema } from "@/utils/numberFormatter";
 
-export const formatTypeSchema = z.union([
-  z.literal("percentage"),
-  z.literal("integer"),
-  z.literal("compact"),
-  z.string().regex(/^decimal-\d+$/),
-]);
+export { formatTypeSchema };
 
 export const columnTypeSchema = z.enum(["MODEL", "VALUE", "CHART", "USERNAME"]);
 
