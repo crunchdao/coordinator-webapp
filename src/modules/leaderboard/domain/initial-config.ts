@@ -3,13 +3,13 @@ import { LeaderboardColumn } from "./types";
 export const initialColumns: LeaderboardColumn[] = [
   {
     id: 1,
-    type: "PROJECT",
+    type: "MODEL",
     property: "model_id",
     format: null,
     displayName: "Model",
     tooltip: null,
     nativeConfiguration: {
-      type: "project",
+      type: "model",
       statusProperty: "status",
     },
     order: 0,

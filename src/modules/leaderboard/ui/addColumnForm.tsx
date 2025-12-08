@@ -128,9 +128,9 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
         type: value,
       };
 
-      if (value === "PROJECT") {
+      if (value === "MODEL") {
         resetData.nativeConfiguration = {
-          type: "project",
+          type: "model",
           statusProperty: undefined,
         };
       }
@@ -290,7 +290,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                 />
               )}
 
-              {columnType === "PROJECT" && (
+              {columnType === "MODEL" && (
                 <FormField
                   control={form.control}
                   name="nativeConfiguration.statusProperty"

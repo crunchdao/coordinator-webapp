@@ -24,7 +24,7 @@ import { ColumnType } from "../domain/types";
 
 const getColumnIcon = (type: ColumnType) => {
   switch (type) {
-    case "PROJECT":
+    case "MODEL":
       return <Folder className="w-4 h-4" />;
     case "VALUE":
       return <Percentage className="w-4 h-4" />;

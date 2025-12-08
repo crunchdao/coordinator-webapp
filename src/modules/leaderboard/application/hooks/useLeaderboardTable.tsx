@@ -24,15 +24,15 @@ export const useLeaderboardTable = () => {
     if (!leaderboardColumns) return [];
 
     return leaderboardColumns.map((column) => {
-      if (column.type === "PROJECT") {
+      if (column.type === "MODEL") {
         return {
           id: `column_${column.id}`,
           accessorKey: column.property,
-          header: column.displayName || "Project",
+          header: column.displayName || "Model",
           cell: ({ row }) => {
-            const projectName = row.original[column.property] as string;
+            const modelName = row.original[column.property] as string;
             const statusProperty =
-              column.nativeConfiguration?.type === "project"
+              column.nativeConfiguration?.type === "model"
                 ? column.nativeConfiguration.statusProperty
                 : undefined;
 
@@ -47,12 +47,12 @@ export const useLeaderboardTable = () => {
                     active={isActive}
                     className={!isActive ? "invisible" : undefined}
                   />
-                  {projectName}
+                  {modelName}
                 </span>
               );
             }
 
-            return <span>{projectName}</span>;
+            return <span>{modelName}</span>;
           },
         };
       }

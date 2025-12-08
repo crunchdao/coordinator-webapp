@@ -12,7 +12,7 @@ export type FormatType = z.infer<typeof formatTypeSchema>;
 export type ColumnType = z.infer<typeof columnTypeSchema>;
 
 export type ProjectConfiguration = {
-  type: "project";
+  type: "model";
   statusProperty?: string;
 };
 
