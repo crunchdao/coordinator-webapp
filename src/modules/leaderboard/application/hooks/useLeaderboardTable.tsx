@@ -57,6 +57,30 @@ export const useLeaderboardTable = () => {
         };
       }
 
+      if (column.type === "USERNAME") {
+        return {
+          id: `column_${column.id}`,
+          accessorKey: column.property,
+          header: column.tooltip
+            ? () => (
+                <div>
+                  {column.displayName}&nbsp;
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                    </TooltipTrigger>
+                    <TooltipContent>{column.tooltip}</TooltipContent>
+                  </Tooltip>
+                </div>
+              )
+            : column.displayName || "",
+          cell: ({ row }) => {
+            const username = row.original[column.property] as string;
+            return <span>{username || ""}</span>;
+          },
+        };
+      }
+
       return {
         id: `column_${column.id}`,
         accessorKey: column.property,

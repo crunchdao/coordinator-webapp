@@ -19,7 +19,7 @@ import { DeleteColumnButton } from "./deleteColumnButton";
 import { AddColumnSheet } from "./addColumnSheet";
 import { EditColumnSheet } from "./editColumnSheet";
 import { ResetColumnsButton } from "./resetColumnsButton";
-import { Settings, Folder, Percentage, Chart } from "@crunch-ui/icons";
+import { Settings, Folder, Percentage, Chart, User } from "@crunch-ui/icons";
 import { ColumnType } from "../domain/types";
 
 const getColumnIcon = (type: ColumnType) => {
@@ -30,6 +30,8 @@ const getColumnIcon = (type: ColumnType) => {
       return <Percentage className="w-4 h-4" />;
     case "CHART":
       return <Chart className="w-4 h-4" />;
+    case "USERNAME":
+      return <User className="w-4 h-4" />;
   }
 };
 

@@ -7,7 +7,7 @@ export const formatTypeSchema = z.union([
   z.string().regex(/^decimal-\d+$/),
 ]);
 
-export const columnTypeSchema = z.enum(["PROJECT", "VALUE", "CHART"]);
+export const columnTypeSchema = z.enum(["PROJECT", "VALUE", "CHART", "USERNAME"]);
 
 const gaugeSeriesConfigSchema = z.object({
   name: z.string().optional(),
