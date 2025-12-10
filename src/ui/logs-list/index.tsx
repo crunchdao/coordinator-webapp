@@ -13,7 +13,7 @@ interface Log {
 interface LogListProps {
   logs: Log[];
   logVariants?: Record<string, string>;
-  autoscroll: boolean;
+  autoscroll?: boolean;
 }
 
 const LogList: React.FC<LogListProps> = ({ logs, logVariants, autoscroll }) => {

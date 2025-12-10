@@ -13,8 +13,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@crunch-ui/core";
-import { InfoCircle } from "@crunch-ui/icons";
-import { useForm } from "react-hook-form";
+import { InfoCircle, Plus, Trash } from "@crunch-ui/icons";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUpdateSettings } from "../application/hooks/useUpdateSettings";
 import { useGlobalSettings } from "../application/hooks/useGlobalSettings";
@@ -34,21 +34,20 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
     defaultValues: {
-      apiBaseUrl: "",
+      apiBaseUrl: settings?.apiBaseUrl || "",
       endpoints: {
-        leaderboard: "",
+        leaderboard: settings?.endpoints?.leaderboard || "",
       },
-      container: {
-        name: "",
+      logs: {
+        containerNames: settings?.logs?.containerNames || [""],
       },
     },
   });
 
-  useEffect(() => {
-    if (settings) {
-      form.reset(settings);
-    }
-  }, [settings, form]);
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "logs.containerNames" as never,
+  });
 
   const handleSubmit = (data: GlobalSettingsFormData) => {
     updateSettings(data, {
@@ -111,32 +110,56 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="container.name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Container Name
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    The name of the container to stream logs from
-                  </TooltipContent>
-                </Tooltip>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="crunchdao-model-runner-condorgame-benchmarktracker"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <FormItem>
+          <FormLabel>
+            Container Names
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+              </TooltipTrigger>
+              <TooltipContent>
+                The names of containers to stream logs from
+              </TooltipContent>
+            </Tooltip>
+          </FormLabel>
+          <div className="space-y-2">
+            {fields.map((field, index) => (
+              <FormField
+                key={field.id}
+                control={form.control}
+                name={`logs.containerNames.${index}`}
+                render={({ field }) => (
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input placeholder="container-name" {...field} />
+                    </FormControl>
+                    {fields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                )}
+              />
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => append("")}
+              className="w-full"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Container
+            </Button>
+          </div>
+          <FormMessage />
+        </FormItem>
 
         <div className="flex justify-end pt-4">
           <Button

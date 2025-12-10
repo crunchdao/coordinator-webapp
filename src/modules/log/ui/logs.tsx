@@ -1,81 +1,184 @@
 "use client";
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import {
+  PulseRing,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@crunch-ui/core";
 import LogList from "@/ui/logs-list";
 import { useGlobalSettings } from "@/modules/settings/application/hooks/useGlobalSettings";
 import { createLogStream } from "../infrastructure/services";
 import { LogEntry } from "../domain/types";
-import { Badge, PulseRing } from "@crunch-ui/core";
+
+interface ContainerLogs {
+  [containerName: string]: {
+    logs: LogEntry[];
+    isConnected: boolean;
+    error: string | null;
+  };
+}
+
+const MAX_LOGS_PER_CONTAINER = 1_000;
 
 export const Logs = () => {
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
   const { settings } = useGlobalSettings();
+  const containerNames = useMemo(
+    () => settings?.logs?.containerNames || [],
+    [settings?.logs?.containerNames]
+  );
+
+  const [containerLogs, setContainerLogs] = useState<ContainerLogs>({});
+  const [activeContainer, setActiveContainer] = useState<string>("");
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
-    if (!settings?.container?.name) return;
+    if (containerNames.length > 0 && !activeContainer) {
+      // eslint-disable-next-line
+      setActiveContainer(containerNames[0]);
+    }
+  }, [containerNames, activeContainer]);
+
+  useEffect(() => {
+    containerNames.forEach((containerName) => {
+      if (!containerLogs[containerName]) {
+        setContainerLogs((prev) => ({
+          ...prev,
+          [containerName]: {
+            logs: [],
+            isConnected: false,
+            error: null,
+          },
+        }));
+      }
+    });
+    // eslint-disable-next-line
+  }, [containerNames]);
+
+  useEffect(() => {
+    if (!activeContainer || containerNames.length === 0) return;
+
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
 
     const eventSource = createLogStream(
-      settings.container.name,
+      activeContainer,
       (log) => {
-        setError(null);
-        setLogs((prev) => [...prev, log]);
+        setContainerLogs((prev) => {
+          const currentLogs = prev[activeContainer]?.logs || [];
+          const newLogs = [...currentLogs, log];
+          const trimmedLogs = newLogs.slice(-MAX_LOGS_PER_CONTAINER);
+
+          return {
+            ...prev,
+            [activeContainer]: {
+              ...prev[activeContainer],
+              logs: trimmedLogs,
+              error: null,
+            },
+          };
+        });
       },
       () => {
-        setIsConnected(false);
-        setError("Connection lost. Attempting to reconnect...");
+        setContainerLogs((prev) => ({
+          ...prev,
+          [activeContainer]: {
+            ...prev[activeContainer],
+            isConnected: false,
+            error: "Connection lost. Attempting to reconnect...",
+          },
+        }));
       }
     );
 
     eventSource.onopen = () => {
-      setIsConnected(true);
-      setError(null);
+      setContainerLogs((prev) => ({
+        ...prev,
+        [activeContainer]: {
+          ...prev[activeContainer],
+          isConnected: true,
+          error: null,
+        },
+      }));
     };
 
     eventSourceRef.current = eventSource;
 
     return () => {
       eventSource.close();
+      eventSourceRef.current = null;
     };
-  }, [settings?.container?.name]);
+  }, [activeContainer, containerNames]);
 
-  const formattedLogs = useMemo(
-    () =>
-      logs.map((log, index) => ({
-        id: index,
-        createdAt: log.timestamp,
-        content: log.message,
-        emitter: log.level,
-      })),
-    [logs]
-  );
+  useEffect(() => {
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+    };
+  }, []);
 
-  if (!settings?.container?.name) {
+  const formattedLogs = useMemo(() => {
+    const currentContainer = containerLogs[activeContainer];
+    if (!currentContainer) return [];
+
+    return currentContainer.logs.map((log, index) => ({
+      id: index,
+      createdAt: log.timestamp,
+      content: log.message,
+      emitter: log.level,
+    }));
+  }, [containerLogs, activeContainer]);
+
+  if (containerNames.length === 0) {
     return (
       <div className="p-6 text-muted-foreground">
-        Please configure a container name in settings to view logs.
+        Configure container names in settings to view logs.
       </div>
     );
   }
 
+  const currentContainer = containerLogs[activeContainer];
+
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <Badge>Container: {settings.container.name}</Badge>
+      {currentContainer && (
         <div className="flex items-center gap-2">
-          <PulseRing active={isConnected} />
-          {isConnected ? "Connected" : "Disconnected"}
+          <PulseRing active={currentContainer.isConnected} />
+          {currentContainer.isConnected ? "Connected" : "Disconnected"}
         </div>
-      </div>
-      {error && (
-        <div className="px-4 py-2 text-sm text-red-500 border-b">{error}</div>
       )}
-      {logs.length === 0 ? (
-        <div className="p-4 text-muted-foreground">Waiting for logs...</div>
-      ) : (
-        <LogList logs={formattedLogs} autoscroll={true} />
-      )}
+      <Tabs value={activeContainer} onValueChange={setActiveContainer}>
+        <TabsList size="sm">
+          {containerNames.map((name) => (
+            <TabsTrigger key={name} value={name}>
+              {name}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+
+        {containerNames.map((name) => (
+          <TabsContent key={name} value={name} className="flex-1">
+            {containerLogs[name]?.error && (
+              <div className="px-4 py-2 text-sm text-red-500 border-b">
+                {containerLogs[name].error}
+              </div>
+            )}
+            {containerLogs[name]?.logs.length === 0 ? (
+              <div className="p-4 text-muted-foreground">
+                Waiting for logs...
+              </div>
+            ) : (
+              <div className="relative">
+                <LogList logs={name === activeContainer ? formattedLogs : []} />
+              </div>
+            )}
+          </TabsContent>
+        ))}
+      </Tabs>
     </div>
   );
 };
