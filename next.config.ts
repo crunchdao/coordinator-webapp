@@ -7,7 +7,11 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path((?!logs$))",
+        source: "/api/logs/:path*",
+        destination: "/api/logs/:path*",
+      },
+      {
+        source: "/api/:path*",
         destination: `${API_URL}/:path*`,
       },
     ];
