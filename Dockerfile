@@ -19,6 +19,8 @@ RUN npm run build -- --webpack
 FROM node:25-alpine AS runtime
 WORKDIR /app
 
+RUN apk add --no-cache docker-cli
+
 COPY --from=build /app ./
 
 EXPOSE 3000
