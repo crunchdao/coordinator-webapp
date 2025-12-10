@@ -34,7 +34,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
     defaultValues: settings || {
-      apiBaseUrl: "",
       endpoints: {
         leaderboard: "",
       },
@@ -69,37 +68,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="apiBaseUrl"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                API Base URL
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    The base URL for your external API (e.g.,
-                    http://localhost:8000). You must change this value directly
-                    inside the global-settings.json file, then restart the
-                    application.
-                  </TooltipContent>
-                </Tooltip>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  disabled
-                  placeholder="http://localhost:8000"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="endpoints.leaderboard"
