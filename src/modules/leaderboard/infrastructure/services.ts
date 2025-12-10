@@ -2,11 +2,11 @@ import apiClient from "@/utils/api";
 import configApiClient from "@/utils/config-api";
 import { Leaderboard, LeaderboardColumn } from "../domain/types";
 import { endpoints } from "./endpoints";
-import { getGlobalSettings } from "@/modules/settings/infrastructure/services";
 
-export const getLeaderboard = async (): Promise<Leaderboard> => {
-  const settings = await getGlobalSettings();
-  const response = await apiClient.get(settings.endpoints.leaderboard);
+export const getLeaderboard = async (
+  leaderboardEndpoint: string
+): Promise<Leaderboard> => {
+  const response = await apiClient.get(leaderboardEndpoint);
   return response.data;
 };
 

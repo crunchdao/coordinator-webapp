@@ -3,11 +3,7 @@ import { getGlobalSettings } from "../../infrastructure/services";
 import { updateApiBaseUrl } from "@/utils/api";
 
 export const useGlobalSettings = () => {
-  const {
-    data: settings,
-    isLoading: settingsLoading,
-    error,
-  } = useQuery({
+  const query = useQuery({
     queryKey: ["globalSettings"],
     queryFn: async () => {
       const settings = await getGlobalSettings();
@@ -18,5 +14,5 @@ export const useGlobalSettings = () => {
     },
   });
 
-  return { settings, settingsLoading, error };
+  return { settings: query.data, settingsLoading: query.isLoading };
 };

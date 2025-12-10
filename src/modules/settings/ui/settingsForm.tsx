@@ -33,13 +33,13 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
 
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
-    defaultValues: {
-      apiBaseUrl: settings?.apiBaseUrl || "",
+    defaultValues: settings || {
+      apiBaseUrl: "",
       endpoints: {
-        leaderboard: settings?.endpoints?.leaderboard || "",
+        leaderboard: "",
       },
       logs: {
-        containerNames: settings?.logs?.containerNames || [""],
+        containerNames: [""],
       },
     },
   });
@@ -48,6 +48,15 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
     control: form.control,
     name: "logs.containerNames" as never,
   });
+
+  useEffect(() => {
+    if (
+      settings &&
+      JSON.stringify(settings) !== JSON.stringify(form.getValues())
+    ) {
+      form.reset(settings);
+    }
+  }, [settings, form]);
 
   const handleSubmit = (data: GlobalSettingsFormData) => {
     updateSettings(data, {
