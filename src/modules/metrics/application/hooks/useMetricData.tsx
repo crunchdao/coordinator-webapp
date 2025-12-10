@@ -13,7 +13,7 @@ export const useMetricData = (
     queryFn: async () => {
       const response = await apiClient.get(endpointUrl, {
         params: {
-          model_ids: params.modelIds.join(','),
+          model_ids: params.modelIds.join(","),
           start: params.start,
           end: params.end,
         },

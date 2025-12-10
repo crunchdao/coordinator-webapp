@@ -36,19 +36,3 @@ export const removeMetricsWidget = async (id: number): Promise<void> => {
 export const resetMetricsWidgets = async (): Promise<void> => {
   await configApiClient.post(endpoints.resetMetricsWidgets());
 };
-
-// External API calls for metrics data
-export const getReportModelsGlobal = async () => {
-  const response = await apiClient.get(endpoints.getReportModelsGlobal());
-  return response.data;
-};
-
-export const getReportModelsParams = async () => {
-  const response = await apiClient.get(endpoints.getReportModelsParams());
-  return response.data;
-};
-
-export const getReportPredictions = async () => {
-  const response = await apiClient.get(endpoints.getReportPredictions());
-  return response.data;
-};

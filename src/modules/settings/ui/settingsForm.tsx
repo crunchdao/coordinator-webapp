@@ -82,12 +82,18 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
                   </TooltipTrigger>
                   <TooltipContent>
                     The base URL for your external API (e.g.,
-                    http://localhost:8000)
+                    http://localhost:8000). You must change this value directly
+                    inside the global-settings.json file, then restart the
+                    application.
                   </TooltipContent>
                 </Tooltip>
               </FormLabel>
               <FormControl>
-                <Input placeholder="http://localhost:8000" {...field} />
+                <Input
+                  disabled
+                  placeholder="http://localhost:8000"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

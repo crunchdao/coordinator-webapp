@@ -1,7 +1,7 @@
 export const endpoints = {
-  getReportModelsGlobal: () => "/reports/models/global",
-  getReportModelsParams: () => "/reports/models/params",
-  getReportPredictions: () => "/reports/models/predictions",
+  getReportModelsGlobal: () => "/api/reports/models/global",
+  getReportModelsParams: () => "/api/reports/models/params",
+  getReportPredictions: () => "/api/reports/models/predictions",
   getMetricsWidgets: () => "/api/metrics/widgets",
   createMetricsWidget: () => "/api/metrics/widgets",
   getMetricsWidget: (id: number) => `/api/metrics/widgets/${id}`,
