@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { initialConfig } from "@/modules/metrics/domain/initial-config";
+import { checkApiEnvironment } from "@/utils/api-environment-check";
 
 const CONFIG_FILE = path.join(
   process.cwd(),
@@ -19,6 +20,9 @@ async function ensureConfigDir() {
 }
 
 export async function POST() {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     await ensureConfigDir();
     await fs.writeFile(
