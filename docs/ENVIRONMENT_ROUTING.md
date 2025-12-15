@@ -5,7 +5,7 @@ This guide explains how routes are protected and displayed based on the current 
 ## Overview
 
 The application supports three environments:
-- **development**: Local development environment
+- **local**: Local environment (npm run dev, build, or start)
 - **staging**: Staging environment linked to the staging branch, used to preview the Crunches and is using devnet
 - **production**: Production deployment from master branch, used on production and using mainnet 
 
@@ -30,7 +30,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: "/settings",
     label: "Settings",
-    allowedEnvs: ["development"],  // Only accessible in development
+    allowedEnvs: ["local"],  // Only accessible in local environment
   },
 ];
 ```
@@ -69,7 +69,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.NEW_FEATURE,
     label: "New Feature",
-    allowedEnvs: ["development", "staging"],  // Not available in production
+    allowedEnvs: ["local", "staging"],  // Not available in production
   },
 ];
 ```

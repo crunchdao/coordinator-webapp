@@ -17,8 +17,10 @@ export const EnvironmentBadge: React.FC = () => {
         return "Staging";
       case "production":
         return "Prod";
+      case "local":
+        return "Local";
       default:
-        return "Development";
+        return "Local";
     }
   }, [env]);
 
@@ -29,7 +31,11 @@ export const EnvironmentBadge: React.FC = () => {
           {envName}
         </Badge>
       </TooltipTrigger>
-      {env === "development" && <TooltipContent></TooltipContent>}
+      {env === "local" && (
+        <TooltipContent>
+          Local mode – development purposes only, no onchain or Hub push.
+        </TooltipContent>
+      )}
     </Tooltip>
   );
 };

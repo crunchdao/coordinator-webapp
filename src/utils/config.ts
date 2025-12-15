@@ -1,6 +1,6 @@
 import packageJson from "../../package.json";
 
-export type Environment = "development" | "staging" | "production";
+export type Environment = "local" | "staging" | "production";
 
 interface Config {
   env: Environment;
@@ -8,10 +8,6 @@ interface Config {
 }
 
 const getEnvironment = (): Environment => {
-  if (process.env.NODE_ENV === "development") {
-    return "development";
-  }
-
   if (process.env.VERCEL_ENV) {
     if (
       process.env.VERCEL_ENV === "production" &&
@@ -19,11 +15,10 @@ const getEnvironment = (): Environment => {
     ) {
       return "production";
     }
-
     return "staging";
   }
 
-  return process.env.NODE_ENV === "production" ? "production" : "development";
+  return "local";
 };
 
 export const config: Config = {

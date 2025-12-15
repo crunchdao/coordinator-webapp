@@ -21,7 +21,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({
-      isLocal: config.env === "development",
+      isLocal: config.env === "local",
       version: config.version,
       env: config.env,
     }),

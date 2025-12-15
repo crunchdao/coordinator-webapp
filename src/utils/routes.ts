@@ -26,12 +26,12 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.LOGS,
     label: "Logs",
-    allowedEnvs: ["development"],
+    allowedEnvs: ["local"],
   },
   {
     path: INTERNAL_LINKS.SETTINGS,
     label: "Settings",
-    allowedEnvs: ["development"],
+    allowedEnvs: ["local"],
   },
 ];
 
