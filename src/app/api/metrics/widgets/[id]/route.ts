@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { Widget } from "@/modules/metrics/domain/types";
+import { checkApiEnvironment } from "@/utils/api-environment-check";
 
 const CONFIG_FILE = path.join(
   process.cwd(),
@@ -22,6 +23,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const { id: idParam } = await params;
     const id = parseInt(idParam);
@@ -55,6 +59,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const { id: idParam } = await params;
     const id = parseInt(idParam);

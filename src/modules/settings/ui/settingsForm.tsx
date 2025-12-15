@@ -22,6 +22,7 @@ import {
   globalSettingsSchema,
   type GlobalSettingsFormData,
 } from "../application/schemas/settingsSchema";
+import { useSettings } from "../application/context/settingsContext";
 
 interface SettingsFormProps {
   onSuccess?: () => void;
@@ -30,6 +31,7 @@ interface SettingsFormProps {
 export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
   const { settings } = useGlobalSettings();
   const { updateSettings, updateSettingsLoading } = useUpdateSettings();
+  const { version } = useSettings();
 
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
@@ -154,6 +156,9 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
           </Button>
         </div>
       </form>
+      <p className="body-xs text-muted-foreground mt-2 text-center">
+        Coordinator Platform v{version}
+      </p>
     </Form>
   );
 };

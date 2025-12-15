@@ -1,13 +1,13 @@
+import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { cn } from "@crunch-ui/utils";
 import { Legals, Toaster } from "@crunch-ui/core";
 import localFont from "next/font/local";
+import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 import "./globals.css";
 import ReactQuery from "./react-query";
-import type { Metadata } from "next";
 import Providers from "./providers";
 import "./globals.css";
-import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 
 const departure = localFont({
   src: "../../public/fonts/DepartureMono/DepartureMono-Regular.woff2",

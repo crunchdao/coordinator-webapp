@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { Widget } from "@/modules/metrics/domain/types";
 import { initialConfig } from "@/modules/metrics/domain/initial-config";
+import { checkApiEnvironment } from "@/utils/api-environment-check";
 
 const CONFIG_FILE = path.join(
   process.cwd(),
@@ -20,6 +21,9 @@ async function ensureConfigDir() {
 }
 
 export async function GET() {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const data = await fs.readFile(CONFIG_FILE, "utf-8");
     const widgets: Widget[] = JSON.parse(data);
@@ -74,6 +78,9 @@ async function writeWidgets(widgets: Widget[]): Promise<void> {
 }
 
 export async function POST(request: NextRequest) {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const widgetData: Omit<Widget, "id"> = await request.json();
     const widgets = await readWidgets();
@@ -94,6 +101,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const widgets: Widget[] = await request.json();
     await writeWidgets(widgets);

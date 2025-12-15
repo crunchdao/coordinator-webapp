@@ -4,6 +4,7 @@ import path from "path";
 import { initialSettings } from "@/modules/settings/domain/initial-config";
 import { GlobalSettings } from "@/modules/settings/domain/types";
 import { globalSettingsSchema } from "@/modules/settings/application/schemas/settingsSchema";
+import { checkApiEnvironment } from "@/utils/api-environment-check";
 
 const CONFIG_FILE = path.join(
   process.cwd(),
@@ -21,6 +22,9 @@ async function ensureConfigDir() {
 }
 
 export async function GET() {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const data = await fs.readFile(CONFIG_FILE, "utf-8");
     const settings: GlobalSettings = JSON.parse(data);
@@ -75,6 +79,9 @@ async function writeSettings(settings: GlobalSettings): Promise<void> {
 }
 
 export async function PUT(request: NextRequest) {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const body = await request.json();
     

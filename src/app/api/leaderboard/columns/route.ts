@@ -3,6 +3,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import { LeaderboardColumn } from "@/modules/leaderboard/domain/types";
 import { initialColumns } from "@/modules/leaderboard/domain/initial-config";
+import { checkApiEnvironment } from "@/utils/api-environment-check";
 
 const CONFIG_FILE = path.join(
   process.cwd(),
@@ -20,6 +21,9 @@ async function ensureConfigDir() {
 }
 
 export async function GET() {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const data = await fs.readFile(CONFIG_FILE, "utf-8");
     const columns: LeaderboardColumn[] = JSON.parse(data);
@@ -76,6 +80,9 @@ async function writeColumns(columns: LeaderboardColumn[]): Promise<void> {
 }
 
 export async function POST(request: NextRequest) {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const columnData: Omit<LeaderboardColumn, "id"> = await request.json();
     const columns = await readColumns();
@@ -96,6 +103,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const envCheck = checkApiEnvironment();
+  if (envCheck) return envCheck;
+  
   try {
     const columns: LeaderboardColumn[] = await request.json();
     await writeColumns(columns);

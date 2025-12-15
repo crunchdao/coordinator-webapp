@@ -64,12 +64,8 @@ export const MetricsDashboard: React.FC = () => {
   }
 
   if (!widgets || widgets.length === 0) {
-    return <p className="text-muted-foreground">No metrics configured</p>;
-  }
-
-  if (!leaderboard || leaderboard.length === 0) {
     return (
-      <p className="text-muted-foreground">No models found in leaderboard</p>
+      <p className="text-muted-foreground text-center">No metrics configured</p>
     );
   }
 
