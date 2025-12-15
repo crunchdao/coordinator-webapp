@@ -1,0 +1,23 @@
+name: Require Changeset
+
+on:
+  pull_request:
+
+jobs:
+  changeset:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for changesets
+        run: |
+          if [ -z "$(ls .changeset/*.md 2>/dev/null)" ]; then
+            echo "❌ No changeset found. Add one with: npx changeset"
+            exit 1
+          else
+            echo "✔️ Changeset detected."
+          fi
