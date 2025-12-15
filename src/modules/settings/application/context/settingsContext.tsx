@@ -1,13 +1,16 @@
 "use client";
 
 import React, { createContext, useContext, useMemo } from "react";
-import { config } from "@/utils/config";
+import { config, type Environment } from "@/utils/config";
 import { useGlobalSettings } from "../hooks/useGlobalSettings";
 
 interface SettingsContextType {
   isLocal: boolean;
   version: string;
+  env: Environment;
 }
+
+export type { Environment };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
   undefined
@@ -20,6 +23,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     () => ({
       isLocal: config.env === "development",
       version: config.version,
+      env: config.env,
     }),
     []
   );
