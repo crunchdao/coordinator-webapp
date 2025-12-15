@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "release": "changeset publish"
   },
   "dependencies": {
     "@crunch-ui/core": "^1.2.0",
