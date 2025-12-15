@@ -69,9 +69,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
 
   return (
     <Form {...form}>
-      <p className="body-xs text-muted-foreground">
-        Coordinator Platform v{version}
-      </p>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <FormField
           control={form.control}
@@ -159,6 +156,9 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
           </Button>
         </div>
       </form>
+      <p className="body-xs text-muted-foreground mt-2 text-center">
+        Coordinator Platform v{version}
+      </p>
     </Form>
   );
 };

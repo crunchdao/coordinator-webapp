@@ -1,6 +1,11 @@
 "use client";
 import { useMemo } from "react";
-import { Badge } from "@crunch-ui/core";
+import {
+  Badge,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@crunch-ui/core";
 import { useSettings } from "@/modules/settings/application/context/settingsContext";
 
 export const EnvironmentBadge: React.FC = () => {
@@ -18,8 +23,13 @@ export const EnvironmentBadge: React.FC = () => {
   }, [env]);
 
   return (
-    <Badge size="sm" variant="secondary">
-      {envName}
-    </Badge>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Badge size="sm" variant="secondary">
+          {envName}
+        </Badge>
+      </TooltipTrigger>
+      {env === "development" && <TooltipContent></TooltipContent>}
+    </Tooltip>
   );
 };
