@@ -3,7 +3,16 @@ import { endpoints } from "./endpoints";
 import { Model, AddModelBody } from "../domain/types";
 
 export const addModel = async (data: AddModelBody): Promise<Model> => {
-  const response = await apiClient.post(endpoints.addModel(), data);
+  const formData = new FormData();
+  formData.append("name", data.name);
+  formData.append("file", data.file);
+  formData.append("desiredState", data.desiredState);
+  
+  const response = await apiClient.post(endpoints.addModel(), formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 
