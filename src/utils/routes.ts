@@ -8,6 +8,7 @@ export const INTERNAL_LINKS = {
   SETTINGS: "/settings",
   LOGS: "/logs",
   PITCH: "/pitch",
+  MODELS: "/models",
 } as const;
 
 type RouteConfig = {
@@ -38,6 +39,11 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.SETTINGS,
     label: "Settings",
+    allowedEnvs: ["local"],
+  },
+  {
+    path: INTERNAL_LINKS.MODELS,
+    label: "Models",
     allowedEnvs: ["local"],
   },
 ];
