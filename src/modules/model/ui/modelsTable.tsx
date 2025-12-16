@@ -17,6 +17,7 @@ import {
 } from "@crunch-ui/core";
 import { Search } from "@crunch-ui/icons";
 import { useGetModels } from "../application/hooks/useGetModels";
+import { DeleteModelButton } from "./deleteModelButton";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
@@ -24,11 +25,14 @@ export const ModelsTable: React.FC = () => {
 
   const filteredData = useMemo(() => {
     if (!searchTerm || !models) return models || [];
-    
+
     return models.filter((model) => {
       return Object.values(model).some((value) => {
         if (value === null || value === undefined) return false;
-        return value.toString().toLowerCase().includes(searchTerm.toLowerCase());
+        return value
+          .toString()
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
       });
     });
   }, [models, searchTerm]);
@@ -61,13 +65,14 @@ export const ModelsTable: React.FC = () => {
               <TableHead>Name</TableHead>
               <TableHead>Path</TableHead>
               <TableHead>Desired State</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {modelsLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={5}
                   className="h-32 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-2">
@@ -78,11 +83,9 @@ export const ModelsTable: React.FC = () => {
               </TableRow>
             ) : filteredData && filteredData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-32 text-center">
+                <TableCell colSpan={5} className="h-32 text-center">
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                    <p className="text-sm font-medium">
-                      No models found
-                    </p>
+                    <p className="text-sm font-medium">No models found</p>
                     {searchTerm && (
                       <p className="body-sm">
                         Try adjusting your search criteria
@@ -97,25 +100,19 @@ export const ModelsTable: React.FC = () => {
                   key={model.id}
                   className="group hover:bg-muted/50 transition-colors"
                 >
-                  <TableCell>
-                    <span className="font-medium text-sm tabular-nums">
-                      {model.id}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-medium text-sm">
-                      {model.name}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <code className="text-sm bg-muted px-2 py-1 rounded">
-                      {model.path}
-                    </code>
-                  </TableCell>
+                  <TableCell>{model.id}</TableCell>
+                  <TableCell>{model.name}</TableCell>
+                  <TableCell>{model.path}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" size="sm">
                       {model.desiredState}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <DeleteModelButton
+                      modelId={model.id}
+                      modelName={model.name}
+                    />
                   </TableCell>
                 </TableRow>
               ))
