@@ -10,9 +10,14 @@ import {
   FormMessage,
   Input,
   Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@crunch-ui/core";
 import { addModelSchema } from "../application/schemas/addModelSchema";
-import { AddModelBody } from "../domain/types";
+import { AddModelBody, DesiredState } from "../domain/types";
 import { useAddModel } from "../application/hooks/useAddModel";
 
 interface AddModelFormProps {
@@ -25,7 +30,7 @@ export const AddModelForm: React.FC<AddModelFormProps> = ({ onSuccess }) => {
     resolver: zodResolver(addModelSchema),
     defaultValues: {
       name: "",
-      desiredState: "",
+      desiredState: DesiredState.START,
     },
   });
 
@@ -82,9 +87,17 @@ export const AddModelForm: React.FC<AddModelFormProps> = ({ onSuccess }) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Desired State</FormLabel>
-              <FormControl>
-                <Input placeholder="active" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a state" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value={DesiredState.START}>Start</SelectItem>
+                  <SelectItem value={DesiredState.STOP}>Stop</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

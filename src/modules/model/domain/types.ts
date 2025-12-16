@@ -2,11 +2,16 @@ import z from "zod";
 import { addModelSchema } from "../application/schemas/addModelSchema";
 import { updateModelSchema } from "../application/schemas/updateModelSchema";
 
+export enum DesiredState {
+  START = "START",
+  STOP = "STOP",
+}
+
 export interface Model {
   id: number;
   name: string;
   path: string;
-  desiredState: string;
+  desiredState: DesiredState;
 }
 
 export type AddModelBody = z.infer<typeof addModelSchema>;
