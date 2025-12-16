@@ -6,6 +6,7 @@ export const INTERNAL_LINKS = {
   METRICS: "/metrics",
   SETTINGS: "/settings",
   LOGS: "/logs",
+  MODELS: "/models",
 } as const;
 
 type RouteConfig = {
@@ -31,6 +32,11 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.SETTINGS,
     label: "Settings",
+    allowedEnvs: ["local"],
+  },
+  {
+    path: INTERNAL_LINKS.MODELS,
+    label: "Models",
     allowedEnvs: ["local"],
   },
 ];
