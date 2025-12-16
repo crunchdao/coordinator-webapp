@@ -13,14 +13,17 @@ import {
   TableHeader,
   TableRow,
   Spinner,
-  Badge,
+  Switch,
 } from "@crunch-ui/core";
 import { Search } from "@crunch-ui/icons";
 import { useGetModels } from "../application/hooks/useGetModels";
+import { useUpdateModel } from "../application/hooks/useUpdateModel";
 import { DeleteModelButton } from "./deleteModelButton";
+import { DesiredState } from "../domain/types";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
+  const { updateModel, updateModelLoading } = useUpdateModel();
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredData = useMemo(() => {
@@ -104,9 +107,18 @@ export const ModelsTable: React.FC = () => {
                   <TableCell>{model.name}</TableCell>
                   <TableCell>{model.path}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" size="sm">
-                      {model.desiredState}
-                    </Badge>
+                    <Switch
+                      checked={model.desiredState === DesiredState.START}
+                      disabled={updateModelLoading}
+                      onCheckedChange={(checked) => {
+                        updateModel({
+                          modelId: model.id,
+                          data: {
+                            desiredState: checked ? DesiredState.START : DesiredState.STOP
+                          }
+                        });
+                      }}
+                    />
                   </TableCell>
                   <TableCell className="text-right">
                     <DeleteModelButton
