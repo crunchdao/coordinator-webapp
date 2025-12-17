@@ -1,6 +1,6 @@
 import packageJson from "../../package.json";
 
-export type Environment = "local" | "staging" | "production";
+export type Environment = "local" | "staging" | "production" | "development";
 
 interface Config {
   env: Environment;
@@ -17,7 +17,9 @@ const getEnvironment = (): Environment => {
     }
     return "staging";
   }
-
+  if (process.env.NODE_ENV === "development") {
+    return "development";
+  }
   return "local";
 };
 

@@ -20,7 +20,7 @@ export const EnvironmentBadge: React.FC = () => {
       case "local":
         return "Local";
       default:
-        return "Local";
+        return "Development";
     }
   }, [env]);
 

@@ -10,8 +10,6 @@ interface SettingsContextType {
   env: Environment;
 }
 
-export type { Environment };
-
 const SettingsContext = createContext<SettingsContextType | undefined>(
   undefined
 );
