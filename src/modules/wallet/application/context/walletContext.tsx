@@ -9,10 +9,10 @@ import {
   SolflareWalletAdapter,
   LedgerWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 import { useSettings } from "@/modules/settings/application/context/settingsContext";
+import { config } from "@/utils/config";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 // Re-export the Solana wallet hook directly
@@ -25,9 +25,17 @@ interface WalletProviderProps {
 export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
   const { isLocal } = useSettings();
 
-  const network = WalletAdapterNetwork.Mainnet;
+  const network = config.solana.network;
   const endpoint = useMemo(
-    () => process.env.NEXT_PUBLIC_SOLANA_RPC_URL || clusterApiUrl(network),
+    () => {
+      try {
+        return config.solana.rpcUrl;
+      } catch (error) {
+        // Fallback to cluster URL if config fails
+        console.warn('Using default cluster URL:', error);
+        return clusterApiUrl(network);
+      }
+    },
     [network]
   );
 
@@ -46,7 +54,7 @@ export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <SolanaWalletProvider wallets={wallets} autoConnect={false}>
+      <SolanaWalletProvider wallets={wallets} autoConnect={true}>
         <WalletModalProvider>{children}</WalletModalProvider>
       </SolanaWalletProvider>
     </ConnectionProvider>
