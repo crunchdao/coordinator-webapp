@@ -15,7 +15,7 @@ jobs:
 
       - name: Check for changesets
         run: |
-          if [ -z "$(ls .changeset/*.md 2>/dev/null)" ]; then
+          if [ -z "$(ls .changeset/*.md 2>/dev/null | grep -v README.md)" ]; then
             echo "❌ No changeset found. Add one with: npx changeset"
             exit 1
           else
