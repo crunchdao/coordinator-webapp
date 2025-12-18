@@ -5,10 +5,6 @@ export function useGetLogsByUrl(url: string, enabled?: boolean) {
   const query = useQuery({
     queryKey: ["modelLogsUrl", url],
     queryFn: async () => {
-      if (!url) {
-        return "";
-      }
-      
       try {
         const urlWithParams = new URL(url);
         if (!urlWithParams.searchParams.has("follow")) {
@@ -17,7 +13,7 @@ export function useGetLogsByUrl(url: string, enabled?: boolean) {
         if (!urlWithParams.searchParams.has("from_start")) {
           urlWithParams.searchParams.set("from_start", "true");
         }
-        
+
         const response = await fetch(urlWithParams.toString());
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -30,6 +26,7 @@ export function useGetLogsByUrl(url: string, enabled?: boolean) {
     },
     enabled: enabled && !!url,
     refetchInterval: 5000,
+    retry: 0,
   });
 
   return {
