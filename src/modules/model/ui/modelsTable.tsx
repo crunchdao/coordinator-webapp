@@ -18,8 +18,8 @@ import {
 import { Search } from "@crunch-ui/icons";
 import { useGetModels } from "../application/hooks/useGetModels";
 import { useUpdateModel } from "../application/hooks/useUpdateModel";
-import { DeleteModelButton } from "./deleteModelButton";
 import { DesiredState } from "../domain/types";
+import { UpdateModelSheet } from "./updateModelSheet";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
@@ -66,7 +66,6 @@ export const ModelsTable: React.FC = () => {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Path</TableHead>
               <TableHead>Desired State</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -104,27 +103,25 @@ export const ModelsTable: React.FC = () => {
                   className="group hover:bg-muted/50 transition-colors"
                 >
                   <TableCell>{model.id}</TableCell>
-                  <TableCell>{model.name}</TableCell>
-                  <TableCell>{model.path}</TableCell>
+                  <TableCell>{model.model_name}</TableCell>
                   <TableCell>
                     <Switch
-                      checked={model.desiredState === DesiredState.START}
+                      checked={model.desired_state === DesiredState.RUNNING}
                       disabled={updateModelLoading}
                       onCheckedChange={(checked) => {
                         updateModel({
                           modelId: model.id,
                           data: {
-                            desiredState: checked ? DesiredState.START : DesiredState.STOP
-                          }
+                            desiredState: checked
+                              ? DesiredState.RUNNING
+                              : DesiredState.STOPPED,
+                          },
                         });
                       }}
                     />
                   </TableCell>
                   <TableCell className="text-right">
-                    <DeleteModelButton
-                      modelId={model.id}
-                      modelName={model.name}
-                    />
+                    <UpdateModelSheet model={model} />
                   </TableCell>
                 </TableRow>
               ))

@@ -7,8 +7,8 @@ export const useAddModel = () => {
 
   const mutation = useMutation({
     mutationFn: (data: AddModelBody) => addModel(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["models"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["models"] });
     },
   });
 

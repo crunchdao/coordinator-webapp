@@ -29,10 +29,31 @@ export const getModels = async (): Promise<Model[]> => {
 };
 
 export const updateModel = async (
-  modelId: number,
+  modelId: string,
   data: UpdateModelBody
 ): Promise<Model> => {
-  const response = await modelsApiClient.patch(endpoints.updateModel(modelId), data);
+  const formData = new FormData();
+  
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== null && value !== undefined) {
+      if (key === "files" && Array.isArray(value)) {
+        // If files array is empty, we still need to send it
+        if (value.length === 0) {
+          formData.append("files", "");
+        } else {
+          (value as File[]).forEach((file) => formData.append("files", file));
+        }
+      } else {
+        formData.append(key, value as string);
+      }
+    }
+  });
+
+  const response = await modelsApiClient.patch(endpoints.updateModel(modelId), formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 
