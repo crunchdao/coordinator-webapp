@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,7 @@ import {
   AlertDescription,
 } from "@crunch-ui/core";
 import { useGetLogsByUrl } from "../application/hooks/useGetLogsByUrl";
+import LogList from "@/ui/logs-list";
 
 interface LogsDialogProps {
   logUrl: string;
@@ -29,6 +30,20 @@ export const LogsDialog: React.FC<LogsDialogProps> = ({
     logUrl,
     open && !!logUrl
   );
+
+  const parsedLogs = useMemo(() => {
+    if (!logs) return [];
+    
+    // Split logs by newline and filter empty lines
+    const lines = logs.split('\n').filter(line => line.trim());
+    
+    return lines.map((line, index) => ({
+      id: index,
+      createdAt: new Date().toISOString(),
+      content: line,
+      error: line.toLowerCase().includes('error') || line.toLowerCase().includes('failed'),
+    }));
+  }, [logs]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -54,9 +69,9 @@ export const LogsDialog: React.FC<LogsDialogProps> = ({
                   : "Failed to fetch logs"}
               </AlertDescription>
             </Alert>
-          ) : logs ? (
-            <div className="h-[calc(100vh-256px)] overflow-auto">
-              <pre>{logs}</pre>
+          ) : parsedLogs.length > 0 ? (
+            <div className="h-[calc(100vh-256px)]">
+              <LogList logs={parsedLogs} autoscroll={true} />
             </div>
           ) : (
             <div className="text-center text-muted-foreground py-8">
