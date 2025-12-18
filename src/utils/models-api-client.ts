@@ -6,7 +6,7 @@ const IGNORED_ERROR_CODES: string[] = [];
 
 const modelsApiClient = axios.create({
   timeout: 15000,
-  baseURL: process.env.NEXT_PUBLIC_API_URL_MODELS || "/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL_MODEL_ORCHESTRATOR || "/api",
   headers: {
     "Content-Type": "application/json",
   },
