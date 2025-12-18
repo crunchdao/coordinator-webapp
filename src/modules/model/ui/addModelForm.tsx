@@ -125,7 +125,7 @@ export const AddModelForm: React.FC<AddModelFormProps> = ({ onSuccess }) => {
           )}
         />
         <Button type="submit" className="w-full" loading={addModelLoading}>
-          Add Model
+          Submit a Model
         </Button>
       </form>
     </Form>
