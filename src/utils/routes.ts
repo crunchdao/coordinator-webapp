@@ -37,13 +37,13 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     allowedEnvs: ["local"],
   },
   {
-    path: INTERNAL_LINKS.SETTINGS,
-    label: "Settings",
+    path: INTERNAL_LINKS.MODELS,
+    label: "Models",
     allowedEnvs: ["local"],
   },
   {
-    path: INTERNAL_LINKS.MODELS,
-    label: "Models",
+    path: INTERNAL_LINKS.SETTINGS,
+    label: "Settings",
     allowedEnvs: ["local"],
   },
 ];
