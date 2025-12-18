@@ -20,8 +20,8 @@ export enum Status {
 }
 
 export enum JobLogType {
-  BUILDER = "BUILDER",
-  RUNNER = "RUNNER",
+  BUILDER = "builder",
+  RUNNER = "runner",
 }
 
 export interface Model {

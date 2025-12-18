@@ -10,6 +10,6 @@ export function useGetModels() {
   });
   return {
     models: query.data,
-    modelsLoading: query.isLoading || query.isFetching,
+    modelsLoading: query.isPending,
   };
 }
