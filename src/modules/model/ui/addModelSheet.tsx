@@ -22,9 +22,9 @@ export const AddModelSheet: React.FC = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="primary" size="sm">
-          <Plus className="mr-2" />
-          Add Model
+        <Button variant="primary">
+          <Plus />
+          Submit a Model
         </Button>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-2xl overflow-y-auto pb-8">
