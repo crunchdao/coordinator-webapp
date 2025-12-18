@@ -6,7 +6,7 @@ export const useUpdateModel = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: ({ modelId, data }: { modelId: number; data: UpdateModelBody }) => 
+    mutationFn: ({ modelId, data }: { modelId: string; data: UpdateModelBody }) => 
       updateModel(modelId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["models"] });
