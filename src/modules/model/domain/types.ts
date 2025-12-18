@@ -19,6 +19,11 @@ export enum Status {
   CREATED = "CREATED",
 }
 
+export enum JobLogType {
+  BUILDER = "BUILDER",
+  RUNNER = "RUNNER",
+}
+
 export interface Model {
   id: string;
   model_name: string | null;
