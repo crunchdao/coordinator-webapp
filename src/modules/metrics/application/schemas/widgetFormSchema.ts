@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { formatTypeSchema } from "@/utils/numberFormatter";
+import { formatTypeSchema } from "@/utils/number-formatter";
 
 const filterConfigSchema = z.object({
   property: z.string().min(1, "Property is required"),

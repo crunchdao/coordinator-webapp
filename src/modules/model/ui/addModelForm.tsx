@@ -29,8 +29,10 @@ export const AddModelForm: React.FC<AddModelFormProps> = ({ onSuccess }) => {
   const form = useForm<AddModelBody>({
     resolver: zodResolver(addModelSchema),
     defaultValues: {
-      name: "",
-      desiredState: DesiredState.START,
+      desired_state: DesiredState.RUNNING,
+      model_name: "",
+      cruncher_name: "",
+      files: [],
     },
   });
 
@@ -48,12 +50,16 @@ export const AddModelForm: React.FC<AddModelFormProps> = ({ onSuccess }) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="name"
+          name="model_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Model Name (optional)</FormLabel>
               <FormControl>
-                <Input placeholder="Model name" {...field} />
+                <Input
+                  placeholder="Model name"
+                  {...field}
+                  value={field.value || ""}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -61,18 +67,34 @@ export const AddModelForm: React.FC<AddModelFormProps> = ({ onSuccess }) => {
         />
         <FormField
           control={form.control}
-          name="file"
+          name="cruncher_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Cruncher Name (optional)</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Cruncher name"
+                  {...field}
+                  value={field.value || ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="files"
           render={({ field: { value, onChange, ...field } }) => (
             <FormItem>
-              <FormLabel>Model File</FormLabel>
+              <FormLabel>Model Files</FormLabel>
               <FormControl>
                 <Input
                   type="file"
+                  multiple
                   onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      onChange(file);
-                    }
+                    const files = Array.from(e.target.files || []);
+                    onChange(files);
                   }}
                   {...field}
                 />
@@ -83,7 +105,7 @@ export const AddModelForm: React.FC<AddModelFormProps> = ({ onSuccess }) => {
         />
         <FormField
           control={form.control}
-          name="desiredState"
+          name="desired_state"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Desired State</FormLabel>
@@ -94,8 +116,8 @@ export const AddModelForm: React.FC<AddModelFormProps> = ({ onSuccess }) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={DesiredState.START}>Start</SelectItem>
-                  <SelectItem value={DesiredState.STOP}>Stop</SelectItem>
+                  <SelectItem value={DesiredState.RUNNING}>Start</SelectItem>
+                  <SelectItem value={DesiredState.STOPPED}>Stop</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

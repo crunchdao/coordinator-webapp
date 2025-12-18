@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Gauge } from "@/modules/chart/ui/gauge";
 import { LeaderboardPosition } from "../../domain/types";
 import { getLeaderboardColumns } from "../../infrastructure/services";
-import { formatNumber } from "@/utils/numberFormatter";
+import { formatNumber } from "@/utils/number-formatter";
 
 export const useLeaderboardTable = () => {
   const { data: leaderboardColumns } = useQuery({
