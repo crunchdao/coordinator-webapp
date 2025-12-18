@@ -7,7 +7,6 @@ export const INTERNAL_LINKS = {
   SETTINGS: "/settings",
   LOGS: "/logs",
   MODELS: "/models",
-  MODELS_LOGS: "/models/logs/:jobId",
 } as const;
 
 type RouteConfig = {

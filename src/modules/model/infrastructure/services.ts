@@ -4,7 +4,6 @@ import {
   Model,
   AddModelBody,
   UpdateModelBody,
-  JobLogType,
 } from "../domain/types";
 
 export const addModel = async (data: AddModelBody): Promise<Model> => {
@@ -67,14 +66,4 @@ export const updateModel = async (
 
 export const deleteModel = async (modelId: number): Promise<void> => {
   await modelsApiClient.delete(endpoints.deleteModel(modelId));
-};
-
-export const getJobLogsByType = async (
-  jobId: string,
-  type: JobLogType
-): Promise<unknown[]> => {
-  const response = await modelsApiClient.get(
-    endpoints.getJobLogsByType(type, jobId)
-  );
-  return response.data;
 };
