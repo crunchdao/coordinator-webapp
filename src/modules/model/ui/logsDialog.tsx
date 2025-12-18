@@ -71,9 +71,7 @@ export const LogsDialog: React.FC<LogsDialogProps> = ({
               </AlertDescription>
             </Alert>
           ) : parsedLogs.length > 0 ? (
-            <div className="h-[calc(100vh-256px)]">
-              <LogList logs={parsedLogs} autoscroll={true} />
-            </div>
+            <LogList logs={parsedLogs} autoscroll={true} />
           ) : (
             <div className="text-center text-muted-foreground py-8">
               No logs available
