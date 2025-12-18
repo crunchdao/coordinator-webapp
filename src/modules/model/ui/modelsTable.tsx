@@ -94,7 +94,7 @@ export const ModelsTable: React.FC = () => {
               </TableRow>
             ) : filteredData && filteredData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-32 text-center">
+                <TableCell colSpan={7} className="h-32 text-center">
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                     <p className="text-sm font-medium">No models found</p>
                     {searchTerm && (
