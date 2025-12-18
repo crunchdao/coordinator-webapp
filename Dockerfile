@@ -24,4 +24,4 @@ RUN apk add --no-cache docker-cli
 COPY --from=build /app ./
 
 EXPOSE 3000
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
