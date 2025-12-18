@@ -1,6 +1,11 @@
 import modelsApiClient from "@/utils/models-api-client";
 import { endpoints } from "./endpoints";
-import { Model, AddModelBody, UpdateModelBody } from "../domain/types";
+import {
+  Model,
+  AddModelBody,
+  UpdateModelBody,
+  JobLogType,
+} from "../domain/types";
 
 export const addModel = async (data: AddModelBody): Promise<Model> => {
   const formData = new FormData();
@@ -33,11 +38,10 @@ export const updateModel = async (
   data: UpdateModelBody
 ): Promise<Model> => {
   const formData = new FormData();
-  
+
   Object.entries(data).forEach(([key, value]) => {
     if (value !== null && value !== undefined) {
       if (key === "files" && Array.isArray(value)) {
-        // If files array is empty, we still need to send it
         if (value.length === 0) {
           formData.append("files", "");
         } else {
@@ -49,14 +53,28 @@ export const updateModel = async (
     }
   });
 
-  const response = await modelsApiClient.patch(endpoints.updateModel(modelId), formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await modelsApiClient.patch(
+    endpoints.updateModel(modelId),
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
   return response.data;
 };
 
 export const deleteModel = async (modelId: number): Promise<void> => {
   await modelsApiClient.delete(endpoints.deleteModel(modelId));
+};
+
+export const getJobLogsByType = async (
+  jobId: string,
+  type: JobLogType
+): Promise<unknown[]> => {
+  const response = await modelsApiClient.get(
+    endpoints.getJobLogsByType(type, jobId)
+  );
+  return response.data;
 };

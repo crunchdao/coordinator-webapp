@@ -1,5 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -14,12 +15,14 @@ import {
   TableRow,
   Spinner,
   Switch,
+  Button,
 } from "@crunch-ui/core";
-import { Search } from "@crunch-ui/icons";
+import { Search, File } from "@crunch-ui/icons";
 import { useGetModels } from "../application/hooks/useGetModels";
 import { useUpdateModel } from "../application/hooks/useUpdateModel";
 import { DesiredState } from "../domain/types";
 import { UpdateModelSheet } from "./updateModelSheet";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
@@ -112,7 +115,7 @@ export const ModelsTable: React.FC = () => {
                         updateModel({
                           modelId: model.id,
                           data: {
-                            desiredState: checked
+                            desired_state: checked
                               ? DesiredState.RUNNING
                               : DesiredState.STOPPED,
                           },
@@ -121,7 +124,20 @@ export const ModelsTable: React.FC = () => {
                     />
                   </TableCell>
                   <TableCell className="text-right">
-                    <UpdateModelSheet model={model} />
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={INTERNAL_LINKS.MODELS_LOGS.replace(
+                          ":jobId",
+                          model.id
+                        )}
+                      >
+                        <Button size="sm" variant={"secondary"}>
+                          Logs
+                          <File className="w-3" />
+                        </Button>
+                      </Link>
+                      <UpdateModelSheet model={model} />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
