@@ -14,13 +14,17 @@ import {
   TableRow,
   Spinner,
   Switch,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from "@crunch-ui/core";
-import { Search } from "@crunch-ui/icons";
+import { InfoCircle, Search } from "@crunch-ui/icons";
 import { useGetModels } from "../application/hooks/useGetModels";
 import { useUpdateModel } from "../application/hooks/useUpdateModel";
 import { DesiredState } from "../domain/types";
 import { UpdateModelSheet } from "./updateModelSheet";
 import { LogsDialog } from "./logsDialog";
+import { AddModelSheet } from "./addModelSheet";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
@@ -58,6 +62,7 @@ export const ModelsTable: React.FC = () => {
                 rightSlot={<Search className="text-muted-foreground" />}
               />
             </div>
+            <AddModelSheet />
           </div>
         </div>
       </CardHeader>
@@ -66,8 +71,10 @@ export const ModelsTable: React.FC = () => {
           <TableHeader>
             <TableRow>
               <TableHead>ID</TableHead>
-              <TableHead>Name</TableHead>
+              <TableHead>Model Name</TableHead>
+              <TableHead>Cruncher</TableHead>
               <TableHead>Desired State</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Logs</TableHead>
               <TableHead className="text-right"></TableHead>
             </TableRow>
@@ -76,7 +83,7 @@ export const ModelsTable: React.FC = () => {
             {modelsLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={7}
                   className="h-32 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-2">
@@ -106,7 +113,8 @@ export const ModelsTable: React.FC = () => {
                 >
                   <TableCell>{model.id}</TableCell>
                   <TableCell>{model.model_name}</TableCell>
-                  <TableCell>
+                  <TableCell>{model.cruncher_name}</TableCell>
+                  <TableCell className="flex items-center gap-2">
                     <Switch
                       checked={model.desired_state === DesiredState.RUNNING}
                       disabled={updateModelLoading}
@@ -121,6 +129,22 @@ export const ModelsTable: React.FC = () => {
                         });
                       }}
                     />
+                    <p className="body-2xs text-muted-foreground inline-block">
+                      {model.desired_state}
+                    </p>
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        {model.status}{" "}
+                        {model.statusMessage && (
+                          <InfoCircle className="inline-block ml-1 mb-1 body-sm" />
+                        )}
+                      </TooltipTrigger>
+                      {model.statusMessage && (
+                        <TooltipContent>{model.statusMessage}</TooltipContent>
+                      )}
+                    </Tooltip>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
