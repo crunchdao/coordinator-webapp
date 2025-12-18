@@ -2,7 +2,8 @@ import { z } from "zod";
 import { DesiredState } from "../../domain/types";
 
 export const addModelSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  file: z.instanceof(File).refine((file) => file.size > 0, "File is required"),
-  desiredState: z.nativeEnum(DesiredState),
+  desired_state: z.nativeEnum(DesiredState),
+  model_name: z.string().nullable().optional(),
+  cruncher_name: z.string().nullable().optional(),
+  files: z.array(z.instanceof(File)).min(1, "At least one file is required"),
 });

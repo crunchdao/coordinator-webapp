@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { formatTypeSchema } from "@/utils/numberFormatter";
+import { formatTypeSchema } from "@/utils/number-formatter";
 
 // Schema for filter configuration (matching FilterConfig from chart/domain/types.ts)
 const filterConfigSchema = z.object({
@@ -51,7 +51,6 @@ export const widgetFormDataSchema = z
     // Common filter config
     filterConfig: z.array(filterConfigSchema).optional(),
 
-
     // Gauge series config
     gaugeSeriesConfig: z.array(gaugeSeriesConfigSchema).optional(),
   })
@@ -63,7 +62,9 @@ export const widgetFormDataSchema = z
       }
 
       if (data.chartType === "line") {
-        return !!data.xAxisName && !!data.yAxisSeries && data.yAxisSeries.length > 0;
+        return (
+          !!data.xAxisName && !!data.yAxisSeries && data.yAxisSeries.length > 0
+        );
       }
     }
 
