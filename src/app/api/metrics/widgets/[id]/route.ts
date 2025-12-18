@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { Widget } from "@/modules/metrics/domain/types";
-import { checkApiEnvironment } from "@/utils/api-environment-check";
 
-const CONFIG_FILE = path.join(
-  process.cwd(),
-  "config",
-  "metrics-widgets.json"
-);
+const CONFIG_FILE = path.join(process.cwd(), "config", "metrics-widgets.json");
 
 async function readWidgets(): Promise<Widget[]> {
   const data = await fs.readFile(CONFIG_FILE, "utf-8");
@@ -23,28 +18,22 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const envCheck = checkApiEnvironment();
-  if (envCheck) return envCheck;
-  
   try {
     const { id: idParam } = await params;
     const id = parseInt(idParam);
     const widgetData: Omit<Widget, "id"> = await request.json();
-    
+
     const widgets = await readWidgets();
-    const index = widgets.findIndex(w => w.id === id);
-    
+    const index = widgets.findIndex((w) => w.id === id);
+
     if (index === -1) {
-      return NextResponse.json(
-        { error: "Widget not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Widget not found" }, { status: 404 });
     }
-    
+
     const updatedWidget: Widget = { ...widgetData, id };
     widgets[index] = updatedWidget;
     await writeWidgets(widgets);
-    
+
     return NextResponse.json(updatedWidget);
   } catch (error) {
     console.error("Error updating widget:", error);
@@ -59,22 +48,16 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const envCheck = checkApiEnvironment();
-  if (envCheck) return envCheck;
-  
   try {
     const { id: idParam } = await params;
     const id = parseInt(idParam);
     const widgets = await readWidgets();
-    const filteredWidgets = widgets.filter(w => w.id !== id);
-    
+    const filteredWidgets = widgets.filter((w) => w.id !== id);
+
     if (widgets.length === filteredWidgets.length) {
-      return NextResponse.json(
-        { error: "Widget not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Widget not found" }, { status: 404 });
     }
-    
+
     await writeWidgets(filteredWidgets);
     return NextResponse.json({ success: true });
   } catch (error) {

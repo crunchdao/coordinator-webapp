@@ -1,14 +1,10 @@
 import { NextRequest } from "next/server";
 import { spawn } from "child_process";
-import { checkApiEnvironment } from "@/utils/api-environment-check";
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ container: string }> }
 ) {
-  const envCheck = checkApiEnvironment();
-  if (envCheck) return envCheck;
-  
   const { container } = await params;
 
   const headers = {

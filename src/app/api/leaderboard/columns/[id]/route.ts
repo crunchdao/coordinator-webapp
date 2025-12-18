@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { LeaderboardColumn } from "@/modules/leaderboard/domain/types";
-import { checkApiEnvironment } from "@/utils/api-environment-check";
 
 const CONFIG_FILE = path.join(
   process.cwd(),
@@ -23,28 +22,22 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const envCheck = checkApiEnvironment();
-  if (envCheck) return envCheck;
-  
   try {
     const { id: idParam } = await params;
     const id = parseInt(idParam);
     const columnData: Omit<LeaderboardColumn, "id"> = await request.json();
-    
+
     const columns = await readColumns();
-    const index = columns.findIndex(col => col.id === id);
-    
+    const index = columns.findIndex((col) => col.id === id);
+
     if (index === -1) {
-      return NextResponse.json(
-        { error: "Column not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Column not found" }, { status: 404 });
     }
-    
+
     const updatedColumn: LeaderboardColumn = { ...columnData, id };
     columns[index] = updatedColumn;
     await writeColumns(columns);
-    
+
     return NextResponse.json(updatedColumn);
   } catch (error) {
     console.error("Error updating column:", error);
@@ -59,22 +52,16 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const envCheck = checkApiEnvironment();
-  if (envCheck) return envCheck;
-  
   try {
     const { id: idParam } = await params;
     const id = parseInt(idParam);
     const columns = await readColumns();
-    const filteredColumns = columns.filter(col => col.id !== id);
-    
+    const filteredColumns = columns.filter((col) => col.id !== id);
+
     if (columns.length === filteredColumns.length) {
-      return NextResponse.json(
-        { error: "Column not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Column not found" }, { status: 404 });
     }
-    
+
     await writeColumns(filteredColumns);
     return NextResponse.json({ success: true });
   } catch (error) {
