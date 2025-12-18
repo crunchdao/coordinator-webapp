@@ -11,8 +11,8 @@ import {
   Alert,
   AlertDescription,
 } from "@crunch-ui/core";
-import { useGetLogsByUrl } from "../application/hooks/useGetLogsByUrl";
 import LogList from "@/ui/logs-list";
+import { useGetLogsByUrl } from "../application/hooks/useGetLogsByUrl";
 
 interface LogsDialogProps {
   logUrl: string;
@@ -33,15 +33,16 @@ export const LogsDialog: React.FC<LogsDialogProps> = ({
 
   const parsedLogs = useMemo(() => {
     if (!logs) return [];
-    
-    // Split logs by newline and filter empty lines
-    const lines = logs.split('\n').filter(line => line.trim());
-    
+
+    const lines = logs.split("\n").filter((line) => line.trim());
+
     return lines.map((line, index) => ({
       id: index,
       createdAt: new Date().toISOString(),
       content: line,
-      error: line.toLowerCase().includes('error') || line.toLowerCase().includes('failed'),
+      error:
+        line.toLowerCase().includes("error") ||
+        line.toLowerCase().includes("failed"),
     }));
   }, [logs]);
 
