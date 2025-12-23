@@ -7,6 +7,7 @@ import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 import "./globals.css";
 import ReactQuery from "./react-query";
 import Providers from "./providers";
+import { DevMenu } from "@/modules/dev/ui/devMenu";
 import "./globals.css";
 
 const departure = localFont({
@@ -50,6 +51,7 @@ export default async function RootLayout({
             <div>{children}</div>
             <Legals className="mx-auto mt-auto" />
             <Toaster />
+            <DevMenu />
           </Providers>
         </ReactQuery>
       </body>

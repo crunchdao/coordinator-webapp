@@ -6,7 +6,7 @@ export function useGetModels() {
   const query = useQuery({
     queryKey: ["models"],
     queryFn: getModels,
-    refetchInterval: 7_500,
+    refetchInterval: 30_000,
   });
   return {
     models: query.data,

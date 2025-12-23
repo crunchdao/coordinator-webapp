@@ -25,6 +25,7 @@ import { DesiredState } from "../domain/types";
 import { UpdateModelSheet } from "./updateModelSheet";
 import { LogsDialog } from "./logsDialog";
 import { AddModelSheet } from "./addModelSheet";
+import { ModelDetailDialog } from "./modelDetailDialog";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
@@ -73,17 +74,16 @@ export const ModelsTable: React.FC = () => {
               <TableHead>ID</TableHead>
               <TableHead>Model Name</TableHead>
               <TableHead>Cruncher</TableHead>
-              <TableHead>Desired State</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Logs</TableHead>
-              <TableHead className="text-right"></TableHead>
+              <TableHead>Desired State</TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {modelsLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={6}
                   className="h-32 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-2">
@@ -94,7 +94,7 @@ export const ModelsTable: React.FC = () => {
               </TableRow>
             ) : filteredData && filteredData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="h-32 text-center">
+                <TableCell colSpan={6} className="h-32 text-center">
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                     <p className="text-sm font-medium">No models found</p>
                     {searchTerm && (
@@ -114,6 +114,19 @@ export const ModelsTable: React.FC = () => {
                   <TableCell>{model.id}</TableCell>
                   <TableCell>{model.model_name}</TableCell>
                   <TableCell>{model.cruncher_name}</TableCell>
+                  <TableCell>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        {model.status}{" "}
+                        {model.statusMessage && (
+                          <InfoCircle className="inline-block ml-1 mb-1 body-sm" />
+                        )}
+                      </TooltipTrigger>
+                      {model.statusMessage && (
+                        <TooltipContent>{model.statusMessage}</TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TableCell>
                   <TableCell className="flex items-center gap-2">
                     <Switch
                       checked={model.desired_state === DesiredState.RUNNING}
@@ -129,39 +142,16 @@ export const ModelsTable: React.FC = () => {
                         });
                       }}
                     />
-                    <p className="body-2xs text-muted-foreground inline-block">
+                    <p className="body-xs text-muted-foreground inline-block">
                       {model.desired_state}
                     </p>
                   </TableCell>
-                  <TableCell>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        {model.status}{" "}
-                        {model.statusMessage && (
-                          <InfoCircle className="inline-block ml-1 mb-1 body-sm" />
-                        )}
-                      </TooltipTrigger>
-                      {model.statusMessage && (
-                        <TooltipContent>{model.statusMessage}</TooltipContent>
-                      )}
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <LogsDialog
-                        logUrl={model.builder_log_uri || ""}
-                        title="Builder Logs"
-                        buttonLabel="Builder"
-                      />
-                      <LogsDialog
-                        logUrl={model.runner_log_uri || ""}
-                        title="Runner Logs"
-                        buttonLabel="Runner"
-                      />
-                    </div>
-                  </TableCell>
                   <TableCell className="text-right">
-                    <UpdateModelSheet model={model} />
+                    <div className="flex items-center justify-end gap-1">
+                      <LogsDialog model={model} />
+                      <ModelDetailDialog model={model} />
+                      <UpdateModelSheet model={model} />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
