@@ -7,31 +7,43 @@ import {
   DialogTitle,
   DialogTrigger,
   Button,
-  Spinner,
-  Alert,
-  AlertDescription,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from "@crunch-ui/core";
-import LogList from "@/ui/logs-list";
 import { useGetLogsByUrl } from "../application/hooks/useGetLogsByUrl";
+import { Model } from "../domain/types";
+import { LogContent } from "./logContent";
+import { List } from "@crunch-ui/icons";
 
 interface LogsDialogProps {
-  logUrl: string;
-  title: string;
-  buttonLabel: string;
+  model: Model;
 }
 
-export const LogsDialog: React.FC<LogsDialogProps> = ({
-  logUrl,
-  title,
-  buttonLabel,
-}) => {
+export const LogsDialog: React.FC<LogsDialogProps> = ({ model }) => {
   const [open, setOpen] = useState(false);
-  const { logs, logsLoading, logsError } = useGetLogsByUrl(
-    logUrl,
-    open && !!logUrl
+  const [activeTab, setActiveTab] = useState("builder");
+
+  const {
+    logs: builderLogs,
+    logsLoading: builderLoading,
+    logsError: builderError,
+  } = useGetLogsByUrl(
+    model.builder_log_uri || "",
+    open && activeTab === "builder" && !!model.builder_log_uri
   );
 
-  const parsedLogs = useMemo(() => {
+  const {
+    logs: runnerLogs,
+    logsLoading: runnerLoading,
+    logsError: runnerError,
+  } = useGetLogsByUrl(
+    model.runner_log_uri || "",
+    open && activeTab === "runner" && !!model.runner_log_uri
+  );
+
+  const parseLogs = (logs: string | undefined) => {
     if (!logs) return [];
 
     const lines = logs.split("\n").filter((line) => line.trim());
@@ -44,40 +56,51 @@ export const LogsDialog: React.FC<LogsDialogProps> = ({
         line.toLowerCase().includes("error") ||
         line.toLowerCase().includes("failed"),
     }));
-  }, [logs]);
+  };
+
+  const parsedBuilderLogs = useMemo(
+    () => parseLogs(builderLogs),
+    [builderLogs]
+  );
+  const parsedRunnerLogs = useMemo(() => parseLogs(runnerLogs), [runnerLogs]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" disabled={!logUrl}>
-          {buttonLabel}
+        <Button size="sm" variant="outline">
+          Logs <List />
         </Button>
       </DialogTrigger>
-      <DialogContent className="!max-w-[calc(100vw-32px)] max-h-[calc(100vh-32px)]">
+      <DialogContent className="!max-w-[calc(100vw-32px)] max-h-[calc(100vh-32px)] flex flex-col">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle>Model Logs</DialogTitle>
         </DialogHeader>
-        <div className="mt-4 overflow-auto">
-          {logsLoading ? (
-            <div className="flex justify-center py-8">
-              <Spinner />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+          <TabsList>
+            <TabsTrigger value="builder">Builder</TabsTrigger>
+            <TabsTrigger value="runner">Runner</TabsTrigger>
+          </TabsList>
+          <TabsContent value="builder" className="flex-1 min-h-0 overflow-auto">
+            <div className="overflow-x-auto">
+              <LogContent
+                logs={parsedBuilderLogs}
+                loading={builderLoading}
+                error={builderError}
+                hasUrl={!!model.builder_log_uri}
+              />
             </div>
-          ) : logsError ? (
-            <Alert variant="destructive">
-              <AlertDescription>
-                {logsError instanceof Error
-                  ? logsError.message
-                  : "Failed to fetch logs"}
-              </AlertDescription>
-            </Alert>
-          ) : parsedLogs.length > 0 ? (
-            <LogList logs={parsedLogs} autoscroll={true} />
-          ) : (
-            <div className="text-center text-muted-foreground py-8">
-              No logs available
+          </TabsContent>
+          <TabsContent value="runner" className="flex-1 min-h-0 overflow-auto">
+            <div className="overflow-x-auto">
+              <LogContent
+                logs={parsedRunnerLogs}
+                loading={runnerLoading}
+                error={runnerError}
+                hasUrl={!!model.runner_log_uri}
+              />
             </div>
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

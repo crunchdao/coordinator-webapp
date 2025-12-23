@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef, useMemo, useCallback } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import {
   PulseRing,
   Tabs,
@@ -69,6 +69,7 @@ export const Logs = () => {
         setContainerLogs((prev) => {
           const currentLogs = prev[activeContainer]?.logs || [];
           const newLogs = [...currentLogs, log];
+          console.log(newLogs);
           const trimmedLogs = newLogs.slice(-MAX_LOGS_PER_CONTAINER);
 
           return {
@@ -112,6 +113,8 @@ export const Logs = () => {
     };
   }, [activeContainer, containerNames]);
 
+  console.log(containerLogs);
+
   useEffect(() => {
     return () => {
       if (eventSourceRef.current) {
@@ -126,20 +129,12 @@ export const Logs = () => {
     if (!currentContainer) return [];
 
     return currentContainer.logs.map((log, index) => ({
-      id: index,
+      id: `${activeContainer}-${log.timestamp}-${index}`,
       createdAt: log.timestamp,
       content: log.message,
       emitter: log.level,
     }));
   }, [containerLogs, activeContainer]);
-
-  if (containerNames.length === 0) {
-    return (
-      <div className="p-6 text-muted-foreground">
-        Configure container names in settings to view logs.
-      </div>
-    );
-  }
 
   const currentContainer = containerLogs[activeContainer];
 
@@ -167,13 +162,16 @@ export const Logs = () => {
                 {containerLogs[name].error}
               </div>
             )}
-            {containerLogs[name]?.logs.length === 0 ? (
+            {containerLogs[name]?.logs === undefined ? (
               <div className="p-4 text-muted-foreground">
                 Waiting for logs...
               </div>
             ) : (
               <div className="relative">
-                <LogList logs={name === activeContainer ? formattedLogs : []} />
+                <LogList
+                  autoscroll
+                  logs={name === activeContainer ? formattedLogs : []}
+                />
               </div>
             )}
           </TabsContent>
