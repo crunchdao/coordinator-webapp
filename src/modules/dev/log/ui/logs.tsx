@@ -69,6 +69,7 @@ export const Logs = () => {
         setContainerLogs((prev) => {
           const currentLogs = prev[activeContainer]?.logs || [];
           const newLogs = [...currentLogs, log];
+          console.log(newLogs);
           const trimmedLogs = newLogs.slice(-MAX_LOGS_PER_CONTAINER);
 
           return {
@@ -111,6 +112,8 @@ export const Logs = () => {
       eventSourceRef.current = null;
     };
   }, [activeContainer, containerNames]);
+
+  console.log(containerLogs);
 
   useEffect(() => {
     return () => {

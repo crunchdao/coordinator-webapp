@@ -23,7 +23,7 @@ export async function GET(
           closed = true;
           try {
             controller.close();
-          } catch (error) {
+          } catch {
             // Controller already closed
           }
         }
@@ -37,7 +37,7 @@ export async function GET(
             message: data.toString().trim(),
           };
           controller.enqueue(`data: ${JSON.stringify(log)}\n\n`);
-        } catch (error) {
+        } catch {
           // Controller already closed
         }
       });
@@ -50,7 +50,7 @@ export async function GET(
             message: data.toString().trim(),
           };
           controller.enqueue(`data: ${JSON.stringify(log)}\n\n`);
-        } catch (error) {
+        } catch {
           // Controller already closed
         }
       });
