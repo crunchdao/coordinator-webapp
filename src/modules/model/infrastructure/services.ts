@@ -1,4 +1,4 @@
-import modelsApiClient from "@/utils/models-api-client";
+import apiClient from "@/utils/api";
 import { endpoints } from "./endpoints";
 import { Model, AddModelBody, UpdateModelBody } from "../domain/types";
 
@@ -15,7 +15,7 @@ export const addModel = async (data: AddModelBody): Promise<Model> => {
     }
   });
 
-  const response = await modelsApiClient.post(endpoints.addModel(), formData, {
+  const response = await apiClient.post(endpoints.addModel(), formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

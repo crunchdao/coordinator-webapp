@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const MODEL_ORCHESTRATOR_URL = process.env.NEXT_PUBLIC_API_URL_MODEL_ORCHESTRATOR || "http://localhost:8001";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -9,6 +10,10 @@ const nextConfig: NextConfig = {
       {
         source: "/api/logs/:path*",
         destination: "/api/logs/:path*",
+      },
+      {
+        source: "/api/models/:path*",
+        destination: `${MODEL_ORCHESTRATOR_URL}/models/:path*`,
       },
       {
         source: "/api/:path*",
