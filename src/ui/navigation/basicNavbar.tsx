@@ -10,10 +10,10 @@ import { useSettings } from "@/modules/settings/application/context/settingsCont
 export const BasicNavbar: React.FC = () => {
   const { env } = useSettings();
   const visibleRoutes = getVisibleRoutes(env);
-  
+
   const linkClassName =
     "body-sm text-muted-foreground inline-flex items-center gap-1.5 uppercase hover:underline";
-  
+
   return (
     <nav className="sticky top-0 left-0 right-0 z-40 w-full">
       <div className="py-3 border-b mb-3 z-40 w-full backdrop-blur-sm bg-background/70">

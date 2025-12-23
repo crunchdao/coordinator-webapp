@@ -4,7 +4,7 @@ import Chart from "chart.js/auto";
 import "chartjs-adapter-date-fns";
 import { Button } from "@crunch-ui/core";
 import { RANDOM_COLORS } from "../application/utils";
-import { formatNumber } from "@/utils/numberFormatter";
+import { formatNumber } from "@/utils/number-formatter";
 import {
   LineChartDefinition,
   MetricItem,
