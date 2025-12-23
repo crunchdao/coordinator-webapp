@@ -53,7 +53,7 @@ export const MetricSettingsTable: React.FC = () => {
           <div className="flex items-center justify-between w-full pr-4">
             <div className="flex items-center gap-3">
               <Settings className="w-5 h-5 text-muted-foreground" />
-              <h2 className="text-lg font-semibold">Column Configuration</h2>
+              <h2 className="text-lg font-semibold">Metrics Configuration</h2>
               <Badge size="sm" variant="secondary" className="ml-2">
                 {widgets?.length} Widgets
               </Badge>
