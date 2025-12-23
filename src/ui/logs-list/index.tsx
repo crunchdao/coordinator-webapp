@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { cn } from "@crunch-ui/utils";
 import { Badge, Button } from "@crunch-ui/core";
 import { ChevronDown } from "@crunch-ui/icons";
+import { AnsiText } from "@/modules/dev/log/utils/ansiParser";
 
 interface Log {
   id?: number | string;
@@ -119,7 +120,7 @@ const LogList: React.FC<LogListProps> = ({
                     line.error && "text-destructive"
                   )}
                 >
-                  {line.content}
+                  <AnsiText text={line.content} />
                 </p>
               </div>
             ))}
