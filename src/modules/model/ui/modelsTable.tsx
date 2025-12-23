@@ -76,15 +76,14 @@ export const ModelsTable: React.FC = () => {
               <TableHead>Cruncher</TableHead>
               <TableHead>Desired State</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Logs</TableHead>
-              <TableHead className="text-right"></TableHead>
+              <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {modelsLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={6}
                   className="h-32 text-center text-muted-foreground"
                 >
                   <div className="flex flex-col items-center justify-center gap-2">
@@ -95,7 +94,7 @@ export const ModelsTable: React.FC = () => {
               </TableRow>
             ) : filteredData && filteredData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="h-32 text-center">
+                <TableCell colSpan={6} className="h-32 text-center">
                   <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                     <p className="text-sm font-medium">No models found</p>
                     {searchTerm && (
@@ -147,22 +146,9 @@ export const ModelsTable: React.FC = () => {
                       )}
                     </Tooltip>
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <LogsDialog
-                        logUrl={model.builder_log_uri || ""}
-                        title="Builder Logs"
-                        buttonLabel="Builder"
-                      />
-                      <LogsDialog
-                        logUrl={model.runner_log_uri || ""}
-                        title="Runner Logs"
-                        buttonLabel="Runner"
-                      />
-                    </div>
-                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
+                      <LogsDialog model={model} />
                       <ModelDetailDialog model={model} />
                       <UpdateModelSheet model={model} />
                     </div>

@@ -6,9 +6,8 @@ import {
   DialogTitle,
   DialogTrigger,
   Button,
-  Badge,
 } from "@crunch-ui/core";
-import { Eye } from "@crunch-ui/icons";
+import { Code } from "@crunch-ui/icons";
 import { Model } from "../domain/types";
 
 interface ModelDetailDialogProps {
@@ -21,8 +20,8 @@ export const ModelDetailDialog: React.FC<ModelDetailDialogProps> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon-sm">
-          <Eye />
+        <Button variant="outline" size="sm">
+          Raw <Code />
         </Button>
       </DialogTrigger>
       <DialogContent className="min-w-5xl max-w-full">
