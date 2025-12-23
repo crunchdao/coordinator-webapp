@@ -74,8 +74,8 @@ export const ModelsTable: React.FC = () => {
               <TableHead>ID</TableHead>
               <TableHead>Model Name</TableHead>
               <TableHead>Cruncher</TableHead>
-              <TableHead>Desired State</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Desired State</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
@@ -114,6 +114,19 @@ export const ModelsTable: React.FC = () => {
                   <TableCell>{model.id}</TableCell>
                   <TableCell>{model.model_name}</TableCell>
                   <TableCell>{model.cruncher_name}</TableCell>
+                  <TableCell>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        {model.status}{" "}
+                        {model.statusMessage && (
+                          <InfoCircle className="inline-block ml-1 mb-1 body-sm" />
+                        )}
+                      </TooltipTrigger>
+                      {model.statusMessage && (
+                        <TooltipContent>{model.statusMessage}</TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TableCell>
                   <TableCell className="flex items-center gap-2">
                     <Switch
                       checked={model.desired_state === DesiredState.RUNNING}
@@ -129,22 +142,9 @@ export const ModelsTable: React.FC = () => {
                         });
                       }}
                     />
-                    <p className="body-2xs text-muted-foreground inline-block">
+                    <p className="body-xs text-muted-foreground inline-block">
                       {model.desired_state}
                     </p>
-                  </TableCell>
-                  <TableCell>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        {model.status}{" "}
-                        {model.statusMessage && (
-                          <InfoCircle className="inline-block ml-1 mb-1 body-sm" />
-                        )}
-                      </TooltipTrigger>
-                      {model.statusMessage && (
-                        <TooltipContent>{model.statusMessage}</TooltipContent>
-                      )}
-                    </Tooltip>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
