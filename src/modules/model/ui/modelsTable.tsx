@@ -25,6 +25,7 @@ import { DesiredState } from "../domain/types";
 import { UpdateModelSheet } from "./updateModelSheet";
 import { LogsDialog } from "./logsDialog";
 import { AddModelSheet } from "./addModelSheet";
+import { ModelDetailDialog } from "./modelDetailDialog";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
@@ -161,7 +162,10 @@ export const ModelsTable: React.FC = () => {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <UpdateModelSheet model={model} />
+                    <div className="flex items-center justify-end gap-1">
+                      <ModelDetailDialog model={model} />
+                      <UpdateModelSheet model={model} />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
