@@ -2,6 +2,7 @@ import { Environment } from "./config";
 
 export const INTERNAL_LINKS = {
   ROOT: "/",
+  LOGIN: "/login",
   LEADERBOARD: "/leaderboard",
   METRICS: "/metrics",
   SETTINGS: "/settings",
