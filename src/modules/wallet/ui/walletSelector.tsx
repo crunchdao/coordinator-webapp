@@ -53,7 +53,7 @@ export function WalletSelector() {
           setIsNewWalletFlow(true);
           setVisible(true);
         }}
-        variant="outline"
+        size="sm"
         className="flex items-center gap-2"
         disabled={connecting}
       >
@@ -75,7 +75,7 @@ export function WalletSelector() {
                 {wallet?.adapter.name}
               </span>
             </div>
-            <Selector />
+            <Selector className="ml-auto" />
           </div>
         </Button>
       </DropdownMenuTrigger>
