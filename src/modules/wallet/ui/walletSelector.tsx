@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectSeparator,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
   Button,
 } from "@crunch-ui/core";
 import { useWallet } from "../application/context/walletContext";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { Wallet, Plus, SmallCross } from "@crunch-ui/icons";
+import { Wallet, Plus, SmallCross, Selector } from "@crunch-ui/icons";
 import { truncateAddress } from "@/utils/solana";
 
 export function WalletSelector() {
@@ -47,7 +46,6 @@ export function WalletSelector() {
     }
   };
 
-  // First connection - show button
   if (!connected || !publicKey) {
     return (
       <Button
@@ -65,48 +63,33 @@ export function WalletSelector() {
     );
   }
 
-  // Connected - show select
   return (
-    <Select value={publicKey.toString()} onValueChange={handleSelectChange}>
-      <SelectTrigger className="w-[220px]">
-        <div className="flex items-center gap-2 w-full">
-          <Wallet className="h-4 w-4 flex-shrink-0" />
-          <SelectValue>
-            <div className="flex items-center gap-2">
-              <span className="text-sm">
-                {truncateAddress(publicKey.toString())}
-              </span>
-              <span className="text-xs text-muted-foreground">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button size="sm" variant="outline" className="w-[220px] justify-start">
+          <div className="flex items-center gap-2 w-full">
+            <Wallet className="h-4 w-4 flex-shrink-0" />
+            <div className="flex items-center gap-2 body-xs">
+              <span>{truncateAddress(publicKey.toString())}</span>
+              <span className="text-muted-foreground">
                 {wallet?.adapter.name}
               </span>
             </div>
-          </SelectValue>
-        </div>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value={publicKey.toString()} disabled>
-          <div className="flex items-center justify-between gap-3 w-full">
-            <span>{truncateAddress(publicKey.toString())}</span>
-            <span className="text-xs text-muted-foreground">
-              {wallet?.adapter.name}
-            </span>
+            <Selector />
           </div>
-        </SelectItem>
-        <SelectSeparator />
-        <SelectItem value="connect-new">
-          <div className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            <span>Connect Another Wallet</span>
-          </div>
-        </SelectItem>
-        <SelectSeparator />
-        <SelectItem value="disconnect">
-          <div className="flex items-center gap-2 text-destructive">
-            <SmallCross className="h-4 w-4" />
-            <span>Disconnect</span>
-          </div>
-        </SelectItem>
-      </SelectContent>
-    </Select>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-[220px]">
+        <DropdownMenuItem onSelect={() => handleSelectChange("connect-new")}>
+          <Plus className="h-4 w-4 mr-2" />
+          <span>Connect Another Wallet</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={() => handleSelectChange("disconnect")}>
+          <SmallCross className="h-4 w-4 mr-2" />
+          <span>Disconnect</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
