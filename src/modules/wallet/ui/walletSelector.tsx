@@ -16,25 +16,22 @@ import { Wallet, Plus, SmallCross } from "@crunch-ui/icons";
 import { truncateAddress } from "@/utils/solana";
 
 export function WalletSelector() {
-  const {
-    publicKey,
-    wallet,
-    disconnect,
-    connected,
-    connect,
-    connecting,
-    wallets,
-    select,
-  } = useWallet();
+  const { publicKey, wallet, disconnect, connected, connect, connecting } =
+    useWallet();
   const { setVisible, visible } = useWalletModal();
   const [isNewWalletFlow, setIsNewWalletFlow] = useState(false);
 
   useEffect(() => {
     if (!visible && wallet && !connected && !connecting && isNewWalletFlow) {
-      // Small delay to ensure modal is fully closed
       setTimeout(() => {
         connect().catch((err) => {
           console.error("Failed to connect:", err);
+          console.error("Error details:", {
+            name: err.name,
+            message: err.message,
+            stack: err.stack,
+            wallet: wallet?.adapter.name,
+          });
         });
         setIsNewWalletFlow(false);
       }, 100);

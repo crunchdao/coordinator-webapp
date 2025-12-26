@@ -15,7 +15,6 @@ import { useSettings } from "@/modules/settings/application/context/settingsCont
 import { config } from "@/utils/config";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
-// Re-export the Solana wallet hook directly
 export { useWallet } from "@solana/wallet-adapter-react";
 
 interface WalletProviderProps {
@@ -26,11 +25,12 @@ export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
   const { isLocal } = useSettings();
 
   const network = config.solana.network;
+
   const endpoint = useMemo(() => {
     try {
       return config.solana.rpcUrl;
     } catch (error) {
-      console.warn('Using default cluster URL:', error);
+      console.warn("Using default cluster URL:", error);
       return clusterApiUrl(network);
     }
   }, [network]);
