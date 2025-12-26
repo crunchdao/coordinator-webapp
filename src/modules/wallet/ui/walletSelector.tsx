@@ -8,11 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
   SelectSeparator,
+  Button,
 } from "@crunch-ui/core";
 import { useWallet } from "../application/context/walletContext";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Wallet, Plus, SmallCross } from "@crunch-ui/icons";
-import { Button } from "@crunch-ui/core";
 import { truncateAddress } from "@/utils/solana";
 
 export function WalletSelector() {
@@ -42,10 +42,10 @@ export function WalletSelector() {
   }, [visible, wallet, connected, connecting, connect, isNewWalletFlow]);
 
   const handleSelectChange = (value: string) => {
-    if (value === 'connect-new') {
+    if (value === "connect-new") {
       setIsNewWalletFlow(true);
       setVisible(true);
-    } else if (value === 'disconnect') {
+    } else if (value === "disconnect") {
       disconnect();
     }
   };
@@ -70,16 +70,15 @@ export function WalletSelector() {
 
   // Connected - show select
   return (
-    <Select
-      value={publicKey.toString()}
-      onValueChange={handleSelectChange}
-    >
+    <Select value={publicKey.toString()} onValueChange={handleSelectChange}>
       <SelectTrigger className="w-[220px]">
         <div className="flex items-center gap-2 w-full">
           <Wallet className="h-4 w-4 flex-shrink-0" />
           <SelectValue>
             <div className="flex items-center gap-2">
-              <span className="text-sm">{truncateAddress(publicKey.toString())}</span>
+              <span className="text-sm">
+                {truncateAddress(publicKey.toString())}
+              </span>
               <span className="text-xs text-muted-foreground">
                 {wallet?.adapter.name}
               </span>
@@ -91,7 +90,9 @@ export function WalletSelector() {
         <SelectItem value={publicKey.toString()} disabled>
           <div className="flex items-center justify-between gap-3 w-full">
             <span>{truncateAddress(publicKey.toString())}</span>
-            <span className="text-xs text-muted-foreground">{wallet?.adapter.name}</span>
+            <span className="text-xs text-muted-foreground">
+              {wallet?.adapter.name}
+            </span>
           </div>
         </SelectItem>
         <SelectSeparator />

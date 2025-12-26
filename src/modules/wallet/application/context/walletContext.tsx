@@ -26,18 +26,14 @@ export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
   const { isLocal } = useSettings();
 
   const network = config.solana.network;
-  const endpoint = useMemo(
-    () => {
-      try {
-        return config.solana.rpcUrl;
-      } catch (error) {
-        // Fallback to cluster URL if config fails
-        console.warn('Using default cluster URL:', error);
-        return clusterApiUrl(network);
-      }
-    },
-    [network]
-  );
+  const endpoint = useMemo(() => {
+    try {
+      return config.solana.rpcUrl;
+    } catch (error) {
+      console.warn('Using default cluster URL:', error);
+      return clusterApiUrl(network);
+    }
+  }, [network]);
 
   const wallets = useMemo(
     () => [

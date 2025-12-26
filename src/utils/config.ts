@@ -51,7 +51,14 @@ const getSolanaRpcUrl = (): string => {
   const customUrl = process.env.NEXT_PUBLIC_SOLANA_RPC_URL;
 
   if (customUrl) {
-    return customUrl;
+    try {
+      new URL(customUrl);
+      return customUrl;
+    } catch (error) {
+      throw new Error(
+        `Invalid SOLANA_RPC_URL format: ${customUrl}. Must be a valid URL.`
+      );
+    }
   }
 
   const env = getEnvironment();
