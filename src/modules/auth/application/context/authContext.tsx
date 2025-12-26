@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, ReactNode, useEffect, useState } from "react";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { useSettings } from "@/modules/settings/application/context/settingsContext";
 import { useRouter, usePathname } from "next/navigation";
 
 interface AuthContextType {
@@ -25,6 +26,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const { connected, publicKey, connecting } = useWallet();
+  const { isLocal } = useSettings();
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
@@ -35,13 +37,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  const isAuthenticated = connected && !!publicKey;
+  const isAuthenticated = isLocal || (connected && !!publicKey);
   
   return (
     <AuthContext.Provider 
       value={{ 
         isAuthenticated,
-        isLoading: isLoading || connecting,
+        isLoading: isLocal ? false : (isLoading || connecting),
         publicKey: publicKey?.toString() || null
       }}
     >
