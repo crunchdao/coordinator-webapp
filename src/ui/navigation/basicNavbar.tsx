@@ -6,14 +6,15 @@ import { cn } from "@crunch-ui/utils";
 import { INTERNAL_LINKS, getVisibleRoutes } from "@/utils/routes";
 import { EnvironmentBadge } from "@/modules/settings/ui/environmentBadge";
 import { useSettings } from "@/modules/settings/application/context/settingsContext";
+import { WalletConnection } from "@/modules/wallet/ui/walletConnection";
 
 export const BasicNavbar: React.FC = () => {
   const { env } = useSettings();
   const visibleRoutes = getVisibleRoutes(env);
-  
+
   const linkClassName =
     "body-sm text-muted-foreground inline-flex items-center gap-1.5 uppercase hover:underline";
-  
+
   return (
     <nav className="sticky top-0 left-0 right-0 z-40 w-full">
       <div className="py-3 border-b mb-3 z-40 w-full backdrop-blur-sm bg-background/70">
@@ -30,7 +31,7 @@ export const BasicNavbar: React.FC = () => {
             </Link>
             <EnvironmentBadge />
           </div>
-          <div className="ml-auto flex gap-6">
+          <div className="ml-auto flex gap-6 items-center">
             {visibleRoutes.map((route) => (
               <Link
                 key={route.path}
@@ -40,6 +41,7 @@ export const BasicNavbar: React.FC = () => {
                 {route.label}
               </Link>
             ))}
+            <WalletConnection />
           </div>
         </div>
       </div>
