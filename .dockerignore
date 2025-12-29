@@ -7,5 +7,6 @@ docker-compose.yml
 .env
 .idea
 .next
+.cache
 
 config

@@ -5,13 +5,14 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++ pkgconfig libusb-dev linux-headers eudev-dev
 
 COPY package*.json ./
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm npm ci
 
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV WEBPACK_CACHE=false
 
 RUN npm run build -- --webpack
 
