@@ -39,12 +39,12 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.MODELS,
     label: "Models",
-    allowedEnvs: ["local"],
+    allowedEnvs: ["local", "development"],
   },
   {
     path: INTERNAL_LINKS.SETTINGS,
     label: "Settings",
-    allowedEnvs: ["local"],
+    allowedEnvs: ["local", "development"],
   },
 ];
 
