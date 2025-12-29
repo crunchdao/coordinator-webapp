@@ -1,5 +1,4 @@
 "use client";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -23,6 +22,7 @@ import {
 } from "@crunch-ui/core";
 import { pitchFormSchema } from "../application/schemas/pitch";
 import { PitchFormData, PitchStatus } from "../domain/types";
+import { SliceManager } from "./sliceManager";
 
 export function PitchForm() {
   const form = useForm<PitchFormData>({
@@ -67,7 +67,7 @@ export function PitchForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-3 lg:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Basic Information</CardTitle>
@@ -80,7 +80,10 @@ export function PitchForm() {
                   <FormItem>
                     <FormLabel>Display Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter pitch display name" {...field} />
+                      <Input
+                        placeholder="Enter pitch display name"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -100,37 +103,10 @@ export function PitchForm() {
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={PitchStatus.VOTING}>Voting</SelectItem>
-                        <SelectItem value={PitchStatus.CANCELED}>
-                          Canceled
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </CardContent>
             <div className="flex justify-end p-6 pt-0">
               <Button type="button" onClick={onSubmitBasicInfo}>
-                Save Basic Info
+                Save
               </Button>
             </div>
           </Card>
@@ -147,10 +123,10 @@ export function PitchForm() {
                   <FormItem>
                     <FormLabel>Website URL</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="https://example.com" 
-                        {...field} 
-                        value={field.value || ""} 
+                      <Input
+                        placeholder="https://example.com"
+                        {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -165,10 +141,10 @@ export function PitchForm() {
                   <FormItem>
                     <FormLabel>Discord URL</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="https://discord.gg/..." 
-                        {...field} 
-                        value={field.value || ""} 
+                      <Input
+                        placeholder="https://discord.gg/..."
+                        {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -183,10 +159,10 @@ export function PitchForm() {
                   <FormItem>
                     <FormLabel>Twitter URL</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="https://twitter.com/..." 
-                        {...field} 
-                        value={field.value || ""} 
+                      <Input
+                        placeholder="https://twitter.com/..."
+                        {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -201,10 +177,10 @@ export function PitchForm() {
                   <FormItem>
                     <FormLabel>External URL</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="https://..." 
-                        {...field} 
-                        value={field.value || ""} 
+                      <Input
+                        placeholder="https://..."
+                        {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -228,10 +204,19 @@ export function PitchForm() {
             </CardContent>
             <div className="flex justify-end p-6 pt-0">
               <Button type="button" onClick={onSubmitLinks}>
-                Save Links
+                Save
               </Button>
             </div>
           </Card>
+          <div className="col-span-2">
+            <SliceManager form={form} />
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Button type="submit" size="lg">
+            Save
+          </Button>
         </div>
       </form>
     </Form>

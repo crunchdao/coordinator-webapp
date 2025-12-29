@@ -7,51 +7,52 @@ export const pitchKeyMetricSchema = z.object({
 });
 
 export const teamMemberSchema = z.object({
-  displayName: z.string().min(1, "Display name is required"),
-  role: z.string().min(1, "Role is required"),
-  avatarImageUrl: z.string().url().nullable().optional(),
-  crunchbaseUrl: z.string().url().nullable().optional(),
-  farcasterUrl: z.string().url().nullable().optional(),
-  githubUrl: z.string().url().nullable().optional(),
-  linkedinUrl: z.string().url().nullable().optional(),
-  telegramUrl: z.string().url().nullable().optional(),
+  fullName: z.string().min(1, "Full name is required"),
+  avatarImageUrl: z.string().url("Avatar image must be a valid URL"),
+  descriptionMarkdown: z.string().min(1, "Description is required"),
   twitterUrl: z.string().url().nullable().optional(),
+  linkedinUrl: z.string().url().nullable().optional(),
   websiteUrl: z.string().url().nullable().optional(),
 });
 
 export const roadmapEventSchema = z.object({
   date: z.string().min(1, "Date is required"),
-  event: z.string().min(1, "Event description is required"),
+  markdown: z.string().min(1, "Event description is required"),
 });
 
 const basePitchSliceSchema = z.object({
-  id: z.string(),
-  isEnabled: z.boolean(),
+  id: z.number(),
+  name: z.string(),
+  displayName: z.string().nullable(),
   order: z.number(),
 });
 
 export const keyMetricsSliceSchema = basePitchSliceSchema.extend({
   type: z.literal(PitchSliceType.KEY_METRICS),
-  metrics: z
-    .array(pitchKeyMetricSchema)
-    .min(1, "At least one metric is required"),
+  nativeConfiguration: z.object({
+    metrics: z.array(pitchKeyMetricSchema).min(1, "At least one metric is required"),
+  }),
 });
 
 export const contentSliceSchema = basePitchSliceSchema.extend({
   type: z.literal(PitchSliceType.CONTENT),
-  content: z.string().min(1, "Content is required"),
+  nativeConfiguration: z.object({
+    markdown: z.string().min(1, "Content is required"),
+  }),
 });
 
 export const roadmapSliceSchema = basePitchSliceSchema.extend({
   type: z.literal(PitchSliceType.ROADMAP),
-  events: z.array(roadmapEventSchema).min(1, "At least one event is required"),
+  nativeConfiguration: z.object({
+    events: z.array(roadmapEventSchema).min(1, "At least one event is required"),
+  }),
 });
 
 export const teamSliceSchema = basePitchSliceSchema.extend({
   type: z.literal(PitchSliceType.TEAM),
-  members: z
-    .array(teamMemberSchema)
-    .min(1, "At least one team member is required"),
+  nativeConfiguration: z.object({
+    members: z.array(teamMemberSchema).min(1, "At least one team member is required"),
+  }),
 });
 
 export const pitchSliceSchema = z.discriminatedUnion("type", [
@@ -72,3 +73,9 @@ export const pitchFormSchema = z.object({
   status: z.nativeEnum(PitchStatus),
   slices: z.array(pitchSliceSchema),
 });
+
+export type PitchFormData = z.infer<typeof pitchFormSchema>;
+export type PitchSlice = z.infer<typeof pitchSliceSchema>;
+export type PitchKeyMetric = z.infer<typeof pitchKeyMetricSchema>;
+export type TeamMember = z.infer<typeof teamMemberSchema>;
+export type RoadmapEvent = z.infer<typeof roadmapEventSchema>;
