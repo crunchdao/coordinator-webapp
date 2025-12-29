@@ -24,7 +24,7 @@ export const addModel = async (data: AddModelBody): Promise<Model> => {
 };
 
 export const getModels = async (): Promise<Model[]> => {
-  const response = await modelsApiClient.get(endpoints.getModels());
+  const response = await apiClient.get(endpoints.getModels());
   return response.data;
 };
 
@@ -46,7 +46,7 @@ export const updateModel = async (
     }
   });
 
-  const response = await modelsApiClient.patch(
+  const response = await apiClient.patch(
     endpoints.updateModel(modelId),
     formData,
     {
@@ -59,5 +59,5 @@ export const updateModel = async (
 };
 
 export const deleteModel = async (modelId: number): Promise<void> => {
-  await modelsApiClient.delete(endpoints.deleteModel(modelId));
+  await apiClient.delete(endpoints.deleteModel(modelId));
 };
