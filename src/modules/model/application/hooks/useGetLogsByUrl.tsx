@@ -1,12 +1,17 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 
+const MODEL_ORCHESTRATOR_URL =
+  process.env.NEXT_PUBLIC_API_URL_MODEL_ORCHESTRATOR || "http://localhost:8001";
+
 export function useGetLogsByUrl(url: string, enabled?: boolean) {
   const query = useQuery({
     queryKey: ["modelLogsUrl", url],
     queryFn: async () => {
       try {
-        const urlWithParams = new URL(url);
+        const proxyUrl = url.replace(MODEL_ORCHESTRATOR_URL, "/api");
+
+        const urlWithParams = new URL(proxyUrl, window.location.origin);
         if (!urlWithParams.searchParams.has("follow")) {
           urlWithParams.searchParams.set("follow", "false");
         }
