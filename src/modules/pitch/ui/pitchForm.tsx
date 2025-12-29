@@ -23,6 +23,7 @@ import {
 import { pitchFormSchema } from "../application/schemas/pitch";
 import { PitchFormData, PitchStatus } from "../domain/types";
 import { SliceManager } from "./sliceManager";
+import { Save } from "@crunch-ui/icons";
 
 export function PitchForm() {
   const form = useForm<PitchFormData>({
@@ -44,35 +45,16 @@ export function PitchForm() {
     console.log("Pitch form submitted:", data);
   };
 
-  const onSubmitBasicInfo = () => {
-    const values = form.getValues();
-    console.log("Basic info submitted:", {
-      displayName: values.displayName,
-      shortDescription: values.shortDescription,
-      status: values.status,
-    });
-  };
-
-  const onSubmitLinks = () => {
-    const values = form.getValues();
-    console.log("External links submitted:", {
-      websiteUrl: values.websiteUrl,
-      discordUrl: values.discordUrl,
-      twitterUrl: values.twitterUrl,
-      externalUrl: values.externalUrl,
-      externalUrlText: values.externalUrlText,
-    });
-  };
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="grid gap-3 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+    <Card>
+      <CardHeader>
+        <CardTitle>Pitch</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CardTitle>Basic Information</CardTitle>
+            <div className="grid gap-3 lg:grid-cols-2">
               <FormField
                 control={form.control}
                 name="displayName"
@@ -103,19 +85,6 @@ export function PitchForm() {
                   </FormItem>
                 )}
               />
-            </CardContent>
-            <div className="flex justify-end p-6 pt-0">
-              <Button type="button" onClick={onSubmitBasicInfo}>
-                Save
-              </Button>
-            </div>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>External Links</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
               <FormField
                 control={form.control}
                 name="websiteUrl"
@@ -201,24 +170,19 @@ export function PitchForm() {
                   </FormItem>
                 )}
               />
-            </CardContent>
-            <div className="flex justify-end p-6 pt-0">
-              <Button type="button" onClick={onSubmitLinks}>
-                Save
+            </div>
+            <div className="mt-8">
+              <SliceManager form={form} />
+            </div>
+
+            <div className="mt-8 flex justify-end">
+              <Button type="submit" size="lg">
+                Save <Save />
               </Button>
             </div>
-          </Card>
-          <div className="col-span-2">
-            <SliceManager form={form} />
-          </div>
-        </div>
-
-        <div className="mt-8 flex justify-center">
-          <Button type="submit" size="lg">
-            Save
-          </Button>
-        </div>
-      </form>
-    </Form>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

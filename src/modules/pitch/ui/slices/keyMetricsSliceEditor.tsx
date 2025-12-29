@@ -61,10 +61,9 @@ export function KeyMetricsSliceEditor({
             />
             <Button
               type="button"
-              variant="outline"
-              size="sm"
+              variant="destructive"
+              size="icon-sm"
               onClick={() => remove(index)}
-              className="mt-8"
             >
               <Trash />
             </Button>

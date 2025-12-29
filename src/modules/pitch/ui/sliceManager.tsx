@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import {
   Button,
@@ -6,13 +7,14 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@crunch-ui/core";
-import { ArrowDown, ArrowUp, Trash } from "@crunch-ui/icons";
+import { ArrowDown, ArrowUp, Plus, Trash } from "@crunch-ui/icons";
 import { PitchFormData, PitchSliceType } from "../domain/types";
 import { KeyMetricsSliceEditor } from "./slices/keyMetricsSliceEditor";
 import { ContentSliceEditor } from "./slices/contentSliceEditor";
@@ -24,6 +26,7 @@ interface SliceManagerProps {
 }
 
 export function SliceManager({ form }: SliceManagerProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { fields, append, remove, move } = useFieldArray({
     control: form.control,
     name: "slices",
@@ -67,6 +70,7 @@ export function SliceManager({ form }: SliceManagerProps) {
         });
         break;
     }
+    setIsDialogOpen(false);
   };
 
   const renderSliceEditor = (sliceIndex: number) => {
@@ -87,74 +91,91 @@ export function SliceManager({ form }: SliceManagerProps) {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Content Slices</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2 mb-8">
-            <Select onValueChange={handleAddSlice}>
-              <SelectTrigger>
-                <SelectValue placeholder="Add a new slice" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={PitchSliceType.KEY_METRICS}>
+      <CardTitle>Content Slices</CardTitle>
+      <div>
+        <div className="flex items-center gap-2 mb-8">
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Plus />
+                Add Slice
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Content Slice</DialogTitle>
+                <DialogDescription>
+                  Choose the type of content you want to add to your pitch.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <Button
+                  variant="outline"
+                  onClick={() => handleAddSlice(PitchSliceType.KEY_METRICS)}
+                >
                   Key Metrics
-                </SelectItem>
-                <SelectItem value={PitchSliceType.CONTENT}>Content</SelectItem>
-                <SelectItem value={PitchSliceType.ROADMAP}>Roadmap</SelectItem>
-                <SelectItem value={PitchSliceType.TEAM}>Team</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={!fields.length}
-              onClick={() =>
-                console.log("Save all slices:", form.getValues("slices"))
-              }
-            >
-              Save All Slices
-            </Button>
-          </div>
-
-          <div className="space-y-8">
-            {fields.map((field, index) => (
-              <div key={field.id} className="relative flex gap-3">
-                <div className="flex-1">{renderSliceEditor(index)}</div>
-                <div className="flex flex-col gap-1">
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon-sm"
-                    onClick={() => remove(index)}
-                  >
-                    <Trash />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    disabled={index === 0}
-                    onClick={() => move(index, index - 1)}
-                  >
-                    <ArrowUp />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon-sm"
-                    disabled={index === fields.length - 1}
-                    onClick={() => move(index, index + 1)}
-                  >
-                    <ArrowDown />
-                  </Button>
-                </div>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleAddSlice(PitchSliceType.CONTENT)}
+                >
+                  Content
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleAddSlice(PitchSliceType.ROADMAP)}
+                >
+                  Roadmap
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleAddSlice(PitchSliceType.TEAM)}
+                >
+                  Team
+                </Button>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="space-y-8">
+          {fields.map((field, index) => (
+            <div key={field.id} className="relative flex gap-3">
+              <div className="flex-1 border-r pr-3">
+                {renderSliceEditor(index)}
+              </div>
+              <div className="flex flex-col gap-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  disabled={index === 0}
+                  onClick={() => move(index, index - 1)}
+                >
+                  <ArrowUp />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  disabled={index === fields.length - 1}
+                  onClick={() => move(index, index + 1)}
+                >
+                  <ArrowDown />
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon-sm"
+                  onClick={() => remove(index)}
+                >
+                  <Trash />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
