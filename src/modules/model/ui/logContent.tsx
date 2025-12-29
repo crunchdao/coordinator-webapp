@@ -2,8 +2,15 @@
 import { Spinner, Alert, AlertDescription } from "@crunch-ui/core";
 import LogList from "@/ui/logs-list";
 
+interface Log {
+  id: number | string;
+  createdAt: string;
+  content: string;
+  error?: boolean;
+}
+
 interface LogContentProps {
-  logs: any[];
+  logs: Log[];
   loading: boolean;
   error: unknown;
   hasUrl: boolean;
