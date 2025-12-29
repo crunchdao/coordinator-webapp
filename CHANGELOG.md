@@ -1,5 +1,11 @@
 # coordinator-webapp
 
+## 0.3.0
+
+### Minor Changes
+
+- cb50a9b: Implement Solana layer and authentication through wallet
+
 ## 0.2.1
 
 ### Patch Changes
