@@ -4,16 +4,40 @@ import {
   ConnectionProvider,
   WalletProvider as SolanaWalletProvider,
 } from "@solana/wallet-adapter-react";
-import {
-  LedgerWalletAdapter,
-} from "@solana/wallet-adapter-wallets";
+import { LedgerWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 import { useSettings } from "@/modules/settings/application/context/settingsContext";
 import { config } from "@/utils/config";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
-export { useWallet } from "@solana/wallet-adapter-react";
+import { useWallet as useSolanaWallet } from "@solana/wallet-adapter-react";
+
+export const useWallet = () => {
+  try {
+    return useSolanaWallet();
+  } catch {
+    return {
+      publicKey: null,
+      connected: false,
+      connecting: false,
+      disconnect: async () => {},
+      connect: async () => {},
+      select: () => {},
+      wallet: null,
+      wallets: [],
+      signTransaction: async () => {
+        throw new Error("Not available");
+      },
+      signAllTransactions: async () => {
+        throw new Error("Not available");
+      },
+      signMessage: async () => {
+        throw new Error("Not available");
+      },
+    };
+  }
+};
 
 interface WalletProviderProps {
   children: React.ReactNode;
@@ -33,15 +57,16 @@ export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
     }
   }, [network]);
 
-  const wallets = useMemo(
-    () => [
-      new LedgerWalletAdapter(),
-    ],
-    []
-  );
+  const wallets = useMemo(() => [new LedgerWalletAdapter()], []);
 
   if (isLocal) {
-    return <>{children}</>;
+    return (
+      <ConnectionProvider endpoint={"http://localhost:8899"}>
+        <SolanaWalletProvider wallets={[]} autoConnect={false}>
+          {children}
+        </SolanaWalletProvider>
+      </ConnectionProvider>
+    );
   }
 
   return (

@@ -3,6 +3,7 @@ import { useAuth } from "../application/context/authContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { Spinner } from "@crunch-ui/core";
 
 interface AuthWrapperProps {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ export function AuthWrapper({ children }: AuthWrapperProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <Spinner />
       </div>
     );
   }
