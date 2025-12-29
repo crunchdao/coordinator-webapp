@@ -1,10 +1,10 @@
 # Stage 1 — build
 FROM node:25-alpine AS build
-
 WORKDIR /app
 
-COPY package*.json ./
+RUN apk add --no-cache python3 make g++ pkgconfig libusb-dev linux-headers eudev-dev
 
+COPY package*.json ./
 RUN npm ci
 
 COPY . .
