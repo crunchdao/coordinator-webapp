@@ -6,13 +6,12 @@ import { WalletProvider } from "@/modules/wallet/application/context/walletConte
 import { AuthProvider } from "@/modules/auth/application/context/authContext";
 
 const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
+  console.log(process.env.NEXT_PUBLIC_API_URL_MODEL_ORCHESTRATOR);
   return (
     <SettingsProvider>
       <WalletProvider>
         <AuthProvider>
-          <TooltipProvider disableHoverableContent delayDuration={50}>
-            {children}
-          </TooltipProvider>
+          <TooltipProvider delayDuration={50}>{children}</TooltipProvider>
         </AuthProvider>
       </WalletProvider>
     </SettingsProvider>
