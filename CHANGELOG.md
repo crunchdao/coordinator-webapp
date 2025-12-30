@@ -1,5 +1,20 @@
 # coordinator-webapp
 
+## 0.4.0
+
+### Minor Changes
+
+- 3469228: Add models management feature
+
+  - Added models list with search functionality
+  - Added ability to upload model files
+  - Added model state toggle (START/STOP)
+  - Added delete model functionality
+  - Added model configuration accordion
+
+- 3469228: - Improvements on the System Logs interface
+  - Improvements on the Model screen
+
 ## 0.3.0
 
 ### Minor Changes
