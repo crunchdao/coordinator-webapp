@@ -16,10 +16,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@crunch-ui/core";
+import { Save, Eye, EyeClosed } from "@crunch-ui/icons";
 import { pitchFormSchema } from "../application/schemas/pitch";
 import { PitchFormData } from "../domain/types";
 import { SliceManager } from "./sliceManager";
-import { Save, Eye, EyeClosed } from "@crunch-ui/icons";
 import { SlicesRenderer } from "./pitchSlicesRenderer";
 
 export function PitchForm() {

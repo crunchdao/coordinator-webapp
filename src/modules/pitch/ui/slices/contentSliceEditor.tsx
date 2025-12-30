@@ -7,7 +7,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  Textarea,
+  Input,
 } from "@crunch-ui/core";
 import { PitchFormData } from "../../domain/types";
 import MdEditor from "@/ui/md-editor";
@@ -22,23 +22,37 @@ export function ContentSliceEditor({
   sliceIndex,
 }: ContentSliceEditorProps) {
   return (
-    <div>
-      <h2 className="title-sm">Content</h2>
-      <div>
-        <FormField
-          control={form.control}
-          name={`slices.${sliceIndex}.nativeConfiguration.markdown`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Markdown Content</FormLabel>
-              <FormControl>
-                <MdEditor {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
+    <div className="space-y-4">
+      <FormField
+        control={form.control}
+        name={`slices.${sliceIndex}.displayName`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Section Title</FormLabel>
+            <FormControl>
+              <Input 
+                placeholder="Content" 
+                {...field} 
+                value={field.value || ""} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name={`slices.${sliceIndex}.nativeConfiguration.markdown`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Markdown Content</FormLabel>
+            <FormControl>
+              <MdEditor {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 }

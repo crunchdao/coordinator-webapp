@@ -137,8 +137,8 @@ export function SliceManager({ form }: SliceManagerProps) {
 
         <div className="space-y-8">
           {fields.map((field, index) => (
-            <div key={field.id} className="relative flex gap-3">
-              <div className="flex-1 border-r pr-3">
+            <div key={field.id} className="relative flex gap-6">
+              <div className="flex-1 border-r pb-3 pr-6">
                 {renderSliceEditor(index)}
               </div>
               <div className="flex flex-col gap-1">

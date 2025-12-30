@@ -25,10 +25,17 @@ export function AddSliceDialog({ form }: AddSliceDialogProps) {
   });
 
   const handleAddSlice = (type: PitchSliceType) => {
+    const defaultTitles = {
+      [PitchSliceType.KEY_METRICS]: "Key Metrics",
+      [PitchSliceType.CONTENT]: "Content",
+      [PitchSliceType.ROADMAP]: "Roadmap",
+      [PitchSliceType.TEAM]: "Team",
+    };
+
     const baseSlice = {
       id: Date.now(),
       name: type.toLowerCase().replace("_", "-"),
-      displayName: type.replace("_", " "),
+      displayName: defaultTitles[type],
       order: fields.length,
     };
 

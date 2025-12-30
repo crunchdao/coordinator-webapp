@@ -9,7 +9,6 @@ import {
   FormMessage,
   Input,
   Button,
-  Textarea,
 } from "@crunch-ui/core";
 import { Plus, Trash } from "@crunch-ui/icons";
 import { PitchFormData } from "../../domain/types";
@@ -27,8 +26,20 @@ export function TeamSliceEditor({ form, sliceIndex }: TeamSliceEditorProps) {
   });
 
   return (
-    <div>
-      <h2 className="title-sm">Team Members</h2>
+    <div className="space-y-4">
+      <FormField
+        control={form.control}
+        name={`slices.${sliceIndex}.displayName`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Section Title</FormLabel>
+            <FormControl>
+              <Input placeholder="Team" {...field} value={field.value || ""} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <div className="space-y-6">
         {fields.map((field, index) => (
           <div key={field.id} className="space-y-4 border p-4 rounded-lg">
@@ -53,7 +64,7 @@ export function TeamSliceEditor({ form, sliceIndex }: TeamSliceEditorProps) {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <MdEditor {...field} />
+                    <MdEditor {...field} value={field.value || ""} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -68,7 +79,11 @@ export function TeamSliceEditor({ form, sliceIndex }: TeamSliceEditorProps) {
                   <FormItem>
                     <FormLabel>Avatar URL</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://..." {...field} />
+                      <Input
+                        placeholder="https://..."
+                        {...field}
+                        value={field.value || ""}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -148,11 +163,11 @@ export function TeamSliceEditor({ form, sliceIndex }: TeamSliceEditorProps) {
           onClick={() =>
             append({
               fullName: "",
-              avatarImageUrl: "",
-              descriptionMarkdown: "",
-              twitterUrl: "",
-              linkedinUrl: "",
-              websiteUrl: "",
+              avatarImageUrl: undefined,
+              descriptionMarkdown: undefined,
+              twitterUrl: undefined,
+              linkedinUrl: undefined,
+              websiteUrl: undefined,
             })
           }
           className="w-full"

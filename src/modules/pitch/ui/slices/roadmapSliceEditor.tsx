@@ -29,8 +29,24 @@ export function RoadmapSliceEditor({
   });
 
   return (
-    <div>
-      <h2 className="title-sm">Content</h2>
+    <div className="space-y-4">
+      <FormField
+        control={form.control}
+        name={`slices.${sliceIndex}.displayName`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Section Title</FormLabel>
+            <FormControl>
+              <Input 
+                placeholder="Roadmap" 
+                {...field} 
+                value={field.value || ""} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <div className="space-y-4">
         {fields.map((field, index) => (
           <div key={field.id} className="space-y-4 border-b pb-4">

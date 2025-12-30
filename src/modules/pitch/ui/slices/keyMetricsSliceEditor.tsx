@@ -28,11 +28,27 @@ export function KeyMetricsSliceEditor({
   });
 
   return (
-    <div>
-      <h2 className="title-sm">Key Metrics</h2>
+    <div className="space-y-4">
+      <FormField
+        control={form.control}
+        name={`slices.${sliceIndex}.displayName`}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Section Title</FormLabel>
+            <FormControl>
+              <Input
+                placeholder="Key Metrics"
+                {...field}
+                value={field.value || ""}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <div className="space-y-4">
         {fields.map((field, index) => (
-          <div key={field.id} className="flex gap-4">
+          <div key={field.id} className="flex gap-4 border p-4 rounded-lg">
             <FormField
               control={form.control}
               name={`slices.${sliceIndex}.nativeConfiguration.metrics.${index}.displayName`}
