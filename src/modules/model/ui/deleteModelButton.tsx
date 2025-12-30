@@ -15,7 +15,7 @@ import { Trash } from "@crunch-ui/icons";
 import { useDeleteModel } from "../application/hooks/useDeleteModel";
 
 interface DeleteModelButtonProps {
-  modelId: number;
+  modelId: string;
   modelName?: string;
 }
 
@@ -45,8 +45,8 @@ export const DeleteModelButton: React.FC<DeleteModelButtonProps> = ({
           <AlertDialogTitle>Delete Model</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete{" "}
-            {modelName ? `the "${modelName}" model` : "this model"}? This
-            action cannot be undone.
+            {modelName ? `the "${modelName}" model` : "this model"}? This action
+            cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
