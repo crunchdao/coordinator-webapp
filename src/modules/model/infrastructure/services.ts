@@ -58,6 +58,6 @@ export const updateModel = async (
   return response.data;
 };
 
-export const deleteModel = async (modelId: number): Promise<void> => {
+export const deleteModel = async (modelId: string): Promise<void> => {
   await apiClient.delete(endpoints.deleteModel(modelId));
 };

@@ -5,7 +5,7 @@ export const useDeleteModel = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (modelId: number) => deleteModel(modelId),
+    mutationFn: (modelId: string) => deleteModel(modelId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["models"] });
     },
