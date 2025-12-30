@@ -8,7 +8,7 @@ export const getGlobalSettings = async (): Promise<GlobalSettings> => {
 };
 
 export const updateGlobalSettings = async (
-  settings: GlobalSettings
+  settings: Partial<GlobalSettings>
 ): Promise<GlobalSettings> => {
   const response = await configApiClient.put(
     settingsEndpoints.updateSettings,

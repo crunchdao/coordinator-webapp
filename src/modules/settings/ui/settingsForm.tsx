@@ -22,7 +22,6 @@ import {
   globalSettingsSchema,
   type GlobalSettingsFormData,
 } from "../application/schemas/settingsSchema";
-import { useSettings } from "../application/context/settingsContext";
 
 interface SettingsFormProps {
   onSuccess?: () => void;
@@ -31,13 +30,13 @@ interface SettingsFormProps {
 export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
   const { settings } = useGlobalSettings();
   const { updateSettings, updateSettingsLoading } = useUpdateSettings();
-  const { version } = useSettings();
 
   const form = useForm<GlobalSettingsFormData>({
     resolver: zodResolver(globalSettingsSchema),
     defaultValues: settings || {
       endpoints: {
         leaderboard: "",
+        models: "",
       },
       logs: {
         containerNames: [""],
@@ -59,7 +58,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
     }
   }, [settings, form]);
 
-  const handleSubmit = (data: GlobalSettingsFormData) => {
+  const handleSubmit = (data: Partial<GlobalSettingsFormData>) => {
     updateSettings(data, {
       onSuccess: () => {
         onSuccess?.();
@@ -89,6 +88,30 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
               </FormLabel>
               <FormControl>
                 <Input placeholder="/reports/leaderboard" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="endpoints.models"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Model List Endpoint
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    The endpoint path for fetching model list (e.g.,
+                    /reports/models)
+                  </TooltipContent>
+                </Tooltip>
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="/reports/models" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -156,9 +179,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
           </Button>
         </div>
       </form>
-      <p className="body-xs text-muted-foreground mt-2 text-center">
-        Coordinator Platform v{version}
-      </p>
     </Form>
   );
 };
