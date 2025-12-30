@@ -1,8 +1,4 @@
-export interface GlobalSettings {
-  endpoints: {
-    leaderboard: string;
-  };
-  logs: {
-    containerNames: string[];
-  };
-}
+import z from "zod";
+import { globalSettingsSchema } from "../application/schemas/settingsSchema";
+
+export type GlobalSettings = z.infer<typeof globalSettingsSchema>;

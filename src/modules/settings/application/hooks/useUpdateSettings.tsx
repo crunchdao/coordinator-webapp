@@ -7,7 +7,8 @@ export const useUpdateSettings = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (settings: GlobalSettings) => updateGlobalSettings(settings),
+    mutationFn: (settings: Partial<GlobalSettings>) =>
+      updateGlobalSettings(settings),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["globalSettings"] });
       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });

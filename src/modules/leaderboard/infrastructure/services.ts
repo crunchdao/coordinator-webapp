@@ -1,12 +1,23 @@
 import apiClient from "@/utils/api";
 import configApiClient from "@/utils/config-api";
-import { Leaderboard, LeaderboardColumn } from "../domain/types";
+import {
+  GetModelsResponse,
+  Leaderboard,
+  LeaderboardColumn,
+} from "../domain/types";
 import { endpoints } from "./endpoints";
 
 export const getLeaderboard = async (
   leaderboardEndpoint: string
 ): Promise<Leaderboard> => {
   const response = await apiClient.get(leaderboardEndpoint);
+  return response.data;
+};
+
+export const getModelList = async (
+  modelListEndpoint: string
+): Promise<GetModelsResponse> => {
+  const response = await apiClient.get(modelListEndpoint);
   return response.data;
 };
 

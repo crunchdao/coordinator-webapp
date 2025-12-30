@@ -3,6 +3,7 @@ import { z } from "zod";
 export const globalSettingsSchema = z.object({
   endpoints: z.object({
     leaderboard: z.string().min(1, "Endpoint is required"),
+    models: z.string().min(1, "Endpoint is required"),
   }),
   logs: z.object({
     containerNames: z

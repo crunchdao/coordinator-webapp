@@ -11,6 +11,7 @@ const eslintConfig = defineConfig([
     rules: {
       "react-hooks/incompatible-library": "off",
       "react/no-unescaped-entities": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
   },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),

@@ -1,17 +1,19 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getGlobalSettings } from "@/modules/settings/infrastructure/services";
+import { useGlobalSettings } from "@/modules/settings/application/hooks/useGlobalSettings";
+import { initialSettings } from "@/modules/settings/domain/initial-config";
 import { getLeaderboard } from "../../infrastructure/services";
 
 export function useGetLeaderboard() {
+  const { settings } = useGlobalSettings();
+
   const query = useQuery({
-    queryKey: ["leaderboard"],
+    queryKey: ["leaderboard", settings?.endpoints?.leaderboard],
     queryFn: async () => {
       try {
-        const settings = await getGlobalSettings();
         if (!settings?.endpoints?.leaderboard) {
           console.error("Leaderboard endpoint not found in settings");
-          return [];
+          return getLeaderboard(initialSettings.endpoints.leaderboard);
         }
         return getLeaderboard(settings.endpoints.leaderboard);
       } catch (error) {
@@ -19,6 +21,7 @@ export function useGetLeaderboard() {
         return [];
       }
     },
+    enabled: !!settings,
     retry: false,
     refetchOnWindowFocus: false,
   });
