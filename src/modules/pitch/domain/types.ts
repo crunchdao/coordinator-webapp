@@ -68,7 +68,6 @@ export interface Pitch {
 export interface BasePitchSlice {
   id: string;
   type: PitchSliceType;
-  isEnabled: boolean;
   order: number;
 }
 

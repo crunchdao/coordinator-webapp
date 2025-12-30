@@ -10,6 +10,7 @@ import {
   Textarea,
 } from "@crunch-ui/core";
 import { PitchFormData } from "../../domain/types";
+import MdEditor from "@/ui/md-editor";
 
 interface ContentSliceEditorProps {
   form: UseFormReturn<PitchFormData>;
@@ -31,11 +32,7 @@ export function ContentSliceEditor({
             <FormItem>
               <FormLabel>Markdown Content</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Enter your content in markdown format..."
-                  rows={4}
-                  {...field}
-                />
+                <MdEditor {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

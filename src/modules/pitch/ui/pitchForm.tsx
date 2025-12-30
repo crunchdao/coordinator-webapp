@@ -1,5 +1,6 @@
 "use client";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -9,11 +10,6 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Button,
   Card,
   CardContent,
@@ -21,17 +17,19 @@ import {
   CardTitle,
 } from "@crunch-ui/core";
 import { pitchFormSchema } from "../application/schemas/pitch";
-import { PitchFormData, PitchStatus } from "../domain/types";
+import { PitchFormData } from "../domain/types";
 import { SliceManager } from "./sliceManager";
-import { Save } from "@crunch-ui/icons";
+import { Save, Eye, EyeClosed } from "@crunch-ui/icons";
+import { SlicesRenderer } from "./pitchSlicesRenderer";
 
 export function PitchForm() {
+  const [showPreview, setShowPreview] = useState(false);
+
   const form = useForm<PitchFormData>({
     resolver: zodResolver(pitchFormSchema),
     defaultValues: {
       displayName: "",
       shortDescription: "",
-      status: PitchStatus.VOTING,
       websiteUrl: "",
       discordUrl: "",
       twitterUrl: "",
@@ -39,6 +37,11 @@ export function PitchForm() {
       externalUrlText: "",
       slices: [],
     },
+  });
+
+  const slices = useWatch({
+    control: form.control,
+    name: "slices",
   });
 
   const onSubmit = (data: PitchFormData) => {
@@ -175,11 +178,42 @@ export function PitchForm() {
               <SliceManager form={form} />
             </div>
 
-            <div className="mt-8 flex justify-end">
+            <div className="mt-8 flex justify-between items-center">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setShowPreview(!showPreview)}
+                disabled={!slices || slices.length === 0}
+              >
+                {showPreview ? (
+                  <>
+                    <EyeClosed />
+                    Hide Preview
+                  </>
+                ) : (
+                  <>
+                    <Eye />
+                    Show Preview
+                  </>
+                )}
+              </Button>
+
               <Button type="submit" size="lg">
                 Save <Save />
               </Button>
             </div>
+
+            {showPreview && slices && slices.length > 0 && (
+              <div className="mt-8">
+                <h2 className="body-lg font-bold mb-2">Preview</h2>
+                <Card>
+                  <CardHeader />
+                  <CardContent>
+                    <SlicesRenderer slices={slices} />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </form>
         </Form>
       </CardContent>

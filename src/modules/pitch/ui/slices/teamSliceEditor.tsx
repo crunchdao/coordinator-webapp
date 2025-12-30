@@ -9,14 +9,11 @@ import {
   FormMessage,
   Input,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
   Textarea,
 } from "@crunch-ui/core";
 import { Plus, Trash } from "@crunch-ui/icons";
 import { PitchFormData } from "../../domain/types";
+import MdEditor from "@/ui/md-editor";
 
 interface TeamSliceEditorProps {
   form: UseFormReturn<PitchFormData>;
@@ -30,11 +27,9 @@ export function TeamSliceEditor({ form, sliceIndex }: TeamSliceEditorProps) {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Team Members</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
+    <div>
+      <h2 className="title-sm">Team Members</h2>
+      <div className="space-y-6">
         {fields.map((field, index) => (
           <div key={field.id} className="space-y-4 border p-4 rounded-lg">
             <FormField
@@ -53,37 +48,33 @@ export function TeamSliceEditor({ form, sliceIndex }: TeamSliceEditorProps) {
 
             <FormField
               control={form.control}
-              name={`slices.${sliceIndex}.nativeConfiguration.members.${index}.avatarImageUrl`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Avatar URL</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name={`slices.${sliceIndex}.nativeConfiguration.members.${index}.descriptionMarkdown`}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Member bio and role description..."
-                      rows={4}
-                      {...field}
-                    />
+                    <MdEditor {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="flex gap-4 flex-wrap **:flex-1 **:min-w-48">
+              <FormField
+                control={form.control}
+                name={`slices.${sliceIndex}.nativeConfiguration.members.${index}.avatarImageUrl`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Avatar URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://..." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name={`slices.${sliceIndex}.nativeConfiguration.members.${index}.twitterUrl`}
@@ -169,7 +160,7 @@ export function TeamSliceEditor({ form, sliceIndex }: TeamSliceEditorProps) {
           <Plus className="mr-2" />
           Add Team Member
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
