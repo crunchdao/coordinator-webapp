@@ -21,6 +21,7 @@ import {
 import { InfoCircle, Search } from "@crunch-ui/icons";
 import { useGetModels } from "../application/hooks/useGetModels";
 import { useUpdateModel } from "../application/hooks/useUpdateModel";
+import { useGetModelList } from "@/modules/leaderboard/application/hooks/useGetModelList";
 import { DesiredState } from "../domain/types";
 import { UpdateModelSheet } from "./updateModelSheet";
 import { LogsDialog } from "./logsDialog";
@@ -29,13 +30,39 @@ import { ModelDetailDialog } from "./modelDetailDialog";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
+  const { models: modelList, modelsLoading: modelListLoading } = useGetModelList();
   const { updateModel, updateModelLoading } = useUpdateModel();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredData = useMemo(() => {
-    if (!searchTerm || !models) return models || [];
+  const modelIdToInfo = useMemo(() => {
+    if (!modelList) return {};
+    return modelList.reduce((acc, model) => {
+      if (model.model_id) {
+        acc[String(model.model_id)] = {
+          cruncher_name: model.cruncher_name,
+          model_name: model.model_name,
+        };
+      }
+      return acc;
+    }, {} as Record<string, { cruncher_name: string; model_name: string }>);
+  }, [modelList]);
 
-    return models.filter((model) => {
+  const enrichedModels = useMemo(() => {
+    if (!models) return [];
+    return models.map((model) => {
+      const modelInfo = modelIdToInfo[String(model.id)];
+      return {
+        ...model,
+        model_name: modelInfo?.model_name || model.model_name || "",
+        cruncher_name: modelInfo?.cruncher_name || model.cruncher_name || "",
+      };
+    });
+  }, [models, modelIdToInfo]);
+
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return enrichedModels;
+
+    return enrichedModels.filter((model) => {
       return Object.values(model).some((value) => {
         if (value === null || value === undefined) return false;
         return value
@@ -44,7 +71,7 @@ export const ModelsTable: React.FC = () => {
           .includes(searchTerm.toLowerCase());
       });
     });
-  }, [models, searchTerm]);
+  }, [enrichedModels, searchTerm]);
 
   return (
     <Card displayCorners>
@@ -73,7 +100,7 @@ export const ModelsTable: React.FC = () => {
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Model Name</TableHead>
-              <TableHead>Cruncher</TableHead>
+              <TableHead>Username</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Desired State</TableHead>
               <TableHead></TableHead>
