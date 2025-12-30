@@ -23,41 +23,77 @@ export const useLeaderboardTable = () => {
   return useMemo<ColumnDef<LeaderboardPosition>[]>(() => {
     if (!leaderboardColumns) return [];
 
-    return leaderboardColumns.map((column) => {
-      if (column.type === "MODEL") {
-        return {
-          id: `column_${column.id}`,
-          accessorKey: column.property,
-          header: column.displayName || "Model",
-          cell: ({ row }) => {
-            const modelName = row.original[column.property] as string;
-            const statusProperty =
-              column.nativeConfiguration?.type === "model"
-                ? column.nativeConfiguration.statusProperty
-                : undefined;
+    const fixedColumns: ColumnDef<LeaderboardPosition>[] = [
+      {
+        id: "username",
+        accessorKey: "cruncher_name",
+        header: "Username",
+        cell: ({ row }) => {
+          const username = row.original.cruncher_name as string;
+          return <span>{username || "-"}</span>;
+        },
+      },
+    ];
 
-            if (statusProperty) {
-              const status = row.original[statusProperty] as string | boolean;
-              const isActive =
-                typeof status === "boolean" ? status : status === "active";
+    const configColumns: ColumnDef<LeaderboardPosition>[] =
+      leaderboardColumns.map((column) => {
+        if (column.type === "MODEL") {
+          return {
+            id: `column_${column.id}`,
+            accessorKey: "model_name",
+            header: column.displayName || "Model",
+            cell: ({ row }) => {
+              const modelName = row.original.model_name as string;
+              const statusProperty =
+                column.nativeConfiguration?.type === "model"
+                  ? column.nativeConfiguration.statusProperty
+                  : undefined;
 
-              return (
-                <span className="flex items-center gap-2">
-                  <PulseRing
-                    active={isActive}
-                    className={!isActive ? "invisible" : undefined}
-                  />
-                  {modelName}
-                </span>
-              );
-            }
+              if (statusProperty) {
+                const status = row.original[statusProperty] as string | boolean;
+                const isActive =
+                  typeof status === "boolean" ? status : status === "active";
 
-            return <span>{modelName}</span>;
-          },
-        };
-      }
+                return (
+                  <span className="flex items-center gap-2">
+                    <PulseRing
+                      active={isActive}
+                      className={!isActive ? "invisible" : undefined}
+                    />
+                    {modelName || "-"}
+                  </span>
+                );
+              }
 
-      if (column.type === "USERNAME") {
+              return <span>{modelName || "-"}</span>;
+            },
+          };
+        }
+
+        if (column.type === "USERNAME") {
+          return {
+            id: `column_${column.id}`,
+            accessorKey: column.property,
+            header: column.tooltip
+              ? () => (
+                  <div>
+                    {column.displayName}&nbsp;
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                      </TooltipTrigger>
+                      <TooltipContent>{column.tooltip}</TooltipContent>
+                    </Tooltip>
+                  </div>
+                )
+              : column.displayName || "",
+            cell: ({ row }) => {
+              const username = row.original[column.property] as string;
+              return <span>{username || ""}</span>;
+            },
+          };
+        }
+
         return {
           id: `column_${column.id}`,
           accessorKey: column.property,
@@ -74,50 +110,29 @@ export const useLeaderboardTable = () => {
                 </div>
               )
             : column.displayName || "",
+          meta: {
+            className: column.type === "CHART" ? "text-left" : "text-right",
+          },
           cell: ({ row }) => {
-            const username = row.original[column.property] as string;
-            return <span>{username || ""}</span>;
+            const value = row.original[column.property];
+
+            if (
+              column.type === "CHART" &&
+              column.nativeConfiguration?.type === "gauge"
+            ) {
+              return (
+                <Gauge
+                  config={column.nativeConfiguration}
+                  data={value as Record<string, number>}
+                />
+              );
+            }
+
+            return formatNumber(value, column.format);
           },
         };
-      }
+      });
 
-      return {
-        id: `column_${column.id}`,
-        accessorKey: column.property,
-        header: column.tooltip
-          ? () => (
-              <div>
-                {column.displayName}&nbsp;
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
-                  </TooltipTrigger>
-                  <TooltipContent>{column.tooltip}</TooltipContent>
-                </Tooltip>
-              </div>
-            )
-          : column.displayName || "",
-        meta: {
-          className: column.type === "CHART" ? "text-left" : "text-right",
-        },
-        cell: ({ row }) => {
-          const value = row.original[column.property];
-
-          if (
-            column.type === "CHART" &&
-            column.nativeConfiguration?.type === "gauge"
-          ) {
-            return (
-              <Gauge
-                config={column.nativeConfiguration}
-                data={value as Record<string, number>}
-              />
-            );
-          }
-
-          return formatNumber(value, column.format);
-        },
-      };
-    });
+    return [...fixedColumns, ...configColumns];
   }, [leaderboardColumns]);
 };

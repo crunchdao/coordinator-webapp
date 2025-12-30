@@ -24,11 +24,13 @@ import { Gauge } from "@/modules/chart/ui/gauge";
 interface MetricWidgetProps {
   widget: Widget;
   params: GetMetricDataParams;
+  getModelLabel?: (modelId: string | number) => string;
 }
 
 export const MetricWidget: React.FC<MetricWidgetProps> = ({
   widget,
   params,
+  getModelLabel,
 }) => {
   const { data, isLoading, error } = useMetricData(
     widget.endpointUrl,
@@ -152,6 +154,7 @@ export const MetricWidget: React.FC<MetricWidgetProps> = ({
               data={data}
               definition={widget as LineChartDefinition}
               projectIdProperty="model_id"
+              getLabel={getModelLabel}
               selectedFilters={selectedFilters}
             />
           )

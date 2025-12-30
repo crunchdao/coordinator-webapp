@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -20,6 +20,26 @@ export const MetricsDashboard: React.FC = () => {
 
   const [selectedModelIds, setSelectedModelIds] = useState<string[] | null>(
     null
+  );
+
+  const modelIdToName = useMemo(() => {
+    if (!models) return {};
+    return models.reduce((acc, model) => {
+      if (model.model_id) {
+        acc[
+          String(model.model_id)
+        ] = `${model.cruncher_name}/${model.model_name}`;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+  }, [models]);
+
+  const getModelLabel = useCallback(
+    (modelId: string | number) => {
+      const id = String(modelId);
+      return modelIdToName[id] || id;
+    },
+    [modelIdToName]
   );
 
   useEffect(() => {
@@ -97,7 +117,12 @@ export const MetricsDashboard: React.FC = () => {
       </CardHeader>
       <CardContent className="space-y-8">
         {widgets.map((widget) => (
-          <MetricWidget key={widget.id} widget={widget} params={metricParams} />
+          <MetricWidget
+            key={widget.id}
+            widget={widget}
+            params={metricParams}
+            getModelLabel={getModelLabel}
+          />
         ))}
       </CardContent>
     </Card>
