@@ -7,6 +7,7 @@ export const INTERNAL_LINKS = {
   METRICS: "/metrics",
   SETTINGS: "/settings",
   LOGS: "/logs",
+  PITCH: "/pitch",
 } as const;
 
 type RouteConfig = {
@@ -23,6 +24,11 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.METRICS,
     label: "Metrics",
+  },
+  {
+    path: INTERNAL_LINKS.PITCH,
+    label: "Pitch",
+    allowedEnvs: ["production", "staging", "development"],
   },
   {
     path: INTERNAL_LINKS.LOGS,

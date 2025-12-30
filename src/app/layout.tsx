@@ -39,7 +39,7 @@ export default async function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "h-screen flex flex-col !pointer-events-auto",
+          "h-screen flex flex-col pointer-events-auto!",
           GeistSans.variable,
           departure.variable
         )}
