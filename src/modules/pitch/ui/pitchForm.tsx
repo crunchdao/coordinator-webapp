@@ -30,11 +30,11 @@ export function PitchForm() {
     defaultValues: {
       displayName: "",
       shortDescription: "",
-      websiteUrl: "",
-      discordUrl: "",
-      twitterUrl: "",
-      externalUrl: "",
-      externalUrlText: "",
+      websiteUrl: undefined,
+      discordUrl: undefined,
+      twitterUrl: undefined,
+      externalUrl: undefined,
+      externalUrlText: undefined,
       slices: [],
     },
   });
@@ -45,8 +45,18 @@ export function PitchForm() {
   });
 
   const onSubmit = (data: PitchFormData) => {
-    console.log("Pitch form submitted:", data);
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "pitch.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
+  console.log(form.formState.errors);
 
   return (
     <Card>
@@ -199,7 +209,7 @@ export function PitchForm() {
               </Button>
 
               <Button type="submit" size="lg">
-                Save <Save />
+                Download <Save />
               </Button>
             </div>
 

@@ -84,7 +84,6 @@ export const pitchFormSchema = z.object({
   twitterUrl: z.string().url().nullable().optional(),
   externalUrl: z.string().url().nullable().optional(),
   externalUrlText: z.string().optional(),
-  status: z.nativeEnum(PitchStatus),
   slices: z.array(pitchSliceSchema),
 });
 
