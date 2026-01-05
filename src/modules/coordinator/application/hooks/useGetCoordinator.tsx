@@ -1,22 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCoordinatorProgram, getCoordinator } from "@crunchdao/sdk";
+import { PublicKey } from "@solana/web3.js";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { PublicKey } from "@solana/web3.js";
 import {
   CoordinatorStatus,
-  CoordinatorState,
+  CoordinatorData,
 } from "@/modules/coordinator/domain/types";
 
-export const useGetCoordinator = () => {
+export const useGetCoordinator = (): {
+  coordinator: CoordinatorData | undefined;
+  coordinatorLoading: boolean;
+} => {
   const { publicKey } = useWallet();
   const provider = useAnchorProvider();
 
-  const query = useQuery({
+  const query = useQuery<CoordinatorData>({
     queryKey: ["coordinator", publicKey?.toString()],
-    queryFn: async () => {
+    queryFn: async (): Promise<CoordinatorData> => {
       if (!publicKey || !provider) {
-        return null;
+        return {
+          status: CoordinatorStatus.UNREGISTERED,
+          data: null,
+        };
       }
 
       try {
@@ -49,7 +55,7 @@ export const useGetCoordinator = () => {
           data: coordinator,
         };
       } catch (error) {
-        console.error("Error fetching coordinator:", error);
+        console.warn("Error fetching coordinator:", error);
         return {
           status: CoordinatorStatus.UNREGISTERED,
           data: null,
@@ -58,6 +64,8 @@ export const useGetCoordinator = () => {
     },
     enabled: !!publicKey && !!provider,
   });
+
+  console.log(query.data);
 
   return {
     coordinator: query.data,

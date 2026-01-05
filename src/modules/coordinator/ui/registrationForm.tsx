@@ -24,7 +24,8 @@ export function RegistrationForm() {
     },
   });
 
-  const { registerCoordinator, registerCoordinatorLoading } = useRegisterCoordinator();
+  const { registerCoordinator, registerCoordinatorLoading } =
+    useRegisterCoordinator();
 
   const onSubmit = (data: RegistrationFormData) => {
     registerCoordinator(data);
@@ -32,7 +33,7 @@ export function RegistrationForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="grid gap-3" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="organizationName"
@@ -46,10 +47,11 @@ export function RegistrationForm() {
             </FormItem>
           )}
         />
-
-        <Button type="submit" loading={registerCoordinatorLoading}>
-          Create Coordinator Account
-        </Button>
+        <div>
+          <Button type="submit" loading={registerCoordinatorLoading}>
+            Register
+          </Button>
+        </div>
       </form>
     </Form>
   );

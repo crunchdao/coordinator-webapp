@@ -8,7 +8,10 @@ import {
 } from "react";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useSettings } from "@/modules/settings/application/context/settingsContext";
-import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
+import {
+  CoordinatorStatus,
+  CoordinatorState,
+} from "@/modules/coordinator/domain/types";
 import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 
 interface AuthContextType {
@@ -17,6 +20,7 @@ interface AuthContextType {
   publicKey: string | null;
   coordinatorStatus: CoordinatorStatus;
   isCheckingCoordinator: boolean;
+  coordinator: CoordinatorState | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,7 +52,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const isAuthenticated = isLocal || (connected && !!publicKey);
-  const coordinatorStatus = coordinator?.status || CoordinatorStatus.UNREGISTERED;
+  const coordinatorStatus =
+    coordinator?.status || CoordinatorStatus.UNREGISTERED;
 
   return (
     <AuthContext.Provider
@@ -58,6 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         publicKey: publicKey?.toString() || null,
         coordinatorStatus,
         isCheckingCoordinator: coordinatorLoading,
+        coordinator: coordinator?.data || null,
       }}
     >
       {children}

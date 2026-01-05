@@ -8,29 +8,28 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   Button,
+  DropdownMenuLabel,
+  PulseRing,
 } from "@crunch-ui/core";
 import { useWallet } from "../application/context/walletContext";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { Wallet, Plus, SmallCross, Selector } from "@crunch-ui/icons";
 import { truncateAddress } from "@/utils/solana";
+import { useAuth } from "@/modules/auth/application/context/authContext";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 
 export function WalletSelector() {
   const { publicKey, wallet, disconnect, connected, connect, connecting } =
     useWallet();
   const { setVisible, visible } = useWalletModal();
   const [isNewWalletFlow, setIsNewWalletFlow] = useState(false);
+  const { coordinatorStatus, coordinator } = useAuth();
 
   useEffect(() => {
     if (!visible && wallet && !connected && !connecting && isNewWalletFlow) {
       setTimeout(() => {
         connect().catch((err) => {
           console.error("Failed to connect:", err);
-          console.error("Error details:", {
-            name: err.name,
-            message: err.message,
-            stack: err.stack,
-            wallet: wallet?.adapter.name,
-          });
         });
         setIsNewWalletFlow(false);
       }, 100);
@@ -66,9 +65,9 @@ export function WalletSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="sm" variant="outline" className="w-[220px] justify-start">
+        <Button size="sm" variant="outline" className="w-56 justify-start">
           <div className="flex items-center gap-2 w-full">
-            <Wallet className="h-4 w-4 flex-shrink-0" />
+            <Wallet className="h-4 w-4 shrink-0" />
             <div className="flex items-center gap-2 body-xs">
               <span>{truncateAddress(publicKey.toString())}</span>
               <span className="text-muted-foreground">
@@ -79,7 +78,19 @@ export function WalletSelector() {
           </div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[220px]">
+      <DropdownMenuContent className="w-56">
+        <DropdownMenuLabel className="gap-2 flex items-center">
+          {coordinatorStatus === CoordinatorStatus.APPROVED && (
+            <>
+              <PulseRing active={true} /> {coordinator?.name}
+            </>
+          )}
+          {coordinatorStatus === CoordinatorStatus.PENDING && (
+            <>
+              <PulseRing active={false} /> {coordinator?.name}
+            </>
+          )}
+        </DropdownMenuLabel>
         <DropdownMenuItem onSelect={() => handleSelectChange("connect-new")}>
           <Plus className="h-4 w-4 mr-2" />
           <span>Connect Another Wallet</span>
