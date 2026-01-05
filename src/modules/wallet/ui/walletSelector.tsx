@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +13,6 @@ import {
   Avatar,
   AvatarFallback,
 } from "@crunch-ui/core";
-import { useWallet } from "../application/context/walletContext";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import {
   Wallet,
@@ -25,8 +25,8 @@ import {
 import { truncateAddress } from "@/utils/solana";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
-import Link from "next/link";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { useWallet } from "../application/context/walletContext";
 
 export function WalletSelector() {
   const { publicKey, wallet, disconnect, connected, connect, connecting } =

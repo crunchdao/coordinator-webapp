@@ -33,7 +33,7 @@ export const BasicNavbar: React.FC = () => {
             <EnvironmentBadge />
           </div>
           <div className="ml-auto flex gap-6 items-center">
-            <RestrictedWrapper>
+            <RestrictedWrapper showDefaultMessage={false}>
               {visibleRoutes.map((route) => (
                 <Link
                   key={route.path}
