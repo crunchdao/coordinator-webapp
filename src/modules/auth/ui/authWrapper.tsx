@@ -3,6 +3,7 @@ import { useAuth } from "../application/context/authContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { Spinner } from "@crunch-ui/core";
 
 interface AuthWrapperProps {
@@ -10,16 +11,21 @@ interface AuthWrapperProps {
 }
 
 export function AuthWrapper({ children }: AuthWrapperProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, coordinatorStatus, isCheckingCoordinator } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.replace(INTERNAL_LINKS.LOGIN);
+      router.push(INTERNAL_LINKS.LOGIN);
+      return;
     }
-  }, [isAuthenticated, isLoading, router]);
 
-  if (isLoading) {
+    if (!isLoading && !isCheckingCoordinator && isAuthenticated && coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
+      router.push(INTERNAL_LINKS.REGISTER);
+    }
+  }, [isAuthenticated, isLoading, isCheckingCoordinator, coordinatorStatus, router]);
+
+  if (isLoading || isCheckingCoordinator) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner />

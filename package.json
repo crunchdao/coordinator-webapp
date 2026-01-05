@@ -10,10 +10,13 @@
     "changeset": "changeset"
   },
   "dependencies": {
+    "@coral-xyz/anchor": "^0.32.1",
     "@crunch-ui/core": "^1.2.0",
     "@crunch-ui/icons": "^1.0.2",
     "@crunch-ui/tailwind-config": "^1.0.0",
     "@crunch-ui/utils": "^1.1.0",
+    "@crunchdao/programs": "^9.0.0",
+    "@crunchdao/sdk": "^8.3.0",
     "@hookform/resolvers": "^5.2.2",
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-react": "^0.15.39",
