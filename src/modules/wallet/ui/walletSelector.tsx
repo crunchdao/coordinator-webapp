@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -10,13 +9,24 @@ import {
   Button,
   DropdownMenuLabel,
   PulseRing,
+  Avatar,
+  AvatarFallback,
 } from "@crunch-ui/core";
 import { useWallet } from "../application/context/walletContext";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
-import { Wallet, Plus, SmallCross, Selector } from "@crunch-ui/icons";
+import {
+  Wallet,
+  SmallCross,
+  Coordinator,
+  Switch,
+  QuestionMark,
+  ExternalLink,
+} from "@crunch-ui/icons";
 import { truncateAddress } from "@/utils/solana";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
+import Link from "next/link";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 export function WalletSelector() {
   const { publicKey, wallet, disconnect, connected, connect, connecting } =
@@ -65,38 +75,59 @@ export function WalletSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button size="sm" variant="outline" className="w-56 justify-start">
-          <div className="flex items-center gap-2 w-full">
-            <Wallet className="h-4 w-4 shrink-0" />
-            <div className="flex items-center gap-2 body-xs">
-              <span>{truncateAddress(publicKey.toString())}</span>
-              <span className="text-muted-foreground">
-                {wallet?.adapter.name}
-              </span>
-            </div>
-            <Selector className="ml-auto" />
-          </div>
-        </Button>
+        <Avatar className="cursor-pointer">
+          <AvatarFallback>
+            {coordinatorStatus === CoordinatorStatus.UNREGISTERED ? (
+              <QuestionMark />
+            ) : (
+              <span>{coordinator?.name.charAt(0).toUpperCase()}</span>
+            )}
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel className="gap-2 flex items-center">
-          {coordinatorStatus === CoordinatorStatus.APPROVED && (
-            <>
-              <PulseRing active={true} /> {coordinator?.name}
-            </>
-          )}
-          {coordinatorStatus === CoordinatorStatus.PENDING && (
-            <>
-              <PulseRing active={false} /> {coordinator?.name}
-            </>
-          )}
-        </DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-64">
+        {coordinatorStatus === CoordinatorStatus.UNREGISTERED ? (
+          <Link href={INTERNAL_LINKS.REGISTER}>
+            <DropdownMenuItem>
+              <Coordinator className="h-4 w-4 mr-2" /> Registration
+            </DropdownMenuItem>
+          </Link>
+        ) : (
+          <DropdownMenuLabel className="gap-3 [&>span]:ml-1 flex items-center">
+            {coordinatorStatus === CoordinatorStatus.APPROVED && (
+              <>
+                <PulseRing active={true} /> {coordinator?.name}
+              </>
+            )}
+            {coordinatorStatus === CoordinatorStatus.PENDING && (
+              <>
+                <PulseRing active={false} /> {coordinator?.name}
+              </>
+            )}
+            {coordinatorStatus === CoordinatorStatus.REJECTED && (
+              <>
+                <PulseRing active={false} /> {coordinator?.name}
+              </>
+            )}
+            <Link
+              href={`https://solscan.io/account/${publicKey.toString()}`}
+              target="_blank"
+              className="ml-auto body-xs"
+            >
+              {truncateAddress(publicKey.toString())}
+              <ExternalLink className="inline -mt-1 ml-1" />
+            </Link>
+          </DropdownMenuLabel>
+        )}
         <DropdownMenuItem onSelect={() => handleSelectChange("connect-new")}>
-          <Plus className="h-4 w-4 mr-2" />
+          <Switch className="h-4 w-4 mr-2" />
           <span>Connect Another Wallet</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => handleSelectChange("disconnect")}>
+        <DropdownMenuItem
+          className="text-destructive"
+          onSelect={() => handleSelectChange("disconnect")}
+        >
           <SmallCross className="h-4 w-4 mr-2" />
           <span>Disconnect</span>
         </DropdownMenuItem>
