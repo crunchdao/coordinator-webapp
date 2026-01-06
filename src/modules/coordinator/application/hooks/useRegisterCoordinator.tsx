@@ -15,7 +15,6 @@ export const useRegisterCoordinator = () => {
       }
 
       const coordinatorProgram = getCoordinatorProgram(provider);
-      console.log(data);
       const txHash = await registerCoordinator(
         coordinatorProgram,
         data.organizationName

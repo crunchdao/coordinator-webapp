@@ -71,8 +71,6 @@ export const useGetCoordinator = (): {
     },
   });
 
-  console.log(query.data);
-
   return {
     coordinator: query.data,
     coordinatorLoading: query.isLoading,
