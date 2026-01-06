@@ -13,6 +13,7 @@ interface Config {
 }
 
 const getEnvironment = (): Environment => {
+  console.log(process.env.VERCEL_ENV);
   if (process.env.VERCEL_ENV) {
     if (
       process.env.VERCEL_ENV === "production" &&
