@@ -20,7 +20,9 @@ export function AuthWrapper({ children }: AuthWrapperProps) {
       return;
     }
 
-    if (!isLoading && !isCheckingCoordinator && isAuthenticated && coordinatorStatus !== CoordinatorStatus.APPROVED) {
+    if (!isLoading && !isCheckingCoordinator && isAuthenticated && 
+        coordinatorStatus !== CoordinatorStatus.APPROVED && 
+        coordinatorStatus !== CoordinatorStatus.PENDING) {
       router.push(INTERNAL_LINKS.REGISTER);
     }
   }, [isAuthenticated, isLoading, isCheckingCoordinator, coordinatorStatus, router]);
