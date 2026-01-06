@@ -12,11 +12,19 @@ export async function withMaintenance(req: NextRequest): Promise<NextResponse> {
       return NextResponse.next();
     }
 
-    const isInMaintenanceMode = await get<boolean>(
-      "isCoordinatorPlatformInMaintenanceMode"
-    );
+    const environment: "production" | "staging" | undefined =
+      process.env.NEXT_PUBLIC_SOLANA_NETWORK === "devnet"
+        ? "staging"
+        : process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet"
+        ? "production"
+        : undefined;
 
-    if (isInMaintenanceMode) {
+    const maintenanceMode = await get<{
+      production: boolean;
+      staging: boolean;
+    }>("isCoordinatorPlatformInMaintenanceMode");
+
+    if (environment && maintenanceMode?.[environment]) {
       req.nextUrl.pathname = INTERNAL_LINKS.MAINTENANCE;
       return NextResponse.rewrite(req.nextUrl);
     }
