@@ -1,28 +1,45 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { RegistrationFormData } from "../../domain/types";
+import { getCoordinatorProgram, registerCoordinator } from "@crunchdao/sdk";
+import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 
 export const useRegisterCoordinator = () => {
   const queryClient = useQueryClient();
-  
+  const provider = useAnchorProvider();
+
   const mutation = useMutation({
     mutationFn: async (data: RegistrationFormData) => {
-      // TODO: Unmock
-      console.log("Registering coordinator with data:", data);
-      return { success: true };
+      if (!provider) {
+        throw new Error("Wallet not connected");
+      }
+
+      const coordinatorProgram = getCoordinatorProgram(provider);
+      console.log(data);
+      const txHash = await registerCoordinator(
+        coordinatorProgram,
+        data.organizationName
+      );
+
+      if (!txHash) {
+        throw new Error("Coordinator already exists");
+      }
+
+      return { success: true, txHash };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["coordinator"] });
-      toast({ 
+      toast({
         title: "Registration submitted",
-        description: "Your coordinator account is now pending validation."
+        description: "Your coordinator account is now pending validation.",
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.log(error);
       toast({
         title: "Registration failed",
         description: "Please try again later.",
-        variant: "destructive"
+        variant: "destructive",
       });
     },
   });
