@@ -63,6 +63,12 @@ export const useGetCoordinator = (): {
       }
     },
     enabled: !!publicKey && !!provider,
+    refetchInterval: (query) => {
+      if (query.state.data?.status === CoordinatorStatus.PENDING) {
+        return 30_000;
+      }
+      return false;
+    },
   });
 
   console.log(query.data);

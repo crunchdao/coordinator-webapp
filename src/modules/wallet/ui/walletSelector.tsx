@@ -101,7 +101,11 @@ export function WalletSelector() {
             )}
             {coordinatorStatus === CoordinatorStatus.PENDING && (
               <>
-                <PulseRing active={false} /> {coordinator?.name}
+                <PulseRing
+                  className={"bg-primary text-primary/50"}
+                  active={false}
+                />{" "}
+                {coordinator?.name}
               </>
             )}
             {coordinatorStatus === CoordinatorStatus.REJECTED && (

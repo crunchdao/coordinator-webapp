@@ -3,7 +3,13 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RegistrationForm } from "@/modules/coordinator/ui/registrationForm";
-import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@crunch-ui/core";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
@@ -30,12 +36,22 @@ export default function RegisterPage() {
       <Card>
         <CardHeader>
           <CardTitle>
-            {coordinatorStatus === CoordinatorStatus.PENDING &&
-              "Registration Pending"}
-            {coordinatorStatus === CoordinatorStatus.REJECTED &&
-              "Registration Rejected"}
-            {coordinatorStatus === CoordinatorStatus.UNREGISTERED &&
-              "Create Coordinator Account"}
+            Coordinator Registration
+            {coordinatorStatus !== CoordinatorStatus.UNREGISTERED && (
+              <Badge
+                className="ml-3 -mt-3"
+                size="sm"
+                variant={
+                  coordinatorStatus === CoordinatorStatus.REJECTED
+                    ? "destructive"
+                    : "primary"
+                }
+              >
+                {coordinatorStatus === CoordinatorStatus.REJECTED
+                  ? "Rejected"
+                  : "Pending"}
+              </Badge>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -51,9 +67,7 @@ export default function RegisterPage() {
               support for more information.
             </p>
           )}
-          {coordinatorStatus === CoordinatorStatus.UNREGISTERED && (
-            <RegistrationForm />
-          )}
+          <RegistrationForm />
         </CardContent>
       </Card>
     </div>

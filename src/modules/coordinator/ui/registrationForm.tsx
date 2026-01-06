@@ -12,8 +12,9 @@ import {
   FormMessage,
   Input,
 } from "@crunch-ui/core";
+import { useAuth } from "@/modules/auth/application/context/authContext";
 import { registrationSchema } from "../application/schemas/registration";
-import { RegistrationFormData } from "../domain/types";
+import { CoordinatorStatus, RegistrationFormData } from "../domain/types";
 import { useRegisterCoordinator } from "../application/hooks/useRegisterCoordinator";
 
 export function RegistrationForm() {
@@ -26,10 +27,15 @@ export function RegistrationForm() {
 
   const { registerCoordinator, registerCoordinatorLoading } =
     useRegisterCoordinator();
+  const { coordinatorStatus, isCheckingCoordinator } = useAuth();
 
   const onSubmit = (data: RegistrationFormData) => {
     registerCoordinator(data);
   };
+
+  const isDisabled =
+    coordinatorStatus !== CoordinatorStatus.UNREGISTERED ||
+    isCheckingCoordinator;
 
   return (
     <Form {...form}>
@@ -41,14 +47,22 @@ export function RegistrationForm() {
             <FormItem>
               <FormLabel>Organization Name</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your organization name" {...field} />
+                <Input
+                  disabled={isDisabled}
+                  placeholder="Enter your organization name"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <div>
-          <Button type="submit" loading={registerCoordinatorLoading}>
+          <Button
+            disabled={isDisabled}
+            type="submit"
+            loading={registerCoordinatorLoading}
+          >
             Register
           </Button>
         </div>
