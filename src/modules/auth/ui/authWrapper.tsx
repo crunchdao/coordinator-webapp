@@ -20,7 +20,7 @@ export function AuthWrapper({ children }: AuthWrapperProps) {
       return;
     }
 
-    if (!isLoading && !isCheckingCoordinator && isAuthenticated && coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
+    if (!isLoading && !isCheckingCoordinator && isAuthenticated && coordinatorStatus !== CoordinatorStatus.APPROVED) {
       router.push(INTERNAL_LINKS.REGISTER);
     }
   }, [isAuthenticated, isLoading, isCheckingCoordinator, coordinatorStatus, router]);
