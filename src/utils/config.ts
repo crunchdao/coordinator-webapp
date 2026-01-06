@@ -13,15 +13,14 @@ interface Config {
 }
 
 const getEnvironment = (): Environment => {
-  console.log(process.env.VERCEL_ENV);
+  console.log(process.env.VERCEL_PROJECT_PRODUCTION_URL);
   if (process.env.VERCEL_ENV) {
-    if (
-      process.env.VERCEL_ENV === "production" &&
-      process.env.VERCEL_GIT_COMMIT_REF === "master"
-    ) {
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
       return "production";
     }
-    return "staging";
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "staging") {
+      return "staging";
+    }
   }
   if (process.env.NODE_ENV === "development") {
     return "development";
