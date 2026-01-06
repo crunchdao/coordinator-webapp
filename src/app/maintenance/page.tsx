@@ -4,7 +4,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Maintenance",
   description:
-    "We are currently undergoing maintenance. Please check back later.",
+    "We are currently undergoing maintenance. Please check again later.",
 };
 
 export default function Maintenance() {
