@@ -13,7 +13,7 @@ interface Config {
 }
 
 const getEnvironment = (): Environment => {
-  if (process.env.VERCEL_ENV) {
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV) {
     if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
       return "production";
     }
