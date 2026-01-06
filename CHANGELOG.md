@@ -1,5 +1,11 @@
 # coordinator-webapp
 
+## 0.6.0
+
+### Minor Changes
+
+- 4909ef9: Allow pending coordinators to access features with limitations
+
 ## 0.5.0
 
 ### Minor Changes
