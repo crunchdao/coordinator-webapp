@@ -1,4 +1,10 @@
+import { Metadata } from "next";
 import { LoginCard } from "@/modules/auth/ui/loginCard";
+
+export const metadata: Metadata = {
+  title: "Login",
+  description: "Connect your wallet to access the CrunchDAO platform",
+};
 
 export default function LoginPage() {
   return (

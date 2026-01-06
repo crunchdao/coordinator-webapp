@@ -20,7 +20,10 @@ export function LoginCard() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <CardTitle>Connect to CrunchDAO</CardTitle>
+        <CardTitle>
+          Connect to the <br />
+          Coordinator Platform
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center space-y-4">
         <p className="text-center text-muted-foreground">
