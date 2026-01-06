@@ -6,7 +6,6 @@ export const INTERNAL_LINKS = {
   LEADERBOARD: "/leaderboard",
   METRICS: "/metrics",
   SETTINGS: "/settings",
-  LOGS: "/logs",
   PITCH: "/pitch",
   MODELS: "/models",
   REGISTER: "/register",
@@ -32,11 +31,6 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     path: INTERNAL_LINKS.PITCH,
     label: "Pitch",
     allowedEnvs: ["production", "staging", "development"],
-  },
-  {
-    path: INTERNAL_LINKS.LOGS,
-    label: "Logs",
-    allowedEnvs: ["local"],
   },
   {
     path: INTERNAL_LINKS.MODELS,
