@@ -21,6 +21,7 @@ interface AuthContextType {
   coordinatorStatus: CoordinatorStatus;
   isCheckingCoordinator: boolean;
   coordinator: CoordinatorState | null;
+  isReadOnly: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,6 +55,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isAuthenticated = isLocal || (connected && !!publicKey);
   const coordinatorStatus =
     coordinator?.status || CoordinatorStatus.UNREGISTERED;
+  const isReadOnly = coordinatorStatus === CoordinatorStatus.PENDING;
 
   return (
     <AuthContext.Provider
@@ -64,6 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         coordinatorStatus,
         isCheckingCoordinator: coordinatorLoading,
         coordinator: coordinator?.data || null,
+        isReadOnly,
       }}
     >
       {children}
