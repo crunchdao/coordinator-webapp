@@ -13,7 +13,6 @@ interface Config {
 }
 
 const getEnvironment = (): Environment => {
-  console.log(process.env.VERCEL_PROJECT_PRODUCTION_URL);
   if (process.env.VERCEL_ENV) {
     if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
       return "production";

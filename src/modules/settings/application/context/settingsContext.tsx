@@ -17,6 +17,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   useGlobalSettings();
+  console.log(config.env);
 
   const value = useMemo(
     () => ({
