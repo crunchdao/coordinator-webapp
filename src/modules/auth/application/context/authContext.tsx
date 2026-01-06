@@ -53,8 +53,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const isAuthenticated = isLocal || (connected && !!publicKey);
-  const coordinatorStatus =
-    coordinator?.status || CoordinatorStatus.UNREGISTERED;
+  const coordinatorStatus = isLocal
+    ? CoordinatorStatus.APPROVED
+    : coordinator?.status || CoordinatorStatus.UNREGISTERED;
   const isReadOnly = coordinatorStatus === CoordinatorStatus.PENDING;
 
   return (
