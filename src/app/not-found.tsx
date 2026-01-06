@@ -5,8 +5,8 @@ import { INTERNAL_LINKS } from "@/utils/routes";
 
 export default async function NotFound() {
   return (
-    <div className="justify-center min-h-dvh">
-      <section className="container h-full flex flex-col items-center justify-center text-center gap-4">
+    <div className="flex justify-center items-center min-h-dvh">
+      <section className="container mx-auto h-full flex flex-col items-center justify-center text-center gap-4">
         <div className="flex items-center gap-2 text-3xl">
           <Cereal />
           <div className="flex items-center -space-x-4">
