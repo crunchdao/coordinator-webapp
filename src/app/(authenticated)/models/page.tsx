@@ -1,4 +1,3 @@
-"use client";
 import { ModelsTable } from "@/modules/model/ui/modelsTable";
 
 export default function ModelsPage() {
