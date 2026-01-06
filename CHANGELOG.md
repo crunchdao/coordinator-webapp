@@ -1,5 +1,16 @@
 # coordinator-webapp
 
+## 0.5.0
+
+### Minor Changes
+
+- 24a0144: Add pitch creation feature with ability to download json file
+- 736c139: Add coordinator identity features:
+  - Identification through wallet
+  - Coordinator registration form
+  - Coordinator account
+  - Coordinator state management & accesses restriction
+
 ## 0.4.0
 
 ### Minor Changes
