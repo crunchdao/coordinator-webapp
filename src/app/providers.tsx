@@ -6,7 +6,6 @@ import { WalletProvider } from "@/modules/wallet/application/context/walletConte
 import { AuthProvider } from "@/modules/auth/application/context/authContext";
 
 const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
-  console.log(process.env.NEXT_PUBLIC_API_URL_MODEL_ORCHESTRATOR);
   return (
     <SettingsProvider>
       <WalletProvider>

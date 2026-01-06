@@ -2,6 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { config as appConfig } from "@/utils/config";
 import { isRouteAllowed, INTERNAL_LINKS } from "@/utils/routes";
+import { compose } from "./utils/proxy";
+import { withCsp } from "./utils/security/withCsp";
+import { withMaintenance } from "./utils/withMaintenance";
+
+const run = compose(withCsp, withMaintenance);
 
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -11,7 +16,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(INTERNAL_LINKS.ROOT, request.url));
   }
 
-  return NextResponse.next();
+  return run(request);
 }
 
 export const config = {

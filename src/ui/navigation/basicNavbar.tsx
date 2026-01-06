@@ -7,6 +7,7 @@ import { INTERNAL_LINKS, getVisibleRoutes } from "@/utils/routes";
 import { EnvironmentBadge } from "@/modules/settings/ui/environmentBadge";
 import { useSettings } from "@/modules/settings/application/context/settingsContext";
 import { WalletConnection } from "@/modules/wallet/ui/walletConnection";
+import { RestrictedWrapper } from "@/modules/auth/ui/restrictedWrapper";
 
 export const BasicNavbar: React.FC = () => {
   const { env } = useSettings();
@@ -32,15 +33,17 @@ export const BasicNavbar: React.FC = () => {
             <EnvironmentBadge />
           </div>
           <div className="ml-auto flex gap-6 items-center">
-            {visibleRoutes.map((route) => (
-              <Link
-                key={route.path}
-                className={cn(linkClassName)}
-                href={route.path}
-              >
-                {route.label}
-              </Link>
-            ))}
+            <RestrictedWrapper showDefaultMessage={false}>
+              {visibleRoutes.map((route) => (
+                <Link
+                  key={route.path}
+                  className={cn(linkClassName)}
+                  href={route.path}
+                >
+                  {route.label}
+                </Link>
+              ))}
+            </RestrictedWrapper>
             <WalletConnection />
           </div>
         </div>

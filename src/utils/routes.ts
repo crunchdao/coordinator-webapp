@@ -9,6 +9,8 @@ export const INTERNAL_LINKS = {
   LOGS: "/logs",
   PITCH: "/pitch",
   MODELS: "/models",
+  REGISTER: "/register",
+  MAINTENANCE: "/maintenance",
 } as const;
 
 type RouteConfig = {

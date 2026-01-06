@@ -13,14 +13,13 @@ interface Config {
 }
 
 const getEnvironment = (): Environment => {
-  if (process.env.VERCEL_ENV) {
-    if (
-      process.env.VERCEL_ENV === "production" &&
-      process.env.VERCEL_GIT_COMMIT_REF === "master"
-    ) {
+  if (process.env.NEXT_PUBLIC_VERCEL_ENV) {
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production") {
       return "production";
     }
-    return "staging";
+    if (process.env.NEXT_PUBLIC_VERCEL_ENV === "staging") {
+      return "staging";
+    }
   }
   if (process.env.NODE_ENV === "development") {
     return "development";

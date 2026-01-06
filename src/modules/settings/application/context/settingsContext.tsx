@@ -6,6 +6,7 @@ import { useGlobalSettings } from "../hooks/useGlobalSettings";
 
 interface SettingsContextType {
   isLocal: boolean;
+  isDevelopment: boolean;
   version: string;
   env: Environment;
 }
@@ -16,10 +17,12 @@ const SettingsContext = createContext<SettingsContextType | undefined>(
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   useGlobalSettings();
+  console.log(config.env);
 
   const value = useMemo(
     () => ({
       isLocal: config.env === "local",
+      isDevelopment: config.env === "development",
       version: config.version,
       env: config.env,
     }),
