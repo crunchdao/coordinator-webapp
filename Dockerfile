@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++ pkgconfig libusb-dev linux-headers eudev-dev
 
 COPY package*.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci
+RUN --mount=type=cache,target=/root/.npm npm install --frozen-lockfile
 
 COPY . .
 
