@@ -6,14 +6,14 @@ export const useCanAccess = () => {
   const { coordinatorStatus, isAuthenticated } = useAuth();
   const { isDevelopment, isLocal } = useSettings();
 
-  const isApprovedCoordinator = coordinatorStatus === CoordinatorStatus.APPROVED;
+  const hasAllowedStatus =
+    coordinatorStatus === CoordinatorStatus.APPROVED ||
+    coordinatorStatus === CoordinatorStatus.PENDING;
   const isDevMode = isDevelopment || isLocal;
 
-  const canAccess = isAuthenticated && (isApprovedCoordinator || isDevMode);
+  const canAccess = isAuthenticated && (hasAllowedStatus || isDevMode);
 
   return {
     canAccess,
-    isApprovedCoordinator,
-    isDevMode,
   };
 };
