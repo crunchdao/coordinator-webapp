@@ -3,11 +3,12 @@ import { Environment } from "./config";
 export const INTERNAL_LINKS = {
   ROOT: "/",
   LOGIN: "/login",
-  LEADERBOARD: "/leaderboard",
-  METRICS: "/metrics",
-  SETTINGS: "/settings",
-  PITCH: "/pitch",
-  MODELS: "/models",
+  DASHBOARD: "/dashboard",
+  LEADERBOARD: "/:crunchname/leaderboard",
+  METRICS: "/:crunchname/metrics",
+  SETTINGS: "/:crunchname/settings",
+  PITCH: "/:crunchname/pitch",
+  MODELS: "/:crunchname/models",
   REGISTER: "/register",
   MAINTENANCE: "/maintenance",
 } as const;

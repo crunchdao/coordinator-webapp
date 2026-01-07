@@ -6,9 +6,9 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ReactQuery from "./react-query";
 import Providers from "./providers";
-import { Navbar } from "@/ui/navigation/navbar";
 import { DevMenu } from "@/modules/dev/ui/devMenu";
 import "./globals.css";
+import { TopNavbar } from "@/ui/navigation/topNavbar";
 
 const departure = localFont({
   src: "../../public/fonts/DepartureMono/DepartureMono-Regular.woff2",
@@ -47,8 +47,8 @@ export default async function RootLayout({
       >
         <ReactQuery>
           <Providers>
-            <Navbar />
-            <div className="mt-3">{children}</div>
+            <TopNavbar />
+            {children}
             <Legals className="mx-auto mt-auto" />
             <Toaster />
             <DevMenu />

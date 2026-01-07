@@ -1,14 +1,17 @@
 import { RestrictedWrapper } from "@/modules/auth/ui/restrictedWrapper";
-import { BasicNavbar } from "./basicNavbar";
-import { TopNavbar } from "./topNavbar";
+import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 
-export const Navbar: React.FC = () => {
+export default function CrunchLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <>
-      <TopNavbar />
       <RestrictedWrapper showDefaultMessage={false}>
         <BasicNavbar />
       </RestrictedWrapper>
+      <div className="mt-3">{children}</div>
     </>
   );
-};
+}
