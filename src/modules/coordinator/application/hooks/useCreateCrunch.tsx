@@ -41,14 +41,12 @@ export const useCreateCrunch = () => {
       const transaction = new Transaction();
       transaction.add(instruction);
 
-      // Get fresh blockhash
       const { blockhash } = await provider.connection.getLatestBlockhash(
         "confirmed"
       );
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      // Send using the provider's sendAndConfirm
       const txHash = await provider.sendAndConfirm(transaction);
 
       return { success: true, txHash, crunchName: data.name };
