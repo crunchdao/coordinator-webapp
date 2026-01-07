@@ -1,5 +1,6 @@
 "use client";
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -17,29 +18,28 @@ export function CoordinatorCrunches() {
 
   if (crunchesLoading || crunchesPending) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[...Array(6)].map((_, index) => (
-          <Card key={index}>
-            <CardHeader>
-              <Skeleton className="h-6 w-2/3" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-1/2" />
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid gap-4">
+        <div>
+          <Skeleton className="h-6 w-2/3" />
+        </div>
+        <div>
+          <Skeleton className="h-4 w-full mb-2" />
+          <Skeleton className="h-4 w-1/2" />
+        </div>
       </div>
     );
   }
 
   if (!crunches || crunches.length === 0) {
     return (
-      <Card>
-        <CardContent className="text-center py-10">
-          <p className="text-muted-foreground">No Crunches</p>
-        </CardContent>
-      </Card>
+      <div className="space-y-3">
+        <p className="text-muted-foreground">
+          You didn't create any crunches yet, create your first one!
+        </p>
+        <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
+          <Button>Create your First Crunch</Button>
+        </Link>
+      </div>
     );
   }
 

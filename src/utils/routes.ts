@@ -4,6 +4,7 @@ export const INTERNAL_LINKS = {
   ROOT: "/",
   LOGIN: "/login",
   DASHBOARD: "/dashboard",
+  CREATE_CRUNCH: "/create-crunch",
   LEADERBOARD: "/:crunchname/leaderboard",
   METRICS: "/:crunchname/metrics",
   SETTINGS: "/:crunchname/settings",
