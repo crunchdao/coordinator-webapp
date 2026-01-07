@@ -1,6 +1,6 @@
-import { useAuth } from "../context/authContext";
 import { useSettings } from "@/modules/settings/application/context/settingsContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
+import { useAuth } from "../context/authContext";
 
 export const useCanAccess = () => {
   const { coordinatorStatus, isAuthenticated } = useAuth();
