@@ -3,10 +3,10 @@ import { GeistSans } from "geist/font/sans";
 import { cn } from "@crunch-ui/utils";
 import { Legals, Toaster } from "@crunch-ui/core";
 import localFont from "next/font/local";
-import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 import "./globals.css";
 import ReactQuery from "./react-query";
 import Providers from "./providers";
+import { Navbar } from "@/ui/navigation/navbar";
 import { DevMenu } from "@/modules/dev/ui/devMenu";
 import "./globals.css";
 
@@ -17,12 +17,12 @@ const departure = localFont({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | CrunchDAO",
+    template: "%s | CrunchDAO Coordinator Platform",
     default: "CrunchDAO",
   },
   openGraph: {
     title: {
-      template: "%s | CrunchDAO",
+      template: "%s | CrunchDAO Coordinator Platform",
       default: "CrunchDAO",
     },
   },
@@ -47,7 +47,7 @@ export default async function RootLayout({
       >
         <ReactQuery>
           <Providers>
-            <BasicNavbar />
+            <Navbar />
             <div>{children}</div>
             <Legals className="mx-auto mt-auto" />
             <Toaster />
