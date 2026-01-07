@@ -49,7 +49,7 @@ export default async function RootLayout({
           <Providers>
             <TopNavbar />
             {children}
-            <Legals className="mx-auto mt-auto" />
+            <Legals className="min-w-full px-6 pt-12 mt-auto" />
             <Toaster />
             <DevMenu />
           </Providers>

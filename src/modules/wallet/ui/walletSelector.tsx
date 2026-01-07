@@ -38,10 +38,13 @@ export function WalletSelector() {
   useEffect(() => {
     if (!visible && wallet && !connected && !connecting && isNewWalletFlow) {
       setTimeout(() => {
-        connect().catch((err) => {
-          console.error("Failed to connect:", err);
-        });
-        setIsNewWalletFlow(false);
+        connect()
+          .catch((err) => {
+            console.error("Failed to connect:", err);
+          })
+          .finally(() => {
+            setIsNewWalletFlow(false);
+          });
       }, 100);
     }
   }, [visible, wallet, connected, connecting, connect, isNewWalletFlow]);

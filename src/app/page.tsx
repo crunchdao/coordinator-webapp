@@ -4,14 +4,19 @@ import { Spinner } from "@crunch-ui/core";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/modules/auth/application/context/authContext";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, coordinatorStatus, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading) {
       if (isAuthenticated) {
-        redirect(INTERNAL_LINKS.DASHBOARD);
+        if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
+          redirect(INTERNAL_LINKS.REGISTER);
+        } else {
+          redirect(INTERNAL_LINKS.DASHBOARD);
+        }
       } else {
         redirect(INTERNAL_LINKS.LOGIN);
       }

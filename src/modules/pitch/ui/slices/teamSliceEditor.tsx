@@ -40,7 +40,7 @@ export function TeamSliceEditor({ form, sliceIndex }: TeamSliceEditorProps) {
           </FormItem>
         )}
       />
-      <div className="space-y-6">
+      <div className="space-y-3">
         {fields.map((field, index) => (
           <div key={field.id} className="space-y-4 border p-4 rounded-lg">
             <FormField

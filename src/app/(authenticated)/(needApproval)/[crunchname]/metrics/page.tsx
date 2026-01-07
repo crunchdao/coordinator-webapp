@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function MetricsPage() {
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-6">
+    <div className="mx-auto w-full max-w-7xl space-y-3">
       <MetricSettingsTable />
       <MetricsDashboard />
     </div>
