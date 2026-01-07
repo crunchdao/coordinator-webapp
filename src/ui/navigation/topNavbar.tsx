@@ -1,14 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { INTERNAL_LINKS } from "@/utils/routes";
-import { EnvironmentBadge } from "@/modules/settings/ui/environmentBadge";
 import { WalletConnection } from "@/modules/wallet/ui/walletConnection";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from "@crunch-ui/core";
+import { NavbarBreadcrumb } from "./navbarBreadcrumb";
 
 export const TopNavbar: React.FC = () => {
   return (
@@ -23,14 +17,7 @@ export const TopNavbar: React.FC = () => {
             height={14}
           />
         </Link>
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbItem className="text-foreground">Test</BreadcrumbItem>
-            <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbItem className="text-foreground">Test</BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <NavbarBreadcrumb />
         <div className="ml-auto">
           <WalletConnection />
         </div>

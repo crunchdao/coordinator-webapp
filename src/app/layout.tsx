@@ -48,7 +48,7 @@ export default async function RootLayout({
         <ReactQuery>
           <Providers>
             <Navbar />
-            <div>{children}</div>
+            <div className="mt-3">{children}</div>
             <Legals className="mx-auto mt-auto" />
             <Toaster />
             <DevMenu />
