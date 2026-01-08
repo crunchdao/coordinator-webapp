@@ -17,19 +17,18 @@ export const useGetCoordinatorCrunches = () => {
       if (!publicKey || !provider) {
         return [];
       }
+      const coordinatorProgram = getCoordinatorProgram(provider);
+      const crunches = await getCrunchesForCoordinatorWallet(
+        coordinatorProgram,
+        new PublicKey(publicKey)
+      );
 
-      try {
-        const coordinatorProgram = getCoordinatorProgram(provider);
-        const crunches = await getCrunchesForCoordinatorWallet(
-          coordinatorProgram,
-          new PublicKey(publicKey)
-        );
+      const transformedCrunches = crunches?.map((crunch) => ({
+        ...crunch,
+        state: crunch.state ? Object.keys(crunch.state)[0] : undefined,
+      }));
 
-        return crunches || [];
-      } catch (error) {
-        console.error("Error fetching coordinator crunches:", error);
-        throw error;
-      }
+      return transformedCrunches || [];
     },
     enabled: !!publicKey && !!provider,
   });

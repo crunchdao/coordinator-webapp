@@ -1,5 +1,6 @@
 "use client";
 import {
+  Badge,
   Button,
   Card,
   CardContent,
@@ -11,6 +12,8 @@ import { useGetCoordinatorCrunches } from "../application/hooks/useGetCoordinato
 import Link from "next/link";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { CircleCheck, Cube, Payout, Wallet } from "@crunch-ui/icons";
+import { SolanaAddressLink } from "@/modules/wallet/ui/solanaAddressLink";
 
 export function CoordinatorCrunches() {
   const { crunches, crunchesLoading, crunchesPending } =
@@ -46,27 +49,59 @@ export function CoordinatorCrunches() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {crunches.map((crunch) => (
-        <Link
-          key={crunch.name}
-          href={generateLink(INTERNAL_LINKS.LEADERBOARD, {
-            crunchname: crunch.name,
-          })}
-        >
-          <Card className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">{crunch.name}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                <span>Max models per cruncher:</span>{" "}
+        <Card key={crunch.name}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">{crunch.name}</CardTitle>
+              <Badge
+                variant={crunch.state === "started" ? "success" : "secondary"}
+                size="sm"
+              >
+                {crunch.state}
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-3 [&_svg]:mb-0.5 [&_svg]:w-6 [&_svg]:inline text-muted-foreground">
+              <p className="text-sm line-clamp-2">
+                <span className="font-medium text-foreground">
+                  <Cube />
+                  Max models per cruncher:
+                </span>{" "}
                 {crunch.maxModelsPerCruncher}
               </p>
-              OTHERS DETIALS GOES HERE
-            </CardContent>
-          </Card>
-        </Link>
+              <p className="text-sm line-clamp-2">
+                <span className="font-medium text-foreground">
+                  <CircleCheck />
+                  Last checkpoint index:
+                </span>{" "}
+                {crunch.lastCheckpointIndex}
+              </p>
+              <p className="text-sm line-clamp-2">
+                <span className="font-medium text-foreground">
+                  <Payout /> Payout amount:
+                </span>{" "}
+                {(crunch.payoutAmount.toNumber() / 10 ** 6).toLocaleString()}{" "}
+                USDC
+              </p>
+              <p className="text-sm line-clamp-2">
+                <span className="font-medium text-foreground">
+                  <Wallet /> Reward Vault:
+                </span>{" "}
+                <SolanaAddressLink address={crunch.rewardVault} />
+              </p>
+            </div>
+
+            <Link
+              key={crunch.name}
+              href={generateLink(INTERNAL_LINKS.LEADERBOARD, {
+                crunchname: crunch.name,
+              })}
+            >
+              <Button size="sm">Enter</Button>
+            </Link>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );

@@ -20,13 +20,12 @@ import {
   Coordinator,
   Switch,
   QuestionMark,
-  ExternalLink,
 } from "@crunch-ui/icons";
-import { truncateAddress } from "@/utils/solana";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useWallet } from "../application/context/walletContext";
+import { SolanaAddressLink } from "./solanaAddressLink";
 
 export function WalletSelector() {
   const { publicKey, wallet, disconnect, connected, connect, connecting } =
@@ -121,8 +120,7 @@ export function WalletSelector() {
               target="_blank"
               className="ml-auto body-xs"
             >
-              {truncateAddress(publicKey.toString())}
-              <ExternalLink className="inline -mt-1 ml-1" />
+              <SolanaAddressLink address={publicKey.toString()} />
             </Link>
           </DropdownMenuLabel>
         )}

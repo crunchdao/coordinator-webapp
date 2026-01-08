@@ -16,28 +16,29 @@ import {
   DropdownMenuTrigger,
 } from "@crunch-ui/core";
 import { ChevronDown } from "@crunch-ui/icons";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 export const NavbarBreadcrumb: React.FC = () => {
   const { coordinator, coordinatorStatus, isLoading } = useAuth();
   const { crunches, crunchesPending } = useGetCoordinatorCrunches();
   const params = useParams();
   const pathname = usePathname();
-  
+
   const currentCrunchName = params.crunchname as string;
   const unregistered =
     !isLoading && coordinatorStatus === CoordinatorStatus.UNREGISTERED;
 
   return (
     <Breadcrumb>
-      <BreadcrumbList>
+      <BreadcrumbList className="[&_a]:lowercase!">
         <BreadcrumbSeparator>/</BreadcrumbSeparator>
-        <BreadcrumbItem className="text-foreground normal-case">
+        <BreadcrumbItem className="text-foreground">
           {isLoading ? (
             <Skeleton className="w-32 h-4" />
           ) : unregistered ? (
-            "Register"
+            <Link href={INTERNAL_LINKS.REGISTER}>Register</Link>
           ) : (
-            coordinator?.name
+            <Link href={INTERNAL_LINKS.DASHBOARD}>{coordinator?.name}</Link>
           )}
         </BreadcrumbItem>
         {!unregistered && currentCrunchName && (
@@ -54,18 +55,18 @@ export const NavbarBreadcrumb: React.FC = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
                     {crunches.map((crunch, index) => {
-                      const pathSegments = pathname.split('/');
-                      const crunchIndex = pathSegments.findIndex(seg => seg === currentCrunchName);
+                      const pathSegments = pathname.split("/");
+                      const crunchIndex = pathSegments.findIndex(
+                        (seg) => seg === currentCrunchName
+                      );
                       if (crunchIndex !== -1) {
                         pathSegments[crunchIndex] = crunch.name;
                       }
-                      const newPath = pathSegments.join('/');
-                      
+                      const newPath = pathSegments.join("/");
+
                       return (
                         <DropdownMenuItem key={index} asChild>
-                          <Link href={newPath}>
-                            {crunch.name}
-                          </Link>
+                          <Link href={newPath}>{crunch.name}</Link>
                         </DropdownMenuItem>
                       );
                     })}
