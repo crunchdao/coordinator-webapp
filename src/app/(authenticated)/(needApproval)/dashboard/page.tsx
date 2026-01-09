@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { CoordinatorCrunches } from "@/modules/coordinator/ui/coordinatorCrunches";
+import { StakingCard } from "@/modules/staking/ui/stakingCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
 
 export const metadata: Metadata = {
@@ -9,10 +10,12 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="p-6">
+    <div className="p-6 flex gap-3">
+      <StakingCard />
+
       <Card>
         <CardHeader>
-          <CardTitle>Dashboard</CardTitle>
+          <CardTitle>Your Crunches</CardTitle>
         </CardHeader>
         <CardContent>
           <CoordinatorCrunches />
