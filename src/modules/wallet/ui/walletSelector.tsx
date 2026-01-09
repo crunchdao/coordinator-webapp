@@ -102,13 +102,9 @@ export function WalletSelector() {
                 <PulseRing active={false} /> {coordinator?.name}
               </>
             )}
-            <Link
-              href={`https://solscan.io/account/${publicKey.toString()}`}
-              target="_blank"
-              className="ml-auto body-xs"
-            >
+            <span className="ml-auto body-xs">
               <SolanaAddressLink address={publicKey.toString()} />
-            </Link>
+            </span>
           </DropdownMenuLabel>
         )}
         <DropdownMenuItem onSelect={() => handleSelectChange("connect-new")}>

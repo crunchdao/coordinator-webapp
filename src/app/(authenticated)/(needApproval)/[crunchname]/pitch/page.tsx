@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function PitchPage() {
-  return (
-    <div className="mx-auto w-full max-w-7xl">
-      <PitchForm />
-    </div>
-  );
+  return <PitchForm />;
 }

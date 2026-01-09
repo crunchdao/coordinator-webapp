@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function SettingsPage() {
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-3">
+    <>
       <Card>
         <CardHeader>
           <CardTitle>Global Settings</CardTitle>
@@ -18,6 +18,6 @@ export default function SettingsPage() {
           <SettingsForm />
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }

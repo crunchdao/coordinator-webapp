@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function ModelsPage() {
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-3">
+    <>
       <ModelsTable />
-    </div>
+    </>
   );
 }

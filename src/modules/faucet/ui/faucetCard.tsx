@@ -18,13 +18,13 @@ import {
   Input,
   Skeleton,
 } from "@crunch-ui/core";
+import { config } from "@/utils/config";
 import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { faucetRequestSchema } from "../application/schemas/faucet-request";
 import { useRequestFaucet } from "../application/hooks/useRequestFaucet";
 import { FaucetRequest } from "../domain/types";
 import { useGetCrnchAccount } from "../../staking/application/hooks/useGetCrnchAccount";
-import { config } from "@/utils/config";
 
 export function FaucetCard() {
   const form = useForm<FaucetRequest>({
@@ -52,7 +52,7 @@ export function FaucetCard() {
     form.reset();
   };
 
-  const isDisabled = !isApprovedCoordinator || requestFaucetLoading;
+  const isDisabled = !isApprovedCoordinator;
 
   return (
     <Card className="w-full">

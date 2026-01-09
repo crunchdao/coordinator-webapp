@@ -11,7 +11,7 @@ export default function CrunchLayout({
       <RestrictedWrapper showDefaultMessage={false}>
         <BasicNavbar />
       </RestrictedWrapper>
-      <div className="mt-3">{children}</div>
+      <div className="p-6">{children}</div>
     </>
   );
 }

@@ -16,7 +16,7 @@ import {
   TabsTrigger,
   Skeleton,
 } from "@crunch-ui/core";
-import { ArrowDown, ArrowUp, Wallet } from "@crunch-ui/icons";
+import { Wallet } from "@crunch-ui/icons";
 import { useGetStakingInfo } from "../application/hooks/useGetStakingInfo";
 import { useDepositCrnch } from "../application/hooks/useDepositCrnch";
 import { useStakeToCoordinator } from "../application/hooks/useStakeToCoordinator";
@@ -117,17 +117,17 @@ export function StakingCard() {
           <>
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Self Staked</p>
-                <p className="text-2xl font-bold">
+                <p className="body-sm text-muted-foreground">Self Staked</p>
+                <p className="body-lg font-bold">
                   {stakingInfo ? formatAmount(stakingInfo.stakedAmount) : "0"}{" "}
                   CRNCH
                 </p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">
+                <p className="body-sm text-muted-foreground">
                   Available to Stake
                 </p>
-                <p className="text-2xl font-bold">
+                <p className="body-lg font-bold">
                   {stakingInfo
                     ? formatAmount(stakingInfo.availableToStake)
                     : "0"}{" "}
@@ -143,8 +143,7 @@ export function StakingCard() {
               </TabsList>
 
               <TabsContent value="stake" className="space-y-4">
-                {(!stakingInfo ||
-                  stakingInfo.availableToStake === 0) && (
+                {(!stakingInfo || stakingInfo.availableToStake === 0) && (
                   <div className="space-y-4">
                     <Label htmlFor="deposit-amount">
                       Deposit and Stake Amount
@@ -199,7 +198,6 @@ export function StakingCard() {
                         disabled={stakeToCoordinatorLoading || !stakeAmount}
                         loading={stakeToCoordinatorLoading}
                       >
-                        <ArrowUp className="mr-2 h-4 w-4" />
                         Stake
                       </Button>
                     </div>
@@ -224,7 +222,6 @@ export function StakingCard() {
                       disabled={unstakeFromCoordinatorLoading || !unstakeAmount}
                       loading={unstakeFromCoordinatorLoading}
                     >
-                      <ArrowDown className="mr-2 h-4 w-4" />
                       Unstake
                     </Button>
                   </div>
