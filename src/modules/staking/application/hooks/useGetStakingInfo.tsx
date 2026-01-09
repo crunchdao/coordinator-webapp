@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useStakingContext } from "../context/stakingContext";
+import { convertToCrunch } from "@/utils/solana";
 
 export const useGetStakingInfo = () => {
   const { publicKey } = useWallet();
@@ -11,28 +12,37 @@ export const useGetStakingInfo = () => {
     queryFn: async () => {
       if (!publicKey || !stakingClient) {
         return {
-          stakedAmount: BigInt(0),
-          availableToStake: BigInt(0),
-          stakingAmounts: new Map(),
+          stakedAmount: 0,
+          availableToStake: 0,
+          stakingAmounts: new Map<string, number>(),
         };
       }
 
       try {
-        const availableToStake = await stakingClient.getAvailableAmountToStake();
-        const stakingAmounts = await stakingClient.getUserStakingAmountPerCoordinator();
-        const selfStakedAmount = stakingAmounts.get(publicKey.toString()) || BigInt(0);
+        const availableToStakeBigInt = await stakingClient.getAvailableAmountToStake();
+        const availableToStake = convertToCrunch(Number(availableToStakeBigInt));
+        
+        const stakingAmountsBigInt = await stakingClient.getUserStakingAmountPerCoordinator();
+        const selfStakedAmountBigInt = stakingAmountsBigInt.get(publicKey.toString()) || BigInt(0);
+        const stakedAmount = convertToCrunch(Number(selfStakedAmountBigInt));
+        
+        // Convert all staking amounts to numbers
+        const stakingAmounts = new Map<string, number>();
+        for (const [key, value] of stakingAmountsBigInt.entries()) {
+          stakingAmounts.set(key, convertToCrunch(Number(value)));
+        }
 
         return {
-          stakedAmount: selfStakedAmount,
+          stakedAmount,
           availableToStake,
           stakingAmounts,
         };
       } catch (error) {
         console.error("Error fetching staking info:", error);
         return {
-          stakedAmount: BigInt(0),
-          availableToStake: BigInt(0),
-          stakingAmounts: new Map(),
+          stakedAmount: 0,
+          availableToStake: 0,
+          stakingAmounts: new Map<string, number>(),
         };
       }
     },

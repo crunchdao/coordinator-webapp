@@ -31,13 +31,17 @@ export function StakingCard() {
 
   const { stakingInfo, stakingInfoLoading } = useGetStakingInfo();
   const { depositCrnchAsync, depositCrnchLoading } = useDepositCrnch();
-  const { stakeToCoordinator, stakeToCoordinatorLoading } = useStakeToCoordinator();
+  const { stakeToCoordinator, stakeToCoordinatorLoading } =
+    useStakeToCoordinator();
   const { unstakeFromCoordinatorAsync, unstakeFromCoordinatorLoading } =
     useUnstakeFromCoordinator();
   const { withdrawCrnchAsync, withdrawCrnchLoading } = useWithdrawCrnch();
 
-  const formatAmount = (amount: bigint) => {
-    return (Number(amount) / 10 ** 9).toLocaleString();
+  const formatAmount = (amount: number) => {
+    return amount.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   const parseAmount = (amount: string): bigint => {
@@ -140,7 +144,7 @@ export function StakingCard() {
 
               <TabsContent value="stake" className="space-y-4">
                 {(!stakingInfo ||
-                  stakingInfo.availableToStake === BigInt(0)) && (
+                  stakingInfo.availableToStake === 0) && (
                   <div className="space-y-4">
                     <Label htmlFor="deposit-amount">
                       Deposit and Stake Amount
@@ -178,7 +182,7 @@ export function StakingCard() {
                   </div>
                 )}
 
-                {stakingInfo && stakingInfo.availableToStake > BigInt(0) && (
+                {stakingInfo && stakingInfo.availableToStake > 0 && (
                   <div className="space-y-4">
                     <Label htmlFor="stake-amount">Stake Amount</Label>
                     <div className="flex space-x-2">
