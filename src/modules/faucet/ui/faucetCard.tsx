@@ -18,12 +18,13 @@ import {
   Input,
   Skeleton,
 } from "@crunch-ui/core";
-import { useGetCrnchBalance } from "../application/hooks/useGetCrnchBalance";
-import { useRequestFaucet } from "../application/hooks/useRequestFaucet";
 import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
-import { faucetRequestSchema } from "../application/schemas/faucet-request.schema";
+import { faucetRequestSchema } from "../application/schemas/faucet-request";
+import { useRequestFaucet } from "../application/hooks/useRequestFaucet";
 import { FaucetRequest } from "../domain/types";
+import { useGetCrnchAccount } from "../../staking/application/hooks/useGetCrnchAccount";
+import { config } from "@/utils/config";
 
 export function FaucetCard() {
   const form = useForm<FaucetRequest>({
@@ -33,12 +34,12 @@ export function FaucetCard() {
     },
   });
 
-  const { crnchBalance, crnchBalanceLoading } = useGetCrnchBalance();
-  console.log(crnchBalance);
+  const { crnchAccount, crnchAccountLoading } = useGetCrnchAccount();
+
   const { requestFaucet, requestFaucetLoading } = useRequestFaucet();
   const { coordinator, coordinatorLoading } = useGetCoordinator();
 
-  const isDevnet = process.env.NEXT_PUBLIC_SOLANA_NETWORK !== "mainnet-beta";
+  const isDevnet = config.solana.network !== "mainnet-beta";
   const isApprovedCoordinator =
     coordinator?.status === CoordinatorStatus.APPROVED;
 
@@ -46,8 +47,8 @@ export function FaucetCard() {
     return null;
   }
 
-  const onSubmit = async (data: FaucetRequest) => {
-    await requestFaucet(data.amount);
+  const onSubmit = (data: FaucetRequest) => {
+    requestFaucet(data.amount);
     form.reset();
   };
 
@@ -63,13 +64,13 @@ export function FaucetCard() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="rounded-lg bg-muted p-4">
+          <div>
             <p className="text-sm text-muted-foreground">Current Balance</p>
-            {crnchBalanceLoading ? (
+            {crnchAccountLoading ? (
               <Skeleton className="h-8 w-32 mt-1" />
             ) : (
               <p className="text-2xl font-bold">
-                {crnchBalance?.formatted || "0"} CRNCH
+                {crnchAccount?.amount || "0"} CRNCH
               </p>
             )}
           </div>
@@ -108,7 +109,7 @@ export function FaucetCard() {
               </Button>
 
               {!isApprovedCoordinator && (
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="body-sm text-destructive text-center">
                   Only approved coordinators can request tokens
                 </p>
               )}

@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="p-6 flex gap-3">
-      <div className="flex flex-col gap-3">
+    <div className="p-6 flex flex-wrap max-lg:flex-col gap-3">
+      <div className="flex flex-col gap-3 w-full lg:max-w-md">
         <FaucetCard />
         <StakingCard />
       </div>

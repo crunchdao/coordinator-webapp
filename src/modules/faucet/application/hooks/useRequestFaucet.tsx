@@ -23,7 +23,6 @@ export const useRequestFaucet = () => {
       );
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["wallet-balance"] });
       toast({
         title: "CRNCH received successfully",
         description: `Received ${result} CRNCH from faucet`,
