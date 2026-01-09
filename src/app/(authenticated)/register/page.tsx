@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="mx-auto w-full max-w-7xl">
+    <section className="w-full p-6 mx-auto">
       <RegistrationCard />
-    </div>
+    </section>
   );
 }

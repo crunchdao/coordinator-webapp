@@ -17,7 +17,7 @@ export default function DashboardPage() {
         <StakingCard />
       </div>
 
-      <Card>
+      <Card className="flex-1">
         <CardHeader>
           <CardTitle>Your Crunches</CardTitle>
         </CardHeader>
