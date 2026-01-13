@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { convertToCrunch } from "@/utils/solana";
+import { convertToCrunch } from "@crunchdao/solana-utils";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useStakingContext } from "../context/stakingContext";
 
 export const useGetCrnchAccount = () => {
-  const anchorProvider = useAnchorProvider();
+  const { anchorProvider } = useAnchorProvider();
   const wallet = anchorProvider?.wallet.publicKey;
   const { stakingClient } = useStakingContext();
 

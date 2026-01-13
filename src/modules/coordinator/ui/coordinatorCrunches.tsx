@@ -13,7 +13,7 @@ import Link from "next/link";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { CircleCheck, Cube, Payout, Plus, Wallet } from "@crunch-ui/icons";
-import { SolanaAddressLink } from "@/modules/wallet/ui/solanaAddressLink";
+import { SolanaAddressLink } from "@crunchdao/solana-utils";
 
 export function CoordinatorCrunches() {
   const { crunches, crunchesLoading, crunchesPending } =
@@ -89,7 +89,7 @@ export function CoordinatorCrunches() {
                   <span className="font-medium text-foreground">
                     <Wallet /> Reward Vault:
                   </span>{" "}
-                  <SolanaAddressLink address={crunch.rewardVault} />
+                  <SolanaAddressLink address={crunch.rewardVault.toString()} />
                 </p>
               </div>
 

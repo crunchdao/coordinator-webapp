@@ -17,6 +17,7 @@
     "@crunch-ui/utils": "^1.1.0",
     "@crunchdao/programs": "^9.1.0",
     "@crunchdao/sdk": "^8.3.2",
+    "@crunchdao/solana-utils": "^0.1.4",
     "@hookform/resolvers": "^5.2.2",
     "@solana/wallet-adapter-base": "^0.9.27",
     "@solana/wallet-adapter-react": "^0.15.39",

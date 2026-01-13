@@ -14,17 +14,17 @@ import { useRouter } from "next/navigation";
 
 export const useCreateCrunch = () => {
   const queryClient = useQueryClient();
-  const provider = useAnchorProvider();
+  const { anchorProvider } = useAnchorProvider();
   const { publicKey } = useWallet();
   const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: async (data: CreateCrunchFormData) => {
-      if (!provider || !publicKey) {
+      if (!anchorProvider || !publicKey) {
         throw new Error("Wallet not connected");
       }
 
-      const coordinatorProgram = getCoordinatorProgram(provider);
+      const coordinatorProgram = getCoordinatorProgram(anchorProvider);
       const crunchService = CrunchServiceWithContext({
         program: coordinatorProgram,
       });
@@ -41,13 +41,13 @@ export const useCreateCrunch = () => {
       const transaction = new Transaction();
       transaction.add(instruction);
 
-      const { blockhash } = await provider.connection.getLatestBlockhash(
+      const { blockhash } = await anchorProvider.connection.getLatestBlockhash(
         "confirmed"
       );
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      const txHash = await provider.sendAndConfirm(transaction);
+      const txHash = await anchorProvider.sendAndConfirm(transaction);
 
       return { success: true, txHash, crunchName: data.name };
     },

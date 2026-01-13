@@ -6,15 +6,15 @@ import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorP
 
 export const useRegisterCoordinator = () => {
   const queryClient = useQueryClient();
-  const provider = useAnchorProvider();
+  const { anchorProvider } = useAnchorProvider();
 
   const mutation = useMutation({
     mutationFn: async (data: RegistrationFormData) => {
-      if (!provider) {
+      if (!anchorProvider) {
         throw new Error("Wallet not connected");
       }
 
-      const coordinatorProgram = getCoordinatorProgram(provider);
+      const coordinatorProgram = getCoordinatorProgram(anchorProvider);
       const txHash = await registerCoordinator(
         coordinatorProgram,
         data.organizationName

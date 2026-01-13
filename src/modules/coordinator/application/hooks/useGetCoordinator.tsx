@@ -13,12 +13,12 @@ export const useGetCoordinator = (): {
   coordinatorLoading: boolean;
 } => {
   const { publicKey } = useWallet();
-  const provider = useAnchorProvider();
+  const { anchorProvider } = useAnchorProvider();
 
   const query = useQuery<CoordinatorData>({
     queryKey: ["coordinator", publicKey?.toString()],
     queryFn: async (): Promise<CoordinatorData> => {
-      if (!publicKey || !provider) {
+      if (!publicKey || !anchorProvider) {
         return {
           status: CoordinatorStatus.UNREGISTERED,
           data: null,
@@ -26,7 +26,7 @@ export const useGetCoordinator = (): {
       }
 
       try {
-        const coordinatorProgram = getCoordinatorProgram(provider);
+        const coordinatorProgram = getCoordinatorProgram(anchorProvider);
         const coordinator = await getCoordinator(
           coordinatorProgram,
           new PublicKey(publicKey)
@@ -62,7 +62,7 @@ export const useGetCoordinator = (): {
         };
       }
     },
-    enabled: !!publicKey && !!provider,
+    enabled: !!publicKey && !!anchorProvider,
     refetchInterval: (query) => {
       if (query.state.data?.status === CoordinatorStatus.PENDING) {
         return 30_000;

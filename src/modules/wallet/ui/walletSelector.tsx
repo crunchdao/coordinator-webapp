@@ -25,7 +25,7 @@ import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useWallet } from "../application/context/walletContext";
-import { SolanaAddressLink } from "./solanaAddressLink";
+import { SolanaAddressLink } from "@crunchdao/solana-utils";
 
 export function WalletSelector() {
   const { publicKey, wallet, disconnect, connected, connect, connecting } =

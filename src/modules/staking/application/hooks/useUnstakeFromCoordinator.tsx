@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { useStakingContext } from "../context/stakingContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { convertFromCrunch } from "@/utils/solana";
+import { convertFromCrunch } from "@crunchdao/solana-utils";
 import { PublicKey } from "@solana/web3.js";
 
 interface UnstakeFromCoordinatorParams {

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { useStakingContext } from "../context/stakingContext";
-import { convertFromCrunch } from "@/utils/solana";
+import { convertFromCrunch } from "@crunchdao/solana-utils";
 
 export const useWithdrawCrnch = () => {
   const queryClient = useQueryClient();

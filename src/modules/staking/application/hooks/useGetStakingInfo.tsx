@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useStakingContext } from "../context/stakingContext";
-import { convertToCrunch } from "@/utils/solana";
+import { convertToCrunch } from "@crunchdao/solana-utils";
 
 export const useGetStakingInfo = () => {
   const { publicKey } = useWallet();

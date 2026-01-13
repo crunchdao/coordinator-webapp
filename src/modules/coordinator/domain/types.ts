@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { PublicKey } from "@solana/web3.js";
-import { PaginatedRequestParams, PaginatedResponse } from "@/domain/pagination";
 import { registrationSchema } from "../application/schemas/registration";
 
 export enum CoordinatorStatus {

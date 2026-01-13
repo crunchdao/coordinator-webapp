@@ -5,12 +5,12 @@ import { useWallet } from "@/modules/wallet/application/context/walletContext";
 
 export const useRequestFaucet = () => {
   const queryClient = useQueryClient();
-  const provider = useAnchorProvider();
+  const { anchorProvider } = useAnchorProvider();
   const { publicKey } = useWallet();
 
   const mutation = useMutation({
     mutationFn: async (amount: number) => {
-      if (!provider || !publicKey) {
+      if (!anchorProvider || !publicKey) {
         throw new Error("Wallet not connected");
       }
 

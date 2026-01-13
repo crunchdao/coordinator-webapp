@@ -9,15 +9,15 @@ import { useWallet } from "@/modules/wallet/application/context/walletContext";
 
 export const useGetCoordinatorCrunches = () => {
   const { publicKey } = useWallet();
-  const provider = useAnchorProvider();
+  const { anchorProvider } = useAnchorProvider();
 
   const query = useQuery({
     queryKey: ["coordinator-crunches", publicKey?.toString()],
     queryFn: async () => {
-      if (!publicKey || !provider) {
+      if (!publicKey || !anchorProvider) {
         return [];
       }
-      const coordinatorProgram = getCoordinatorProgram(provider);
+      const coordinatorProgram = getCoordinatorProgram(anchorProvider);
       const crunches = await getCrunchesForCoordinatorWallet(
         coordinatorProgram,
         new PublicKey(publicKey)
@@ -30,7 +30,7 @@ export const useGetCoordinatorCrunches = () => {
 
       return transformedCrunches || [];
     },
-    enabled: !!publicKey && !!provider,
+    enabled: !!publicKey && !!anchorProvider,
   });
 
   return {

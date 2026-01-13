@@ -12,21 +12,21 @@ const StakingContext = createContext<StakingContextType | null>(null);
 export const StakingProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const provider = useAnchorProvider();
+  const { anchorProvider } = useAnchorProvider();
 
   const stakingClient = useMemo<StakingClient | null>(() => {
-    if (!provider) {
+    if (!anchorProvider) {
       return null;
     }
-    
+
     const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta" ? "mainnet" : "devnet";
-    
+
     return new StakingClient({
-      connection: provider.connection,
-      wallet: provider.wallet,
+      connection: anchorProvider.connection,
+      wallet: anchorProvider.wallet,
       network: network as "mainnet" | "devnet",
     });
-  }, [provider]);
+  }, [anchorProvider]);
 
   const contextValue = useMemo<StakingContextType>(
     () => ({

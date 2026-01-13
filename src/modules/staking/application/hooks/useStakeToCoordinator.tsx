@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { useStakingContext } from "../context/stakingContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { convertFromCrunch } from "@/utils/solana";
+import { convertFromCrunch } from "@crunchdao/solana-utils";
 import { useWaitForConfirmation } from "@/modules/blockchain/application/hooks/useWaitForConfirmation";
 import { useEffect, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
