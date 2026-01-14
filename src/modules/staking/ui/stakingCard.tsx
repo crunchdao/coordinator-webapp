@@ -18,10 +18,13 @@ import {
 } from "@crunch-ui/core";
 import { Wallet } from "@crunch-ui/icons";
 import { useGetStakingInfo } from "../application/hooks/useGetStakingInfo";
-import { useDepositCrnch } from "../application/hooks/useDepositCrnch";
-import { useStakeToCoordinator } from "../application/hooks/useStakeToCoordinator";
-import { useUnstakeFromCoordinator } from "../application/hooks/useUnstakeFromCoordinator";
-import { useWithdrawCrnch } from "../application/hooks/useWithdrawCrnch";
+import {
+  useDepositCrunch,
+  useDelegate,
+  useUnstakeFromCoordinator,
+  useWithdrawCrunch
+} from "@crunchdao/staking";
+import { useWallet } from "@/modules/wallet/application/context/walletContext";
 
 export function StakingCard() {
   const [depositAmount, setDepositAmount] = useState("");
@@ -29,13 +32,12 @@ export function StakingCard() {
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
 
+  const { publicKey } = useWallet();
   const { stakingInfo, stakingInfoLoading } = useGetStakingInfo();
-  const { depositCrnchAsync, depositCrnchLoading } = useDepositCrnch();
-  const { stakeToCoordinator, stakeToCoordinatorLoading } =
-    useStakeToCoordinator();
-  const { unstakeFromCoordinatorAsync, unstakeFromCoordinatorLoading } =
-    useUnstakeFromCoordinator();
-  const { withdrawCrnchAsync, withdrawCrnchLoading } = useWithdrawCrnch();
+  const { deposit, depositLoading } = useDepositCrunch();
+  const { delegate, delegateLoading } = useDelegate();
+  const { unstake, unstakeLoading } = useUnstakeFromCoordinator();
+  const { withdraw, isLoading: withdrawLoading } = useWithdrawCrunch();
 
   const formatAmount = (amount: number) => {
     return amount.toLocaleString(undefined, {
@@ -54,11 +56,14 @@ export function StakingCard() {
   };
 
   const handleDepositAndStake = async () => {
-    if (!depositAmount || parseFloat(depositAmount) <= 0) return;
+    if (!depositAmount || parseFloat(depositAmount) <= 0 || !publicKey) return;
 
     try {
-      await depositCrnchAsync(parseFloat(depositAmount));
-      await stakeToCoordinator({ amount: parseFloat(depositAmount) });
+      await deposit({ amount: parseFloat(depositAmount) });
+      await delegate({
+        amount: parseFloat(depositAmount),
+        poolAddress: publicKey.toString()
+      });
       setDepositAmount("");
       setStakeAmount("");
     } catch (error) {
@@ -67,10 +72,13 @@ export function StakingCard() {
   };
 
   const handleStake = async () => {
-    if (!stakeAmount || parseFloat(stakeAmount) <= 0) return;
+    if (!stakeAmount || parseFloat(stakeAmount) <= 0 || !publicKey) return;
 
     try {
-      await stakeToCoordinator({ amount: parseFloat(stakeAmount) });
+      await delegate({
+        amount: parseFloat(stakeAmount),
+        poolAddress: publicKey.toString()
+      });
       setStakeAmount("");
     } catch (error) {
       // Error handled by hooks
@@ -78,10 +86,13 @@ export function StakingCard() {
   };
 
   const handleUnstake = async () => {
-    if (!unstakeAmount || parseFloat(unstakeAmount) <= 0) return;
+    if (!unstakeAmount || parseFloat(unstakeAmount) <= 0 || !publicKey) return;
 
     try {
-      await unstakeFromCoordinatorAsync({ amount: parseFloat(unstakeAmount) });
+      await unstake({
+        amount: parseFloat(unstakeAmount),
+        poolAddress: publicKey.toString()
+      });
       setUnstakeAmount("");
     } catch (error) {
       // Error handled by hooks
@@ -92,7 +103,7 @@ export function StakingCard() {
     if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) return;
 
     try {
-      await withdrawCrnchAsync(parseFloat(withdrawAmount));
+      await withdraw({ amount: parseFloat(withdrawAmount) });
       setWithdrawAmount("");
     } catch (error) {
       // Error handled by hooks
@@ -156,18 +167,18 @@ export function StakingCard() {
                         value={depositAmount}
                         onChange={(e) => setDepositAmount(e.target.value)}
                         disabled={
-                          depositCrnchLoading || stakeToCoordinatorLoading
+                          depositLoading || delegateLoading
                         }
                       />
                       <Button
                         onClick={handleDepositAndStake}
                         disabled={
-                          depositCrnchLoading ||
-                          stakeToCoordinatorLoading ||
+                          depositLoading ||
+                          delegateLoading ||
                           !depositAmount
                         }
                         loading={
-                          depositCrnchLoading || stakeToCoordinatorLoading
+                          depositLoading || delegateLoading
                         }
                       >
                         <Wallet className="mr-2 h-4 w-4" />
@@ -191,12 +202,12 @@ export function StakingCard() {
                         placeholder="0.00"
                         value={stakeAmount}
                         onChange={(e) => setStakeAmount(e.target.value)}
-                        disabled={stakeToCoordinatorLoading}
+                        disabled={delegateLoading}
                       />
                       <Button
                         onClick={handleStake}
-                        disabled={stakeToCoordinatorLoading || !stakeAmount}
-                        loading={stakeToCoordinatorLoading}
+                        disabled={delegateLoading || !stakeAmount}
+                        loading={delegateLoading}
                       >
                         Stake
                       </Button>
@@ -215,12 +226,12 @@ export function StakingCard() {
                       placeholder="0.00"
                       value={unstakeAmount}
                       onChange={(e) => setUnstakeAmount(e.target.value)}
-                      disabled={unstakeFromCoordinatorLoading}
+                      disabled={unstakeLoading}
                     />
                     <Button
                       onClick={handleUnstake}
-                      disabled={unstakeFromCoordinatorLoading || !unstakeAmount}
-                      loading={unstakeFromCoordinatorLoading}
+                      disabled={unstakeLoading || !unstakeAmount}
+                      loading={unstakeLoading}
                     >
                       Unstake
                     </Button>
@@ -240,12 +251,12 @@ export function StakingCard() {
                       placeholder="0.00"
                       value={withdrawAmount}
                       onChange={(e) => setWithdrawAmount(e.target.value)}
-                      disabled={withdrawCrnchLoading}
+                      disabled={withdrawLoading}
                     />
                     <Button
                       onClick={handleWithdraw}
-                      disabled={withdrawCrnchLoading || !withdrawAmount}
-                      loading={withdrawCrnchLoading}
+                      disabled={withdrawLoading || !withdrawAmount}
+                      loading={withdrawLoading}
                       variant="outline"
                     >
                       <Wallet className="mr-2 h-4 w-4" />

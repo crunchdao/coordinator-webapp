@@ -24,7 +24,7 @@ import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { faucetRequestSchema } from "../application/schemas/faucet-request";
 import { useRequestFaucet } from "../application/hooks/useRequestFaucet";
 import { FaucetRequest } from "../domain/types";
-import { useGetCrnchAccount } from "../../staking/application/hooks/useGetCrnchAccount";
+import { useGetCrnchAccount } from "@crunchdao/staking";
 
 export function FaucetCard() {
   const form = useForm<FaucetRequest>({
