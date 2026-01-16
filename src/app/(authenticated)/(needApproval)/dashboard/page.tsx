@@ -1,8 +1,13 @@
 import { Metadata } from "next";
 import { CoordinatorCrunches } from "@/modules/coordinator/ui/coordinatorCrunches";
-import { StakingCard } from "@/modules/staking/ui/stakingCard";
-import { FaucetCard } from "@/modules/faucet/ui/faucetCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
+import {
+  DepositedCard,
+  RewardCard,
+  StakingLifecycle,
+  UnstackedCard,
+} from "@crunchdao/staking";
+import { SelfStakeCard } from "@/modules/staking/ui/selfStakeCard";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -11,20 +16,24 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="p-6 flex flex-wrap max-lg:flex-col gap-3">
-      <div className="flex flex-col gap-3 w-full lg:max-w-md">
-        <FaucetCard />
-        <StakingCard />
+    <div className="p-6 flex flex-col gap-3">
+      <div className="flex [&_div]:flex-1 gap-3 w-full">
+        <DepositedCard />
+        <UnstackedCard />
+        <RewardCard />
+        <SelfStakeCard />
       </div>
-
-      <Card className="flex-1">
-        <CardHeader>
-          <CardTitle>Your Crunches</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CoordinatorCrunches />
-        </CardContent>
-      </Card>
+      <StakingLifecycle />
+      <div className="flex flex-wrap max-lg:flex-col gap-3">
+        <Card className="flex-1">
+          <CardHeader>
+            <CardTitle>Your Crunches</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CoordinatorCrunches />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

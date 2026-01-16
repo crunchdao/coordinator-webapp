@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -79,7 +78,10 @@ export function WalletSelector() {
             >
               <Coordinator className="h-4 w-4 mr-2" /> Registration
             </Link>
-            <SolanaAddressLink address={publicKey.toString()} />
+            <SolanaAddressLink
+              copyable={false}
+              address={publicKey.toString()}
+            />
           </DropdownMenuItem>
         ) : (
           <DropdownMenuLabel className="gap-3 [&>span]:ml-1 flex items-center">
@@ -103,7 +105,10 @@ export function WalletSelector() {
               </>
             )}
             <span className="ml-auto body-xs">
-              <SolanaAddressLink address={publicKey.toString()} />
+              <SolanaAddressLink
+                copyable={false}
+                address={publicKey.toString()}
+              />
             </span>
           </DropdownMenuLabel>
         )}
