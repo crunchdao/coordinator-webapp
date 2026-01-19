@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@crunch-ui/core";
+import { LocalRestrictedWrapper } from "@/modules/auth/ui/localRestrictedWrapper";
 
 export const metadata: Metadata = {
   title: "Create Crunch",
@@ -16,18 +17,20 @@ export const metadata: Metadata = {
 export default function CreateCrunchPage() {
   return (
     <div className="container max-w-2xl mx-auto p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Create a New Crunch</CardTitle>
-          <CardDescription>
-            Set up a new Crunch: Define the name, reward pool, and participation
-            limits.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CrunchCreationForm />
-        </CardContent>
-      </Card>
+      <LocalRestrictedWrapper message="Crunch creation requires blockchain connection">
+        <Card>
+          <CardHeader>
+            <CardTitle>Create a New Crunch</CardTitle>
+            <CardDescription>
+              Set up a new Crunch: Define the name, reward pool, and participation
+              limits.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CrunchCreationForm />
+          </CardContent>
+        </Card>
+      </LocalRestrictedWrapper>
     </div>
   );
 }

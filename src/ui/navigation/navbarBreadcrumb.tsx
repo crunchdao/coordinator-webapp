@@ -2,6 +2,7 @@
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/modules/auth/application/context/authContext";
+import { useSettings } from "@/modules/settings/application/context/settingsContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { useGetCoordinatorCrunches } from "@/modules/coordinator/application/hooks/useGetCoordinatorCrunches";
 import {
@@ -17,16 +18,21 @@ import {
 } from "@crunch-ui/core";
 import { ChevronDown } from "@crunch-ui/icons";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { LOCAL_CRUNCH_NAME, LOCAL_COORDINATOR_NAME } from "@/utils/config";
 
 export const NavbarBreadcrumb: React.FC = () => {
   const { coordinator, coordinatorStatus, isLoading } = useAuth();
   const { crunches, crunchesPending } = useGetCoordinatorCrunches();
+  const { isLocal } = useSettings();
   const params = useParams();
   const pathname = usePathname();
 
   const currentCrunchName = params.crunchname as string;
   const unregistered =
     !isLoading && coordinatorStatus === CoordinatorStatus.UNREGISTERED;
+
+  const coordinatorName = isLocal ? LOCAL_COORDINATOR_NAME : coordinator?.name;
+  const displayCrunchName = isLocal ? LOCAL_CRUNCH_NAME : currentCrunchName;
 
   return (
     <Breadcrumb>
@@ -38,16 +44,16 @@ export const NavbarBreadcrumb: React.FC = () => {
           ) : unregistered ? (
             <Link href={INTERNAL_LINKS.REGISTER}>Register</Link>
           ) : (
-            <Link href={INTERNAL_LINKS.DASHBOARD}>{coordinator?.name}</Link>
+            <Link href={INTERNAL_LINKS.DASHBOARD}>{coordinatorName}</Link>
           )}
         </BreadcrumbItem>
-        {!unregistered && currentCrunchName && (
+        {!unregistered && displayCrunchName && (
           <>
             <BreadcrumbSeparator>/</BreadcrumbSeparator>
             <BreadcrumbItem className="text-foreground normal-case">
-              {crunchesPending ? (
+              {!isLocal && crunchesPending ? (
                 <Skeleton className="w-32 h-4" />
-              ) : crunches && crunches.length > 1 ? (
+              ) : !isLocal && crunches && crunches.length > 1 ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center gap-1 normal-case!">
                     {currentCrunchName}
@@ -73,7 +79,7 @@ export const NavbarBreadcrumb: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <span className="normal-case">{currentCrunchName}</span>
+                <span className="normal-case">{displayCrunchName}</span>
               )}
             </BreadcrumbItem>
           </>

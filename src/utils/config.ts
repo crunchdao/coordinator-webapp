@@ -70,6 +70,9 @@ const getSolanaRpcUrl = (): string => {
   return "https://api.devnet.solana.com";
 };
 
+export const LOCAL_CRUNCH_NAME = "local-crunch";
+export const LOCAL_COORDINATOR_NAME = "Coordinator";
+
 export const config: Config = {
   env: getEnvironment(),
   version: packageJson.version,
