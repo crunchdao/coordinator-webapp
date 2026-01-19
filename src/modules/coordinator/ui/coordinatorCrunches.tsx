@@ -9,15 +9,35 @@ import {
   Skeleton,
 } from "@crunch-ui/core";
 import { useGetCoordinatorCrunches } from "../application/hooks/useGetCoordinatorCrunches";
+import { useSettings } from "@/modules/settings/application/context/settingsContext";
 import Link from "next/link";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { LOCAL_CRUNCH_NAME } from "@/utils/config";
 import { CircleCheck, Cube, Payout, Plus, Wallet } from "@crunch-ui/icons";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 
 export function CoordinatorCrunches() {
   const { crunches, crunchesLoading, crunchesPending } =
     useGetCoordinatorCrunches();
+  const { isLocal } = useSettings();
+
+  if (isLocal) {
+    return (
+      <div className="space-y-3">
+        <p className="text-muted-foreground">
+          Local mode: Access your local crunch environment.
+        </p>
+        <Link
+          href={generateLink(INTERNAL_LINKS.LEADERBOARD, {
+            crunchname: LOCAL_CRUNCH_NAME,
+          })}
+        >
+          <Button>Enter {LOCAL_CRUNCH_NAME}</Button>
+        </Link>
+      </div>
+    );
+  }
 
   if (crunchesLoading || crunchesPending) {
     return (

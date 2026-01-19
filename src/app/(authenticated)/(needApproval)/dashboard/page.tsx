@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <div className="p-6 flex flex-col gap-3">
-      <LocalRestrictedWrapper message="Staking requires blockchain connection">
+      <LocalRestrictedWrapper>
         <div className="flex [&_div]:flex-1 gap-3 w-full">
           <DepositedCard />
           <UnstackedCard />
@@ -33,9 +33,7 @@ export default function DashboardPage() {
             <CardTitle>Your Crunches</CardTitle>
           </CardHeader>
           <CardContent>
-            <LocalRestrictedWrapper message="Crunches require blockchain connection">
-              <CoordinatorCrunches />
-            </LocalRestrictedWrapper>
+            <CoordinatorCrunches />
           </CardContent>
         </Card>
       </div>

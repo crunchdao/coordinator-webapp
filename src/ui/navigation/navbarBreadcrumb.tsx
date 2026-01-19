@@ -18,7 +18,7 @@ import {
 } from "@crunch-ui/core";
 import { ChevronDown } from "@crunch-ui/icons";
 import { INTERNAL_LINKS } from "@/utils/routes";
-import { LOCAL_CRUNCH_NAME, LOCAL_COORDINATOR_NAME } from "@/utils/config";
+import { LOCAL_COORDINATOR_NAME } from "@/utils/config";
 
 export const NavbarBreadcrumb: React.FC = () => {
   const { coordinator, coordinatorStatus, isLoading } = useAuth();
@@ -32,7 +32,6 @@ export const NavbarBreadcrumb: React.FC = () => {
     !isLoading && coordinatorStatus === CoordinatorStatus.UNREGISTERED;
 
   const coordinatorName = isLocal ? LOCAL_COORDINATOR_NAME : coordinator?.name;
-  const displayCrunchName = isLocal ? LOCAL_CRUNCH_NAME : currentCrunchName;
 
   return (
     <Breadcrumb>
@@ -47,7 +46,7 @@ export const NavbarBreadcrumb: React.FC = () => {
             <Link href={INTERNAL_LINKS.DASHBOARD}>{coordinatorName}</Link>
           )}
         </BreadcrumbItem>
-        {!unregistered && displayCrunchName && (
+        {!unregistered && currentCrunchName && (
           <>
             <BreadcrumbSeparator>/</BreadcrumbSeparator>
             <BreadcrumbItem className="text-foreground normal-case">
@@ -79,7 +78,7 @@ export const NavbarBreadcrumb: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <span className="normal-case">{displayCrunchName}</span>
+                <span className="normal-case!">{currentCrunchName}</span>
               )}
             </BreadcrumbItem>
           </>
