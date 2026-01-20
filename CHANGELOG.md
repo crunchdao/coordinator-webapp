@@ -1,5 +1,11 @@
 # coordinator-webapp
 
+## 0.6.1
+
+### Patch Changes
+
+- 3da3b9f: Block local APIs on Vercel deployment
+
 ## 0.6.0
 
 ### Minor Changes
