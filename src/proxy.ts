@@ -5,8 +5,9 @@ import { isRouteAllowed, INTERNAL_LINKS } from "@/utils/routes";
 import { compose } from "./utils/proxy";
 import { withCsp } from "./utils/security/withCsp";
 import { withMaintenance } from "./utils/withMaintenance";
+import { withLocalApiBlock } from "./utils/withLocalApiBlock";
 
-const run = compose(withCsp, withMaintenance);
+const run = compose(withCsp, withMaintenance, withLocalApiBlock);
 
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -20,5 +21,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|images|fonts).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|images|fonts).*)"],
 };

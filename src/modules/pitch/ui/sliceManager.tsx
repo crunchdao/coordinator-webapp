@@ -87,7 +87,7 @@ export function SliceManager({ form }: SliceManagerProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       <CardTitle>Content Slices</CardTitle>
       <div>
         <div className="flex items-center gap-2 mb-8">

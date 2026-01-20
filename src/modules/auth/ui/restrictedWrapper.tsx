@@ -10,10 +10,10 @@ interface RestrictedWrapperProps {
   showDefaultMessage?: boolean;
 }
 
-export function RestrictedWrapper({ 
-  children, 
+export function RestrictedWrapper({
+  children,
   fallback = null,
-  showDefaultMessage = true 
+  showDefaultMessage = true,
 }: RestrictedWrapperProps) {
   const { canAccess } = useCanAccess();
 
@@ -21,7 +21,7 @@ export function RestrictedWrapper({
     if (fallback) {
       return <>{fallback}</>;
     }
-    
+
     if (showDefaultMessage) {
       return (
         <div className="mx-auto w-full max-w-7xl">
@@ -31,14 +31,14 @@ export function RestrictedWrapper({
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground">
-                This content is only available to approved coordinators.
+                This content is only available to registered coordinators.
               </p>
             </CardContent>
           </Card>
         </div>
       );
     }
-    
+
     return null;
   }
 

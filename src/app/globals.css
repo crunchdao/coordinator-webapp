@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
+@source "../../node_modules/@crunchdao/staking/src/**/*.{ts,tsx}";
 
 @theme inline {
   --font-departure: "departure", sans-serif;

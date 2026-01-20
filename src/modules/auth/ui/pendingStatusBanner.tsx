@@ -9,7 +9,7 @@ export function PendingStatusBanner() {
   if (!isReadOnly) return null;
 
   return (
-    <Alert variant="warning" className="container mx-auto mb-3">
+    <Alert variant="warning" className="container mx-auto my-3">
       <InfoCircle />
       <AlertTitle>Application in Read-Only Mode</AlertTitle>
       <AlertDescription>

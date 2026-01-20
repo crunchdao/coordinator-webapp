@@ -6,16 +6,20 @@ import { useAuth } from "@/modules/auth/application/context/authContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 
 export function LoginCard() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, coordinatorStatus, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.push(INTERNAL_LINKS.LEADERBOARD);
+    if (!isLoading && isAuthenticated && coordinatorStatus) {
+      if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
+        router.push(INTERNAL_LINKS.REGISTER);
+      }
+      router.push(INTERNAL_LINKS.DASHBOARD);
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, router, coordinatorStatus]);
 
   return (
     <Card className="w-full max-w-md">
