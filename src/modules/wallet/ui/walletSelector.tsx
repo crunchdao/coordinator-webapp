@@ -11,6 +11,7 @@ import {
   PulseRing,
   Avatar,
   AvatarFallback,
+  Badge,
 } from "@crunch-ui/core";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import {
@@ -24,6 +25,7 @@ import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useWallet } from "../application/context/walletContext";
+import { useEffectiveAuthority } from "../application/hooks/useEffectiveAuthority";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 
 export function WalletSelector() {
@@ -31,6 +33,7 @@ export function WalletSelector() {
     useWallet();
   const { setVisible, visible } = useWalletModal();
   const { coordinatorStatus, coordinator } = useAuth();
+  const { authority, isMultisigMode } = useEffectiveAuthority();
 
   const handleSelectChange = (value: string) => {
     if (value === "connect-new") {
@@ -59,17 +62,39 @@ export function WalletSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="cursor-pointer">
-          <AvatarFallback>
-            {coordinatorStatus === CoordinatorStatus.UNREGISTERED ? (
-              <QuestionMark />
-            ) : (
-              <span>{coordinator?.name.charAt(0).toUpperCase()}</span>
-            )}
-          </AvatarFallback>
-        </Avatar>
+        <div className="flex items-center gap-2 cursor-pointer">
+          {isMultisigMode && (
+            <Badge variant="outline" className="text-xs">
+              Multisig
+            </Badge>
+          )}
+          <Avatar>
+            <AvatarFallback>
+              {coordinatorStatus === CoordinatorStatus.UNREGISTERED ? (
+                <QuestionMark />
+              ) : (
+                <span>{coordinator?.name.charAt(0).toUpperCase()}</span>
+              )}
+            </AvatarFallback>
+          </Avatar>
+        </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
+      <DropdownMenuContent align="end" className="w-72">
+        {isMultisigMode && authority && (
+          <>
+            <DropdownMenuLabel className="text-xs text-muted-foreground">
+              Multisig Mode Active
+            </DropdownMenuLabel>
+            <DropdownMenuItem className="flex-col items-start gap-1">
+              <span className="text-xs text-muted-foreground">Vault (Authority)</span>
+              <SolanaAddressLink
+                copyable={true}
+                address={authority.toString()}
+              />
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         {coordinatorStatus === CoordinatorStatus.UNREGISTERED ? (
           <DropdownMenuItem>
             <Link

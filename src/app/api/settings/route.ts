@@ -19,7 +19,16 @@ async function ensureConfigDir() {
 export async function GET() {
   try {
     const data = await fs.readFile(CONFIG_FILE, "utf-8");
-    const settings: GlobalSettings = JSON.parse(data);
+    const savedSettings: GlobalSettings = JSON.parse(data);
+    // Merge with initial settings to pick up new fields
+    const settings: GlobalSettings = {
+      ...initialSettings,
+      ...savedSettings,
+      // Deep merge nested objects
+      endpoints: { ...initialSettings.endpoints, ...savedSettings.endpoints },
+      logs: { ...initialSettings.logs, ...savedSettings.logs },
+      multisig: { ...initialSettings.multisig, ...savedSettings.multisig },
+    };
     return NextResponse.json(settings);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {

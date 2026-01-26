@@ -5,8 +5,7 @@ import {
   CrunchServiceWithContext,
 } from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { Transaction } from "@solana/web3.js";
+import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 
 interface StartCrunchParams {
   crunchName: string;
@@ -15,11 +14,11 @@ interface StartCrunchParams {
 export const useStartCrunch = () => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
-  const { publicKey } = useWallet();
+  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
 
   const mutation = useMutation({
     mutationFn: async ({ crunchName }: StartCrunchParams) => {
-      if (!anchorProvider || !publicKey) {
+      if (!anchorProvider || !authority) {
         throw new Error("Wallet not connected");
       }
 
@@ -28,32 +27,38 @@ export const useStartCrunch = () => {
         program: coordinatorProgram,
       });
 
+      // Use authority (vault in multisig mode, wallet otherwise) as the signer
       const { instructions, partialSigners } =
-        await crunchService.startCrunchInstruction(crunchName, publicKey);
+        await crunchService.startCrunchInstruction(crunchName, authority);
 
-      const transaction = new Transaction();
-      transaction.add(...instructions);
+      const result = await executeTransaction({
+        instructions,
+        partialSigners,
+        memo: `Start crunch: ${crunchName}`,
+      });
 
-      const { blockhash } = await anchorProvider.connection.getLatestBlockhash(
-        "confirmed"
-      );
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = publicKey;
-
-      if (partialSigners.length > 0) {
-        transaction.partialSign(...partialSigners);
-      }
-
-      const txHash = await anchorProvider.sendAndConfirm(transaction);
-
-      return { success: true, txHash, crunchName };
+      return {
+        success: true,
+        txHash: result.signature,
+        crunchName,
+        isMultisig: result.isMultisig,
+        proposalUrl: result.proposalUrl,
+      };
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["coordinator-crunches"] });
-      toast({
-        title: "Crunch started successfully",
-        description: `"${result.crunchName}" is now active.`,
-      });
+
+      if (result.isMultisig) {
+        toast({
+          title: "Multisig proposal created",
+          description: `Proposal to start "${result.crunchName}" has been submitted for approval.`,
+        });
+      } else {
+        toast({
+          title: "Crunch started successfully",
+          description: `"${result.crunchName}" is now active.`,
+        });
+      }
     },
     onError: (error) => {
       console.error("Start crunch error:", error);
@@ -70,5 +75,6 @@ export const useStartCrunch = () => {
     startCrunchAsync: mutation.mutateAsync,
     startCrunchLoading: mutation.isPending,
     startCrunchError: mutation.error,
+    isMultisigMode,
   };
 };

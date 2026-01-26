@@ -3,24 +3,23 @@ import {
   getCoordinatorProgram,
   getCrunchesForCoordinatorWallet,
 } from "@crunchdao/sdk";
-import { PublicKey } from "@solana/web3.js";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
-import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 
 export const useGetCoordinatorCrunches = () => {
-  const { publicKey } = useWallet();
+  const { authority, isMultisigMode, ready } = useEffectiveAuthority();
   const { anchorProvider } = useAnchorProvider();
 
   const query = useQuery({
-    queryKey: ["coordinator-crunches", publicKey?.toString()],
+    queryKey: ["coordinator-crunches", authority?.toString(), isMultisigMode],
     queryFn: async () => {
-      if (!publicKey || !anchorProvider) {
+      if (!authority || !anchorProvider) {
         return [];
       }
       const coordinatorProgram = getCoordinatorProgram(anchorProvider);
       const crunches = await getCrunchesForCoordinatorWallet(
         coordinatorProgram,
-        new PublicKey(publicKey)
+        authority
       );
 
       const transformedCrunches = crunches?.map((crunch) => ({
@@ -30,12 +29,13 @@ export const useGetCoordinatorCrunches = () => {
 
       return transformedCrunches || [];
     },
-    enabled: !!publicKey && !!anchorProvider,
+    enabled: !!authority && !!anchorProvider && ready,
   });
 
   return {
     crunches: query.data,
     crunchesLoading: query.isLoading,
     crunchesPending: query.isPending,
+    isMultisigMode,
   };
 };

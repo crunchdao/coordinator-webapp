@@ -1,7 +1,6 @@
 "use client";
 import { PublicKey } from "@solana/web3.js";
 import { useGetRewardVaultBalance } from "../application/hooks/useGetRewardVaultBalance";
-import { Skeleton } from "@crunch-ui/core";
 
 interface RewardVaultBalanceProps {
   rewardVaultAddress: PublicKey;
@@ -14,7 +13,7 @@ export function RewardVaultBalance({
     useGetRewardVaultBalance(rewardVaultAddress);
 
   if (vaultBalanceLoading) {
-    return <Skeleton className="h-4 w-20 inline-block" />;
+    return <span className="text-muted-foreground animate-pulse">Loading...</span>;
   }
 
   return <span>{vaultBalance.toLocaleString()} USDC</span>;

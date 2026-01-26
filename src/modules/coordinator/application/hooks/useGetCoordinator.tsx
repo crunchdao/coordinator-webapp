@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCoordinatorProgram, getCoordinator } from "@crunchdao/sdk";
-import { PublicKey } from "@solana/web3.js";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
-import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import {
   CoordinatorStatus,
   CoordinatorData,
@@ -11,14 +10,15 @@ import {
 export const useGetCoordinator = (): {
   coordinator: CoordinatorData | undefined;
   coordinatorLoading: boolean;
+  isMultisigMode: boolean;
 } => {
-  const { publicKey } = useWallet();
+  const { authority, isMultisigMode, ready } = useEffectiveAuthority();
   const { anchorProvider } = useAnchorProvider();
 
   const query = useQuery<CoordinatorData>({
-    queryKey: ["coordinator", publicKey?.toString()],
+    queryKey: ["coordinator", authority?.toString(), isMultisigMode],
     queryFn: async (): Promise<CoordinatorData> => {
-      if (!publicKey || !anchorProvider) {
+      if (!authority || !anchorProvider) {
         return {
           status: CoordinatorStatus.UNREGISTERED,
           data: null,
@@ -29,7 +29,7 @@ export const useGetCoordinator = (): {
         const coordinatorProgram = getCoordinatorProgram(anchorProvider);
         const coordinator = await getCoordinator(
           coordinatorProgram,
-          new PublicKey(publicKey)
+          authority
         );
 
         if (!coordinator) {
@@ -62,7 +62,7 @@ export const useGetCoordinator = (): {
         };
       }
     },
-    enabled: !!publicKey && !!anchorProvider,
+    enabled: !!authority && !!anchorProvider && ready,
     refetchInterval: (query) => {
       if (query.state.data?.status === CoordinatorStatus.PENDING) {
         return 30_000;
@@ -74,5 +74,6 @@ export const useGetCoordinator = (): {
   return {
     coordinator: query.data,
     coordinatorLoading: query.isLoading,
+    isMultisigMode,
   };
 };

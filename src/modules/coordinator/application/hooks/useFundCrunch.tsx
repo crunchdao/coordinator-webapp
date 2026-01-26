@@ -5,8 +5,8 @@ import {
   CrunchServiceWithContext,
 } from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, Transaction } from "@solana/web3.js";
+import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
+import { PublicKey } from "@solana/web3.js";
 
 interface FundCrunchParams {
   crunchAddress: PublicKey;
@@ -16,11 +16,11 @@ interface FundCrunchParams {
 export const useFundCrunch = () => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
-  const { publicKey } = useWallet();
+  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
 
   const mutation = useMutation({
     mutationFn: async ({ crunchAddress, amount }: FundCrunchParams) => {
-      if (!anchorProvider || !publicKey) {
+      if (!anchorProvider || !authority) {
         throw new Error("Wallet not connected");
       }
 
@@ -32,31 +32,41 @@ export const useFundCrunch = () => {
       // Convert USDC to micro-USDC (6 decimals)
       const amountInMicroUsdc = Math.floor(amount * 1_000_000);
 
+      // Use authority (vault in multisig mode, wallet otherwise) as the signer
       const instruction = await crunchService.depositRewardUsdcInstruction(
         crunchAddress,
         amountInMicroUsdc,
-        publicKey
+        authority
       );
 
-      const transaction = new Transaction();
-      transaction.add(instruction);
+      const result = await executeTransaction({
+        instructions: [instruction],
+        memo: `Fund crunch with ${amount} USDC`,
+      });
 
-      const { blockhash } = await anchorProvider.connection.getLatestBlockhash(
-        "confirmed"
-      );
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = publicKey;
-
-      const txHash = await anchorProvider.sendAndConfirm(transaction);
-
-      return { success: true, txHash, amount };
+      return {
+        success: true,
+        txHash: result.signature,
+        amount,
+        isMultisig: result.isMultisig,
+        proposalUrl: result.proposalUrl,
+      };
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["coordinator-crunches"] });
-      toast({
-        title: "Crunch funded successfully",
-        description: `Added ${result.amount} USDC to the reward vault.`,
-      });
+      queryClient.invalidateQueries({ queryKey: ["reward-vault-balance"] });
+
+      if (result.isMultisig) {
+        toast({
+          title: "Multisig proposal created",
+          description: `Proposal to fund ${result.amount} USDC has been submitted for approval.`,
+        });
+      } else {
+        toast({
+          title: "Crunch funded successfully",
+          description: `Added ${result.amount} USDC to the reward vault.`,
+        });
+      }
     },
     onError: (error) => {
       console.error("Fund crunch error:", error);
@@ -73,5 +83,6 @@ export const useFundCrunch = () => {
     fundCrunchAsync: mutation.mutateAsync,
     fundCrunchLoading: mutation.isPending,
     fundCrunchError: mutation.error,
+    isMultisigMode,
   };
 };
