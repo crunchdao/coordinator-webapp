@@ -50,18 +50,6 @@ export const updateLeaderboardColumn = async (
   );
   return response.data;
 };
-
-export const updateFixedColumnProperty = async (
-  id: number,
-  property: string
-): Promise<LeaderboardColumn> => {
-  const response = await configApiClient.patch(
-    `${endpoints.getLeaderboardColumns()}/${id}`,
-    { property }
-  );
-  return response.data;
-};
-
 export const resetLeaderboardColumns = async (): Promise<void> => {
   await configApiClient.post(`${endpoints.resetLeaderboardColumns()}`);
 };

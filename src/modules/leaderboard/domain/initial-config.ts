@@ -19,6 +19,7 @@ export const FIXED_COLUMNS_DEFAULTS = {
     format: null,
     tooltip: null,
     nativeConfiguration: null,
+    property: "cruncher_name",
   },
 };
 

@@ -23,18 +23,6 @@ export const useLeaderboardTable = () => {
   return useMemo<ColumnDef<LeaderboardPosition>[]>(() => {
     if (!leaderboardColumns) return [];
 
-    const fixedColumns: ColumnDef<LeaderboardPosition>[] = [
-      {
-        id: "username",
-        accessorKey: "cruncher_name",
-        header: "Username",
-        cell: ({ row }) => {
-          const username = row.original.cruncher_name as string;
-          return <span>{username || "-"}</span>;
-        },
-      },
-    ];
-
     const configColumns: ColumnDef<LeaderboardPosition>[] =
       leaderboardColumns.map((column) => {
         if (column.type === "MODEL") {
@@ -133,6 +121,6 @@ export const useLeaderboardTable = () => {
         };
       });
 
-    return [...fixedColumns, ...configColumns];
+    return configColumns;
   }, [leaderboardColumns]);
 };

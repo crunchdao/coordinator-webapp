@@ -40,8 +40,8 @@ import {
 import { ColumnType, LeaderboardColumn } from "../domain/types";
 import { useAddColumn } from "../application/hooks/useAddColumn";
 import { useUpdateColumn } from "../application/hooks/useUpdateColumn";
-import { useUpdateFixedColumn } from "../application/hooks/useUpdateFixedColumn";
 import { isFixedColumnType } from "../application/utils";
+import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
 
 type ColumnFormData = z.infer<typeof createLeaderboardColumnSchema>;
 type FixedColumnFormData = z.infer<typeof editFixedColumnSchema>;
@@ -105,8 +105,6 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
 
   const { addColumn, addColumnLoading } = useAddColumn();
   const { updateColumn, updateColumnLoading } = useUpdateColumn();
-  const { updateFixedColumn, updateFixedColumnLoading } =
-    useUpdateFixedColumn();
 
   const submit = useCallback(
     (data: ColumnFormData) => {
@@ -144,8 +142,18 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
   const submitFixed = useCallback(
     (data: FixedColumnFormData) => {
       if (!editValues) return;
-      updateFixedColumn(
-        { id: editValues.id, property: data.property },
+      const defaults =
+        FIXED_COLUMNS_DEFAULTS[
+          editValues.type as keyof typeof FIXED_COLUMNS_DEFAULTS
+        ];
+      updateColumn(
+        {
+          id: editValues.id,
+          column: {
+            ...defaults,
+            property: data.property,
+          },
+        },
         {
           onSuccess: () => {
             onSuccess?.();
@@ -153,7 +161,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
         }
       );
     },
-    [updateFixedColumn, onSuccess, editValues]
+    [updateColumn, onSuccess, editValues]
   );
 
   const columnType = form.watch("type");
@@ -211,8 +219,8 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
           <div className="flex justify-end gap-4 pt-4">
             <Button
               type="submit"
-              disabled={updateFixedColumnLoading}
-              loading={updateFixedColumnLoading}
+              disabled={updateColumnLoading}
+              loading={updateColumnLoading}
             >
               Update Column
             </Button>
