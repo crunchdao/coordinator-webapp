@@ -38,3 +38,7 @@ export const createLeaderboardColumnSchema = z.object({
     .optional(),
   order: z.number().int().min(0),
 });
+
+export const editFixedColumnSchema = z.object({
+  property: z.string().min(1, "Property is required"),
+});

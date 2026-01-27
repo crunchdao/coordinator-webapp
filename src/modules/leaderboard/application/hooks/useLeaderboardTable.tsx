@@ -2,6 +2,8 @@
 import { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import {
+  Avatar,
+  AvatarFallback,
   PulseRing,
   Tooltip,
   TooltipContent,
@@ -22,18 +24,6 @@ export const useLeaderboardTable = () => {
 
   return useMemo<ColumnDef<LeaderboardPosition>[]>(() => {
     if (!leaderboardColumns) return [];
-
-    const fixedColumns: ColumnDef<LeaderboardPosition>[] = [
-      {
-        id: "username",
-        accessorKey: "cruncher_name",
-        header: "Username",
-        cell: ({ row }) => {
-          const username = row.original.cruncher_name as string;
-          return <span>{username || "-"}</span>;
-        },
-      },
-    ];
 
     const configColumns: ColumnDef<LeaderboardPosition>[] =
       leaderboardColumns.map((column) => {
@@ -89,7 +79,16 @@ export const useLeaderboardTable = () => {
               : column.displayName || "",
             cell: ({ row }) => {
               const username = row.original[column.property] as string;
-              return <span>{username || ""}</span>;
+              return (
+                <div className="flex items-center gap-2">
+                  <Avatar className="inline-block">
+                    <AvatarFallback>
+                      {username?.charAt(0)?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{username || ""}</span>
+                </div>
+              );
             },
           };
         }
@@ -133,6 +132,6 @@ export const useLeaderboardTable = () => {
         };
       });
 
-    return [...fixedColumns, ...configColumns];
+    return configColumns;
   }, [leaderboardColumns]);
 };

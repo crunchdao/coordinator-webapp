@@ -21,6 +21,8 @@ import { EditColumnSheet } from "./editColumnSheet";
 import { ResetColumnsButton } from "./resetColumnsButton";
 import { Settings, Folder, Percentage, Chart, User } from "@crunch-ui/icons";
 import { ColumnType } from "../domain/types";
+import { isFixedColumnType } from "../application/utils";
+import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
 
 const getColumnIcon = (type: ColumnType) => {
   switch (type) {
@@ -50,7 +52,19 @@ export const ColumnSettingsTable: React.FC = () => {
     queryFn: getLeaderboardColumns,
   });
 
-  const sortedColumns = columns?.sort((a, b) => a.order - b.order) || [];
+  const allColumns = columns || [];
+  const fixedColumns = allColumns
+    .filter((c) => isFixedColumnType(c.type))
+    .sort((a, b) => {
+      const defaultsA =
+        FIXED_COLUMNS_DEFAULTS[a.type as keyof typeof FIXED_COLUMNS_DEFAULTS];
+      const defaultsB =
+        FIXED_COLUMNS_DEFAULTS[b.type as keyof typeof FIXED_COLUMNS_DEFAULTS];
+      return (defaultsA?.order ?? 0) - (defaultsB?.order ?? 0);
+    });
+  const customColumns = allColumns
+    .filter((c) => !isFixedColumnType(c.type))
+    .sort((a, b) => a.order - b.order);
 
   return (
     <Accordion type="single" collapsible>
@@ -64,96 +78,158 @@ export const ColumnSettingsTable: React.FC = () => {
               <Settings className="w-5 h-5 text-muted-foreground" />
               <h2 className="text-lg font-semibold">Column Configuration</h2>
               <Badge size="sm" variant="secondary" className="ml-2">
-                {sortedColumns.length} Columns
+                {allColumns.length} Columns
               </Badge>
             </div>
           </div>
         </AccordionTrigger>
         <AccordionContent>
-          <div className="px-6 pb-6 pt-2">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Column Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Property</TableHead>
-                  <TableHead>Order</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
+          <div className="px-6 pb-6 pt-2 space-y-6">
+            <div>
+              <h3 className="title-sm font-medium mb-3">Fixed Columns</h3>
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="h-32 text-center text-muted-foreground"
-                    >
-                      <div className="flex flex-col items-center justify-center gap-2">
-                        <Spinner />
-                        <span>Loading columns...</span>
-                      </div>
-                    </TableCell>
+                    <TableHead>Column Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Property</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ) : sortedColumns.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-32 text-center">
-                      <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-                        <Settings className="w-8 h-8 opacity-20" />
-                        <p className="text-sm font-medium">
-                          No columns configured
-                        </p>
-                        <p className="body-sm">
-                          Add your first column to get started
-                        </p>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  sortedColumns.map((column) => (
-                    <TableRow
-                      key={column.id}
-                      className="group hover:bg-muted/50 transition-colors"
-                    >
-                      <TableCell>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="font-medium text-sm">
-                            {column.displayName || column.property}
-                          </span>
-                          {column.tooltip && (
-                            <span className="body-sm text-muted-foreground line-clamp-1">
-                              {column.tooltip}
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>{getColumnTypeBadge(column.type)}</TableCell>
-                      <TableCell>
-                        <code className="body-sm bg-muted px-2 py-1 rounded font-mono">
-                          {column.property}
-                        </code>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground tabular-nums">
-                          {column.order}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <EditColumnSheet column={column} />
-                          <DeleteColumnButton
-                            columnId={column.id}
-                            columnName={column.displayName || column.property}
-                          />
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        className="h-20 text-center text-muted-foreground"
+                      >
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <Spinner />
+                          <span>Loading columns...</span>
                         </div>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-            <div className="flex justify-end gap-3 items-center pt-4 border-t mt-4">
-              <ResetColumnsButton />
-              <AddColumnSheet />
+                  ) : (
+                    fixedColumns.map((column) => {
+                      const defaults =
+                        FIXED_COLUMNS_DEFAULTS[
+                          column.type as keyof typeof FIXED_COLUMNS_DEFAULTS
+                        ];
+                      return (
+                        <TableRow
+                          key={column.id}
+                          className="group hover:bg-muted/50 transition-colors"
+                        >
+                          <TableCell>
+                            <span className="font-medium text-sm">
+                              {defaults?.displayName ?? column.displayName}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            {getColumnTypeBadge(column.type)}
+                          </TableCell>
+                          <TableCell>
+                            <code className="body-sm bg-muted px-2 py-1 rounded font-mono">
+                              {column.property}
+                            </code>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <EditColumnSheet column={column} />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            <div>
+              <h3 className="title-sm font-medium mb-3">Custom Columns</h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Column Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Property</TableHead>
+                    <TableHead>Order</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        className="h-20 text-center text-muted-foreground"
+                      >
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <Spinner />
+                          <span>Loading columns...</span>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : customColumns.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-20 text-center">
+                        <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                          <Settings className="w-8 h-8 opacity-20" />
+                          <p className="text-sm font-medium">
+                            No custom columns configured
+                          </p>
+                          <p className="body-sm">
+                            Add your first custom column to get started
+                          </p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    customColumns.map((column) => (
+                      <TableRow
+                        key={column.id}
+                        className="group hover:bg-muted/50 transition-colors"
+                      >
+                        <TableCell>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="font-medium text-sm">
+                              {column.displayName || column.property}
+                            </span>
+                            {column.tooltip && (
+                              <span className="body-sm text-muted-foreground line-clamp-1">
+                                {column.tooltip}
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>{getColumnTypeBadge(column.type)}</TableCell>
+                        <TableCell>
+                          <code className="body-sm bg-muted px-2 py-1 rounded font-mono">
+                            {column.property}
+                          </code>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm text-muted-foreground tabular-nums">
+                            {column.order}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <EditColumnSheet column={column} />
+                            <DeleteColumnButton
+                              columnId={column.id}
+                              columnName={column.displayName || column.property}
+                            />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+              <div className="flex justify-end gap-3 items-center pt-4 border-t mt-4">
+                <ResetColumnsButton />
+                <AddColumnSheet />
+              </div>
             </div>
           </div>
         </AccordionContent>

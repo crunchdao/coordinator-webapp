@@ -1,21 +1,41 @@
 import { LeaderboardColumn } from "./types";
 
+export const FIXED_COLUMNS_DEFAULTS = {
+  MODEL: {
+    type: "MODEL" as const,
+    displayName: "Model",
+    order: 0,
+    format: null,
+    tooltip: null,
+    nativeConfiguration: {
+      type: "model" as const,
+      statusProperty: "status",
+    },
+  },
+  USERNAME: {
+    type: "USERNAME" as const,
+    displayName: "Username",
+    order: -10,
+    format: null,
+    tooltip: null,
+    nativeConfiguration: null,
+    property: "cruncher_name",
+  },
+};
+
 export const initialColumns: LeaderboardColumn[] = [
   {
     id: 1,
-    type: "MODEL",
-    property: "model_id",
-    format: null,
-    displayName: "Model",
-    tooltip: null,
-    nativeConfiguration: {
-      type: "model",
-      statusProperty: "status",
-    },
-    order: 0,
+    ...FIXED_COLUMNS_DEFAULTS.USERNAME,
+    property: "username",
   },
   {
     id: 2,
+    ...FIXED_COLUMNS_DEFAULTS.MODEL,
+    property: "model_id",
+  },
+  {
+    id: 3,
     type: "VALUE",
     property: "score_recent",
     format: "decimal-2",
@@ -25,7 +45,7 @@ export const initialColumns: LeaderboardColumn[] = [
     order: 20,
   },
   {
-    id: 3,
+    id: 4,
     type: "VALUE",
     property: "score_steady",
     format: "decimal-2",
@@ -35,7 +55,7 @@ export const initialColumns: LeaderboardColumn[] = [
     order: 30,
   },
   {
-    id: 4,
+    id: 5,
     type: "VALUE",
     property: "score_anchor",
     format: "decimal-2",

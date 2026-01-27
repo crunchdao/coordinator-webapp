@@ -24,14 +24,27 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { Plus, Trash, Folder, Chart, Percentage, User, InfoCircle } from "@crunch-ui/icons";
+import {
+  Plus,
+  Trash,
+  Folder,
+  Chart,
+  Percentage,
+  InfoCircle,
+} from "@crunch-ui/icons";
 import { z } from "zod";
-import { createLeaderboardColumnSchema } from "../application/schemas/createLeaderboardSchema";
+import {
+  createLeaderboardColumnSchema,
+  editFixedColumnSchema,
+} from "../application/schemas/createLeaderboardSchema";
 import { ColumnType, LeaderboardColumn } from "../domain/types";
 import { useAddColumn } from "../application/hooks/useAddColumn";
 import { useUpdateColumn } from "../application/hooks/useUpdateColumn";
+import { isFixedColumnType } from "../application/utils";
+import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
 
 type ColumnFormData = z.infer<typeof createLeaderboardColumnSchema>;
+type FixedColumnFormData = z.infer<typeof editFixedColumnSchema>;
 
 const columnTypes = [
   {
@@ -52,12 +65,6 @@ const columnTypes = [
     icon: Chart,
     description: "Data visualizations",
   },
-  {
-    value: "USERNAME",
-    label: "Username",
-    icon: User,
-    description: "User identification",
-  },
 ] as const;
 
 interface AddColumnFormProps {
@@ -69,6 +76,9 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
   onSuccess,
   editValues,
 }) => {
+  const isEditMode = !!editValues;
+  const isFixed = editValues ? isFixedColumnType(editValues.type) : false;
+
   const form = useForm<ColumnFormData>({
     resolver: zodResolver(createLeaderboardColumnSchema),
     defaultValues: editValues
@@ -86,9 +96,15 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
         },
   });
 
+  const fixedForm = useForm<FixedColumnFormData>({
+    resolver: zodResolver(editFixedColumnSchema),
+    defaultValues: editValues
+      ? { property: editValues.property }
+      : { property: "" },
+  });
+
   const { addColumn, addColumnLoading } = useAddColumn();
   const { updateColumn, updateColumnLoading } = useUpdateColumn();
-  const isEditMode = !!editValues;
 
   const submit = useCallback(
     (data: ColumnFormData) => {
@@ -123,6 +139,31 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
     [addColumn, updateColumn, form, onSuccess, isEditMode, editValues]
   );
 
+  const submitFixed = useCallback(
+    (data: FixedColumnFormData) => {
+      if (!editValues) return;
+      const defaults =
+        FIXED_COLUMNS_DEFAULTS[
+          editValues.type as keyof typeof FIXED_COLUMNS_DEFAULTS
+        ];
+      updateColumn(
+        {
+          id: editValues.id,
+          column: {
+            ...defaults,
+            property: data.property,
+          },
+        },
+        {
+          onSuccess: () => {
+            onSuccess?.();
+          },
+        }
+      );
+    },
+    [updateColumn, onSuccess, editValues]
+  );
+
   const columnType = form.watch("type");
 
   const handleTypeChange = (value: ColumnType) => {
@@ -141,6 +182,53 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
       form.reset(resetData);
     }
   };
+
+  if (isFixed) {
+    return (
+      <Form {...fixedForm}>
+        <form
+          role="form"
+          onSubmit={fixedForm.handleSubmit(submitFixed)}
+          className="space-y-6"
+        >
+          <FormField
+            control={fixedForm.control}
+            name="property"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Property
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      The data field name to display in this column. Must match
+                      exactly with your data property.
+                    </TooltipContent>
+                  </Tooltip>
+                </FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g., username" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex justify-end gap-4 pt-4">
+            <Button
+              type="submit"
+              disabled={updateColumnLoading}
+              loading={updateColumnLoading}
+            >
+              Update Column
+            </Button>
+          </div>
+        </form>
+      </Form>
+    );
+  }
 
   return (
     <Form {...form}>
@@ -194,7 +282,8 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                           <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          The data field name to display in this column. Must match exactly with your data property.
+                          The data field name to display in this column. Must
+                          match exactly with your data property.
                         </TooltipContent>
                       </Tooltip>
                     </FormLabel>
@@ -218,7 +307,8 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                           <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          The text shown in the column header. This is what users will see.
+                          The text shown in the column header. This is what
+                          users will see.
                         </TooltipContent>
                       </Tooltip>
                     </FormLabel>
@@ -260,7 +350,9 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                           <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          Column position from left to right. Lower numbers appear first. Use increments of 10 for easier reordering.
+                          Column position from left to right. Lower numbers
+                          appear first. Use increments of 10 for easier
+                          reordering.
                         </TooltipContent>
                       </Tooltip>
                     </FormLabel>
@@ -292,7 +384,8 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                             <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            How numeric values are displayed. Percentage assumes decimal input (0.5 = 50%).
+                            How numeric values are displayed. Percentage assumes
+                            decimal input (0.5 = 50%).
                           </TooltipContent>
                         </Tooltip>
                       </FormLabel>
@@ -346,7 +439,8 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                             <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            Data field containing status (boolean or string). Shows a pulse indicator when true or "active".
+                            Data field containing status (boolean or string).
+                            Shows a pulse indicator when true or "active".
                           </TooltipContent>
                         </Tooltip>
                       </FormLabel>
@@ -445,7 +539,8 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                             <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            Configure the data series for your gauge. Each series represents a segment with its own color.
+                            Configure the data series for your gauge. Each
+                            series represents a segment with its own color.
                           </TooltipContent>
                         </Tooltip>
                       </FormLabel>

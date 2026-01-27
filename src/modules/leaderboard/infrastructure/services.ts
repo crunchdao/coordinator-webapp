@@ -50,7 +50,6 @@ export const updateLeaderboardColumn = async (
   );
   return response.data;
 };
-
 export const resetLeaderboardColumns = async (): Promise<void> => {
   await configApiClient.post(`${endpoints.resetLeaderboardColumns()}`);
 };
