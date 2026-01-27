@@ -41,9 +41,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
       logs: {
         containerNames: [""],
       },
-      multisig: {
-        address: "",
-      },
     },
   });
 
@@ -171,36 +168,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ onSuccess }) => {
           </div>
           <FormMessage />
         </FormItem>
-
-        <FormField
-          control={form.control}
-          name="multisig.address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                Multisig Address
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    When set, all transactions will be proposed to this Squads
-                    multisig instead of being executed directly. Leave empty for
-                    direct execution.
-                  </TooltipContent>
-                </Tooltip>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Multisig address (e.g., SQDS...)"
-                  {...field}
-                  value={field.value || ""}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <div className="flex justify-end pt-4">
           <Button

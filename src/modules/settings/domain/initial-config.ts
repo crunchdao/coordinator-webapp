@@ -13,7 +13,4 @@ export const initialSettings: GlobalSettings = {
       "model-orchestrator-local",
     ],
   },
-  multisig: {
-    address: "",
-  },
 };

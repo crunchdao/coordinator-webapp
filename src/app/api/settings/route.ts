@@ -27,7 +27,6 @@ export async function GET() {
       // Deep merge nested objects
       endpoints: { ...initialSettings.endpoints, ...savedSettings.endpoints },
       logs: { ...initialSettings.logs, ...savedSettings.logs },
-      multisig: { ...initialSettings.multisig, ...savedSettings.multisig },
     };
     return NextResponse.json(settings);
   } catch (error) {
