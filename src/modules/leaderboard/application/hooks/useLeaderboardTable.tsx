@@ -2,6 +2,8 @@
 import { useMemo } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import {
+  Avatar,
+  AvatarFallback,
   PulseRing,
   Tooltip,
   TooltipContent,
@@ -77,7 +79,16 @@ export const useLeaderboardTable = () => {
               : column.displayName || "",
             cell: ({ row }) => {
               const username = row.original[column.property] as string;
-              return <span>{username || ""}</span>;
+              return (
+                <div className="flex items-center gap-2">
+                  <Avatar className="inline-block">
+                    <AvatarFallback>
+                      {username?.charAt(0)?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span>{username || ""}</span>
+                </div>
+              );
             },
           };
         }
