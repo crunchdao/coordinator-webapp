@@ -1,18 +1,32 @@
 import { LeaderboardColumn } from "./types";
 
+export const FIXED_COLUMNS_DEFAULTS = {
+  MODEL: {
+    type: "MODEL" as const,
+    displayName: "Model",
+    order: 0,
+    format: null,
+    tooltip: null,
+    nativeConfiguration: {
+      type: "model" as const,
+      statusProperty: "status",
+    },
+  },
+  USERNAME: {
+    type: "USERNAME" as const,
+    displayName: "Username",
+    order: -10,
+    format: null,
+    tooltip: null,
+    nativeConfiguration: null,
+  },
+};
+
 export const initialColumns: LeaderboardColumn[] = [
   {
     id: 1,
-    type: "MODEL",
+    ...FIXED_COLUMNS_DEFAULTS.MODEL,
     property: "model_id",
-    format: null,
-    displayName: "Model",
-    tooltip: null,
-    nativeConfiguration: {
-      type: "model",
-      statusProperty: "status",
-    },
-    order: 0,
   },
   {
     id: 2,
