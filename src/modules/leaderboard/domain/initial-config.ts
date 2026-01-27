@@ -25,11 +25,16 @@ export const FIXED_COLUMNS_DEFAULTS = {
 export const initialColumns: LeaderboardColumn[] = [
   {
     id: 1,
+    ...FIXED_COLUMNS_DEFAULTS.USERNAME,
+    property: "username",
+  },
+  {
+    id: 2,
     ...FIXED_COLUMNS_DEFAULTS.MODEL,
     property: "model_id",
   },
   {
-    id: 2,
+    id: 3,
     type: "VALUE",
     property: "score_recent",
     format: "decimal-2",
@@ -39,7 +44,7 @@ export const initialColumns: LeaderboardColumn[] = [
     order: 20,
   },
   {
-    id: 3,
+    id: 4,
     type: "VALUE",
     property: "score_steady",
     format: "decimal-2",
@@ -49,7 +54,7 @@ export const initialColumns: LeaderboardColumn[] = [
     order: 30,
   },
   {
-    id: 4,
+    id: 5,
     type: "VALUE",
     property: "score_anchor",
     format: "decimal-2",
