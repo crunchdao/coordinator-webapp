@@ -1,4 +1,5 @@
 "use client";
+import { useState, useMemo } from "react";
 import {
   Badge,
   Button,
@@ -16,11 +17,53 @@ import { INTERNAL_LINKS } from "@/utils/routes";
 import { LOCAL_CRUNCH_NAME } from "@/utils/config";
 import { CircleCheck, Cube, Payout, Plus, Wallet } from "@crunch-ui/icons";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
+import { FundCrunchDialog } from "./fundCrunchDialog";
+import { StartCrunchDialog } from "./startCrunchDialog";
+import { RewardVaultBalance } from "./rewardVaultBalance";
+import {
+  getCoordinatorProgram,
+  CrunchAccountServiceWithContext,
+} from "@crunchdao/sdk";
+import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
+import { PublicKey } from "@solana/web3.js";
+
+interface SelectedCrunch {
+  name: string;
+  address: PublicKey;
+  state: string;
+}
 
 export function CoordinatorCrunches() {
   const { crunches, crunchesLoading, crunchesPending } =
     useGetCoordinatorCrunches();
   const { isLocal } = useSettings();
+  const { anchorProvider } = useAnchorProvider();
+
+  const [fundDialogOpen, setFundDialogOpen] = useState(false);
+  const [startDialogOpen, setStartDialogOpen] = useState(false);
+  const [selectedCrunch, setSelectedCrunch] = useState<SelectedCrunch | null>(
+    null
+  );
+
+  const crunchAccountService = useMemo(() => {
+    if (!anchorProvider) return null;
+    const coordinatorProgram = getCoordinatorProgram(anchorProvider);
+    return CrunchAccountServiceWithContext({ program: coordinatorProgram });
+  }, [anchorProvider]);
+
+  const handleFundClick = (crunchName: string, crunchState: string) => {
+    if (!crunchAccountService) return;
+    const crunchAddress = crunchAccountService.getCrunchAddress(crunchName);
+    setSelectedCrunch({ name: crunchName, address: crunchAddress, state: crunchState });
+    setFundDialogOpen(true);
+  };
+
+  const handleStartClick = (crunchName: string, crunchState: string) => {
+    if (!crunchAccountService) return;
+    const crunchAddress = crunchAccountService.getCrunchAddress(crunchName);
+    setSelectedCrunch({ name: crunchName, address: crunchAddress, state: crunchState });
+    setStartDialogOpen(true);
+  };
 
   if (isLocal) {
     return (
@@ -111,19 +154,44 @@ export function CoordinatorCrunches() {
                   </span>{" "}
                   <SolanaAddressLink address={crunch.rewardVault.toString()} />
                 </p>
+                <p className="text-sm line-clamp-2">
+                  <span className="font-medium text-foreground">
+                    <Payout /> Vault Balance:
+                  </span>{" "}
+                  <RewardVaultBalance rewardVaultAddress={crunch.rewardVault} />
+                </p>
               </div>
 
-              <Link
-                key={crunch.name}
-                href={generateLink(INTERNAL_LINKS.LEADERBOARD, {
-                  crunchname: crunch.name,
-                })}
-                className="w-full"
-              >
-                <Button className="w-full" variant="outline" size="sm">
-                  Enter
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleFundClick(crunch.name, crunch.state ?? "unknown")}
+                  disabled={!crunchAccountService}
+                >
+                  Fund
                 </Button>
-              </Link>
+                {crunch.state !== "started" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleStartClick(crunch.name, crunch.state ?? "unknown")}
+                    disabled={!crunchAccountService}
+                  >
+                    Start
+                  </Button>
+                )}
+                <Link
+                  href={generateLink(INTERNAL_LINKS.LEADERBOARD, {
+                    crunchname: crunch.name,
+                  })}
+                  className="flex-1"
+                >
+                  <Button className="w-full" variant="outline" size="sm">
+                    Enter
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -137,11 +205,28 @@ export function CoordinatorCrunches() {
             }
           }}
         >
-          <Button disabled={crunches?.length > 0}>
+          <Button>
             Create Crunch <Plus />
           </Button>
         </Link>
       </div>
+
+      {selectedCrunch && (
+        <>
+          <FundCrunchDialog
+            open={fundDialogOpen}
+            onOpenChange={setFundDialogOpen}
+            crunchName={selectedCrunch.name}
+            crunchAddress={selectedCrunch.address}
+          />
+          <StartCrunchDialog
+            open={startDialogOpen}
+            onOpenChange={setStartDialogOpen}
+            crunchName={selectedCrunch.name}
+            currentState={selectedCrunch.state}
+          />
+        </>
+      )}
     </>
   );
 }

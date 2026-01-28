@@ -1,13 +1,36 @@
 {
-  "name": "coordinator-webapp",
+  "name": "@crunchdao/coordinator-webapp",
   "version": "0.6.1",
+  "description": "CrunchDAO Coordinator Web Application",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crunchdao/coordinator-webapp.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "coordinator-webapp": "./bin/coordinator-webapp"
+  },
+  "files": [
+    ".next/standalone/coordinator-webapp/",
+    ".next/static/",
+    "bin/",
+    "public/",
+    "config/"
+  ],
   "scripts": {
     "dev": "next dev",
+    "dev:devnet": "NEXT_PUBLIC_API_URL=https://hub.crunchdao.io NEXT_PUBLIC_SOLANA_NETWORK=devnet NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com next dev",
+    "dev:mainnet": "NEXT_PUBLIC_API_URL=https://hub.crunchdao.com NEXT_PUBLIC_SOLANA_NETWORK=mainnet-beta NEXT_PUBLIC_SOLANA_RPC_URL=https://api.mainnet-beta.solana.com next dev",
     "build": "next build",
+    "build:devnet": "NEXT_PUBLIC_API_URL=https://hub.crunchdao.io NEXT_PUBLIC_SOLANA_NETWORK=devnet NEXT_PUBLIC_SOLANA_RPC_URL=https://api.devnet.solana.com next build",
+    "build:mainnet": "NEXT_PUBLIC_API_URL=https://hub.crunchdao.com NEXT_PUBLIC_SOLANA_NETWORK=mainnet-beta NEXT_PUBLIC_SOLANA_RPC_URL=https://api.mainnet-beta.solana.com next build",
     "start": "next start",
     "lint": "next lint",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "prepublishOnly": "npm run build:devnet"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",

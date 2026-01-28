@@ -5,6 +5,7 @@ const MODEL_ORCHESTRATOR_URL =
   process.env.NEXT_PUBLIC_API_URL_MODEL_ORCHESTRATOR || "http://localhost:8001";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   poweredByHeader: false,
   async rewrites() {
     return [
