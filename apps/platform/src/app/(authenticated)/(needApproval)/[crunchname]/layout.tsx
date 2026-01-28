@@ -1,4 +1,4 @@
-import { RestrictedWrapper } from "@coordinator/auth/src/ui/restrictedWrapper";
+import { RestrictedWrapper } from "@/modules/auth/ui/restrictedWrapper";
 import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 
 export default function CrunchLayout({

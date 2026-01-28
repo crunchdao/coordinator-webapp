@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { CoordinatorCrunches } from "@coordinator/crunch/src/ui/coordinatorCrunches";
+import { CoordinatorCrunches } from "@/modules/crunch/ui/coordinatorCrunches";
 import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
 import {
   DepositedCard,
@@ -7,8 +7,8 @@ import {
   StakingLifecycle,
   UnstackedCard,
 } from "@crunchdao/staking";
-import { SelfStakeCard } from "@coordinator/staking/src/ui/selfStakeCard";
-import { LocalRestrictedWrapper } from "@coordinator/auth/src/ui/localRestrictedWrapper";
+import { SelfStakeCard } from "@/modules/staking/ui/selfStakeCard";
+import { LocalRestrictedWrapper } from "@/modules/auth/ui/localRestrictedWrapper";
 
 export const metadata: Metadata = {
   title: "Dashboard",

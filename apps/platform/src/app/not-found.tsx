@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Cereal, Four, House, Zero } from "@crunch-ui/icons";
 import { Button } from "@crunch-ui/core";
-import { INTERNAL_LINKS } from "@coordinator/utils/src/routes";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 export default async function NotFound() {
   return (

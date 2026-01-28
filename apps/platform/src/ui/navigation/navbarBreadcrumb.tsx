@@ -1,10 +1,10 @@
 "use client";
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@coordinator/auth/src/application/context/authContext";
+import { useAuth } from "@/modules/auth/application/context/authContext";
 import { useSettings } from "@coordinator/settings/src/application/context/settingsContext";
-import { CoordinatorStatus } from "@coordinator/crunch/src/domain/types";
-import { useGetCoordinatorCrunches } from "@coordinator/crunch/src/application/hooks/useGetCoordinatorCrunches";
+import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { useGetCoordinatorCrunches } from "@/modules/crunch/application/hooks/useGetCoordinatorCrunches";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@crunch-ui/core";
 import { ChevronDown } from "@crunch-ui/icons";
-import { INTERNAL_LINKS } from "@coordinator/utils/src/routes";
+import { INTERNAL_LINKS } from "@/utils/routes";
 import { LOCAL_COORDINATOR_NAME } from "@coordinator/utils/src/config";
 
 export const NavbarBreadcrumb: React.FC = () => {

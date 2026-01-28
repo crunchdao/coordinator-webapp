@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Button } from "@crunch-ui/core";
 import { Cereal, House, Refresh } from "@crunch-ui/icons";
 import Link from "next/link";
-import { INTERNAL_LINKS } from "@coordinator/utils/src/routes";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 export default function Error({
   error,

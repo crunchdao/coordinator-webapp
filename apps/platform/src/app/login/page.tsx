@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { LoginCard } from "@coordinator/auth/src/ui/loginCard";
+import { LoginCard } from "@/modules/auth/ui/loginCard";
 
 export const metadata: Metadata = {
   title: "Login",

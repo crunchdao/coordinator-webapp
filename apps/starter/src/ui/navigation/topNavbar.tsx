@@ -1,9 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { INTERNAL_LINKS } from "@coordinator/utils/src/routes";
-import { WalletConnection } from "@coordinator/wallet/src/ui/walletConnection";
 import { NavbarBreadcrumb } from "./navbarBreadcrumb";
 import { EnvironmentBadge } from "@coordinator/settings/src/ui/environmentBadge";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 export const TopNavbar: React.FC = () => {
   return (
@@ -20,9 +19,6 @@ export const TopNavbar: React.FC = () => {
         </Link>
         <NavbarBreadcrumb />
         <EnvironmentBadge />
-        <div className="ml-auto flex gap-6 items-center">
-          <WalletConnection />
-        </div>
       </nav>
       <div className="bg-border/30 min-h-px w-full" />
     </>

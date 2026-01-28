@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { RegistrationCard } from "@coordinator/crunch/src/ui/registrationCard";
+import { RegistrationCard } from "@/modules/crunch/ui/registrationCard";
 
 export const metadata: Metadata = {
   title: "Register",

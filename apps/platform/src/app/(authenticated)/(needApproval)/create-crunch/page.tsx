@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { CrunchCreationForm } from "@coordinator/crunch/src/ui/crunchCreationForm";
+import { CrunchCreationForm } from "@/modules/crunch/ui/crunchCreationForm";
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@crunch-ui/core";
-import { LocalRestrictedWrapper } from "@coordinator/auth/src/ui/localRestrictedWrapper";
+import { LocalRestrictedWrapper } from "@/modules/auth/ui/localRestrictedWrapper";
 
 export const metadata: Metadata = {
   title: "Create Crunch",

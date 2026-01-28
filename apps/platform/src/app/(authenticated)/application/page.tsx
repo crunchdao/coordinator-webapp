@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { ExternalLink } from "@crunch-ui/icons";
-import { ApplicationForm } from "@coordinator/crunch/src/ui/applicationForm";
+import { ApplicationForm } from "@/modules/crunch/ui/applicationForm";
 
 export const metadata: Metadata = {
   title: "Organizers Application",

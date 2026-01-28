@@ -2,20 +2,17 @@
 import Link from "next/link";
 import { cn, generateLink } from "@crunch-ui/utils";
 import { usePathname, useParams } from "next/navigation";
-import { getVisibleRoutes } from "@coordinator/utils/src/routes";
-import { useSettings } from "@coordinator/settings/src/application/context/settingsContext";
+import { ROUTE_CONFIG } from "@/utils/routes";
 
 export const BasicNavbar: React.FC = () => {
-  const { env } = useSettings();
   const pathname = usePathname();
   const params = useParams();
-  const visibleRoutes = getVisibleRoutes(env);
   const crunchname = params.crunchname as string;
 
   return (
     <nav className="sticky top-0 left-0 right-0 py-4 px-6 z-40 w-full backdrop-blur-sm bg-card/50">
       <div className="flex items-center gap-3">
-        {visibleRoutes.map((route) => {
+        {ROUTE_CONFIG.map((route) => {
           const routePath = crunchname
             ? generateLink(route.path, { crunchname })
             : route.path;
