@@ -10,16 +10,10 @@ import {
   DropdownMenuTrigger,
 } from "@crunch-ui/core";
 import { List, Settings } from "@crunch-ui/icons";
-import { useSettings } from "@coordinator/settings/src/application/context/settingsContext";
 import { LogsDialog } from "../log/ui/logsDialog";
 
 export const DevMenu = () => {
-  const { isLocal } = useSettings();
   const [logsOpen, setLogsOpen] = useState(false);
-
-  if (!isLocal) {
-    return null;
-  }
 
   return (
     <>

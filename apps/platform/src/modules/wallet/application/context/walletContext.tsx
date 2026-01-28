@@ -15,8 +15,7 @@ import {
 import { LedgerWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl, PublicKey } from "@solana/web3.js";
-import { useSettings } from "@coordinator/settings/src/application/context/settingsContext";
-import { config } from "@coordinator/utils/src/config";
+import { config } from "@/config";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 import { useWallet as useSolanaWallet } from "@solana/wallet-adapter-react";
@@ -86,8 +85,9 @@ interface WalletProviderProps {
 }
 
 export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
-  const { isLocal } = useSettings();
-  const [multisigAddress, setAddress] = useState<string>(readMultisigFromStorage);
+  const [multisigAddress, setAddress] = useState<string>(
+    readMultisigFromStorage
+  );
 
   useEffect(() => {
     setAddress(readMultisigFromStorage());
@@ -129,18 +129,6 @@ export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
   }, [network]);
 
   const wallets = useMemo(() => [new LedgerWalletAdapter()], []);
-
-  if (isLocal) {
-    return (
-      <MultisigContext.Provider value={multisigValue}>
-        <ConnectionProvider endpoint={"http://localhost:8899"}>
-          <SolanaWalletProvider wallets={[]} autoConnect={false}>
-            {children}
-          </SolanaWalletProvider>
-        </ConnectionProvider>
-      </MultisigContext.Provider>
-    );
-  }
 
   return (
     <MultisigContext.Provider value={multisigValue}>

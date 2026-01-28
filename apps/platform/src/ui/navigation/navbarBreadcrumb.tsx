@@ -2,7 +2,6 @@
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/modules/auth/application/context/authContext";
-import { useSettings } from "@coordinator/settings/src/application/context/settingsContext";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { useGetCoordinatorCrunches } from "@/modules/crunch/application/hooks/useGetCoordinatorCrunches";
 import {
@@ -18,12 +17,10 @@ import {
 } from "@crunch-ui/core";
 import { ChevronDown } from "@crunch-ui/icons";
 import { INTERNAL_LINKS } from "@/utils/routes";
-import { LOCAL_COORDINATOR_NAME } from "@coordinator/utils/src/config";
 
 export const NavbarBreadcrumb: React.FC = () => {
   const { coordinator, coordinatorStatus, isLoading } = useAuth();
   const { crunches, crunchesPending } = useGetCoordinatorCrunches();
-  const { isLocal } = useSettings();
   const params = useParams();
   const pathname = usePathname();
 
@@ -31,7 +28,7 @@ export const NavbarBreadcrumb: React.FC = () => {
   const unregistered =
     !isLoading && coordinatorStatus === CoordinatorStatus.UNREGISTERED;
 
-  const coordinatorName = isLocal ? LOCAL_COORDINATOR_NAME : coordinator?.name;
+  const coordinatorName = coordinator?.name;
 
   return (
     <Breadcrumb>
@@ -50,9 +47,9 @@ export const NavbarBreadcrumb: React.FC = () => {
           <>
             <BreadcrumbSeparator>/</BreadcrumbSeparator>
             <BreadcrumbItem className="text-foreground normal-case">
-              {!isLocal && crunchesPending ? (
+              {crunchesPending ? (
                 <Skeleton className="w-32 h-4" />
-              ) : !isLocal && crunches && crunches.length > 1 ? (
+              ) : crunches && crunches.length > 1 ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center gap-1 normal-case!">
                     {currentCrunchName}

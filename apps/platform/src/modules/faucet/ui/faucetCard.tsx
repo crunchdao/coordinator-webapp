@@ -18,7 +18,7 @@ import {
   Input,
   Skeleton,
 } from "@crunch-ui/core";
-import { config } from "@coordinator/utils/src/config";
+import { config } from "@/config";
 import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { faucetRequestSchema } from "../application/schemas/faucet-request";

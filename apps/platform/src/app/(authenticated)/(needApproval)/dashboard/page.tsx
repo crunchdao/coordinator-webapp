@@ -8,7 +8,6 @@ import {
   UnstackedCard,
 } from "@crunchdao/staking";
 import { SelfStakeCard } from "@/modules/staking/ui/selfStakeCard";
-import { LocalRestrictedWrapper } from "@/modules/auth/ui/localRestrictedWrapper";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -18,15 +17,13 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <div className="p-6 flex flex-col gap-3">
-      <LocalRestrictedWrapper>
-        <div className="flex [&_div]:flex-1 gap-3 w-full">
-          <DepositedCard />
-          <UnstackedCard />
-          <RewardCard />
-          <SelfStakeCard />
-        </div>
-        <StakingLifecycle />
-      </LocalRestrictedWrapper>
+      <div className="flex [&_div]:flex-1 gap-3 w-full">
+        <DepositedCard />
+        <UnstackedCard />
+        <RewardCard />
+        <SelfStakeCard />
+      </div>
+      <StakingLifecycle />
       <div className="flex flex-wrap max-lg:flex-col gap-3">
         <Card className="flex-1">
           <CardHeader>

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { WalletConnection } from "@/modules/wallet/ui/walletConnection";
 import { NavbarBreadcrumb } from "./navbarBreadcrumb";
-import { EnvironmentBadge } from "@coordinator/settings/src/ui/environmentBadge";
 
 export const TopNavbar: React.FC = () => {
   return (
@@ -19,7 +18,6 @@ export const TopNavbar: React.FC = () => {
           />
         </Link>
         <NavbarBreadcrumb />
-        <EnvironmentBadge />
         <div className="ml-auto flex gap-6 items-center">
           <WalletConnection />
         </div>

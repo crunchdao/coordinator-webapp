@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { useSettings } from "@coordinator/settings/src/application/context/settingsContext";
 import {
   CoordinatorStatus,
   CoordinatorState,
@@ -40,7 +39,6 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const { connected, publicKey, connecting } = useWallet();
-  const { isLocal } = useSettings();
   const [isLoading, setIsLoading] = useState(true);
   const { coordinator, coordinatorLoading } = useGetCoordinator();
 
@@ -52,17 +50,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => clearTimeout(timer);
   }, []);
 
-  const isAuthenticated = isLocal || (connected && !!publicKey);
-  const coordinatorStatus = isLocal
-    ? CoordinatorStatus.APPROVED
-    : coordinator?.status || CoordinatorStatus.UNREGISTERED;
+  const isAuthenticated = connected && !!publicKey;
+  const coordinatorStatus =
+    coordinator?.status || CoordinatorStatus.UNREGISTERED;
   const isReadOnly = coordinatorStatus === CoordinatorStatus.PENDING;
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        isLoading: isLocal ? false : isLoading || connecting,
+        isLoading: isLoading || connecting,
         publicKey: publicKey?.toString() || null,
         coordinatorStatus,
         isCheckingCoordinator: coordinatorLoading,
