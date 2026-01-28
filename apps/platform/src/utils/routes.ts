@@ -28,8 +28,4 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     path: INTERNAL_LINKS.PITCH,
     label: "Pitch",
   },
-  {
-    path: INTERNAL_LINKS.SETTINGS,
-    label: "Settings",
-  },
 ];
