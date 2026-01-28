@@ -1,0 +1,32 @@
+{
+  "name": "@coordinator/crunch",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@coordinator/wallet": "workspace:*",
+    "@coordinator/auth": "workspace:*",
+    "@coordinator/utils": "workspace:*",
+    "@coordinator/ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "next": ">=16",
+    "react": ">=19",
+    "@coral-xyz/anchor": "^0.32.1",
+    "@crunchdao/sdk": "^8.3.4",
+    "@crunchdao/solana-utils": "^0.1.8",
+    "@crunchdao/programs": "^10.0.0",
+    "@crunch-ui/core": "^1.3.2",
+    "@crunch-ui/icons": "^1.1.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@solana/web3.js": "^1.98.4",
+    "@tanstack/react-query": "^5.90.17",
+    "react-turnstile": "^1.1.4",
+    "zod": "^3.25.76"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./src/*": "./src/*"
+  }
+}

@@ -1,0 +1,35 @@
+"use client";
+import { ReactNode } from "react";
+import { TooltipProvider } from "@crunch-ui/core";
+import { SettingsProvider } from "@coordinator/settings/src/application/context/settingsContext";
+import { WalletProvider } from "@coordinator/wallet/src/application/context/walletContext";
+import { AuthProvider } from "@coordinator/auth/src/application/context/authContext";
+import { StakingProvider } from "@crunchdao/staking";
+import { useAnchorProvider } from "@coordinator/wallet/src/application/hooks/useAnchorProvider";
+
+const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { anchorProvider } = useAnchorProvider();
+  const cluster = process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta" ? "mainnet-beta" : "devnet";
+
+  return (
+    <StakingProvider anchorProvider={anchorProvider} cluster={cluster}>
+      {children}
+    </StakingProvider>
+  );
+};
+
+const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
+  return (
+    <SettingsProvider>
+      <WalletProvider>
+        <AuthProvider>
+          <StakingWrapper>
+            <TooltipProvider delayDuration={50}>{children}</TooltipProvider>
+          </StakingWrapper>
+        </AuthProvider>
+      </WalletProvider>
+    </SettingsProvider>
+  );
+};
+
+export default Providers;

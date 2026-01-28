@@ -1,0 +1,15 @@
+{
+  "name": "@coordinator/blockchain",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "peerDependencies": {
+    "react": ">=19",
+    "@solana/web3.js": "^1.98.4"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./src/*": "./src/*"
+  }
+}
