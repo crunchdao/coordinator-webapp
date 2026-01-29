@@ -30,7 +30,7 @@ import { ModelDetailDialog } from "./modelDetailDialog";
 
 export const ModelsTable: React.FC = () => {
   const { models, modelsLoading } = useGetModels();
-  const { models: modelList, modelsLoading: modelListLoading } = useGetModelList();
+  const { models: modelList } = useGetModelList();
   const { updateModel, updateModelLoading } = useUpdateModel();
   const [searchTerm, setSearchTerm] = useState("");
 
