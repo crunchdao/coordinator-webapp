@@ -5,7 +5,6 @@ export const INTERNAL_LINKS = {
   LEADERBOARD: "/leaderboard",
   METRICS: "/metrics",
   SETTINGS: "/settings",
-  PITCH: "/pitch",
   MODELS: "/models",
   LOGS: "/logs",
 } as const;
@@ -23,10 +22,6 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.METRICS,
     label: "Metrics",
-  },
-  {
-    path: INTERNAL_LINKS.PITCH,
-    label: "Pitch",
   },
   {
     path: INTERNAL_LINKS.MODELS,

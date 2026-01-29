@@ -15,7 +15,6 @@
     "@coordinator/chart": "workspace:*",
     "@coordinator/leaderboard": "workspace:*",
     "@coordinator/metrics": "workspace:*",
-    "@coordinator/pitch": "workspace:*",
     "@coral-xyz/anchor": "^0.32.1",
     "@crunch-ui/core": "^1.3.2",
     "@crunch-ui/icons": "^1.1.1",

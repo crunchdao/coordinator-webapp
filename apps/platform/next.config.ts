@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
     "@coordinator/chart",
     "@coordinator/leaderboard",
     "@coordinator/metrics",
-    "@coordinator/pitch",
   ],
 };
 

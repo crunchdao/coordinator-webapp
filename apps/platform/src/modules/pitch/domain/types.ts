@@ -5,7 +5,10 @@ import {
   pitchSliceSchema,
   roadmapEventSchema,
   teamMemberSchema,
+  PitchSliceType,
 } from "../application/schemas/pitch";
+
+export { PitchSliceType };
 
 export enum SeasonStatus {
   VOTING = "VOTING",
@@ -69,13 +72,6 @@ export interface BasePitchSlice {
   id: string;
   type: PitchSliceType;
   order: number;
-}
-
-export enum PitchSliceType {
-  KEY_METRICS = "KEY_METRICS",
-  CONTENT = "CONTENT",
-  ROADMAP = "ROADMAP",
-  TEAM = "TEAM",
 }
 
 export type PitchFormData = z.infer<typeof pitchFormSchema>;

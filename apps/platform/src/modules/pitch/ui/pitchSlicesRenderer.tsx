@@ -5,11 +5,11 @@ import {
   keyMetricsSliceSchema,
   roadmapSliceSchema,
   teamSliceSchema,
-} from "@coordinator/pitch/src/application/schemas/pitch";
-import { Content } from "@coordinator/pitch/src/ui/slices/content";
-import { KeyMetrics } from "@coordinator/pitch/src/ui/slices/keyMetrics";
-import { Roadmap } from "@coordinator/pitch/src/ui/slices/roadmap";
-import { Team } from "@coordinator/pitch/src/ui/slices/team";
+} from "../application/schemas/pitch";
+import { Content } from "./slices/content";
+import { KeyMetrics } from "./slices/keyMetrics";
+import { Roadmap } from "./slices/roadmap";
+import { Team } from "./slices/team";
 
 export const SlicesRenderer: React.FC<{ slices: PitchSlice[] }> = ({
   slices,

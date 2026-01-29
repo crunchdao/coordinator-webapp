@@ -37,10 +37,10 @@ export function RoadmapSliceEditor({
           <FormItem>
             <FormLabel>Section Title</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Roadmap" 
-                {...field} 
-                value={field.value || ""} 
+              <Input
+                placeholder="Roadmap"
+                {...field}
+                value={field.value || ""}
               />
             </FormControl>
             <FormMessage />

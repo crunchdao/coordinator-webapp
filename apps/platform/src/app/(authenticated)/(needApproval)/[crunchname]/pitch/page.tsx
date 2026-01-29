@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { PitchForm } from "@coordinator/pitch/src/ui/pitchForm";
+import { PitchForm } from "@/modules/pitch/ui/pitchForm";
 
 export const metadata: Metadata = {
   title: "Pitch",

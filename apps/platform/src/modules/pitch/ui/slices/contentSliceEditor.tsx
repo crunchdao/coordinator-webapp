@@ -30,10 +30,10 @@ export function ContentSliceEditor({
           <FormItem>
             <FormLabel>Section Title</FormLabel>
             <FormControl>
-              <Input 
-                placeholder="Content" 
-                {...field} 
-                value={field.value || ""} 
+              <Input
+                placeholder="Content"
+                {...field}
+                value={field.value || ""}
               />
             </FormControl>
             <FormMessage />

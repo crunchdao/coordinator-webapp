@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { PitchStatus, PitchSliceType } from "../../domain/types";
+
+export enum PitchSliceType {
+  KEY_METRICS = "KEY_METRICS",
+  CONTENT = "CONTENT",
+  ROADMAP = "ROADMAP",
+  TEAM = "TEAM",
+}
 
 export const pitchKeyMetricSchema = z.object({
   displayName: z.string().min(1, "Display name is required"),
