@@ -1,0 +1,144 @@
+#!/usr/bin/env node
+
+const { spawn } = require("child_process");
+const path = require("path");
+const fs = require("fs");
+
+// Parse command line arguments
+const args = process.argv.slice(2);
+const options = {
+  port: "3000",
+  hostname: "0.0.0.0",
+  apiUrl: null,
+  modelOrchestratorUrl: null,
+};
+
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i];
+  const nextArg = args[i + 1];
+
+  switch (arg) {
+    case "-p":
+    case "--port":
+      options.port = nextArg;
+      i++;
+      break;
+    case "-H":
+    case "--hostname":
+      options.hostname = nextArg;
+      i++;
+      break;
+    case "--api-url":
+      options.apiUrl = nextArg;
+      i++;
+      break;
+    case "--model-orchestrator-url":
+      options.modelOrchestratorUrl = nextArg;
+      i++;
+      break;
+    case "-h":
+    case "--help":
+      console.log(`
+Usage: coordinator-webapp [options]
+
+Options:
+  -p, --port <port>                    Port to run the server on (default: 3000)
+  -H, --hostname <hostname>            Hostname to bind to (default: 0.0.0.0)
+  --api-url <url>                      Backend API URL (default: http://localhost:8000)
+  --model-orchestrator-url <url>       Model orchestrator URL (default: http://localhost:8001)
+  -h, --help                           Show this help message
+
+Examples:
+  coordinator-webapp
+  coordinator-webapp --port 8080
+  coordinator-webapp --api-url http://api.example.com --port 3000
+`);
+      process.exit(0);
+    default:
+      if (arg.startsWith("-")) {
+        console.error(`Unknown option: ${arg}`);
+        process.exit(1);
+      }
+  }
+}
+
+// Find the package root
+const packageRoot = path.resolve(__dirname, "..");
+
+// Path to the standalone server (Next.js nests it under the project name)
+const standaloneBase = path.join(packageRoot, ".next", "standalone");
+const standaloneDir = path.join(standaloneBase, "coordinator-webapp");
+const serverPath = path.join(standaloneDir, "server.js");
+
+// Check if standalone build exists
+if (!fs.existsSync(serverPath)) {
+  console.error("Error: Standalone server not found. The package may not have been built correctly.");
+  console.error("Expected server at:", serverPath);
+  process.exit(1);
+}
+
+// Ensure static files are symlinked/copied to standalone (needed for production)
+const staticSrc = path.join(packageRoot, ".next", "static");
+const staticDest = path.join(standaloneDir, ".next", "static");
+const publicSrc = path.join(packageRoot, "public");
+const publicDest = path.join(standaloneDir, "public");
+const configSrc = path.join(packageRoot, "config");
+const configDest = path.join(standaloneDir, "config");
+
+// Create symlinks if they don't exist
+try {
+  if (fs.existsSync(staticSrc) && !fs.existsSync(staticDest)) {
+    fs.mkdirSync(path.dirname(staticDest), { recursive: true });
+    fs.symlinkSync(staticSrc, staticDest, "junction");
+  }
+  if (fs.existsSync(publicSrc) && !fs.existsSync(publicDest)) {
+    fs.symlinkSync(publicSrc, publicDest, "junction");
+  }
+  if (fs.existsSync(configSrc) && !fs.existsSync(configDest)) {
+    fs.symlinkSync(configSrc, configDest, "junction");
+  }
+} catch (err) {
+  // Symlinks might fail on some systems, but files might already be in place
+  // from the build process
+}
+
+// Set environment variables
+const env = { ...process.env };
+
+env.PORT = options.port;
+env.HOSTNAME = options.hostname;
+
+if (options.apiUrl) {
+  env.NEXT_PUBLIC_API_URL = options.apiUrl;
+}
+
+if (options.modelOrchestratorUrl) {
+  env.NEXT_PUBLIC_API_URL_MODEL_ORCHESTRATOR = options.modelOrchestratorUrl;
+}
+
+console.log(`Starting coordinator-webapp on http://${options.hostname}:${options.port}`);
+
+// Start the standalone server
+const child = spawn("node", [serverPath], {
+  cwd: standaloneDir,
+  env,
+  stdio: "inherit",
+});
+
+child.on("error", (err) => {
+  console.error("Failed to start coordinator-webapp:", err.message);
+  process.exit(1);
+});
+
+child.on("exit", (code) => {
+  process.exit(code || 0);
+});
+
+// Handle signals
+process.on("SIGINT", () => {
+  child.kill("SIGINT");
+});
+
+process.on("SIGTERM", () => {
+  child.kill("SIGTERM");
+});
