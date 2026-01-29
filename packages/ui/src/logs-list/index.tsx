@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { cn } from "@crunch-ui/utils";
 import { Badge, Button } from "@crunch-ui/core";
 import { ChevronDown } from "@crunch-ui/icons";
-import { AnsiText } from "@coordinator/dev/src/log/utils/ansiParser";
+import { AnsiText } from "./ansiParser";
 
 interface Log {
   id?: number | string;

@@ -8,15 +8,26 @@ import {
   Spinner,
 } from "@crunch-ui/core";
 import MultiSelectDropdown from "@coordinator/ui/src/multi-select-dropdown";
-import { LeaderboardPosition } from "@coordinator/leaderboard/src/domain/types";
-import { useGetModelList } from "@coordinator/leaderboard/src/application/hooks/useGetModelList";
 import { useGetWidgets } from "../application/hooks/useGetWidgets";
 import { GetMetricDataParams } from "../domain/types";
 import { MetricWidget } from "./metricWidget";
 
-export const MetricsDashboard: React.FC = () => {
+export interface MetricsModelItem {
+  model_id: string | number;
+  model_name: string;
+  cruncher_name: string;
+}
+
+export interface MetricsDashboardProps {
+  models?: MetricsModelItem[];
+  modelsLoading?: boolean;
+}
+
+export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
+  models = [],
+  modelsLoading = false,
+}) => {
   const { widgets, widgetsLoading } = useGetWidgets();
-  const { models, modelsLoading } = useGetModelList();
 
   const [selectedModelIds, setSelectedModelIds] = useState<string[] | null>(
     null
@@ -61,7 +72,7 @@ export const MetricsDashboard: React.FC = () => {
     );
   }, [models, selectedModelIds]);
 
-  const handleSelectionChange = (models: LeaderboardPosition[]) => {
+  const handleSelectionChange = (models: MetricsModelItem[]) => {
     const ids = models.map((item) => String(item.model_id || ""));
     setSelectedModelIds(ids);
   };

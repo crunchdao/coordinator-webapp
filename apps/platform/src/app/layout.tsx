@@ -3,12 +3,10 @@ import { GeistSans } from "geist/font/sans";
 import { cn } from "@crunch-ui/utils";
 import { Legals, Toaster } from "@crunch-ui/core";
 import localFont from "next/font/local";
+import { TopNavbar } from "@/ui/navigation/topNavbar";
 import "./globals.css";
 import ReactQuery from "./react-query";
 import Providers from "./providers";
-import { DevMenu } from "@coordinator/dev/src/ui/devMenu";
-import "./globals.css";
-import { TopNavbar } from "@/ui/navigation/topNavbar";
 
 const departure = localFont({
   src: "../../public/fonts/DepartureMono/DepartureMono-Regular.woff2",

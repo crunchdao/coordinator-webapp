@@ -30,11 +30,3 @@ export type LeaderboardColumn = {
 };
 
 export type Leaderboard = LeaderboardPosition[];
-
-export type GetModelsResponse = {
-  model_id: string;
-  model_name: string;
-  cruncher_name: string;
-  cruncher_id: string;
-  deployment_id: string;
-}[];

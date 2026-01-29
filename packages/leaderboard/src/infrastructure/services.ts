@@ -1,25 +1,6 @@
-import apiClient from "@coordinator/utils/src/api";
 import configApiClient from "@coordinator/utils/src/config-api";
-import {
-  GetModelsResponse,
-  Leaderboard,
-  LeaderboardColumn,
-} from "../domain/types";
+import { LeaderboardColumn } from "../domain/types";
 import { endpoints } from "./endpoints";
-
-export const getLeaderboard = async (
-  leaderboardEndpoint: string
-): Promise<Leaderboard> => {
-  const response = await apiClient.get(leaderboardEndpoint);
-  return response.data;
-};
-
-export const getModelList = async (
-  modelListEndpoint: string
-): Promise<GetModelsResponse> => {
-  const response = await apiClient.get(modelListEndpoint);
-  return response.data;
-};
 
 export const getLeaderboardColumns = async (): Promise<LeaderboardColumn[]> => {
   const response = await configApiClient.get(endpoints.getLeaderboardColumns());

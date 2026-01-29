@@ -1,17 +1,15 @@
-import { Metadata } from "next";
+"use client";
 import { MetricSettingsTable } from "@coordinator/metrics/src/ui/metricSettingsTable";
 import { MetricsDashboard } from "@coordinator/metrics/src/ui/metricsDashboard";
-
-export const metadata: Metadata = {
-  title: "Metrics",
-  description: "Configure and view metrics dashboard widgets",
-};
+import { useGetModelList } from "@/modules/model/application/hooks/useGetModelList";
 
 export default function MetricsPage() {
+  const { models, modelsLoading } = useGetModelList();
+
   return (
     <>
       <MetricSettingsTable />
-      <MetricsDashboard />
+      <MetricsDashboard models={models} modelsLoading={modelsLoading} />
     </>
   );
 }

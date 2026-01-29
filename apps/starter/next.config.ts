@@ -11,11 +11,8 @@ const nextConfig: NextConfig = {
     "@coordinator/utils",
     "@coordinator/ui",
     "@coordinator/chart",
-    "@coordinator/settings",
     "@coordinator/leaderboard",
     "@coordinator/metrics",
-    "@coordinator/model",
-    "@coordinator/dev",
   ],
   async rewrites() {
     return [

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { SettingsForm } from "@coordinator/settings/src/ui/settingsForm";
+import { SettingsForm } from "@/modules/settings/ui/settingsForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
 
 export const metadata: Metadata = {

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
-import { initialSettings } from "@coordinator/settings/src/domain/initial-config";
-import { GlobalSettings } from "@coordinator/settings/src/domain/types";
-import { globalSettingsSchema } from "@coordinator/settings/src/application/schemas/settingsSchema";
+import { initialSettings } from "@/modules/settings/domain/initial-config";
+import { GlobalSettings } from "@/modules/settings/domain/types";
+import { globalSettingsSchema } from "@/modules/settings/application/schemas/settingsSchema";
 
 const CONFIG_FILE = path.join(process.cwd(), "config", "global-settings.json");
 

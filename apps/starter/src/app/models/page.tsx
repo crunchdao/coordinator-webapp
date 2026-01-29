@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { ModelsTable } from "@coordinator/model/src/ui/modelsTable";
+import { ModelsTable } from "@/modules/model/ui/modelsTable";
 
 export const metadata: Metadata = {
   title: "Models",
