@@ -1,5 +1,5 @@
 export const endpoints = {
-  getLeaderboardColumns: () => "/api/leaderboard/columns",
-  updateLeaderboardColumns: () => "/api/leaderboard/columns",
-  resetLeaderboardColumns: () => "/api/leaderboard/columns/reset",
+  getLeaderboardColumns: () => "/leaderboard/columns",
+  updateLeaderboardColumns: () => "/leaderboard/columns",
+  resetLeaderboardColumns: () => "/leaderboard/columns/reset",
 };

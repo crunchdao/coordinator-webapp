@@ -108,7 +108,7 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   }
 
   return (
-    <Card displayCorners className="h-full">
+    <Card displayCorners>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Metrics Dashboard</CardTitle>
