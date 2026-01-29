@@ -21,8 +21,8 @@ export const NavigationItems: React.FC = () => {
           <Link
             key={route.path}
             className={cn(
-              "body-sm inline-flex items-center hover:underline",
-              isActive ? "text-foreground" : "text-muted-foreground"
+              "title-xs inline-flex items-center hover:underline uppercase",
+              isActive ? "text-foreground font-bold" : "text-muted-foreground"
             )}
             href={routePath}
           >

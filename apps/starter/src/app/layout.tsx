@@ -6,7 +6,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ReactQuery from "./react-query";
 import Providers from "./providers";
-import { DevMenu } from "@/modules/dev/ui/devMenu";
 import { TopNavbar } from "@/ui/navigation/topNavbar";
 
 const departure = localFont({

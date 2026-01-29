@@ -7,7 +7,7 @@ import { Badge } from "@crunch-ui/core";
 export const TopNavbar: React.FC = () => {
   return (
     <>
-      <nav className="bg-card flex justify-between items-center gap-3 sticky top-0 left-0 right-0 py-4 px-6 z-40 w-full backdrop-blur-sm">
+      <nav className="bg-card flex justify-between items-center gap-3 sticky top-0 left-0 right-0 py-4 px-6 z-40 w-full backdrop-blur-sm border-b">
         <div className="flex items-center gap-3">
           <Link href={INTERNAL_LINKS.ROOT}>
             <Image
