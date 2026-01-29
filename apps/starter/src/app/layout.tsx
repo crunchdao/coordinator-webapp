@@ -50,7 +50,6 @@ export default async function RootLayout({
             <div className="p-6">{children}</div>
             <Legals className="min-w-full px-6 pt-12 mt-auto" />
             <Toaster />
-            <DevMenu />
           </Providers>
         </ReactQuery>
       </body>
