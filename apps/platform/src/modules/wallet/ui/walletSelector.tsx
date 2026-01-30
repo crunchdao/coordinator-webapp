@@ -22,6 +22,7 @@ import {
   Switch,
   QuestionMark,
   Lock,
+  Certificate,
 } from "@crunch-ui/icons";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
@@ -146,6 +147,14 @@ export function WalletSelector() {
           <DropdownMenuItem onSelect={() => handleSelectChange("connect-new")}>
             <Switch className="h-4 w-4 mr-2" />
             <span>Connect Another Wallet</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link
+              className="flex items-center mr-auto"
+              href={INTERNAL_LINKS.CERTIFICATE_ENROLL}
+            >
+              <Certificate className="h-4 w-4 mr-2" /> Certificate Enrollment
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
