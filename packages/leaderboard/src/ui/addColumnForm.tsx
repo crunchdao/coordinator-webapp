@@ -38,8 +38,6 @@ import {
   editFixedColumnSchema,
 } from "../application/schemas/createLeaderboardSchema";
 import { ColumnType, LeaderboardColumn } from "../domain/types";
-import { useAddColumn } from "../application/hooks/useAddColumn";
-import { useUpdateColumn } from "../application/hooks/useUpdateColumn";
 import { isFixedColumnType } from "../application/utils";
 import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
 
@@ -70,11 +68,19 @@ const columnTypes = [
 interface AddColumnFormProps {
   onSuccess?: () => void;
   editValues?: LeaderboardColumn;
+  onAdd: (column: Omit<LeaderboardColumn, "id">) => void;
+  onUpdate: (id: number, column: Omit<LeaderboardColumn, "id">) => void;
+  addLoading?: boolean;
+  updateLoading?: boolean;
 }
 
 export const AddColumnForm: React.FC<AddColumnFormProps> = ({
   onSuccess,
   editValues,
+  onAdd,
+  onUpdate,
+  addLoading = false,
+  updateLoading = false,
 }) => {
   const isEditMode = !!editValues;
   const isFixed = editValues ? isFixedColumnType(editValues.type) : false;
@@ -103,9 +109,6 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
       : { property: "" },
   });
 
-  const { addColumn, addColumnLoading } = useAddColumn();
-  const { updateColumn, updateColumnLoading } = useUpdateColumn();
-
   const submit = useCallback(
     (data: ColumnFormData) => {
       const cleanedData = {
@@ -113,30 +116,18 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
         nativeConfiguration: data.nativeConfiguration || null,
         tooltip: data.tooltip || null,
         format: data.format || null,
-      };
+      } as Omit<LeaderboardColumn, "id">;
 
       if (isEditMode && editValues) {
-        updateColumn(
-          {
-            id: editValues.id,
-            column: cleanedData as Omit<LeaderboardColumn, "id">,
-          },
-          {
-            onSuccess: () => {
-              onSuccess?.();
-            },
-          }
-        );
+        onUpdate(editValues.id, cleanedData);
+        onSuccess?.();
       } else {
-        addColumn(cleanedData, {
-          onSuccess: () => {
-            form.reset();
-            onSuccess?.();
-          },
-        });
+        onAdd(cleanedData);
+        form.reset();
+        onSuccess?.();
       }
     },
-    [addColumn, updateColumn, form, onSuccess, isEditMode, editValues]
+    [onAdd, onUpdate, form, onSuccess, isEditMode, editValues]
   );
 
   const submitFixed = useCallback(
@@ -146,22 +137,13 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
         FIXED_COLUMNS_DEFAULTS[
           editValues.type as keyof typeof FIXED_COLUMNS_DEFAULTS
         ];
-      updateColumn(
-        {
-          id: editValues.id,
-          column: {
-            ...defaults,
-            property: data.property,
-          },
-        },
-        {
-          onSuccess: () => {
-            onSuccess?.();
-          },
-        }
-      );
+      onUpdate(editValues.id, {
+        ...defaults,
+        property: data.property,
+      });
+      onSuccess?.();
     },
-    [updateColumn, onSuccess, editValues]
+    [onUpdate, onSuccess, editValues]
   );
 
   const columnType = form.watch("type");
@@ -219,8 +201,8 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
           <div className="flex justify-end gap-4 pt-4">
             <Button
               type="submit"
-              disabled={updateColumnLoading}
-              loading={updateColumnLoading}
+              disabled={updateLoading}
+              loading={updateLoading}
             >
               Update Column
             </Button>
@@ -703,8 +685,8 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
         <div className="flex justify-end gap-4 pt-4">
           <Button
             type="submit"
-            disabled={!columnType || addColumnLoading || updateColumnLoading}
-            loading={addColumnLoading || updateColumnLoading}
+            disabled={!columnType || addLoading || updateLoading}
+            loading={addLoading || updateLoading}
           >
             {isEditMode ? "Update Column" : "Add Column"}
           </Button>

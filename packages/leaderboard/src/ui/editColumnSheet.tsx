@@ -15,9 +15,19 @@ import { LeaderboardColumn } from "../domain/types";
 
 interface EditColumnSheetProps {
   column: LeaderboardColumn;
+  onAdd: (column: Omit<LeaderboardColumn, "id">) => void;
+  onUpdate: (id: number, column: Omit<LeaderboardColumn, "id">) => void;
+  addLoading?: boolean;
+  updateLoading?: boolean;
 }
 
-export const EditColumnSheet: React.FC<EditColumnSheetProps> = ({ column }) => {
+export const EditColumnSheet: React.FC<EditColumnSheetProps> = ({
+  column,
+  onAdd,
+  onUpdate,
+  addLoading,
+  updateLoading,
+}) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -36,7 +46,14 @@ export const EditColumnSheet: React.FC<EditColumnSheetProps> = ({ column }) => {
           </SheetDescription>
         </SheetHeader>
         <div className="px-4">
-          <AddColumnForm onSuccess={() => setOpen(false)} editValues={column} />
+          <AddColumnForm
+            onSuccess={() => setOpen(false)}
+            editValues={column}
+            onAdd={onAdd}
+            onUpdate={onUpdate}
+            addLoading={addLoading}
+            updateLoading={updateLoading}
+          />
         </div>
       </SheetContent>
     </Sheet>

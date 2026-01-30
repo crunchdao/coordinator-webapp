@@ -12,21 +12,22 @@ import {
   Button,
 } from "@crunch-ui/core";
 import { Trash } from "@crunch-ui/icons";
-import { useRemoveColumn } from "../application/hooks/useRemoveColumn";
 
 interface DeleteColumnButtonProps {
   columnId: number;
   columnName?: string;
+  onDelete: (id: number) => void;
+  loading?: boolean;
 }
 
 export const DeleteColumnButton: React.FC<DeleteColumnButtonProps> = ({
   columnId,
   columnName,
+  onDelete,
+  loading = false,
 }) => {
-  const { removeColumn, removeColumnLoading } = useRemoveColumn();
-
   const handleDelete = () => {
-    removeColumn(columnId);
+    onDelete(columnId);
   };
 
   return (
@@ -35,7 +36,7 @@ export const DeleteColumnButton: React.FC<DeleteColumnButtonProps> = ({
         <Button
           variant="destructive"
           size="icon-sm"
-          disabled={removeColumnLoading}
+          disabled={loading}
         >
           <Trash className="h-3 w-3" />
         </Button>

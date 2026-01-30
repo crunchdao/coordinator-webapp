@@ -13,14 +13,12 @@ import {
   Badge,
   Spinner,
 } from "@crunch-ui/core";
-import { useQuery } from "@tanstack/react-query";
-import { getLeaderboardColumns } from "../infrastructure/services";
 import { DeleteColumnButton } from "./deleteColumnButton";
 import { AddColumnSheet } from "./addColumnSheet";
 import { EditColumnSheet } from "./editColumnSheet";
 import { ResetColumnsButton } from "./resetColumnsButton";
 import { Settings, Folder, Percentage, Chart, User } from "@crunch-ui/icons";
-import { ColumnType } from "../domain/types";
+import { ColumnType, LeaderboardColumn } from "../domain/types";
 import { isFixedColumnType } from "../application/utils";
 import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
 
@@ -46,12 +44,31 @@ const getColumnTypeBadge = (type: ColumnType) => {
   );
 };
 
-export const ColumnSettingsTable: React.FC = () => {
-  const { data: columns, isLoading } = useQuery({
-    queryKey: ["leaderboardColumns"],
-    queryFn: getLeaderboardColumns,
-  });
+interface ColumnSettingsTableProps {
+  columns: LeaderboardColumn[];
+  loading?: boolean;
+  onAdd: (column: Omit<LeaderboardColumn, "id">) => void;
+  onUpdate: (id: number, column: Omit<LeaderboardColumn, "id">) => void;
+  onDelete: (id: number) => void;
+  onReset: () => void;
+  addLoading?: boolean;
+  updateLoading?: boolean;
+  deleteLoading?: boolean;
+  resetLoading?: boolean;
+}
 
+export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
+  columns,
+  loading = false,
+  onAdd,
+  onUpdate,
+  onDelete,
+  onReset,
+  addLoading = false,
+  updateLoading = false,
+  deleteLoading = false,
+  resetLoading = false,
+}) => {
   const allColumns = columns || [];
   const fixedColumns = allColumns
     .filter((c) => isFixedColumnType(c.type))
@@ -97,7 +114,7 @@ export const ColumnSettingsTable: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isLoading ? (
+                  {loading ? (
                     <TableRow>
                       <TableCell
                         colSpan={4}
@@ -134,7 +151,13 @@ export const ColumnSettingsTable: React.FC = () => {
                             </code>
                           </TableCell>
                           <TableCell className="text-right">
-                            <EditColumnSheet column={column} />
+                            <EditColumnSheet
+                              column={column}
+                              onAdd={onAdd}
+                              onUpdate={onUpdate}
+                              addLoading={addLoading}
+                              updateLoading={updateLoading}
+                            />
                           </TableCell>
                         </TableRow>
                       );
@@ -157,7 +180,7 @@ export const ColumnSettingsTable: React.FC = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isLoading ? (
+                  {loading ? (
                     <TableRow>
                       <TableCell
                         colSpan={5}
@@ -214,10 +237,18 @@ export const ColumnSettingsTable: React.FC = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <EditColumnSheet column={column} />
+                            <EditColumnSheet
+                              column={column}
+                              onAdd={onAdd}
+                              onUpdate={onUpdate}
+                              addLoading={addLoading}
+                              updateLoading={updateLoading}
+                            />
                             <DeleteColumnButton
                               columnId={column.id}
                               columnName={column.displayName || column.property}
+                              onDelete={onDelete}
+                              loading={deleteLoading}
                             />
                           </div>
                         </TableCell>
@@ -227,8 +258,13 @@ export const ColumnSettingsTable: React.FC = () => {
                 </TableBody>
               </Table>
               <div className="flex justify-end gap-3 items-center pt-4 border-t mt-4">
-                <ResetColumnsButton />
-                <AddColumnSheet />
+                <ResetColumnsButton onReset={onReset} loading={resetLoading} />
+                <AddColumnSheet
+                  onAdd={onAdd}
+                  onUpdate={onUpdate}
+                  addLoading={addLoading}
+                  updateLoading={updateLoading}
+                />
               </div>
             </div>
           </div>

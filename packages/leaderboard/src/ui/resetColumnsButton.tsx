@@ -12,15 +12,20 @@ import {
   AlertDialogTrigger,
 } from "@crunch-ui/core";
 import { Refresh } from "@crunch-ui/icons";
-import { useResetColumns } from "../application/hooks/useResetColumns";
 
-export const ResetColumnsButton: React.FC = () => {
-  const { resetColumns, resetColumnsLoading } = useResetColumns();
+interface ResetColumnsButtonProps {
+  onReset: () => void;
+  loading?: boolean;
+}
 
+export const ResetColumnsButton: React.FC<ResetColumnsButtonProps> = ({
+  onReset,
+  loading = false,
+}) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" disabled={resetColumnsLoading}>
+        <Button variant="destructive" disabled={loading}>
           <Refresh className="w-4 h-4" />
           Reset to Default
         </Button>
@@ -36,7 +41,7 @@ export const ResetColumnsButton: React.FC = () => {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => resetColumns()}
+            onClick={onReset}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             Reset columns

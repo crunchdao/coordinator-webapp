@@ -11,8 +11,21 @@ import {
 import { Plus } from "@crunch-ui/icons";
 import { AddColumnForm } from "./addColumnForm";
 import { useState } from "react";
+import { LeaderboardColumn } from "../domain/types";
 
-export const AddColumnSheet: React.FC = () => {
+interface AddColumnSheetProps {
+  onAdd: (column: Omit<LeaderboardColumn, "id">) => void;
+  onUpdate: (id: number, column: Omit<LeaderboardColumn, "id">) => void;
+  addLoading?: boolean;
+  updateLoading?: boolean;
+}
+
+export const AddColumnSheet: React.FC<AddColumnSheetProps> = ({
+  onAdd,
+  onUpdate,
+  addLoading,
+  updateLoading,
+}) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -31,7 +44,13 @@ export const AddColumnSheet: React.FC = () => {
           </SheetDescription>
         </SheetHeader>
         <div className="px-4">
-          <AddColumnForm onSuccess={() => setOpen(false)} />
+          <AddColumnForm
+            onSuccess={() => setOpen(false)}
+            onAdd={onAdd}
+            onUpdate={onUpdate}
+            addLoading={addLoading}
+            updateLoading={updateLoading}
+          />
         </div>
       </SheetContent>
     </Sheet>
