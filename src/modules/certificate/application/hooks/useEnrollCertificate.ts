@@ -1,6 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
+import { TransactionInstruction, PublicKey } from "@solana/web3.js";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 import {
   CertificateData,
   SignedMessage,
@@ -19,25 +21,52 @@ function uint8ArrayToBase64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
+// Memo program ID
+const MEMO_PROGRAM_ID = new PublicKey(
+  "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
+);
+
+function createMemoInstruction(
+  message: string,
+  signer: PublicKey
+): TransactionInstruction {
+  return new TransactionInstruction({
+    keys: [{ pubkey: signer, isSigner: true, isWritable: false }],
+    programId: MEMO_PROGRAM_ID,
+    data: Buffer.from(message, "utf-8"),
+  });
+}
+
 type EnrollmentStep =
   | "idle"
   | "generating"
   | "fetching_hotkey"
   | "signing"
+  | "proposing"
   | "downloading"
   | "complete";
 
+export interface MultisigEnrollmentResult {
+  certificateData: CertificateData;
+  isMultisig: true;
+  proposalUrl?: string;
+  signature: string;
+}
+
+export type EnrollmentResultExtended = EnrollmentResult | MultisigEnrollmentResult;
+
 export const useEnrollCertificate = () => {
   const { publicKey, signMessage } = useWallet();
+  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
 
   const mutation = useMutation({
-    mutationFn: async (): Promise<EnrollmentResult> => {
+    mutationFn: async (): Promise<EnrollmentResultExtended> => {
       if (!publicKey) {
         throw new Error("Wallet not connected");
       }
 
-      if (!signMessage) {
-        throw new Error("Wallet does not support message signing");
+      if (!authority) {
+        throw new Error("Authority not available");
       }
 
       const certResponse = await fetch("/api/certificate/generate", {
@@ -51,9 +80,10 @@ export const useEnrollCertificate = () => {
 
       const certificateData: CertificateData = await certResponse.json();
 
-      const walletAddress = publicKey.toBase58();
+      // Use the effective authority (multisig vault or wallet) for hotkey lookup
+      const authorityAddress = authority.toBase58();
       const hotkeyResponse = await fetch(
-        `/api/certificate/hotkey?wallet=${encodeURIComponent(walletAddress)}`
+        `/api/certificate/hotkey?wallet=${encodeURIComponent(authorityAddress)}`
       );
 
       if (!hotkeyResponse.ok) {
@@ -67,13 +97,44 @@ export const useEnrollCertificate = () => {
         cert_pub: certificateData.certPub,
         hotkey: hotkey,
       });
-      const messageBytes = new TextEncoder().encode(message);
 
+      // Multisig mode: create a memo transaction and propose it
+      if (isMultisigMode) {
+        const memoInstruction = createMemoInstruction(message, authority);
+
+        const result = await executeTransaction({
+          instructions: [memoInstruction],
+          memo: `Certificate enrollment for hotkey: ${hotkey.slice(0, 8)}...`,
+        });
+
+        // In multisig mode, we download the certificate but without a signature
+        // The on-chain memo transaction serves as the attestation once approved
+        const zipBlob = await createCertificateZip(certificateData, {
+          message_b64: uint8ArrayToBase64(new TextEncoder().encode(message)),
+          wallet_pubkey_b58: authorityAddress,
+          signature_b64: "", // No signature in multisig mode - attestation is on-chain
+        });
+        downloadBlob(zipBlob, "issued-certificate.zip");
+
+        return {
+          certificateData,
+          isMultisig: true,
+          proposalUrl: result.proposalUrl,
+          signature: result.signature,
+        };
+      }
+
+      // Direct mode: sign the message with the wallet
+      if (!signMessage) {
+        throw new Error("Wallet does not support message signing");
+      }
+
+      const messageBytes = new TextEncoder().encode(message);
       const signature = await signMessage(messageBytes);
 
       const signedMessage: SignedMessage = {
         message_b64: uint8ArrayToBase64(messageBytes),
-        wallet_pubkey_b58: walletAddress,
+        wallet_pubkey_b58: authorityAddress,
         signature_b64: uint8ArrayToBase64(signature),
       };
 
@@ -85,11 +146,19 @@ export const useEnrollCertificate = () => {
         signedMessage,
       };
     },
-    onSuccess: () => {
-      toast({
-        title: "Certificate enrolled successfully",
-        description: "Your certificate files have been downloaded.",
-      });
+    onSuccess: (result) => {
+      if ("isMultisig" in result && result.isMultisig) {
+        toast({
+          title: "Multisig proposal created",
+          description:
+            "Certificate files downloaded. The enrollment transaction has been submitted for multisig approval.",
+        });
+      } else {
+        toast({
+          title: "Certificate enrolled successfully",
+          description: "Your certificate files have been downloaded.",
+        });
+      }
     },
     onError: (error) => {
       console.error("Certificate enrollment error:", error);
@@ -116,5 +185,7 @@ export const useEnrollCertificate = () => {
     error: mutation.error,
     step: getStep(),
     reset: mutation.reset,
+    isMultisigMode,
+    data: mutation.data,
   };
 };
