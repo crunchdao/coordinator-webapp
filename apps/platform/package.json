@@ -10,11 +10,11 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@coordinator/utils": "workspace:*",
-    "@coordinator/ui": "workspace:*",
     "@coordinator/chart": "workspace:*",
     "@coordinator/leaderboard": "workspace:*",
     "@coordinator/metrics": "workspace:*",
+    "@coordinator/ui": "workspace:*",
+    "@coordinator/utils": "workspace:*",
     "@coral-xyz/anchor": "^0.32.1",
     "@crunch-ui/core": "^1.3.2",
     "@crunch-ui/icons": "^1.1.1",
@@ -38,13 +38,14 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-zoom": "^2.2.0",
     "geist": "^1.5.1",
+    "jszip": "^3.10.1",
     "lodash.uniqby": "^4.7.0",
     "next": "16.1.2",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-turnstile": "^1.1.4",
-    "zod": "^3.25.76",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

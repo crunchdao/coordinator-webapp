@@ -3,6 +3,7 @@ export const INTERNAL_LINKS = {
   LOGIN: "/login",
   DASHBOARD: "/dashboard",
   CREATE_CRUNCH: "/create-crunch",
+  CERTIFICATE_ENROLL: "/certificate-enrollment",
   LEADERBOARD: "/:crunchname/leaderboard",
   METRICS: "/:crunchname/metrics",
   SETTINGS: "/:crunchname/settings",
