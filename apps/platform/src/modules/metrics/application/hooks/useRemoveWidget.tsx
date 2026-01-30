@@ -1,3 +1,4 @@
+"use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeMetricsWidget } from "../../infrastructure/services";
 
@@ -13,6 +14,7 @@ export const useRemoveWidget = () => {
 
   return {
     removeWidget: mutation.mutate,
+    removeWidgetAsync: mutation.mutateAsync,
     removeWidgetLoading: mutation.isPending,
   };
 };

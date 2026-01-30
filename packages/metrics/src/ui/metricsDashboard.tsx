@@ -8,8 +8,7 @@ import {
   Spinner,
 } from "@crunch-ui/core";
 import MultiSelectDropdown from "@coordinator/ui/src/multi-select-dropdown";
-import { useGetWidgets } from "../application/hooks/useGetWidgets";
-import { GetMetricDataParams } from "../domain/types";
+import { GetMetricDataParams, Widget } from "../domain/types";
 import { MetricWidget } from "./metricWidget";
 
 export interface MetricsModelItem {
@@ -21,13 +20,16 @@ export interface MetricsModelItem {
 export interface MetricsDashboardProps {
   models?: MetricsModelItem[];
   modelsLoading?: boolean;
+  widgets?: Widget[];
+  widgetsLoading?: boolean;
 }
 
 export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   models = [],
   modelsLoading = false,
+  widgets = [],
+  widgetsLoading = false,
 }) => {
-  const { widgets, widgetsLoading } = useGetWidgets();
 
   const [selectedModelIds, setSelectedModelIds] = useState<string[] | null>(
     null

@@ -15,9 +15,21 @@ import { Widget } from "../domain/types";
 
 interface EditWidgetSheetProps {
   widget: Widget;
+  widgets?: Widget[];
+  onAdd: (widget: Omit<Widget, "id">) => void;
+  onUpdate: (id: number, widget: Omit<Widget, "id">) => void;
+  addLoading?: boolean;
+  updateLoading?: boolean;
 }
 
-export const EditWidgetSheet: React.FC<EditWidgetSheetProps> = ({ widget }) => {
+export const EditWidgetSheet: React.FC<EditWidgetSheetProps> = ({
+  widget,
+  widgets,
+  onAdd,
+  onUpdate,
+  addLoading,
+  updateLoading,
+}) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -36,7 +48,15 @@ export const EditWidgetSheet: React.FC<EditWidgetSheetProps> = ({ widget }) => {
           </SheetDescription>
         </SheetHeader>
         <div className="px-4">
-          <AddWidgetForm editValues={widget} onSubmit={() => setOpen(false)} />
+          <AddWidgetForm
+            editValues={widget}
+            onSubmit={() => setOpen(false)}
+            widgets={widgets}
+            onAdd={onAdd}
+            onUpdate={onUpdate}
+            addLoading={addLoading}
+            updateLoading={updateLoading}
+          />
         </div>
       </SheetContent>
     </Sheet>

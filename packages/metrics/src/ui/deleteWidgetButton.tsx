@@ -12,21 +12,22 @@ import {
   Button,
 } from "@crunch-ui/core";
 import { Trash } from "@crunch-ui/icons";
-import { useRemoveWidget } from "../application/hooks/useRemoveWidget";
 
 interface DeleteWidgetButtonProps {
   widgetId: number;
   widgetName?: string;
+  onDelete: (id: number) => void;
+  loading?: boolean;
 }
 
 export const DeleteWidgetButton: React.FC<DeleteWidgetButtonProps> = ({
   widgetId,
   widgetName,
+  onDelete,
+  loading = false,
 }) => {
-  const { removeWidget, removeWidgetLoading } = useRemoveWidget();
-
   const handleDelete = () => {
-    removeWidget(widgetId);
+    onDelete(widgetId);
   };
 
   return (
@@ -35,7 +36,7 @@ export const DeleteWidgetButton: React.FC<DeleteWidgetButtonProps> = ({
         <Button
           variant="destructive"
           size="icon-sm"
-          disabled={removeWidgetLoading}
+          disabled={loading}
         >
           <Trash className="h-3 w-3" />
         </Button>

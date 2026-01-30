@@ -20,9 +20,6 @@ import {
   TooltipTrigger,
 } from "@crunch-ui/core";
 import { Chart, Link, InfoCircle } from "@crunch-ui/icons";
-import { useAddWidget } from "../application/hooks/useAddWidget";
-import { useUpdateWidget } from "../application/hooks/useUpdateWidget";
-import { useGetWidgets } from "../application/hooks/useGetWidgets";
 import { Widget, LineChartDefinition, GaugeDefinition } from "../domain/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,18 +33,25 @@ import { GaugeFields } from "./gaugeFields";
 interface AddWidgetFormProps {
   onSubmit: () => void;
   editValues?: Widget;
+  widgets?: Widget[];
+  onAdd: (widget: Omit<Widget, "id">) => void;
+  onUpdate: (id: number, widget: Omit<Widget, "id">) => void;
+  addLoading?: boolean;
+  updateLoading?: boolean;
 }
 
 export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
   onSubmit,
   editValues,
+  widgets = [],
+  onAdd,
+  onUpdate,
+  addLoading = false,
+  updateLoading = false,
 }) => {
-  const { addWidget, addWidgetLoading } = useAddWidget();
-  const { updateWidgets, updateWidgetsLoading } = useUpdateWidget();
-  const { widgets } = useGetWidgets();
   const isEditMode = !!editValues;
 
-  const isLoading = addWidgetLoading || updateWidgetsLoading;
+  const isLoading = addLoading || updateLoading;
 
   const getInitialValues = (): Partial<WidgetFormData> => {
     if (editValues) {
@@ -166,12 +170,9 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
     }
 
     if (isEditMode && editValues) {
-      updateWidgets({
-        id: editValues.id,
-        column: widgetData,
-      });
+      onUpdate(editValues.id, widgetData);
     } else {
-      addWidget(widgetData);
+      onAdd(widgetData);
     }
 
     onSubmit();

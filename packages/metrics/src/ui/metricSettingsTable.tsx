@@ -15,8 +15,7 @@ import {
   Spinner,
 } from "@crunch-ui/core";
 import { Settings, Folder, Chart, ExternalLink } from "@crunch-ui/icons";
-import { MetricType } from "../domain/types";
-import { useGetWidgets } from "../application/hooks/useGetWidgets";
+import { MetricType, Widget } from "../domain/types";
 import { DeleteWidgetButton } from "./deleteWidgetButton";
 import { ResetWidgetsButton } from "./resetWidgetsButton";
 import { AddWidgetSheet } from "./addWidgetSheet";
@@ -40,8 +39,31 @@ const getColumnTypeBadge = (type: MetricType) => {
   );
 };
 
-export const MetricSettingsTable: React.FC = () => {
-  const { widgets, widgetsLoading } = useGetWidgets();
+interface MetricSettingsTableProps {
+  widgets: Widget[];
+  loading?: boolean;
+  onAdd: (widget: Omit<Widget, "id">) => void;
+  onUpdate: (id: number, widget: Omit<Widget, "id">) => void;
+  onDelete: (id: number) => void;
+  onReset: () => void;
+  addLoading?: boolean;
+  updateLoading?: boolean;
+  deleteLoading?: boolean;
+  resetLoading?: boolean;
+}
+
+export const MetricSettingsTable: React.FC<MetricSettingsTableProps> = ({
+  widgets,
+  loading = false,
+  onAdd,
+  onUpdate,
+  onDelete,
+  onReset,
+  addLoading = false,
+  updateLoading = false,
+  deleteLoading = false,
+  resetLoading = false,
+}) => {
 
   return (
     <Accordion type="single" collapsible>
@@ -73,7 +95,7 @@ export const MetricSettingsTable: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {widgetsLoading ? (
+                {loading ? (
                   <TableRow>
                     <TableCell
                       colSpan={6}
@@ -142,10 +164,19 @@ export const MetricSettingsTable: React.FC = () => {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <EditWidgetSheet widget={widget} />
+                          <EditWidgetSheet
+                            widget={widget}
+                            widgets={widgets}
+                            onAdd={onAdd}
+                            onUpdate={onUpdate}
+                            addLoading={addLoading}
+                            updateLoading={updateLoading}
+                          />
                           <DeleteWidgetButton
                             widgetId={widget.id}
                             widgetName={widget.displayName}
+                            onDelete={onDelete}
+                            loading={deleteLoading}
                           />
                         </div>
                       </TableCell>
@@ -155,8 +186,14 @@ export const MetricSettingsTable: React.FC = () => {
               </TableBody>
             </Table>
             <div className="flex justify-end gap-3 items-center pt-4 border-t mt-4">
-              <ResetWidgetsButton />
-              <AddWidgetSheet />
+              <ResetWidgetsButton onReset={onReset} loading={resetLoading} />
+              <AddWidgetSheet
+                widgets={widgets}
+                onAdd={onAdd}
+                onUpdate={onUpdate}
+                addLoading={addLoading}
+                updateLoading={updateLoading}
+              />
             </div>
           </div>
         </AccordionContent>

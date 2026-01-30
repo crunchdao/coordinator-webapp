@@ -12,15 +12,20 @@ import {
   AlertDialogTrigger,
 } from "@crunch-ui/core";
 import { Refresh } from "@crunch-ui/icons";
-import { useResetWidgets } from "../application/hooks/useResetWidgets";
 
-export const ResetWidgetsButton: React.FC = () => {
-  const { resetWidgets, resetWidgetsLoading } = useResetWidgets();
+interface ResetWidgetsButtonProps {
+  onReset: () => void;
+  loading?: boolean;
+}
 
+export const ResetWidgetsButton: React.FC<ResetWidgetsButtonProps> = ({
+  onReset,
+  loading = false,
+}) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive" disabled={resetWidgetsLoading}>
+        <Button variant="destructive" disabled={loading}>
           <Refresh className="w-4 h-4" />
           Reset to Default
         </Button>
@@ -36,7 +41,7 @@ export const ResetWidgetsButton: React.FC = () => {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => resetWidgets()}
+            onClick={onReset}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             Reset Widgets

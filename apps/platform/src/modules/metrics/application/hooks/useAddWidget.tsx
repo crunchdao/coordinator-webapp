@@ -1,6 +1,7 @@
+"use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addMetricWidget } from "../../infrastructure/services";
-import { Widget } from "../../domain/types";
+import { Widget } from "@coordinator/metrics/src/domain/types";
 
 export const useAddWidget = () => {
   const queryClient = useQueryClient();
@@ -11,8 +12,10 @@ export const useAddWidget = () => {
       queryClient.invalidateQueries({ queryKey: ["widgets"] });
     },
   });
+
   return {
     addWidget: mutation.mutate,
+    addWidgetAsync: mutation.mutateAsync,
     addWidgetLoading: mutation.isPending,
   };
 };
