@@ -173,7 +173,7 @@ export function CoordinatorCrunches() {
                     Start
                   </Button>
                 )}
-                <Link
+                {/*<Link
                   href={generateLink(INTERNAL_LINKS.LEADERBOARD, {
                     crunchname: crunch.name,
                   })}
@@ -182,7 +182,7 @@ export function CoordinatorCrunches() {
                   <Button className="w-full" variant="outline" size="sm">
                     Enter
                   </Button>
-                </Link>
+                </Link>*/}
               </div>
             </CardContent>
           </Card>
