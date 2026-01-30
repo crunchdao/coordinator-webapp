@@ -34,7 +34,7 @@ export const widgetFormDataSchema = z
     // Line chart fields
     xAxisName: z.string().optional(),
     yAxisSeries: z.array(yAxisSeriesSchema).optional(),
-    yAxisFormat: formatTypeSchema.optional(),
+    yAxisFormat: z.string().optional(),
     displayEvolution: z.boolean().optional(),
     displayLegend: z.boolean().optional(),
     groupByProperty: z.string().optional(),
