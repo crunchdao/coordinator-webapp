@@ -1,13 +1,9 @@
-import {
+import type {
   GaugeConfiguration,
   LineChartConfiguration,
-} from "@coordinator/chart/src/domain/types";
+} from "@crunchdao/chart";
 
 export type MetricType = "CHART" | "IFRAME";
-
-export type MetricItem = {
-  [key: string]: string | number | null | boolean | undefined;
-};
 
 export type BaseDefinition = {
   id: number;

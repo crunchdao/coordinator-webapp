@@ -167,13 +167,13 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
                   <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  Format for Y axis values: "decimal:2" (2 decimal places),
-                  "percentage" (show as %), or "currency" ($)
+                  Format for Y axis values: "decimal-2" (2 decimal places),
+                  "percentage" (show as %), or "integer"
                 </TooltipContent>
               </Tooltip>
             </FormLabel>
             <FormControl>
-              <Input {...field} placeholder="e.g., decimal:2" />
+              <Input {...field} placeholder="e.g., decimal-2" />
             </FormControl>
             <FormMessage />
           </FormItem>

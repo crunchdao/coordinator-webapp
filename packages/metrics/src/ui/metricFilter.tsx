@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@crunch-ui/core";
-import { FilterConfig } from "@coordinator/chart/src/domain/types";
+import type { FilterConfig } from "@crunchdao/chart";
 
 interface MetricFiltersProps {
   filters: FilterConfig[];

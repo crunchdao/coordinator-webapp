@@ -10,7 +10,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@coordinator/chart": "workspace:*",
     "@coordinator/leaderboard": "workspace:*",
     "@coordinator/metrics": "workspace:*",
     "@coordinator/ui": "workspace:*",

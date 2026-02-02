@@ -124,7 +124,7 @@ Line charts visualize time-series data with one or more Y-axis series.
       "series": [
         { "name": "score_value" }
       ],
-      "format": "decimal:2"
+      "format": "decimal-2"
     },
     "alertConfig": {
       "field": "score_success",

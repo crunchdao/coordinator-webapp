@@ -5,10 +5,10 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {
-    "@coordinator/chart": "workspace:*",
     "@coordinator/leaderboard": "workspace:*",
     "@coordinator/ui": "workspace:*",
-    "@coordinator/utils": "workspace:*"
+    "@coordinator/utils": "workspace:*",
+    "@crunchdao/chart": "^0.1.1"
   },
   "peerDependencies": {
     "react": ">=19",

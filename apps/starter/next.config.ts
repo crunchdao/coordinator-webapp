@@ -10,7 +10,6 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@coordinator/utils",
     "@coordinator/ui",
-    "@coordinator/chart",
     "@coordinator/leaderboard",
     "@coordinator/metrics",
   ],

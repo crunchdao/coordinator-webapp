@@ -8,18 +8,17 @@ import {
   TooltipTrigger,
 } from "@crunch-ui/core";
 import { InfoCircle } from "@crunch-ui/icons";
+import type { MetricItem } from "@crunchdao/chart";
+import { LineChart, Gauge } from "@crunchdao/chart";
 import {
   Widget,
   LineChartDefinition,
   GaugeDefinition,
   GetMetricDataParams,
-  MetricItem,
 } from "../domain/types";
 import { useMetricData } from "../application/hooks/useMetricData";
-import { LineChart } from "@coordinator/chart/src/ui/lineChart";
 import { IframeWidget } from "./iframeWidget";
 import { MetricFilters } from "./metricFilter";
-import { Gauge } from "@coordinator/chart/src/ui/gauge";
 
 interface MetricWidgetProps {
   widget: Widget;

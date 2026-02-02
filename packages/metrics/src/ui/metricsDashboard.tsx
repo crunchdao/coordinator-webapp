@@ -30,7 +30,6 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   widgets = [],
   widgetsLoading = false,
 }) => {
-
   const [selectedModelIds, setSelectedModelIds] = useState<string[] | null>(
     null
   );

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GaugeConfiguration } from "@coordinator/chart/src/domain/types";
+import type { GaugeConfiguration } from "@crunchdao/chart";
 import {
   columnTypeSchema,
   formatTypeSchema,
