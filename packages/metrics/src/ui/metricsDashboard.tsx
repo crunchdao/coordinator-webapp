@@ -7,9 +7,10 @@ import {
   CardTitle,
   Spinner,
 } from "@crunch-ui/core";
+import { MetricWidget } from "@crunchdao/chart";
 import MultiSelectDropdown from "@coordinator/ui/src/multi-select-dropdown";
 import { GetMetricDataParams, Widget } from "../domain/types";
-import { MetricWidget } from "./metricWidget";
+import { useMetricData } from "../application/hooks/useMetricData";
 
 export interface MetricsModelItem {
   model_id: string | number;
@@ -94,7 +95,12 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
     };
   }, [selectedModels]);
 
-  if (widgetsLoading || modelsLoading) {
+  const { widgets: widgetsWithData, isLoading: dataLoading } = useMetricData(
+    widgets,
+    metricParams
+  );
+
+  if (widgetsLoading || modelsLoading || dataLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Spinner />
@@ -128,11 +134,10 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
         </div>
       </CardHeader>
       <CardContent className="space-y-8">
-        {widgets.map((widget) => (
+        {widgetsWithData.map((widget) => (
           <MetricWidget
             key={widget.id}
             widget={widget}
-            params={metricParams}
             getModelLabel={getModelLabel}
           />
         ))}
