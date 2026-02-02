@@ -71,6 +71,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             chartType: "gauge",
             percentage: config.percentage,
             filterConfig: config.filterConfig,
+            noDataMessage: config.noDataMessage,
           };
         } else if (config.type === "line") {
           return {
@@ -85,6 +86,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             alertField: config.alertConfig?.field,
             alertReasonField: config.alertConfig?.reasonField,
             filterConfig: config.filterConfig,
+            noDataMessage: config.noDataMessage,
           };
         }
       }
@@ -134,6 +136,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             percentage: data.percentage || false,
             filterConfig: data.filterConfig,
             seriesConfig: data.gaugeSeriesConfig,
+            noDataMessage: data.noDataMessage,
           },
         } as Omit<GaugeDefinition, "id">;
       } else if (data.chartType === "line") {
@@ -162,6 +165,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
                     reasonField: data.alertReasonField,
                   }
                 : undefined,
+            noDataMessage: data.noDataMessage,
           },
         } as Omit<LineChartDefinition, "id">;
       } else {

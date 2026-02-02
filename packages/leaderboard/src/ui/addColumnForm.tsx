@@ -40,6 +40,7 @@ import {
 import { ColumnType, LeaderboardColumn } from "../domain/types";
 import { isFixedColumnType } from "../application/utils";
 import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
+import { FormatSelect } from "@coordinator/ui/src/format-select";
 
 type ColumnFormData = z.infer<typeof createLeaderboardColumnSchema>;
 type FixedColumnFormData = z.infer<typeof editFixedColumnSchema>;
@@ -371,37 +372,12 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                           </TooltipContent>
                         </Tooltip>
                       </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value || undefined}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select format..." />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="percentage">
-                            Percentage (50,00%)
-                          </SelectItem>
-                          <SelectItem value="integer">
-                            Integer (1,000,000)
-                          </SelectItem>
-                          <SelectItem value="compact">Compact (1M)</SelectItem>
-                          <SelectItem value="decimal-1">
-                            1 Decimal (1.0)
-                          </SelectItem>
-                          <SelectItem value="decimal-2">
-                            2 Decimals (1.00)
-                          </SelectItem>
-                          <SelectItem value="decimal-3">
-                            3 Decimals (1.000)
-                          </SelectItem>
-                          <SelectItem value="decimal-4">
-                            4 Decimals (1.0000)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <FormatSelect
+                          value={field.value || undefined}
+                          onValueChange={field.onChange}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

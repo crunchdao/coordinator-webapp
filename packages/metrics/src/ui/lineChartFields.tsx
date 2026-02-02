@@ -16,6 +16,7 @@ import {
 import { Plus, SmallCross, InfoCircle } from "@crunch-ui/icons";
 import { WidgetFormData } from "../application/schemas/widgetFormSchema";
 import { FilterConfigEditor } from "./filterConfigEditor";
+import { FormatSelect } from "@coordinator/ui/src/format-select";
 
 interface LineChartFieldsProps {
   form: UseFormReturn<WidgetFormData>;
@@ -167,13 +168,15 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
                   <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  Format for Y axis values: "decimal-2" (2 decimal places),
-                  "percentage" (show as %), or "integer"
+                  Format for Y axis values: controls how numbers are displayed
                 </TooltipContent>
               </Tooltip>
             </FormLabel>
             <FormControl>
-              <Input {...field} placeholder="e.g., decimal-2" />
+              <FormatSelect
+                value={field.value || undefined}
+                onValueChange={field.onChange}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -316,6 +319,31 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
           />
         </div>
       </div>
+
+      {/* No Data Message */}
+      <FormField
+        control={form.control}
+        name="noDataMessage"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              No Data Message
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Custom message displayed when no data is available for this chart. Defaults to &quot;No data available&quot;
+                </TooltipContent>
+              </Tooltip>
+            </FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="No data available" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       {/* Filter Configuration */}
       <div className="space-y-4 border-t pt-4">

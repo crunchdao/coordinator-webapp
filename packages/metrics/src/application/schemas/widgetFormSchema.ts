@@ -6,6 +6,7 @@ const filterConfigSchema = z.object({
   label: z.string().min(1, "Label is required"),
   type: z.literal("select"),
   autoSelectFirst: z.boolean().optional(),
+  defaultValue: z.string().optional(),
 });
 
 const gaugeSeriesConfigSchema = z.object({
@@ -49,6 +50,9 @@ export const widgetFormDataSchema = z
 
     // Gauge series config
     gaugeSeriesConfig: z.array(gaugeSeriesConfigSchema).optional(),
+
+    // Common chart fields
+    noDataMessage: z.string().optional(),
   })
   .refine((data) => {
     if (data.type === "CHART") {
