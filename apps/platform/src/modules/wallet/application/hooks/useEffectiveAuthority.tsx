@@ -15,7 +15,7 @@ import { useWallet } from "../context/walletContext";
  */
 export const useEffectiveAuthority = () => {
   const { connection } = useConnection();
-  const { publicKey, multisigAddress, isMultisigMode } = useWallet();
+  const { publicKey, multisigAddress, isMultisigMode, signTransaction, signAllTransactions } = useWallet();
 
   const { authority, multisigService } = useMemo(() => {
     // Direct mode: use connected wallet
@@ -28,9 +28,13 @@ export const useEffectiveAuthority = () => {
 
     // Multisig mode: use vault PDA
     try {
-      const service = createMultisigService(connection, multisigAddress, {
+      // Pass the full wallet interface with signing capabilities
+      const wallet = {
         publicKey,
-      });
+        signTransaction,
+        signAllTransactions,
+      };
+      const service = createMultisigService(connection, multisigAddress, wallet);
       const vaultPDA = service.getVaultPDA();
 
       return {
@@ -45,7 +49,7 @@ export const useEffectiveAuthority = () => {
         multisigService: null,
       };
     }
-  }, [isMultisigMode, connection, multisigAddress, publicKey]);
+  }, [isMultisigMode, connection, multisigAddress, publicKey, signTransaction, signAllTransactions]);
 
   return {
     /** The effective authority - vault PDA in multisig mode, wallet otherwise */
