@@ -47,7 +47,6 @@ The middleware in `src/proxy.ts` protects routes at the server level:
 ### 2. **Navigation Visibility** (Client-side)
 
 The navbar only displays links for allowed routes:
-- Uses `getVisibleRoutes()` to filter routes based on environment
 - Provides clean user experience without showing inaccessible links
 
 ## Adding New Protected Routes
