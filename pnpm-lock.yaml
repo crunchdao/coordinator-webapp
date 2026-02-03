@@ -20,9 +20,6 @@ importers:
 
   apps/platform:
     dependencies:
-      '@coordinator/chart':
-        specifier: workspace:*
-        version: link:../../packages/chart
       '@coordinator/leaderboard':
         specifier: workspace:*
         version: link:../../packages/leaderboard
@@ -165,9 +162,6 @@ importers:
 
   apps/starter:
     dependencies:
-      '@coordinator/chart':
-        specifier: workspace:*
-        version: link:../../packages/chart
       '@coordinator/leaderboard':
         specifier: workspace:*
         version: link:../../packages/leaderboard
@@ -269,35 +263,8 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
-  packages/chart:
-    dependencies:
-      '@coordinator/utils':
-        specifier: workspace:*
-        version: link:../utils
-      '@crunch-ui/core':
-        specifier: ^1.3.2
-        version: 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
-      '@crunch-ui/utils':
-        specifier: ^1.2.1
-        version: 1.2.1
-      chart.js:
-        specifier: ^4.5.1
-        version: 4.5.1
-      chartjs-adapter-date-fns:
-        specifier: ^3.0.0
-        version: 3.0.0(chart.js@4.5.1)(date-fns@4.1.0)
-      chartjs-plugin-zoom:
-        specifier: ^2.2.0
-        version: 2.2.0(chart.js@4.5.1)
-      react:
-        specifier: '>=19'
-        version: 19.2.4
-
   packages/leaderboard:
     dependencies:
-      '@coordinator/chart':
-        specifier: workspace:*
-        version: link:../chart
       '@coordinator/ui':
         specifier: workspace:*
         version: link:../ui
@@ -310,6 +277,9 @@ importers:
       '@crunch-ui/icons':
         specifier: ^1.1.1
         version: 1.1.1(typescript@5.9.3)
+      '@crunchdao/chart':
+        specifier: ^0.1.2
+        version: 0.1.2(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       '@tanstack/react-query':
         specifier: ^5.90.17
         version: 5.90.20(react@19.2.4)
@@ -328,9 +298,6 @@ importers:
 
   packages/metrics:
     dependencies:
-      '@coordinator/chart':
-        specifier: workspace:*
-        version: link:../chart
       '@coordinator/leaderboard':
         specifier: workspace:*
         version: link:../leaderboard
@@ -346,6 +313,9 @@ importers:
       '@crunch-ui/icons':
         specifier: ^1.1.1
         version: 1.1.1(typescript@5.9.3)
+      '@crunchdao/chart':
+        specifier: ^0.1.2
+        version: 0.1.2(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       '@tanstack/react-query':
         specifier: ^5.90.17
         version: 5.90.20(react@19.2.4)
@@ -649,6 +619,12 @@ packages:
 
   '@crunch-ui/utils@1.2.1':
     resolution: {integrity: sha512-FXbESqyWJjRIKEZCzw0ofv2amiCQo7RSiVwK0wsRpA74J56bvJfXE5/uue1P9GUqoqsl+OCcEXEkMikASHUEcQ==}
+
+  '@crunchdao/chart@0.1.2':
+    resolution: {integrity: sha512-xibriWjhkum4a3mFxD+GlMSApe9jqklHNswoXiO+0WIabcJjTJGUQ6BQaMcXldS5jYr4HndJHmFDe9KFC16lDw==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.0.0
+      react: ^18.0.0 || ^19.0.0
 
   '@crunchdao/programs@10.0.0':
     resolution: {integrity: sha512-NlSgobRUnJtB7IcbsGbAhxisFCrfW2W6qmNE2wa/Kd2B/xTZ8fJNAtZmNm56AlexOokZSwnrnakKuavmrpSmgg==}
@@ -7308,6 +7284,27 @@ snapshots:
       clsx: 2.1.1
       react: 19.2.4
       tailwind-merge: 3.4.0
+
+  '@crunchdao/chart@0.1.2(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(date-fns@4.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)':
+    dependencies:
+      '@crunch-ui/core': 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
+      '@crunch-ui/icons': 1.1.1(typescript@5.9.3)
+      '@crunch-ui/utils': 1.2.1
+      '@tanstack/react-query': 5.90.20(react@19.2.4)
+      chart.js: 4.5.1
+      chartjs-adapter-date-fns: 3.0.0(chart.js@4.5.1)(date-fns@4.1.0)
+      chartjs-plugin-zoom: 2.2.0(chart.js@4.5.1)
+      lodash.uniqby: 4.7.0
+      react: 19.2.4
+      zod: 3.25.76
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+      - date-fns
+      - react-dom
+      - supports-color
+      - tailwindcss
+      - typescript
 
   '@crunchdao/programs@10.0.0': {}
 

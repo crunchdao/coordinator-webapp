@@ -7,6 +7,7 @@ import {
   FormControl,
   FormMessage,
   Checkbox,
+  Input,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -54,6 +55,31 @@ export const GaugeFields: React.FC<GaugeFieldsProps> = ({ form }) => {
       <div className="text-sm text-muted-foreground">
         <p>Additional gauge configuration options will be available soon.</p>
       </div>
+
+      {/* No Data Message */}
+      <FormField
+        control={form.control}
+        name="noDataMessage"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>
+              No Data Message
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Custom message displayed when no data is available for this gauge. Defaults to &quot;No data available&quot;
+                </TooltipContent>
+              </Tooltip>
+            </FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="No data available" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       {/* Filter Configuration */}
       <div className="space-y-4 border-t pt-4">

@@ -76,7 +76,7 @@ export const initialConfig: Widget[] = [
           { name: "score_steady", label: "Steady Score" },
           { name: "score_anchor", label: "Anchor Score" },
         ],
-        format: "decimal:2",
+        format: "decimal-2",
       },
       filterConfig: [
         {

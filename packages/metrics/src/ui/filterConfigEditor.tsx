@@ -35,6 +35,7 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({
         label: "",
         type: "select" as const,
         autoSelectFirst: false,
+        defaultValue: "",
       },
     ]);
   };
@@ -160,6 +161,30 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({
                           </TooltipContent>
                         </Tooltip>
                       </FormLabel>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`filterConfig.${index}.defaultValue`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Default Value
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Specific value to select by default. If not found in data, falls back to first value. Takes priority over &quot;Auto-select first value&quot;
+                          </TooltipContent>
+                        </Tooltip>
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="e.g., ETH, 86400" />
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
