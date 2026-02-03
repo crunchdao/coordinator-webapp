@@ -1,5 +1,11 @@
 # coordinator-webapp
 
+## 0.6.2
+
+### Patch Changes
+
+- 52c9122: Add fixed columns & avatar on user col
+
 ## 0.6.1
 
 ### Patch Changes

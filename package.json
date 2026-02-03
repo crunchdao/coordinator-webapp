@@ -1,8 +1,7 @@
 {
   "name": "coordinator-webapp",
-  "version": "0.6.1",
-  "private": true,
-  "packageManager": "pnpm@9.15.4",
+  "version": "0.6.2",
+  "private": false,
   "scripts": {
     "dev:starter": "turbo dev --filter=@coordinator/starter",
     "dev:platform": "turbo dev --filter=@coordinator/platform",
