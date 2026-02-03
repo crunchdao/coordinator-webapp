@@ -6,8 +6,7 @@ import {
   CrunchServiceWithContext,
 } from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { Transaction } from "@solana/web3.js";
+import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useRouter } from "next/navigation";
@@ -15,12 +14,12 @@ import { useRouter } from "next/navigation";
 export const useCreateCrunch = () => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
-  const { publicKey } = useWallet();
+  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
   const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: async (data: CreateCrunchFormData) => {
-      if (!anchorProvider || !publicKey) {
+      if (!anchorProvider || !authority) {
         throw new Error("Wallet not connected");
       }
 
@@ -35,33 +34,42 @@ export const useCreateCrunch = () => {
           payoutAmount: data.payoutAmount,
           maxModelsPerCruncher: data.maxModelsPerCruncher,
         },
-        publicKey
+        authority
       );
 
-      const transaction = new Transaction();
-      transaction.add(instruction);
+      const result = await executeTransaction({
+        instructions: [instruction],
+        partialSigners: [],
+        memo: `Create crunch: ${data.name}`,
+      });
 
-      const { blockhash } = await anchorProvider.connection.getLatestBlockhash(
-        "confirmed"
-      );
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = publicKey;
-
-      const txHash = await anchorProvider.sendAndConfirm(transaction);
-
-      return { success: true, txHash, crunchName: data.name };
+      return {
+        success: true,
+        txHash: result.signature,
+        crunchName: data.name,
+        isMultisig: result.isMultisig,
+        proposalUrl: result.proposalUrl,
+      };
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["coordinator-crunches"] });
-      toast({
-        title: "Crunch created successfully",
-        description: `Your crunch "${result.crunchName}" has been created.`,
-      });
-      router.push(
-        generateLink(INTERNAL_LINKS.LEADERBOARD, {
-          crunchname: result.crunchName,
-        })
-      );
+
+      if (result.isMultisig) {
+        toast({
+          title: "Multisig proposal created",
+          description: `Proposal to create "${result.crunchName}" has been submitted for approval.`,
+        });
+      } else {
+        toast({
+          title: "Crunch created successfully",
+          description: `Your crunch "${result.crunchName}" has been created.`,
+        });
+        router.push(
+          generateLink(INTERNAL_LINKS.LEADERBOARD, {
+            crunchname: result.crunchName,
+          })
+        );
+      }
     },
     onError: (error) => {
       console.error("Crunch creation error:", error);
@@ -75,8 +83,10 @@ export const useCreateCrunch = () => {
 
   return {
     createCrunch: mutation.mutate,
+    createCrunchAsync: mutation.mutateAsync,
     createCrunchLoading: mutation.isPending,
     createCrunchError: mutation.error,
     createCrunchData: mutation.data,
+    isMultisigMode,
   };
 };
