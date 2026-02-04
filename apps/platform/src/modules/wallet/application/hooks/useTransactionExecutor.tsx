@@ -1,5 +1,10 @@
 import { useCallback } from "react";
-import { Transaction, TransactionInstruction, Keypair } from "@solana/web3.js";
+import {
+  Transaction,
+  TransactionInstruction,
+  Keypair,
+  PublicKey,
+} from "@solana/web3.js";
 import { useAnchorProvider } from "./useAnchorProvider";
 import { useEffectiveAuthority } from "./useEffectiveAuthority";
 
@@ -13,6 +18,10 @@ export interface ExecuteTransactionResult {
   signature: string;
   isMultisig: boolean;
   proposalUrl?: string;
+  /** For multisig proposals: the transaction index to track status */
+  transactionIndex?: bigint;
+  /** For multisig proposals: the multisig PDA address */
+  multisigPda?: PublicKey;
 }
 
 export const useTransactionExecutor = () => {
@@ -47,6 +56,8 @@ export const useTransactionExecutor = () => {
           signature: result.signature,
           isMultisig: true,
           proposalUrl: result.proposalUrl,
+          transactionIndex: result.transactionIndex,
+          multisigPda: result.multisigPda,
         };
       }
 

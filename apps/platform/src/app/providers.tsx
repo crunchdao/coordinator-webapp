@@ -5,6 +5,8 @@ import { WalletProvider } from "@/modules/wallet/application/context/walletConte
 import { AuthProvider } from "@/modules/auth/application/context/authContext";
 import { StakingProvider } from "@crunchdao/staking";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
+import { MultisigProposalTrackerProvider } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
+import { MultisigProposalTrackerDialog } from "@/modules/wallet/ui/multisigProposalTrackerDialog";
 
 const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { anchorProvider } = useAnchorProvider();
@@ -25,7 +27,12 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
     <WalletProvider>
       <AuthProvider>
         <StakingWrapper>
-          <TooltipProvider delayDuration={50}>{children}</TooltipProvider>
+          <MultisigProposalTrackerProvider>
+            <TooltipProvider delayDuration={50}>
+              {children}
+              <MultisigProposalTrackerDialog />
+            </TooltipProvider>
+          </MultisigProposalTrackerProvider>
         </StakingWrapper>
       </AuthProvider>
     </WalletProvider>

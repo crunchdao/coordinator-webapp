@@ -1,14 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { RegistrationFormData } from "../../domain/types";
-import { getCoordinatorProgram, registerCoordinatorInstruction } from "@crunchdao/sdk";
+import {
+  getCoordinatorProgram,
+  registerCoordinatorInstruction,
+} from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
+import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 
 export const useRegisterCoordinator = () => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
-  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
+  const { executeTransaction, authority, isMultisigMode } =
+    useTransactionExecutor();
+  const { trackProposal } = useMultisigProposalTracker();
 
   const mutation = useMutation({
     mutationFn: async (data: RegistrationFormData) => {
@@ -17,7 +23,7 @@ export const useRegisterCoordinator = () => {
       }
 
       const coordinatorProgram = getCoordinatorProgram(anchorProvider);
-      
+
       const instruction = await registerCoordinatorInstruction(
         coordinatorProgram,
         data.organizationName,
@@ -36,21 +42,30 @@ export const useRegisterCoordinator = () => {
         organizationName: data.organizationName,
         isMultisig: result.isMultisig,
         proposalUrl: result.proposalUrl,
+        transactionIndex: result.transactionIndex,
+        multisigPda: result.multisigPda,
       };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["coordinator"] });
-
-      if (result.isMultisig) {
-        toast({
-          title: "Multisig proposal created",
-          description: `Proposal to register "${result.organizationName}" has been submitted for approval.`,
-        });
-      } else {
+      const handleSuccess = () => {
+        queryClient.invalidateQueries({ queryKey: ["coordinator"] });
         toast({
           title: "Registration submitted",
           description: "Your coordinator account is now pending validation.",
         });
+      };
+
+      if (result.isMultisig && result.transactionIndex && result.multisigPda) {
+        trackProposal({
+          multisigPda: result.multisigPda,
+          transactionIndex: result.transactionIndex,
+          memo: `Register coordinator: ${result.organizationName}`,
+          proposalUrl: result.proposalUrl,
+          signature: result.txHash,
+          onExecuted: handleSuccess,
+        });
+      } else {
+        handleSuccess();
       }
     },
     onError: (error) => {

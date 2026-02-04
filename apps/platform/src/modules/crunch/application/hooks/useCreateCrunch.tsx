@@ -7,6 +7,7 @@ import {
 } from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
+import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useRouter } from "next/navigation";
@@ -14,7 +15,9 @@ import { useRouter } from "next/navigation";
 export const useCreateCrunch = () => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
-  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
+  const { executeTransaction, authority, isMultisigMode } =
+    useTransactionExecutor();
+  const { trackProposal } = useMultisigProposalTracker();
   const router = useRouter();
 
   const mutation = useMutation({
@@ -49,17 +52,15 @@ export const useCreateCrunch = () => {
         crunchName: data.name,
         isMultisig: result.isMultisig,
         proposalUrl: result.proposalUrl,
+        transactionIndex: result.transactionIndex,
+        multisigPda: result.multisigPda,
       };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["coordinator-crunches"] });
-
-      if (result.isMultisig) {
-        toast({
-          title: "Multisig proposal created",
-          description: `Proposal to create "${result.crunchName}" has been submitted for approval.`,
+      const handleSuccess = () => {
+        queryClient.invalidateQueries({
+          queryKey: ["coordinator-crunches"],
         });
-      } else {
         toast({
           title: "Crunch created successfully",
           description: `Your crunch "${result.crunchName}" has been created.`,
@@ -69,6 +70,19 @@ export const useCreateCrunch = () => {
             crunchname: result.crunchName,
           })
         );
+      };
+
+      if (result.isMultisig && result.transactionIndex && result.multisigPda) {
+        trackProposal({
+          multisigPda: result.multisigPda,
+          transactionIndex: result.transactionIndex,
+          memo: `Create crunch: ${result.crunchName}`,
+          proposalUrl: result.proposalUrl,
+          signature: result.txHash,
+          onExecuted: handleSuccess,
+        });
+      } else {
+        handleSuccess();
       }
     },
     onError: (error) => {
