@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +9,7 @@ import {
   Button,
   Spinner,
   Badge,
+  toast,
 } from "@crunch-ui/core";
 import {
   useMultisigProposalTracker,
@@ -132,16 +134,73 @@ function ApprovalCountdown({
 }
 
 export const MultisigProposalTrackerDialog: React.FC = () => {
-  const { trackingState, dismiss, isTracking } = useMultisigProposalTracker();
-  const { proposal, status, approvals, threshold } = trackingState;
+  const {
+    trackingState,
+    dismiss,
+    isTracking,
+    approveProposal,
+    executeProposal,
+    isActing,
+    hasApproved,
+    isMember,
+  } = useMultisigProposalTracker();
+  const { proposal, status, approvals, threshold, error } = trackingState;
+  const [actionError, setActionError] = useState<string | null>(null);
 
   console.log(
-    `[ProposalTrackerDialog] render: isTracking=${isTracking}, status=${status}, approvals=${approvals.length}, threshold=${threshold}`
+    `[ProposalTrackerDialog] render: isTracking=${isTracking}, status=${status}, approvals=${approvals.length}, threshold=${threshold}, isMember=${isMember}, hasApproved=${hasApproved}`
   );
 
   const isTerminal =
     status === "Executed" || status === "Rejected" || status === "Cancelled";
   const isError = status === "Rejected" || status === "Cancelled";
+
+  const canApprove =
+    isMember &&
+    !hasApproved &&
+    (status === "Active" || status === "Draft") &&
+    !isActing;
+
+  const canExecute =
+    isMember && status === "Approved" && !isActing;
+
+  const handleApprove = async () => {
+    setActionError(null);
+    try {
+      await approveProposal();
+      toast({
+        title: "Proposal approved",
+        description: "Your approval has been recorded on-chain.",
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Approve failed";
+      setActionError(msg);
+      toast({
+        title: "Approval failed",
+        description: msg,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleExecute = async () => {
+    setActionError(null);
+    try {
+      await executeProposal();
+      toast({
+        title: "Proposal executed",
+        description: "The transaction has been executed on-chain.",
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Execute failed";
+      setActionError(msg);
+      toast({
+        title: "Execution failed",
+        description: msg,
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Dialog open={isTracking} onOpenChange={(open) => !open && dismiss()}>
@@ -197,8 +256,47 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
                 })}
               </div>
 
+              {/* Action buttons */}
+              {!isTerminal && isMember && (
+                <div className="flex gap-2 pt-2">
+                  {canApprove && (
+                    <Button
+                      onClick={handleApprove}
+                      disabled={isActing}
+                      loading={isActing}
+                      size="sm"
+                    >
+                      Approve
+                    </Button>
+                  )}
+                  {hasApproved && status === "Active" && (
+                    <p className="text-xs text-muted-foreground self-center">
+                      ✓ You approved — waiting for others
+                    </p>
+                  )}
+                  {canExecute && (
+                    <Button
+                      onClick={handleExecute}
+                      disabled={isActing}
+                      loading={isActing}
+                      size="sm"
+                      variant="primary"
+                    >
+                      Execute
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              {/* Error display */}
+              {(error || actionError) && (
+                <p className="text-xs text-destructive">
+                  {actionError || error}
+                </p>
+              )}
+
               {/* Info text */}
-              {!isTerminal && (
+              {!isTerminal && !isMember && (
                 <p className="text-xs text-muted-foreground text-center">
                   Approve and execute this proposal in your Squads multisig to
                   continue.

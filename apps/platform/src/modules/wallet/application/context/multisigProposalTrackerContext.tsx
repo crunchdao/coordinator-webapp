@@ -8,8 +8,14 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { PublicKey } from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  TransactionMessage,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import { useConnection } from "@solana/wallet-adapter-react";
+import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import * as multisig from "@sqds/multisig";
 
 export type ProposalStatusKind =
@@ -44,6 +50,16 @@ interface MultisigProposalTrackerContextValue {
   trackProposal: (proposal: TrackedProposal) => void;
   dismiss: () => void;
   isTracking: boolean;
+  /** Approve the currently tracked proposal. Connected wallet must be a multisig member. */
+  approveProposal: () => Promise<void>;
+  /** Execute the currently tracked proposal. Only callable when status is Approved. */
+  executeProposal: () => Promise<void>;
+  /** Whether an approve/execute action is in progress */
+  isActing: boolean;
+  /** Whether the connected wallet has already approved the proposal */
+  hasApproved: boolean;
+  /** Whether the connected wallet is a member of the multisig */
+  isMember: boolean;
 }
 
 const initialState: ProposalTrackingState = {
@@ -61,6 +77,11 @@ const MultisigProposalTrackerContext =
     trackProposal: () => {},
     dismiss: () => {},
     isTracking: false,
+    approveProposal: async () => {},
+    executeProposal: async () => {},
+    isActing: false,
+    hasApproved: false,
+    isMember: false,
   });
 
 const POLL_INTERVAL_MS = 3000;
@@ -69,9 +90,12 @@ export const MultisigProposalTrackerProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
   const { connection } = useConnection();
+  const { publicKey, signTransaction } = useWallet();
   const [trackingState, setTrackingState] =
     useState<ProposalTrackingState>(initialState);
   const [isTracking, setIsTracking] = useState(false);
+  const [isActing, setIsActing] = useState(false);
+  const [members, setMembers] = useState<PublicKey[]>([]);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const onExecutedRef = useRef<(() => void) | undefined>(undefined);
 
@@ -86,6 +110,7 @@ export const MultisigProposalTrackerProvider: React.FC<{
     stopPolling();
     setIsTracking(false);
     setTrackingState(initialState);
+    setMembers([]);
     onExecutedRef.current = undefined;
   }, [stopPolling]);
 
@@ -115,7 +140,7 @@ export const MultisigProposalTrackerProvider: React.FC<{
           `[ProposalTracker] Status: ${status}, approved: ${proposalAccount.approved.length}, rejected: ${proposalAccount.rejected.length}`
         );
 
-        // Get threshold from multisig account
+        // Get threshold and members from multisig account
         let threshold = 0;
         try {
           const multisigAccount =
@@ -124,10 +149,10 @@ export const MultisigProposalTrackerProvider: React.FC<{
               multisigPda
             );
           threshold = multisigAccount.threshold;
+          setMembers(multisigAccount.members.map((m: any) => m.key));
           console.log(`[ProposalTracker] Threshold: ${threshold}`);
         } catch (e) {
           console.warn(`[ProposalTracker] Failed to fetch multisig account:`, e);
-          // Keep previous threshold if fetch fails
         }
 
         setTrackingState((prev) => ({
@@ -213,6 +238,119 @@ export const MultisigProposalTrackerProvider: React.FC<{
     [stopPolling, pollProposal]
   );
 
+  const approveProposal = useCallback(async () => {
+    const { proposal } = trackingState;
+    if (!proposal || !publicKey || !signTransaction) {
+      throw new Error("Cannot approve: no proposal or wallet not connected");
+    }
+
+    setIsActing(true);
+    try {
+      const approveIx = multisig.instructions.proposalApprove({
+        multisigPda: proposal.multisigPda,
+        transactionIndex: proposal.transactionIndex,
+        member: publicKey,
+      });
+
+      const tx = new Transaction().add(approveIx);
+      tx.feePayer = publicKey;
+      tx.recentBlockhash = (
+        await connection.getLatestBlockhash()
+      ).blockhash;
+
+      const signedTx = await signTransaction(tx);
+      const signature = await connection.sendRawTransaction(
+        signedTx.serialize()
+      );
+      await connection.confirmTransaction(signature, "confirmed");
+
+      console.log(`[ProposalTracker] Approved! Signature: ${signature}`);
+
+      // Trigger immediate poll to refresh state
+      await pollProposal(proposal.multisigPda, proposal.transactionIndex);
+    } catch (error) {
+      console.error("[ProposalTracker] Approve failed:", error);
+      setTrackingState((prev) => ({
+        ...prev,
+        error: error instanceof Error ? error.message : "Approve failed",
+      }));
+      throw error;
+    } finally {
+      setIsActing(false);
+    }
+  }, [trackingState, publicKey, signTransaction, connection, pollProposal]);
+
+  const executeProposal = useCallback(async () => {
+    const { proposal } = trackingState;
+    if (!proposal || !publicKey || !signTransaction) {
+      throw new Error("Cannot execute: no proposal or wallet not connected");
+    }
+
+    setIsActing(true);
+    try {
+      // Use the SDK helper which resolves remaining accounts automatically
+      const { instruction: executeIx, lookupTableAccounts } =
+        await multisig.instructions.vaultTransactionExecute({
+          connection,
+          multisigPda: proposal.multisigPda,
+          transactionIndex: proposal.transactionIndex,
+          member: publicKey,
+        });
+
+      // If there are lookup tables, use VersionedTransaction
+      if (lookupTableAccounts.length > 0) {
+        const { blockhash } = await connection.getLatestBlockhash();
+        const messageV0 = new TransactionMessage({
+          payerKey: publicKey,
+          recentBlockhash: blockhash,
+          instructions: [executeIx],
+        }).compileToV0Message(lookupTableAccounts);
+
+        const versionedTx = new VersionedTransaction(messageV0);
+        const signedTx = await signTransaction(versionedTx);
+        const signature = await connection.sendRawTransaction(
+          signedTx.serialize()
+        );
+        await connection.confirmTransaction(signature, "confirmed");
+        console.log(`[ProposalTracker] Executed (v0)! Signature: ${signature}`);
+      } else {
+        const tx = new Transaction().add(executeIx);
+        tx.feePayer = publicKey;
+        tx.recentBlockhash = (
+          await connection.getLatestBlockhash()
+        ).blockhash;
+
+        const signedTx = await signTransaction(tx);
+        const signature = await connection.sendRawTransaction(
+          signedTx.serialize()
+        );
+        await connection.confirmTransaction(signature, "confirmed");
+        console.log(`[ProposalTracker] Executed! Signature: ${signature}`);
+      }
+
+      // Trigger immediate poll to refresh state (will fire onExecuted)
+      await pollProposal(proposal.multisigPda, proposal.transactionIndex);
+    } catch (error) {
+      console.error("[ProposalTracker] Execute failed:", error);
+      setTrackingState((prev) => ({
+        ...prev,
+        error: error instanceof Error ? error.message : "Execute failed",
+      }));
+      throw error;
+    } finally {
+      setIsActing(false);
+    }
+  }, [trackingState, publicKey, signTransaction, connection, pollProposal]);
+
+  // Derived state: has the connected wallet already approved?
+  const hasApproved =
+    !!publicKey &&
+    trackingState.approvals.some((a) => a.equals(publicKey));
+
+  // Derived state: is the connected wallet a multisig member?
+  const isMember =
+    !!publicKey && members.some((m) => m.equals(publicKey));
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -222,7 +360,17 @@ export const MultisigProposalTrackerProvider: React.FC<{
 
   return (
     <MultisigProposalTrackerContext.Provider
-      value={{ trackingState, trackProposal, dismiss, isTracking }}
+      value={{
+        trackingState,
+        trackProposal,
+        dismiss,
+        isTracking,
+        approveProposal,
+        executeProposal,
+        isActing,
+        hasApproved,
+        isMember,
+      }}
     >
       {children}
     </MultisigProposalTrackerContext.Provider>
