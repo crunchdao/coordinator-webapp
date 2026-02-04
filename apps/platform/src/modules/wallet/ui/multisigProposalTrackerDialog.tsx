@@ -40,17 +40,12 @@ function getStepState(
 
   if (currentOrder > stepOrder) return "done";
   if (currentOrder === stepOrder) return "active";
-  // "Executing" counts as active for "Approved" step
   if (stepKey === "Approved" && currentStatus === "Executing") return "done";
   if (stepKey === "Executed" && currentStatus === "Executing") return "active";
   return "pending";
 }
 
-function StepIndicator({
-  state,
-}: {
-  state: "done" | "active" | "pending";
-}) {
+function StepIndicator({ state }: { state: "done" | "active" | "pending" }) {
   if (state === "done") {
     return (
       <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
@@ -91,14 +86,61 @@ function StatusBadge({
   return <Badge variant={variants[status] ?? "secondary"}>{status}</Badge>;
 }
 
+function ApprovalCountdown({
+  approvals,
+  threshold,
+  status,
+}: {
+  approvals: number;
+  threshold: number;
+  status: ProposalStatusKind | "loading" | "not_found";
+}) {
+  if (threshold === 0) return null;
+
+  const remaining = Math.max(0, threshold - approvals);
+  const isApproved =
+    status === "Approved" ||
+    status === "Executing" ||
+    status === "Executed";
+
+  if (isApproved) {
+    return (
+      <div className="flex items-center gap-2 rounded-lg bg-green-500/10 px-3 py-2">
+        <span className="text-2xl font-bold text-green-500">✓</span>
+        <span className="text-sm text-green-600 font-medium">
+          All approvals received
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2">
+      <span className="text-3xl font-bold tabular-nums text-foreground">
+        {remaining}
+      </span>
+      <div className="flex flex-col">
+        <span className="text-sm font-medium text-foreground">
+          approval{remaining !== 1 ? "s" : ""} remaining
+        </span>
+        <span className="text-xs text-muted-foreground">
+          {approvals} of {threshold} received
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export const MultisigProposalTrackerDialog: React.FC = () => {
   const { trackingState, dismiss, isTracking } = useMultisigProposalTracker();
   const { proposal, status, approvals, threshold } = trackingState;
 
+  console.log(
+    `[ProposalTrackerDialog] render: isTracking=${isTracking}, status=${status}, approvals=${approvals.length}, threshold=${threshold}`
+  );
+
   const isTerminal =
-    status === "Executed" ||
-    status === "Rejected" ||
-    status === "Cancelled";
+    status === "Executed" || status === "Rejected" || status === "Cancelled";
   const isError = status === "Rejected" || status === "Cancelled";
 
   return (
@@ -127,33 +169,29 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
+              {/* Approval countdown */}
+              <ApprovalCountdown
+                approvals={approvals.length}
+                threshold={threshold}
+                status={status}
+              />
+
               {/* Stepper */}
               <div className="space-y-3">
-                {STEPS.map((step, index) => {
+                {STEPS.map((step) => {
                   const state = getStepState(step.key, status);
                   return (
                     <div key={step.key} className="flex items-center gap-3">
                       <StepIndicator state={state} />
-                      <div className="flex-1">
-                        <p
-                          className={`text-sm font-medium ${
-                            state === "pending"
-                              ? "text-muted-foreground/50"
-                              : ""
-                          }`}
-                        >
-                          {step.label}
-                        </p>
-                        {step.key === "Active" && threshold > 0 && (
-                          <p className="text-xs text-muted-foreground">
-                            {approvals.length} of {threshold} approval
-                            {threshold !== 1 ? "s" : ""}
-                          </p>
-                        )}
-                      </div>
-                      {index < STEPS.length - 1 && (
-                        <div className="hidden" /> 
-                      )}
+                      <p
+                        className={`text-sm font-medium ${
+                          state === "pending"
+                            ? "text-muted-foreground/50"
+                            : ""
+                        }`}
+                      >
+                        {step.label}
+                      </p>
                     </div>
                   );
                 })}
@@ -178,19 +216,15 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
 
         <div className="flex justify-between gap-2">
           {proposal?.proposalUrl && (
-            <Button
-              variant="outline"
-              size="sm"
-              asChild
+            <a
+              href={proposal.proposalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <a
-                href={proposal.proposalUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Button variant="outline" size="sm">
                 View on Squads
-              </a>
-            </Button>
+              </Button>
+            </a>
           )}
           <Button
             variant={isTerminal ? "primary" : "ghost"}

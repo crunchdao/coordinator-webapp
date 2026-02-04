@@ -98,6 +98,10 @@ export const MultisigProposalTrackerProvider: React.FC<{
           transactionIndex,
         });
 
+        console.log(
+          `[ProposalTracker] Polling proposal PDA: ${proposalPda.toBase58()} (multisig: ${multisigPda.toBase58()}, txIndex: ${transactionIndex})`
+        );
+
         // Try to fetch the proposal account
         const proposalAccount =
           await multisig.accounts.Proposal.fromAccountAddress(
@@ -106,6 +110,10 @@ export const MultisigProposalTrackerProvider: React.FC<{
           );
 
         const status = proposalAccount.status.__kind as ProposalStatusKind;
+
+        console.log(
+          `[ProposalTracker] Status: ${status}, approved: ${proposalAccount.approved.length}, rejected: ${proposalAccount.rejected.length}`
+        );
 
         // Get threshold from multisig account
         let threshold = 0;
@@ -116,7 +124,9 @@ export const MultisigProposalTrackerProvider: React.FC<{
               multisigPda
             );
           threshold = multisigAccount.threshold;
-        } catch {
+          console.log(`[ProposalTracker] Threshold: ${threshold}`);
+        } catch (e) {
+          console.warn(`[ProposalTracker] Failed to fetch multisig account:`, e);
           // Keep previous threshold if fetch fails
         }
 
@@ -131,6 +141,7 @@ export const MultisigProposalTrackerProvider: React.FC<{
 
         // If executed, call the callback and stop polling
         if (status === "Executed") {
+          console.log(`[ProposalTracker] Proposal executed! Calling onExecuted callback.`);
           onExecutedRef.current?.();
           // Small delay to let UI show "Executed" state before auto-dismissing
           setTimeout(() => {
@@ -141,11 +152,13 @@ export const MultisigProposalTrackerProvider: React.FC<{
 
         // If rejected or cancelled, stop polling
         if (status === "Rejected" || status === "Cancelled") {
+          console.log(`[ProposalTracker] Proposal ${status}, stopping polling.`);
           return true;
         }
 
         return false;
       } catch (error) {
+        console.warn(`[ProposalTracker] Poll error (proposal may not exist yet):`, error);
         // Proposal account might not exist yet (just created)
         setTrackingState((prev) => ({
           ...prev,
@@ -160,6 +173,14 @@ export const MultisigProposalTrackerProvider: React.FC<{
 
   const trackProposal = useCallback(
     (proposal: TrackedProposal) => {
+      console.log(
+        `[ProposalTracker] trackProposal called:`,
+        `multisigPda=${proposal.multisigPda.toBase58()},`,
+        `transactionIndex=${proposal.transactionIndex},`,
+        `memo="${proposal.memo}",`,
+        `signature=${proposal.signature}`
+      );
+
       // Stop any existing polling
       stopPolling();
 
