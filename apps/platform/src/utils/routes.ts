@@ -9,8 +9,14 @@ export const INTERNAL_LINKS = {
   METRICS: "/:crunchname/metrics",
   SETTINGS: "/:crunchname/settings",
   PITCH: "/:crunchname/pitch",
-  REGISTER: "/register",
 } as const;
+
+export const PAGE_LABELS: Record<string, string> = {
+  onboarding: "Get Started",
+  dashboard: "Dashboard",
+  "create-crunch": "Create Crunch",
+  "certificate-enrollment": "Certificate",
+};
 
 type RouteConfig = {
   path: string;
