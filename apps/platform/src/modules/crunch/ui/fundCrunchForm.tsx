@@ -17,6 +17,7 @@ import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { PercentageSelector } from "@crunchdao/staking";
 import { useFundCrunch } from "../application/hooks/useFundCrunch";
 import { useGetUsdcBalance } from "../application/hooks/useGetUsdcBalance";
+import { useGetRewardVaultBalance } from "../application/hooks/useGetRewardVaultBalance";
 import {
   fundCrunchSchema,
   FundCrunchFormData,
@@ -26,6 +27,7 @@ import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 interface FundCrunchFormProps {
   crunchName: string;
   crunchAddress: PublicKey;
+  rewardVault?: PublicKey;
   onSuccess?: () => void;
   showCrunchInfo?: boolean;
 }
@@ -33,11 +35,13 @@ interface FundCrunchFormProps {
 export function FundCrunchForm({
   crunchName,
   crunchAddress,
+  rewardVault,
   onSuccess,
   showCrunchInfo = false,
 }: FundCrunchFormProps) {
   const { fundCrunch, fundCrunchLoading } = useFundCrunch(onSuccess);
   const { usdcBalance, usdcBalanceLoading } = useGetUsdcBalance();
+  const { vaultBalance } = useGetRewardVaultBalance(rewardVault);
 
   const form = useForm<FundCrunchFormData>({
     resolver: zodResolver(fundCrunchSchema),
@@ -80,6 +84,12 @@ export function FundCrunchForm({
                 <span>Address</span>
                 <SolanaAddressLink address={crunchAddress.toString()} />
               </p>
+              {rewardVault && vaultBalance > 0 && (
+                <p className="flex justify-between">
+                  <span>Current Vault Balance</span>
+                  <span className="font-medium text-foreground">{vaultBalance.toLocaleString()} USDC</span>
+                </p>
+              )}
             </div>
           )}
 

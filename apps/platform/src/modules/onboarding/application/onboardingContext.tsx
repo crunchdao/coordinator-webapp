@@ -26,6 +26,7 @@ import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useGetCoordinatorCrunches } from "@/modules/crunch/application/hooks/useGetCoordinatorCrunches";
 import { useGetStakingInfo } from "@/modules/staking/application/hooks/useGetStakingInfo";
 import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks/useGetCoordinatorPoolConfig";
+import { useGetRewardVaultBalance } from "@/modules/crunch/application/hooks/useGetRewardVaultBalance";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { MultisigForm } from "@/modules/wallet/ui/multisigForm";
 import { RegistrationForm } from "@/modules/crunch/ui/registrationForm";
@@ -165,7 +166,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const minStakeRequired = poolConfig?.minActivationSelfStake ?? 0;
   const stakedAmount = stakingInfo?.stakedAmount ?? 0;
   const crunchCount = crunches?.length ?? 0;
-  const firstCrunchState = crunches?.[0]?.state;
+  const firstCrunch = crunches?.[0];
+  const firstCrunchState = firstCrunch?.state;
+
+  const { vaultBalance } = useGetRewardVaultBalance(firstCrunch?.rewardVault);
 
   const isMultisigConfigured = isMultisigMode;
   const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
@@ -173,7 +177,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const isApproved = coordinatorStatus === CoordinatorStatus.APPROVED;
   const hasEnoughStake = stakedAmount >= minStakeRequired;
   const hasCrunch = crunchCount > 0;
-  const isCrunchFunded = firstCrunchState === "funded" || firstCrunchState === "started";
+  const isCrunchFunded = vaultBalance > 0 || firstCrunchState === "started";
   const isCrunchStarted = firstCrunchState === "started";
 
   const maxStepIndex = useMemo(() => {

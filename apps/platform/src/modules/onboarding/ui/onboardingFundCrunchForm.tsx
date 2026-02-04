@@ -41,6 +41,7 @@ export function OnboardingFundCrunchForm() {
     <FundCrunchForm
       crunchName={firstCrunch.name}
       crunchAddress={crunchAddress}
+      rewardVault={firstCrunch.rewardVault}
       showCrunchInfo
     />
   );
