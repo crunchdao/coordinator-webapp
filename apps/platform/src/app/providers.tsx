@@ -1,22 +1,82 @@
 "use client";
-import { ReactNode } from "react";
+import { ReactNode, useCallback } from "react";
 import { TooltipProvider } from "@crunch-ui/core";
 import { WalletProvider } from "@/modules/wallet/application/context/walletContext";
 import { AuthProvider } from "@/modules/auth/application/context/authContext";
 import { StakingProvider } from "@crunchdao/staking";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
+import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 import { MultisigProposalTrackerProvider } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { MultisigProposalTrackerDialog } from "@/modules/wallet/ui/multisigProposalTrackerDialog";
+import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
+import { useQueryClient } from "@tanstack/react-query";
+import type { TransactionExecutor } from "@crunchdao/solana-utils";
 
 const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { anchorProvider } = useAnchorProvider();
+  const { authority, isMultisigMode } = useEffectiveAuthority();
+  const { executeTransaction } = useTransactionExecutor();
+  const { trackProposal } = useMultisigProposalTracker();
+  const queryClient = useQueryClient();
+
   const cluster =
     process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta"
       ? "mainnet-beta"
       : "devnet";
 
+  const stakingTransactionExecutor: TransactionExecutor | undefined =
+    isMultisigMode
+      ? async ({ instructions, memo }) => {
+          console.log(
+            `[StakingWrapper] transactionExecutor called with ${instructions.length} instructions, memo="${memo}"`
+          );
+
+          const result = await executeTransaction({
+            instructions,
+            memo,
+          });
+
+          console.log(
+            `[StakingWrapper] executeTransaction result:`,
+            `isMultisig=${result.isMultisig},`,
+            `transactionIndex=${result.transactionIndex},`,
+            `multisigPda=${result.multisigPda?.toBase58()},`,
+            `signature=${result.signature}`
+          );
+
+          if (
+            result.isMultisig &&
+            result.transactionIndex &&
+            result.multisigPda
+          ) {
+            console.log(`[StakingWrapper] Calling trackProposal...`);
+            trackProposal({
+              multisigPda: result.multisigPda,
+              transactionIndex: result.transactionIndex,
+              memo,
+              proposalUrl: result.proposalUrl,
+              signature: result.signature,
+              onExecuted: () => {
+                console.log(
+                  `[StakingWrapper] onExecuted fired, invalidating staking queries`
+                );
+                queryClient.invalidateQueries({ queryKey: ["staking"] });
+              },
+            });
+          }
+
+          return result;
+        }
+      : undefined;
+
   return (
-    <StakingProvider anchorProvider={anchorProvider} cluster={cluster}>
+    <StakingProvider
+      anchorProvider={anchorProvider}
+      cluster={cluster}
+      owner={authority ?? undefined}
+      transactionExecutor={stakingTransactionExecutor}
+    >
       {children}
     </StakingProvider>
   );
@@ -26,14 +86,14 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <WalletProvider>
       <AuthProvider>
-        <StakingWrapper>
-          <MultisigProposalTrackerProvider>
+        <MultisigProposalTrackerProvider>
+          <StakingWrapper>
             <TooltipProvider delayDuration={50}>
               {children}
               <MultisigProposalTrackerDialog />
             </TooltipProvider>
-          </MultisigProposalTrackerProvider>
-        </StakingWrapper>
+          </StakingWrapper>
+        </MultisigProposalTrackerProvider>
       </AuthProvider>
     </WalletProvider>
   );
