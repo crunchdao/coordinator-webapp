@@ -3,6 +3,7 @@ import { toast } from "@crunch-ui/core";
 import { TransactionInstruction, PublicKey } from "@solana/web3.js";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
+import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import {
   CertificateData,
   SignedMessage,
@@ -58,6 +59,7 @@ export type EnrollmentResultExtended = EnrollmentResult | MultisigEnrollmentResu
 export const useEnrollCertificate = () => {
   const { publicKey, signMessage } = useWallet();
   const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
+  const { trackProposal } = useMultisigProposalTracker();
 
   const mutation = useMutation({
     mutationFn: async (): Promise<EnrollmentResultExtended> => {
@@ -102,10 +104,22 @@ export const useEnrollCertificate = () => {
       if (isMultisigMode) {
         const memoInstruction = createMemoInstruction(message, authority);
 
+        const enrollMemo = `Certificate enrollment for hotkey: ${hotkey.slice(0, 8)}...`;
         const result = await executeTransaction({
           instructions: [memoInstruction],
-          memo: `Certificate enrollment for hotkey: ${hotkey.slice(0, 8)}...`,
+          memo: enrollMemo,
         });
+
+        // Track the multisig proposal so the countdown dialog appears
+        if (result.isMultisig && result.transactionIndex && result.multisigPda) {
+          trackProposal({
+            multisigPda: result.multisigPda,
+            transactionIndex: result.transactionIndex,
+            memo: enrollMemo,
+            proposalUrl: result.proposalUrl,
+            signature: result.signature,
+          });
+        }
 
         // In multisig mode, we download the certificate but without a signature
         // The on-chain memo transaction serves as the attestation once approved
