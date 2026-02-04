@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@crunch-ui/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@crunch-ui/core";
 import { Check } from "@crunch-ui/icons";
 import { useOnboarding } from "../application/onboardingContext";
 
@@ -13,33 +14,37 @@ export function OnboardingStepper() {
         const isLast = index === steps.length - 1;
         const Icon = step.icon;
 
+        const stateClasses = step.isCompleted
+          ? "bg-success border-success text-success-foreground"
+          : step.isActive
+          ? "bg-primary border-primary text-primary-foreground"
+          : "border-muted-foreground/30 text-muted-foreground/50";
+
         return (
           <div key={step.step} className="flex gap-3 mx-auto">
             <div className="flex items-center">
-              <div
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2",
-                  step.isCompleted &&
-                    "bg-primary border-primary text-primary-foreground",
-                  step.isActive &&
-                    !step.isCompleted &&
-                    "border-primary text-primary",
-                  !step.isActive &&
-                    !step.isCompleted &&
-                    "border-muted-foreground/30 text-muted-foreground/50"
-                )}
-              >
-                {step.isCompleted ? (
-                  <Check className="w-4 h-4" />
-                ) : (
-                  <Icon className="w-4 h-4" />
-                )}
-              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div
+                    className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 cursor-default",
+                      stateClasses
+                    )}
+                  >
+                    {step.isCompleted ? (
+                      <Check className="w-4 h-4" />
+                    ) : (
+                      <Icon className="w-4 h-4" />
+                    )}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>{step.title}</TooltipContent>
+              </Tooltip>
               {!isLast && (
                 <div
                   className={cn(
                     "ml-2 w-8 h-0.5 mt-1",
-                    step.isCompleted ? "bg-primary" : "bg-muted-foreground/30"
+                    step.isCompleted ? "bg-success" : "bg-muted-foreground/30"
                   )}
                 />
               )}

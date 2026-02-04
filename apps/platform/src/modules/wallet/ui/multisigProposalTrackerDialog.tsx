@@ -9,6 +9,8 @@ import {
   Button,
   Spinner,
   Badge,
+  Alert,
+  AlertDescription,
   toast,
 } from "@crunch-ui/core";
 import { Check } from "@crunch-ui/icons";
@@ -112,25 +114,19 @@ function ApprovalCountdown({
 
   if (isApproved) {
     return (
-      <div className="flex items-center gap-2 rounded-lg bg-/10 px-3 py-2">
-        <Check className="w-6 h-6 text-success" />
-        <span className="body-sm font-medium">All approvals received!</span>
-      </div>
+      <Alert variant="success">
+        <Check className="w-4 h-4" />
+        <AlertDescription>All approvals received</AlertDescription>
+      </Alert>
     );
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-background border px-3 py-2">
-      <span className="title-lg  text-foreground">{remaining}</span>
-      <div className="flex flex-col">
-        <span className="body-sm text-foreground">
-          approval{remaining !== 1 ? "s" : ""} remaining
-        </span>
-        <span className="body-xs text-muted-foreground">
-          {approvals} of {threshold} received
-        </span>
-      </div>
-    </div>
+    <Alert variant="info">
+      <AlertDescription>
+        <span className="font-semibold">{remaining}</span> approval{remaining !== 1 ? "s" : ""} remaining ({approvals} of {threshold} received)
+      </AlertDescription>
+    </Alert>
   );
 }
 

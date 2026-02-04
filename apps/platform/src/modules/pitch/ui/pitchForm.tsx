@@ -56,7 +56,6 @@ export function PitchForm() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
-  console.log(form.formState.errors);
 
   return (
     <Card>

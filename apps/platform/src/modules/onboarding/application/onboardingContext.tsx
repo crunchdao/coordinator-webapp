@@ -29,8 +29,9 @@ import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { MultisigForm } from "@/modules/wallet/ui/multisigForm";
 import { RegistrationForm } from "@/modules/crunch/ui/registrationForm";
+import { CrunchCreationForm } from "@/modules/crunch/ui/crunchCreationForm";
 import { OnboardingStakeForm } from "../ui/onboardingStakeForm";
-import { StepConfig, OnboardingStep } from "../domain/types";
+import { OnboardingStep, StepConfig } from "../domain/types";
 
 const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
   [OnboardingStep.CONFIGURE_MULTISIG]: {
@@ -65,6 +66,7 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
     description: "Create your first Crunch challenge",
     isOptional: false,
     icon: Cube,
+    content: <CrunchCreationForm onSuccess={() => {}} />,
   },
   [OnboardingStep.FUND_CRUNCH]: {
     title: "Fund Crunch",
@@ -103,17 +105,12 @@ export const STEP_ORDER: OnboardingStep[] = [
   OnboardingStep.CERTIFICATE_ENROLLMENT,
 ];
 
-export interface OnboardingStepInfo {
+export interface OnboardingStepInfo extends StepConfig {
   step: OnboardingStep;
-  title: string;
-  description: string;
-  isOptional: boolean;
   isCompleted: boolean;
   isActive: boolean;
   isBlocked: boolean;
   blockReason?: string;
-  icon: React.ComponentType<{ className?: string }>;
-  content?: React.ReactNode;
 }
 
 export interface OnboardingState {
@@ -159,84 +156,55 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const { stakingInfo, stakingInfoLoading } = useGetStakingInfo();
   const { poolConfig, poolConfigLoading } = useGetCoordinatorPoolConfig();
 
+  const [stepIndex, setStepIndex] = useState(0);
+  const hasInitialized = useRef(false);
+
+  const isLoading = authLoading || crunchesLoading || stakingInfoLoading || poolConfigLoading;
   const minStakeRequired = poolConfig?.minActivationSelfStake ?? 0;
   const stakedAmount = stakingInfo?.stakedAmount ?? 0;
   const crunchCount = crunches?.length ?? 0;
   const firstCrunchState = crunches?.[0]?.state;
 
-  const [stepIndex, setStepIndex] = useState(0);
-  const hasInitialized = useRef(false);
+  const isMultisigConfigured = isMultisigMode;
+  const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
+  const isPending = coordinatorStatus === CoordinatorStatus.PENDING;
+  const isApproved = coordinatorStatus === CoordinatorStatus.APPROVED;
+  const hasEnoughStake = stakedAmount >= minStakeRequired;
+  const hasCrunch = crunchCount > 0;
+  const isCrunchFunded = firstCrunchState === "funded" || firstCrunchState === "started";
+  const isCrunchStarted = firstCrunchState === "started";
 
-  const isLoading = authLoading || crunchesLoading || stakingInfoLoading || poolConfigLoading;
+  const maxStepIndex = useMemo(() => {
+    let max = 1;
+    if (isRegistered) max = 2;
+    if (isApproved) max = 3;
+    if (hasEnoughStake) max = 4;
+    if (hasCrunch) max = 5;
+    if (isCrunchFunded) max = 6;
+    if (isCrunchStarted) max = 7;
+    return max;
+  }, [isRegistered, isApproved, hasEnoughStake, hasCrunch, isCrunchFunded, isCrunchStarted]);
 
   useEffect(() => {
     if (isLoading || hasInitialized.current) return;
     hasInitialized.current = true;
+    setStepIndex(maxStepIndex > 0 ? maxStepIndex : 0);
+  }, [isLoading, maxStepIndex]);
 
-    const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
-    const isApproved = coordinatorStatus === CoordinatorStatus.APPROVED;
-    const hasEnoughStake = stakedAmount >= minStakeRequired;
-    const hasCrunch = crunchCount > 0;
-    const isCrunchFunded = firstCrunchState === "funded" || firstCrunchState === "started";
-    const isCrunchStarted = firstCrunchState === "started";
+  const completionMap: Record<OnboardingStep, boolean> = useMemo(() => ({
+    [OnboardingStep.CONFIGURE_MULTISIG]: isMultisigConfigured,
+    [OnboardingStep.REGISTER_COORDINATOR]: isRegistered,
+    [OnboardingStep.WAITING_APPROVAL]: isApproved,
+    [OnboardingStep.STAKE]: hasEnoughStake,
+    [OnboardingStep.CREATE_CRUNCH]: hasCrunch,
+    [OnboardingStep.FUND_CRUNCH]: isCrunchFunded,
+    [OnboardingStep.START_CRUNCH]: isCrunchStarted,
+    [OnboardingStep.CERTIFICATE_ENROLLMENT]: false,
+    [OnboardingStep.COMPLETED]: false,
+  }), [isMultisigConfigured, isRegistered, isApproved, hasEnoughStake, hasCrunch, isCrunchFunded, isCrunchStarted]);
 
-    let initialIndex = 0;
-    if (isMultisigMode) initialIndex = 1;
-    if (isRegistered) initialIndex = 2;
-    if (isApproved) initialIndex = 3;
-    if (hasEnoughStake) initialIndex = 4;
-    if (hasCrunch) initialIndex = 5;
-    if (isCrunchFunded) initialIndex = 6;
-    if (isCrunchStarted) initialIndex = 7;
-
-    setStepIndex(initialIndex);
-  }, [
-    isLoading,
-    coordinatorStatus,
-    isMultisigMode,
-    stakedAmount,
-    minStakeRequired,
-    crunchCount,
-    firstCrunchState,
-  ]);
-
-  const state = useMemo((): Omit<
-    OnboardingState,
-    "goToNextStep" | "goToPreviousStep" | "canGoNext" | "canGoPrevious"
-  > & { maxStepIndex: number } => {
-    const isMultisigConfigured = isMultisigMode;
-    const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
-    const isPending = coordinatorStatus === CoordinatorStatus.PENDING;
-    const isApproved = coordinatorStatus === CoordinatorStatus.APPROVED;
-    const hasEnoughStake = stakedAmount >= minStakeRequired;
-    const hasCrunch = crunchCount > 0;
-    const isCrunchFunded =
-      firstCrunchState === "funded" || firstCrunchState === "started";
-    const isCrunchStarted = firstCrunchState === "started";
-
-    let maxStepIndex = 1;
-    if (isRegistered) maxStepIndex = 2;
-    if (isApproved) maxStepIndex = 3;
-    if (hasEnoughStake) maxStepIndex = 4;
-    if (hasCrunch) maxStepIndex = 5;
-    if (isCrunchFunded) maxStepIndex = 6;
-    if (isCrunchStarted) maxStepIndex = 7;
-
-    const completionMap: Record<OnboardingStep, boolean> = {
-      [OnboardingStep.CONFIGURE_MULTISIG]: isMultisigConfigured,
-      [OnboardingStep.REGISTER_COORDINATOR]: isRegistered,
-      [OnboardingStep.WAITING_APPROVAL]: isApproved,
-      [OnboardingStep.STAKE]: hasEnoughStake,
-      [OnboardingStep.CREATE_CRUNCH]: hasCrunch,
-      [OnboardingStep.FUND_CRUNCH]: isCrunchFunded,
-      [OnboardingStep.START_CRUNCH]: isCrunchStarted,
-      [OnboardingStep.CERTIFICATE_ENROLLMENT]: false,
-      [OnboardingStep.COMPLETED]: false,
-    };
-
-    const currentStep = STEP_ORDER[stepIndex] ?? STEP_ORDER[0];
-
-    const steps: OnboardingStepInfo[] = STEP_ORDER.map((step, index) => {
+  const steps: OnboardingStepInfo[] = useMemo(() => {
+    return STEP_ORDER.map((step, index) => {
       const config = STEPS_CONFIG[step];
       const isCompleted = completionMap[step];
       const isActive = index === stepIndex;
@@ -256,55 +224,20 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
       return {
         step,
-        title: config.title,
-        description: config.description,
-        isOptional: config.isOptional,
-        icon: config.icon,
-        content: config.content,
+        ...config,
         isCompleted,
         isActive,
         isBlocked,
         blockReason,
       };
     });
+  }, [completionMap, stepIndex, hasEnoughStake, minStakeRequired, isApproved]);
 
-    const currentStepInfo = steps.find((s) => s.step === currentStep);
+  const currentStep = STEP_ORDER[stepIndex] ?? STEP_ORDER[0];
+  const currentStepInfo = steps.find((s) => s.step === currentStep);
+  const currentStepContent = currentStepInfo?.content;
 
-    return {
-      currentStep,
-      currentStepInfo,
-      currentStepContent: currentStepInfo?.content,
-      steps,
-      maxStepIndex,
-      isLoading,
-      isOnboardingComplete: isCrunchStarted,
-      isMultisigConfigured,
-      isRegistered,
-      isApproved,
-      isPending,
-      stakedAmount,
-      minStakeRequired,
-      hasEnoughStake,
-      hasCrunch,
-      isCrunchFunded,
-      isCrunchStarted,
-      hasCertificate: false,
-    };
-  }, [
-    coordinatorStatus,
-    isMultisigMode,
-    stakedAmount,
-    minStakeRequired,
-    crunchCount,
-    firstCrunchState,
-    authLoading,
-    crunchesLoading,
-    stakingInfoLoading,
-    poolConfigLoading,
-    stepIndex,
-  ]);
-
-  const canGoNext = stepIndex < state.maxStepIndex;
+  const canGoNext = stepIndex < maxStepIndex;
   const canGoPrevious = stepIndex > 0;
 
   const goToNextStep = useCallback(() => {
@@ -316,7 +249,23 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   }, [canGoPrevious]);
 
   const value: OnboardingState = {
-    ...state,
+    currentStep,
+    currentStepInfo,
+    currentStepContent,
+    steps,
+    isLoading,
+    isOnboardingComplete: isCrunchStarted,
+    isMultisigConfigured,
+    isRegistered,
+    isApproved,
+    isPending,
+    stakedAmount,
+    minStakeRequired,
+    hasEnoughStake,
+    hasCrunch,
+    isCrunchFunded,
+    isCrunchStarted,
+    hasCertificate: false,
     goToNextStep,
     goToPreviousStep,
     canGoNext,

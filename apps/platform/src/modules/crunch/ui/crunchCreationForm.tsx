@@ -18,13 +18,32 @@ import {
   CreateCrunchFormData,
 } from "../application/schemas/crunchCreation";
 import { useCreateCrunch } from "../application/hooks/useCreateCrunch";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "../domain/types";
+import { useRouter } from "next/navigation";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
-export function CrunchCreationForm() {
+interface CrunchCreationFormProps {
+  onSuccess?: (crunchName: string) => void;
+}
+
+export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
+  const router = useRouter();
+  const { coordinatorStatus } = useAuth();
+
+  const handleSuccess = (crunchName: string) => {
+    if (onSuccess) {
+      onSuccess(crunchName);
+    } else {
+      router.push(
+        generateLink(INTERNAL_LINKS.LEADERBOARD, { crunchname: crunchName })
+      );
+    }
+  };
+
+  const { createCrunch, createCrunchLoading } = useCreateCrunch(handleSuccess);
+
   const form = useForm<CreateCrunchFormData>({
     resolver: zodResolver(crunchCreationSchema),
     defaultValues: {
@@ -34,22 +53,8 @@ export function CrunchCreationForm() {
     },
   });
 
-  const router = useRouter();
-  const { coordinatorStatus } = useAuth();
-  const { createCrunch, createCrunchLoading, createCrunchData } =
-    useCreateCrunch();
-
-  const onSubmit = async (data: CreateCrunchFormData) => {
-    createCrunch(data, {
-      onSuccess: (result) => {
-        // Redirect to the newly created crunch leaderboard
-        router.push(
-          generateLink(INTERNAL_LINKS.LEADERBOARD, {
-            crunchname: result.crunchName,
-          })
-        );
-      },
-    });
+  const onSubmit = (data: CreateCrunchFormData) => {
+    createCrunch(data);
   };
 
   const isDisabled =
