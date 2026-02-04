@@ -26,24 +26,30 @@ function getStepState(
   stepKey: ProposalStatusKind,
   currentStatus: ProposalStatusKind | "loading" | "not_found"
 ): "done" | "active" | "pending" {
-  const order: Record<string, number> = {
-    Draft: 0,
-    Active: 1,
-    Approved: 2,
-    Executing: 3,
-    Executed: 4,
-  };
+  if (currentStatus === "loading" || currentStatus === "not_found") {
+    // Nothing confirmed yet — first step is active, rest pending
+    return stepKey === "Active" ? "active" : "pending";
+  }
 
-  const currentOrder =
-    currentStatus === "loading" || currentStatus === "not_found"
-      ? 0
-      : (order[currentStatus] ?? 0);
-  const stepOrder = order[stepKey] ?? 0;
+  // "Approved" means approvals are complete, waiting for execution
+  // So "Approved" step = done, "Executed" step = active (spinning)
+  if (currentStatus === "Approved" || currentStatus === "Executing") {
+    if (stepKey === "Active" || stepKey === "Approved") return "done";
+    if (stepKey === "Executed") return "active";
+    return "pending";
+  }
 
-  if (currentOrder > stepOrder) return "done";
-  if (currentOrder === stepOrder) return "active";
-  if (stepKey === "Approved" && currentStatus === "Executing") return "done";
-  if (stepKey === "Executed" && currentStatus === "Executing") return "active";
+  if (currentStatus === "Executed") {
+    return "done"; // All steps done
+  }
+
+  // Active status: "Proposed" is active, rest pending
+  if (currentStatus === "Active" || currentStatus === "Draft") {
+    if (stepKey === "Active") return "active";
+    return "pending";
+  }
+
+  // Rejected/Cancelled — show what was reached
   return "pending";
 }
 
