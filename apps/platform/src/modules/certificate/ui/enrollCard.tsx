@@ -11,6 +11,7 @@ import {
   CardTitle,
   Skeleton,
 } from "@crunch-ui/core";
+import { Check } from "@crunch-ui/icons";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { EnrollDialog } from "./enrollDialog";
@@ -84,7 +85,7 @@ export function EnrollCard() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 rounded-lg bg-green-500/10 px-3 py-2">
-                    <span className="text-lg font-bold text-green-500">✓</span>
+                    <Check className="w-5 h-5 text-green-500" />
                     <div>
                       <p className="text-sm font-medium text-green-600 dark:text-green-400">
                         Certificate enrollment confirmed on-chain

@@ -29,6 +29,7 @@ import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { MultisigForm } from "@/modules/wallet/ui/multisigForm";
 import { RegistrationForm } from "@/modules/crunch/ui/registrationForm";
+import { OnboardingStakeForm } from "../ui/onboardingStakeForm";
 import { StepConfig, OnboardingStep } from "../domain/types";
 
 const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
@@ -57,6 +58,7 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
     description: "Stake CRNCH tokens on yourself",
     isOptional: false,
     icon: Trophy,
+    content: <OnboardingStakeForm />,
   },
   [OnboardingStep.CREATE_CRUNCH]: {
     title: "Create Crunch",

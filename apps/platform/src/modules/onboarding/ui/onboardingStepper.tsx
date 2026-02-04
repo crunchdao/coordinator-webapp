@@ -14,7 +14,7 @@ export function OnboardingStepper() {
         const Icon = step.icon;
 
         return (
-          <div key={step.step} className="flex gap-3">
+          <div key={step.step} className="flex gap-3 mx-auto">
             <div className="flex items-center">
               <div
                 className={cn(
@@ -38,7 +38,7 @@ export function OnboardingStepper() {
               {!isLast && (
                 <div
                   className={cn(
-                    "w-8 h-0.5 mt-1",
+                    "ml-2 w-8 h-0.5 mt-1",
                     step.isCompleted ? "bg-primary" : "bg-muted-foreground/30"
                   )}
                 />
