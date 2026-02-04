@@ -175,40 +175,55 @@ export const useEnrollCertificate = () => {
             proposalUrl: result.proposalUrl,
             signature: result.signature,
             onExecuted: async () => {
-              const pending = pendingCertRef.current;
-              if (!pending) {
-                console.warn(
-                  "[EnrollCertificate] onExecuted but no pending cert data"
-                );
-                return;
-              }
-
-              // Find the execution transaction signature on-chain
-              const executionSignature = await findMemoExecutionSignature(
-                connection,
-                authority
-              );
-
-              const zipBlob = await createCertificateZip(
-                pending.certificateData,
-                {
-                  message_b64: uint8ArrayToBase64(
-                    new TextEncoder().encode(pending.message)
-                  ),
-                  wallet_pubkey_b58: pending.authorityAddress,
-                  signature_b64: executionSignature || "",
+              try {
+                const pending = pendingCertRef.current;
+                if (!pending) {
+                  console.warn(
+                    "[EnrollCertificate] onExecuted but no pending cert data"
+                  );
+                  return;
                 }
-              );
-              downloadBlob(zipBlob, "issued-certificate.zip");
 
-              toast({
-                title: "Certificate downloaded",
-                description: executionSignature
-                  ? "Certificate ZIP with execution signature has been downloaded."
-                  : "Certificate ZIP has been downloaded.",
-              });
+                // Find the execution transaction signature on-chain
+                const executionSignature = await findMemoExecutionSignature(
+                  connection,
+                  authority
+                );
 
-              pendingCertRef.current = null;
+                const zipBlob = await createCertificateZip(
+                  pending.certificateData,
+                  {
+                    message_b64: uint8ArrayToBase64(
+                      new TextEncoder().encode(pending.message)
+                    ),
+                    wallet_pubkey_b58: pending.authorityAddress,
+                    signature_b64: executionSignature || "",
+                  }
+                );
+                downloadBlob(zipBlob, "issued-certificate.zip");
+
+                toast({
+                  title: "Certificate downloaded",
+                  description: executionSignature
+                    ? "Certificate ZIP with execution signature has been downloaded."
+                    : "Certificate ZIP has been downloaded.",
+                });
+              } catch (error) {
+                console.error(
+                  "[EnrollCertificate] Failed to download certificate after execution:",
+                  error
+                );
+                toast({
+                  title: "Failed to download certificate",
+                  description:
+                    error instanceof Error
+                      ? error.message
+                      : "An error occurred while downloading the certificate.",
+                  variant: "destructive",
+                });
+              } finally {
+                pendingCertRef.current = null;
+              }
             },
           });
         }

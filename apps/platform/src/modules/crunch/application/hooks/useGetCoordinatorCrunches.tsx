@@ -22,11 +22,10 @@ export const useGetCoordinatorCrunches = () => {
         authority
       );
 
-      const transformedCrunches = crunches?.map((crunch) => {
+      const transformedCrunches = crunches?.map((crunch: Record<string, any>) => {
         // Normalize: getCrunchesForCoordinatorWallet returns { publicKey, account }
         const data = "account" in crunch ? crunch.account : crunch;
-        const pk =
-          "publicKey" in crunch ? (crunch as any).publicKey : undefined;
+        const pk = "publicKey" in crunch ? crunch.publicKey : undefined;
         return {
           ...data,
           publicKey: pk,

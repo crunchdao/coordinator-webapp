@@ -13,6 +13,16 @@ import {
 } from "@crunch-ui/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+
+/** Type guard for multisig transaction results */
+function isMultisigResult(result: unknown): boolean {
+  return (
+    typeof result === "object" &&
+    result !== null &&
+    "isMultisig" in result &&
+    (result as { isMultisig: boolean }).isMultisig === true
+  );
+}
 import { CrunchValue } from "@crunchdao/solana-utils";
 import {
   FormHandlers,
@@ -57,8 +67,7 @@ export const SelfStakeForm: React.FC<SelfStakeFormProps> = ({
 
         // In multisig mode, the transactionExecutor already triggers
         // the proposal tracker — skip the immediate success feedback.
-        const isMultisig =
-          typeof result === "object" && result !== null && "isMultisig" in result && result.isMultisig;
+        const isMultisig = isMultisigResult(result);
 
         if (!isMultisig) {
           toast({

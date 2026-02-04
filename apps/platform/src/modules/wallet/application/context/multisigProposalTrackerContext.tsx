@@ -97,7 +97,10 @@ export const MultisigProposalTrackerProvider: React.FC<{
   const [isActing, setIsActing] = useState(false);
   const [members, setMembers] = useState<PublicKey[]>([]);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const onExecutedRef = useRef<(() => void | Promise<void>) | undefined>(undefined);
+  const dismissTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onExecutedRef = useRef<(() => void | Promise<void>) | undefined>(
+    undefined
+  );
 
   const stopPolling = useCallback(() => {
     if (pollingRef.current) {
@@ -108,6 +111,10 @@ export const MultisigProposalTrackerProvider: React.FC<{
 
   const dismiss = useCallback(() => {
     stopPolling();
+    if (dismissTimeoutRef.current) {
+      clearTimeout(dismissTimeoutRef.current);
+      dismissTimeoutRef.current = null;
+    }
     setIsTracking(false);
     setTrackingState(initialState);
     setMembers([]);
@@ -117,17 +124,11 @@ export const MultisigProposalTrackerProvider: React.FC<{
   const pollProposal = useCallback(
     async (multisigPda: PublicKey, transactionIndex: bigint) => {
       try {
-        // Get proposal PDA
         const [proposalPda] = multisig.getProposalPda({
           multisigPda,
           transactionIndex,
         });
 
-        console.log(
-          `[ProposalTracker] Polling proposal PDA: ${proposalPda.toBase58()} (multisig: ${multisigPda.toBase58()}, txIndex: ${transactionIndex})`
-        );
-
-        // Try to fetch the proposal account
         const proposalAccount =
           await multisig.accounts.Proposal.fromAccountAddress(
             connection,
@@ -135,10 +136,6 @@ export const MultisigProposalTrackerProvider: React.FC<{
           );
 
         const status = proposalAccount.status.__kind as ProposalStatusKind;
-
-        console.log(
-          `[ProposalTracker] Status: ${status}, approved: ${proposalAccount.approved.length}, rejected: ${proposalAccount.rejected.length}`
-        );
 
         // Get threshold and members from multisig account
         let threshold = 0;
@@ -149,10 +146,13 @@ export const MultisigProposalTrackerProvider: React.FC<{
               multisigPda
             );
           threshold = multisigAccount.threshold;
-          setMembers(multisigAccount.members.map((m: any) => m.key));
-          console.log(`[ProposalTracker] Threshold: ${threshold}`);
-        } catch (e) {
-          console.warn(`[ProposalTracker] Failed to fetch multisig account:`, e);
+          setMembers(
+            (multisigAccount.members as Array<{ key: PublicKey }>).map(
+              (member) => member.key
+            )
+          );
+        } catch {
+          // Keep previous threshold if fetch fails
         }
 
         setTrackingState((prev) => ({
@@ -166,24 +166,26 @@ export const MultisigProposalTrackerProvider: React.FC<{
 
         // If executed, call the callback and stop polling
         if (status === "Executed") {
-          console.log(`[ProposalTracker] Proposal executed! Calling onExecuted callback.`);
-          onExecutedRef.current?.();
+          try {
+            await onExecutedRef.current?.();
+          } catch (e) {
+            console.error("[ProposalTracker] onExecuted callback failed:", e);
+          }
           // Small delay to let UI show "Executed" state before auto-dismissing
-          setTimeout(() => {
+          dismissTimeoutRef.current = setTimeout(() => {
             dismiss();
           }, 2000);
-          return true; // Signal to stop polling
+          return true;
         }
 
         // If rejected or cancelled, stop polling
         if (status === "Rejected" || status === "Cancelled") {
-          console.log(`[ProposalTracker] Proposal ${status}, stopping polling.`);
+          stopPolling();
           return true;
         }
 
         return false;
-      } catch (error) {
-        console.warn(`[ProposalTracker] Poll error (proposal may not exist yet):`, error);
+      } catch {
         // Proposal account might not exist yet (just created)
         setTrackingState((prev) => ({
           ...prev,
@@ -193,19 +195,11 @@ export const MultisigProposalTrackerProvider: React.FC<{
         return false;
       }
     },
-    [connection, dismiss]
+    [connection, dismiss, stopPolling]
   );
 
   const trackProposal = useCallback(
     (proposal: TrackedProposal) => {
-      console.log(
-        `[ProposalTracker] trackProposal called:`,
-        `multisigPda=${proposal.multisigPda.toBase58()},`,
-        `transactionIndex=${proposal.transactionIndex},`,
-        `memo="${proposal.memo}",`,
-        `signature=${proposal.signature}`
-      );
-
       // Stop any existing polling
       stopPolling();
 
@@ -264,8 +258,6 @@ export const MultisigProposalTrackerProvider: React.FC<{
       );
       await connection.confirmTransaction(signature, "confirmed");
 
-      console.log(`[ProposalTracker] Approved! Signature: ${signature}`);
-
       // Trigger immediate poll to refresh state
       await pollProposal(proposal.multisigPda, proposal.transactionIndex);
     } catch (error) {
@@ -312,7 +304,6 @@ export const MultisigProposalTrackerProvider: React.FC<{
           signedTx.serialize()
         );
         await connection.confirmTransaction(signature, "confirmed");
-        console.log(`[ProposalTracker] Executed (v0)! Signature: ${signature}`);
       } else {
         const tx = new Transaction().add(executeIx);
         tx.feePayer = publicKey;
@@ -325,7 +316,6 @@ export const MultisigProposalTrackerProvider: React.FC<{
           signedTx.serialize()
         );
         await connection.confirmTransaction(signature, "confirmed");
-        console.log(`[ProposalTracker] Executed! Signature: ${signature}`);
       }
 
       // Trigger immediate poll to refresh state (will fire onExecuted)
@@ -355,6 +345,9 @@ export const MultisigProposalTrackerProvider: React.FC<{
   useEffect(() => {
     return () => {
       stopPolling();
+      if (dismissTimeoutRef.current) {
+        clearTimeout(dismissTimeoutRef.current);
+      }
     };
   }, [stopPolling]);
 

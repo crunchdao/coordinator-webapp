@@ -25,57 +25,42 @@ const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
       ? "mainnet-beta"
       : "devnet";
 
-  const stakingTransactionExecutor: TransactionExecutor | undefined =
-    isMultisigMode
-      ? async ({ instructions, memo }) => {
-          console.log(
-            `[StakingWrapper] transactionExecutor called with ${instructions.length} instructions, memo="${memo}"`
-          );
+  const stakingTransactionExecutor: TransactionExecutor =
+    useCallback<TransactionExecutor>(
+      async ({ instructions, memo }) => {
+        const result = await executeTransaction({
+          instructions,
+          memo,
+        });
 
-          const result = await executeTransaction({
-            instructions,
+        if (
+          result.isMultisig &&
+          result.transactionIndex &&
+          result.multisigPda
+        ) {
+          trackProposal({
+            multisigPda: result.multisigPda,
+            transactionIndex: result.transactionIndex,
             memo,
+            proposalUrl: result.proposalUrl,
+            signature: result.signature,
+            onExecuted: () => {
+              queryClient.invalidateQueries({ queryKey: ["staking"] });
+            },
           });
-
-          console.log(
-            `[StakingWrapper] executeTransaction result:`,
-            `isMultisig=${result.isMultisig},`,
-            `transactionIndex=${result.transactionIndex},`,
-            `multisigPda=${result.multisigPda?.toBase58()},`,
-            `signature=${result.signature}`
-          );
-
-          if (
-            result.isMultisig &&
-            result.transactionIndex &&
-            result.multisigPda
-          ) {
-            console.log(`[StakingWrapper] Calling trackProposal...`);
-            trackProposal({
-              multisigPda: result.multisigPda,
-              transactionIndex: result.transactionIndex,
-              memo,
-              proposalUrl: result.proposalUrl,
-              signature: result.signature,
-              onExecuted: () => {
-                console.log(
-                  `[StakingWrapper] onExecuted fired, invalidating staking queries`
-                );
-                queryClient.invalidateQueries({ queryKey: ["staking"] });
-              },
-            });
-          }
-
-          return result;
         }
-      : undefined;
+
+        return result;
+      },
+      [executeTransaction, trackProposal, queryClient]
+    );
 
   return (
     <StakingProvider
       anchorProvider={anchorProvider}
       cluster={cluster}
       owner={authority ?? undefined}
-      transactionExecutor={stakingTransactionExecutor}
+      transactionExecutor={isMultisigMode ? stakingTransactionExecutor : undefined}
     >
       {children}
     </StakingProvider>

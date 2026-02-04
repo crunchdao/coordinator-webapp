@@ -153,10 +153,6 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
   const { proposal, status, approvals, threshold, error } = trackingState;
   const [actionError, setActionError] = useState<string | null>(null);
 
-  console.log(
-    `[ProposalTrackerDialog] render: isTracking=${isTracking}, status=${status}, approvals=${approvals.length}, threshold=${threshold}, isMember=${isMember}, hasApproved=${hasApproved}`
-  );
-
   const isTerminal =
     status === "Executed" || status === "Rejected" || status === "Cancelled";
   const isError = status === "Rejected" || status === "Cancelled";

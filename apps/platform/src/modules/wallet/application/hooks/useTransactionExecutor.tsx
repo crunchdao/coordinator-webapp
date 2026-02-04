@@ -50,7 +50,7 @@ export const useTransactionExecutor = () => {
         const result = await multisigService.proposeTransaction(
           instructions,
           memo,
-          0,
+          0, // vaultIndex — default vault (index 0) of the multisig
           { createProposal: true }
         );
 
