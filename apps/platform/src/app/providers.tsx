@@ -3,6 +3,7 @@ import { ReactNode, useCallback } from "react";
 import { TooltipProvider } from "@crunch-ui/core";
 import { WalletProvider } from "@/modules/wallet/application/context/walletContext";
 import { AuthProvider } from "@/modules/auth/application/context/authContext";
+import { OnboardingProvider } from "@/modules/onboarding/application/context/onboardingContext";
 import { StakingProvider } from "@crunchdao/staking";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
@@ -60,7 +61,9 @@ const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
       anchorProvider={anchorProvider}
       cluster={cluster}
       owner={authority ?? undefined}
-      transactionExecutor={isMultisigMode ? stakingTransactionExecutor : undefined}
+      transactionExecutor={
+        isMultisigMode ? stakingTransactionExecutor : undefined
+      }
     >
       {children}
     </StakingProvider>
