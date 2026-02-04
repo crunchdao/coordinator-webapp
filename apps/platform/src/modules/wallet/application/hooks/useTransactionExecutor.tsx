@@ -49,7 +49,9 @@ export const useTransactionExecutor = () => {
       if (isMultisigMode && multisigService) {
         const result = await multisigService.proposeTransaction(
           instructions,
-          memo
+          memo,
+          0,
+          { createProposal: true }
         );
 
         return {
