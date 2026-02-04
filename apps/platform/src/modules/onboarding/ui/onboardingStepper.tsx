@@ -2,15 +2,16 @@
 
 import { cn } from "@crunch-ui/utils";
 import { Check } from "@crunch-ui/icons";
-import { useOnboarding } from "../application/context/onboardingContext";
+import { useOnboardingSteps } from "../application/useOnboardingSteps";
 
 export function OnboardingStepper() {
-  const { steps } = useOnboarding();
+  const { steps } = useOnboardingSteps();
 
   return (
     <div className="flex flex-row gap-2">
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
+        const Icon = step.icon;
 
         return (
           <div key={step.step} className="flex gap-3">
@@ -28,7 +29,11 @@ export function OnboardingStepper() {
                     "border-muted-foreground/30 text-muted-foreground/50"
                 )}
               >
-                {step.isCompleted ? <Check className="w-4 h-4" /> : index + 1}
+                {step.isCompleted ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  <Icon className="w-4 h-4" />
+                )}
               </div>
               {!isLast && (
                 <div
@@ -38,25 +43,6 @@ export function OnboardingStepper() {
                   )}
                 />
               )}
-            </div>
-            <div className="pt-1">
-              <p
-                className={cn(
-                  "text-sm font-medium",
-                  step.isActive && "text-foreground",
-                  step.isCompleted && "text-muted-foreground",
-                  !step.isActive &&
-                    !step.isCompleted &&
-                    "text-muted-foreground/50"
-                )}
-              >
-                {step.title}
-                {step.isOptional && (
-                  <span className="ml-2 text-xs text-muted-foreground">
-                    (optional)
-                  </span>
-                )}
-              </p>
             </div>
           </div>
         );

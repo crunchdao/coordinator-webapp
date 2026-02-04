@@ -38,4 +38,9 @@ export interface OnboardingState {
   isCrunchFunded: boolean;
   isCrunchStarted: boolean;
   hasCertificate: boolean;
+
+  goToNextStep: () => void;
+  goToPreviousStep: () => void;
+  canGoNext: boolean;
+  canGoPrevious: boolean;
 }

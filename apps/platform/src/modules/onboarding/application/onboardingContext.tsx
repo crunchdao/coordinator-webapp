@@ -1,28 +1,27 @@
 "use client";
-import { createContext, useContext, ReactNode, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useGetCoordinatorCrunches } from "@/modules/crunch/application/hooks/useGetCoordinatorCrunches";
 import { useGetStakingInfo } from "@/modules/staking/application/hooks/useGetStakingInfo";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
-import { OnboardingStep, OnboardingStepInfo, OnboardingState } from "../../domain/types";
+import {
+  OnboardingStep,
+  OnboardingStepInfo,
+  OnboardingState,
+} from "../domain/types";
 
-// TODO: Get from getCoordinatorPoolConfig
-const MIN_STAKE_REQUIRED = 0;
-
-interface OnboardingContextType extends OnboardingState {}
-
-const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
-
-export const useOnboarding = () => {
-  const context = useContext(OnboardingContext);
-  if (!context) {
-    throw new Error("useOnboarding must be used within an OnboardingProvider");
-  }
-  return context;
-};
-
-const STEP_CONFIG: Record<OnboardingStep, { title: string; description: string; isOptional: boolean }> = {
+const STEP_CONFIG: Record<
+  OnboardingStep,
+  { title: string; description: string; isOptional: boolean }
+> = {
   [OnboardingStep.CONFIGURE_MULTISIG]: {
     title: "Configure Multisig",
     description: "Optionally configure a multisig wallet for enhanced security",
@@ -70,7 +69,7 @@ const STEP_CONFIG: Record<OnboardingStep, { title: string; description: string; 
   },
 };
 
-const STEP_ORDER = [
+const STEP_ORDER: OnboardingStep[] = [
   OnboardingStep.CONFIGURE_MULTISIG,
   OnboardingStep.REGISTER_COORDINATOR,
   OnboardingStep.WAITING_APPROVAL,
@@ -81,17 +80,38 @@ const STEP_ORDER = [
   OnboardingStep.CERTIFICATE_ENROLLMENT,
 ];
 
+interface OnboardingContextType extends OnboardingState {}
+
+const OnboardingContext = createContext<OnboardingContextType | undefined>(
+  undefined
+);
+
+export const useOnboarding = () => {
+  const context = useContext(OnboardingContext);
+  if (!context) {
+    throw new Error("useOnboarding must be used within an OnboardingProvider");
+  }
+  return context;
+};
+
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const { coordinatorStatus, isLoading: authLoading } = useAuth();
   const { isMultisigMode } = useWallet();
   const { crunches, crunchesLoading } = useGetCoordinatorCrunches();
   const { stakingInfo, stakingInfoLoading } = useGetStakingInfo();
 
+  const MIN_STAKE_REQUIRED = 0;
+
   const stakedAmount = stakingInfo?.stakedAmount || 0;
   const crunchCount = crunches?.length || 0;
   const firstCrunchState = crunches?.[0]?.state;
 
-  const state = useMemo((): OnboardingState => {
+  const [stepIndex, setStepIndex] = useState(0);
+
+  const state = useMemo((): Omit<
+    OnboardingState,
+    "goToNextStep" | "goToPreviousStep" | "canGoNext" | "canGoPrevious"
+  > & { maxStepIndex: number } => {
     const isMultisigConfigured = isMultisigMode;
     const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
     const isPending = coordinatorStatus === CoordinatorStatus.PENDING;
@@ -100,26 +120,17 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     const hasEnoughStake = stakedAmount > MIN_STAKE_REQUIRED;
 
     const hasCrunch = crunchCount > 0;
-    const isCrunchFunded = firstCrunchState === "funded" || firstCrunchState === "started";
+    const isCrunchFunded =
+      firstCrunchState === "funded" || firstCrunchState === "started";
     const isCrunchStarted = firstCrunchState === "started";
 
-    let currentStep: OnboardingStep = OnboardingStep.CONFIGURE_MULTISIG;
-
-    if (!isRegistered) {
-      currentStep = OnboardingStep.CONFIGURE_MULTISIG;
-    } else if (isPending) {
-      currentStep = OnboardingStep.WAITING_APPROVAL;
-    } else if (isApproved && !hasEnoughStake) {
-      currentStep = OnboardingStep.STAKE;
-    } else if (isApproved && hasEnoughStake && !hasCrunch) {
-      currentStep = OnboardingStep.CREATE_CRUNCH;
-    } else if (hasCrunch && !isCrunchFunded) {
-      currentStep = OnboardingStep.FUND_CRUNCH;
-    } else if (hasCrunch && isCrunchFunded && !isCrunchStarted) {
-      currentStep = OnboardingStep.START_CRUNCH;
-    } else if (isCrunchStarted) {
-      currentStep = OnboardingStep.CERTIFICATE_ENROLLMENT;
-    }
+    let maxStepIndex = 1;
+    if (isRegistered) maxStepIndex = 2;
+    if (isApproved) maxStepIndex = 3;
+    if (hasEnoughStake) maxStepIndex = 4;
+    if (hasCrunch) maxStepIndex = 5;
+    if (isCrunchFunded) maxStepIndex = 6;
+    if (isCrunchStarted) maxStepIndex = 7;
 
     const completionMap: Record<OnboardingStep, boolean> = {
       [OnboardingStep.CONFIGURE_MULTISIG]: isMultisigConfigured,
@@ -133,10 +144,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       [OnboardingStep.COMPLETED]: false,
     };
 
-    const steps: OnboardingStepInfo[] = STEP_ORDER.map((step) => {
+    const currentStep = STEP_ORDER[stepIndex] || STEP_ORDER[0];
+
+    const steps: OnboardingStepInfo[] = STEP_ORDER.map((step, index) => {
       const config = STEP_CONFIG[step];
       const isCompleted = completionMap[step];
-      const isActive = step === currentStep;
+      const isActive = index === stepIndex;
 
       let isBlocked = false;
       let blockReason: string | undefined;
@@ -166,6 +179,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     return {
       currentStep,
       steps,
+      maxStepIndex,
       isLoading: authLoading || crunchesLoading || stakingInfoLoading,
       isOnboardingComplete: isCrunchStarted,
       isMultisigConfigured,
@@ -189,10 +203,32 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     authLoading,
     crunchesLoading,
     stakingInfoLoading,
+    stepIndex,
   ]);
 
+  console.log(stepIndex);
+  console.log(state);
+  const canGoNext = stepIndex < state.maxStepIndex;
+  const canGoPrevious = stepIndex > 0;
+
+  const goToNextStep = useCallback(() => {
+    if (canGoNext) setStepIndex((i) => i + 1);
+  }, [canGoNext]);
+
+  const goToPreviousStep = useCallback(() => {
+    if (canGoPrevious) setStepIndex((i) => i - 1);
+  }, [canGoPrevious]);
+
+  const value: OnboardingState = {
+    ...state,
+    goToNextStep,
+    goToPreviousStep,
+    canGoNext,
+    canGoPrevious,
+  };
+
   return (
-    <OnboardingContext.Provider value={state}>
+    <OnboardingContext.Provider value={value}>
       {children}
     </OnboardingContext.Provider>
   );

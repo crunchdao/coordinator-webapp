@@ -6,17 +6,24 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Button,
 } from "@crunch-ui/core";
-import { useOnboarding } from "../application/context/onboardingContext";
+import { ChevronLeft, ChevronRight } from "@crunch-ui/icons";
+import { useOnboardingSteps } from "../application/useOnboardingSteps";
 import { OnboardingStepper } from "./onboardingStepper";
 
-interface OnboardingPanelProps {
-  children?: React.ReactNode;
-}
-
-export function OnboardingPanel({ children }: OnboardingPanelProps) {
-  const { currentStep, steps, isLoading, isOnboardingComplete } =
-    useOnboarding();
+export function OnboardingPanel() {
+  const {
+    currentStep,
+    steps,
+    isLoading,
+    isOnboardingComplete,
+    currentStepContent,
+    goToNextStep,
+    goToPreviousStep,
+    canGoNext,
+    canGoPrevious,
+  } = useOnboardingSteps();
 
   if (isLoading) {
     return null;
@@ -56,7 +63,21 @@ export function OnboardingPanel({ children }: OnboardingPanelProps) {
                 )}
               </>
             )}
-            {children}
+            {currentStepContent}
+            <div className="flex justify-between pt-4">
+              <Button
+                variant="outline"
+                onClick={goToPreviousStep}
+                disabled={!canGoPrevious}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Previous
+              </Button>
+              <Button onClick={goToNextStep} disabled={!canGoNext}>
+                Next
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
