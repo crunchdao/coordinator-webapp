@@ -33,7 +33,7 @@ export interface TrackedProposal {
   memo: string;
   proposalUrl?: string;
   signature: string;
-  onExecuted?: () => void;
+  onExecuted?: () => void | Promise<void>;
 }
 
 export interface ProposalTrackingState {
@@ -97,7 +97,7 @@ export const MultisigProposalTrackerProvider: React.FC<{
   const [isActing, setIsActing] = useState(false);
   const [members, setMembers] = useState<PublicKey[]>([]);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const onExecutedRef = useRef<(() => void) | undefined>(undefined);
+  const onExecutedRef = useRef<(() => void | Promise<void>) | undefined>(undefined);
 
   const stopPolling = useCallback(() => {
     if (pollingRef.current) {

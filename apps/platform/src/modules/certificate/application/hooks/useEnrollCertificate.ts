@@ -1,6 +1,8 @@
+import { useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
-import { TransactionInstruction, PublicKey } from "@solana/web3.js";
+import { TransactionInstruction, PublicKey, Connection } from "@solana/web3.js";
+import { useConnection } from "@solana/wallet-adapter-react";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
@@ -38,6 +40,39 @@ function createMemoInstruction(
   });
 }
 
+/**
+ * Find the execution transaction signature for a memo containing cert_pub
+ * by searching the vault's recent transactions.
+ */
+async function findMemoExecutionSignature(
+  connection: Connection,
+  authority: PublicKey
+): Promise<string | null> {
+  try {
+    const signatures = await connection.getSignaturesForAddress(authority, {
+      limit: 10,
+    });
+
+    for (const sigInfo of signatures) {
+      if (sigInfo.err) continue;
+      const tx = await connection.getParsedTransaction(sigInfo.signature, {
+        maxSupportedTransactionVersion: 0,
+      });
+      if (!tx?.meta?.logMessages) continue;
+
+      const hasCertMemo = tx.meta.logMessages.some(
+        (log) => log.includes("Memo") && log.includes("cert_pub")
+      );
+      if (hasCertMemo) {
+        return sigInfo.signature;
+      }
+    }
+  } catch (e) {
+    console.warn("Failed to find memo execution signature:", e);
+  }
+  return null;
+}
+
 type EnrollmentStep =
   | "idle"
   | "generating"
@@ -54,12 +89,24 @@ export interface MultisigEnrollmentResult {
   signature: string;
 }
 
-export type EnrollmentResultExtended = EnrollmentResult | MultisigEnrollmentResult;
+export type EnrollmentResultExtended =
+  | EnrollmentResult
+  | MultisigEnrollmentResult;
 
 export const useEnrollCertificate = () => {
   const { publicKey, signMessage } = useWallet();
-  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
+  const { connection } = useConnection();
+  const { executeTransaction, authority, isMultisigMode } =
+    useTransactionExecutor();
   const { trackProposal } = useMultisigProposalTracker();
+
+  // Store pending certificate data for multisig mode so we can
+  // download the ZIP after the proposal is executed
+  const pendingCertRef = useRef<{
+    certificateData: CertificateData;
+    message: string;
+    authorityAddress: string;
+  } | null>(null);
 
   const mutation = useMutation({
     mutationFn: async (): Promise<EnrollmentResultExtended> => {
@@ -110,7 +157,16 @@ export const useEnrollCertificate = () => {
           memo: enrollMemo,
         });
 
+        // Store cert data so we can download the ZIP after execution
+        pendingCertRef.current = {
+          certificateData,
+          message,
+          authorityAddress,
+        };
+
         // Track the multisig proposal so the countdown dialog appears
+        // The onExecuted callback downloads the certificate ZIP with the
+        // execution transaction signature
         if (result.isMultisig && result.transactionIndex && result.multisigPda) {
           trackProposal({
             multisigPda: result.multisigPda,
@@ -118,17 +174,44 @@ export const useEnrollCertificate = () => {
             memo: enrollMemo,
             proposalUrl: result.proposalUrl,
             signature: result.signature,
+            onExecuted: async () => {
+              const pending = pendingCertRef.current;
+              if (!pending) {
+                console.warn(
+                  "[EnrollCertificate] onExecuted but no pending cert data"
+                );
+                return;
+              }
+
+              // Find the execution transaction signature on-chain
+              const executionSignature = await findMemoExecutionSignature(
+                connection,
+                authority
+              );
+
+              const zipBlob = await createCertificateZip(
+                pending.certificateData,
+                {
+                  message_b64: uint8ArrayToBase64(
+                    new TextEncoder().encode(pending.message)
+                  ),
+                  wallet_pubkey_b58: pending.authorityAddress,
+                  signature_b64: executionSignature || "",
+                }
+              );
+              downloadBlob(zipBlob, "issued-certificate.zip");
+
+              toast({
+                title: "Certificate downloaded",
+                description: executionSignature
+                  ? "Certificate ZIP with execution signature has been downloaded."
+                  : "Certificate ZIP has been downloaded.",
+              });
+
+              pendingCertRef.current = null;
+            },
           });
         }
-
-        // In multisig mode, we download the certificate but without a signature
-        // The on-chain memo transaction serves as the attestation once approved
-        const zipBlob = await createCertificateZip(certificateData, {
-          message_b64: uint8ArrayToBase64(new TextEncoder().encode(message)),
-          wallet_pubkey_b58: authorityAddress,
-          signature_b64: "", // No signature in multisig mode - attestation is on-chain
-        });
-        downloadBlob(zipBlob, "issued-certificate.zip");
 
         return {
           certificateData,
@@ -152,7 +235,10 @@ export const useEnrollCertificate = () => {
         signature_b64: uint8ArrayToBase64(signature),
       };
 
-      const zipBlob = await createCertificateZip(certificateData, signedMessage);
+      const zipBlob = await createCertificateZip(
+        certificateData,
+        signedMessage
+      );
       downloadBlob(zipBlob, "issued-certificate.zip");
 
       return {
@@ -165,7 +251,7 @@ export const useEnrollCertificate = () => {
         toast({
           title: "Multisig proposal created",
           description:
-            "Certificate files downloaded. The enrollment transaction has been submitted for multisig approval.",
+            "Certificate will be downloaded after the proposal is executed.",
         });
       } else {
         toast({
