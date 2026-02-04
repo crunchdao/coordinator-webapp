@@ -16,6 +16,16 @@ import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { EnrollDialog } from "./enrollDialog";
 import { useCertificateEnrollmentStatus } from "../application/hooks/useCertificateEnrollmentStatus";
 
+const solanaCluster =
+  process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta"
+    ? ("mainnet-beta" as const)
+    : ("devnet" as const);
+
+function truncate(str: string, maxLen: number = 20): string {
+  if (str.length <= maxLen) return str;
+  return str.slice(0, maxLen) + "…";
+}
+
 export function EnrollCard() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { connected } = useWallet();
@@ -23,6 +33,7 @@ export function EnrollCard() {
     useCertificateEnrollmentStatus();
 
   const isEnrolled = enrollmentStatus?.enrolled === true;
+  const isStale = isEnrolled && !enrollmentStatus.hotkeyMatch;
 
   return (
     <>
@@ -36,8 +47,16 @@ export function EnrollCard() {
               </CardDescription>
             </div>
             {connected && !enrollmentStatusLoading && (
-              <Badge variant={isEnrolled ? "success" : "secondary"}>
-                {isEnrolled ? "Enrolled" : "Not Enrolled"}
+              <Badge
+                variant={
+                  isEnrolled ? (isStale ? "destructive" : "success") : "secondary"
+                }
+              >
+                {isEnrolled
+                  ? isStale
+                    ? "Stale — Re-enroll Required"
+                    : "Enrolled"
+                  : "Not Enrolled"}
               </Badge>
             )}
             {connected && enrollmentStatusLoading && (
@@ -49,35 +68,74 @@ export function EnrollCard() {
           <div className="space-y-4">
             {isEnrolled ? (
               <div className="space-y-3">
-                <div className="flex items-center gap-2 rounded-lg bg-green-500/10 px-3 py-2">
-                  <span className="text-lg font-bold text-green-500">✓</span>
-                  <div>
-                    <p className="text-sm font-medium text-green-600">
-                      Certificate enrollment confirmed on-chain
-                    </p>
-                    {enrollmentStatus.blockTime && (
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(
-                          enrollmentStatus.blockTime * 1000
-                        ).toLocaleString()}
+                {isStale ? (
+                  <div className="flex items-start gap-2 rounded-lg bg-amber-500/10 px-3 py-2">
+                    <span className="text-lg font-bold text-amber-500">⚠</span>
+                    <div>
+                      <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                        Hotkey has been rotated — re-enrollment required
                       </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        The on-chain hotkey no longer matches the one in the
+                        certificate enrollment memo. Generate a new certificate
+                        to bind it to the current hotkey.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 rounded-lg bg-green-500/10 px-3 py-2">
+                    <span className="text-lg font-bold text-green-500">✓</span>
+                    <div>
+                      <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                        Certificate enrollment confirmed on-chain
+                      </p>
+                      {enrollmentStatus.blockTime && (
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(
+                            enrollmentStatus.blockTime * 1000
+                          ).toLocaleString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-1.5 text-xs text-muted-foreground">
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-medium shrink-0">Hotkey:</span>
+                    <code className="break-all font-mono">
+                      {enrollmentStatus.hotkey}
+                    </code>
+                    {isStale && enrollmentStatus.currentHotkey && (
+                      <span className="text-amber-500 shrink-0">(old)</span>
                     )}
                   </div>
-                </div>
-                {enrollmentStatus.signature && (
-                  <p className="text-xs text-muted-foreground">
-                    Transaction:{" "}
+                  {isStale && enrollmentStatus.currentHotkey && (
+                    <div className="flex items-start gap-1.5">
+                      <span className="font-medium shrink-0">Current hotkey:</span>
+                      <code className="break-all font-mono">
+                        {enrollmentStatus.currentHotkey}
+                      </code>
+                    </div>
+                  )}
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-medium shrink-0">Cert public key:</span>
+                    <code className="break-all font-mono">
+                      {truncate(enrollmentStatus.certPub, 40)}
+                    </code>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <span className="font-medium shrink-0">Transaction:</span>
                     <SolanaAddressLink
                       address={enrollmentStatus.signature}
                       type="tx"
+                      cluster={solanaCluster}
                     />
-                  </p>
-                )}
-                <p className="text-sm text-muted-foreground">
-                  You can re-enroll to generate a new certificate if needed.
-                </p>
+                  </div>
+                </div>
+
                 <Button
-                  variant="outline"
+                  variant={isStale ? "destructive" : "outline"}
                   onClick={() => setDialogOpen(true)}
                   disabled={!connected}
                 >
