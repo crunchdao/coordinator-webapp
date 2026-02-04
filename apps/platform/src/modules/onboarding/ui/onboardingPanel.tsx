@@ -9,21 +9,20 @@ import {
   Button,
 } from "@crunch-ui/core";
 import { ChevronLeft, ChevronRight } from "@crunch-ui/icons";
-import { useOnboardingSteps } from "../application/useOnboardingSteps";
+import { useOnboarding } from "../application/onboardingContext";
 import { OnboardingStepper } from "./onboardingStepper";
 
 export function OnboardingPanel() {
   const {
-    currentStep,
-    steps,
     isLoading,
     isOnboardingComplete,
+    currentStepInfo,
     currentStepContent,
     goToNextStep,
     goToPreviousStep,
     canGoNext,
     canGoPrevious,
-  } = useOnboardingSteps();
+  } = useOnboarding();
 
   if (isLoading) {
     return null;
@@ -32,8 +31,6 @@ export function OnboardingPanel() {
   if (isOnboardingComplete) {
     return null;
   }
-
-  const currentStepInfo = steps.find((s) => s.step === currentStep);
 
   return (
     <Card>

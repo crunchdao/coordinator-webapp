@@ -2,10 +2,10 @@
 
 import { cn } from "@crunch-ui/utils";
 import { Check } from "@crunch-ui/icons";
-import { useOnboardingSteps } from "../application/useOnboardingSteps";
+import { useOnboarding } from "../application/onboardingContext";
 
 export function OnboardingStepper() {
-  const { steps } = useOnboardingSteps();
+  const { steps } = useOnboarding();
 
   return (
     <div className="flex flex-row gap-2">

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   createContext,
   useContext,
@@ -7,69 +8,87 @@ import {
   useState,
   useCallback,
 } from "react";
+import {
+  Check,
+  Lock,
+  Coordinator,
+  Hourglass,
+  Trophy,
+  Cube,
+  Wallet,
+  Rocket,
+  Certificate,
+} from "@crunch-ui/icons";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useGetCoordinatorCrunches } from "@/modules/crunch/application/hooks/useGetCoordinatorCrunches";
 import { useGetStakingInfo } from "@/modules/staking/application/hooks/useGetStakingInfo";
+import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks/useGetCoordinatorPoolConfig";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
-import {
-  OnboardingStep,
-  OnboardingStepInfo,
-  OnboardingState,
-} from "../domain/types";
+import { MultisigForm } from "@/modules/wallet/ui/multisigForm";
+import { RegistrationForm } from "@/modules/crunch/ui/registrationForm";
+import { StepConfig, OnboardingStep } from "../domain/types";
 
-const STEP_CONFIG: Record<
-  OnboardingStep,
-  { title: string; description: string; isOptional: boolean }
-> = {
+const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
   [OnboardingStep.CONFIGURE_MULTISIG]: {
     title: "Configure Multisig",
     description: "Optionally configure a multisig wallet for enhanced security",
     isOptional: true,
+    icon: Lock,
+    content: <MultisigForm />,
   },
   [OnboardingStep.REGISTER_COORDINATOR]: {
     title: "Register as Coordinator",
     description: "Register your organization on-chain",
     isOptional: false,
+    icon: Coordinator,
+    content: <RegistrationForm />,
   },
   [OnboardingStep.WAITING_APPROVAL]: {
     title: "Waiting for Approval",
     description: "Your registration is being reviewed",
     isOptional: false,
+    icon: Hourglass,
   },
   [OnboardingStep.STAKE]: {
     title: "Stake Tokens",
     description: "Stake CRNCH tokens on yourself",
     isOptional: false,
+    icon: Trophy,
   },
   [OnboardingStep.CREATE_CRUNCH]: {
     title: "Create Crunch",
     description: "Create your first Crunch challenge",
     isOptional: false,
+    icon: Cube,
   },
   [OnboardingStep.FUND_CRUNCH]: {
     title: "Fund Crunch",
     description: "Fund your Crunch with USDC rewards",
     isOptional: false,
+    icon: Wallet,
   },
   [OnboardingStep.START_CRUNCH]: {
     title: "Start Crunch",
     description: "Launch your Crunch to start accepting submissions",
     isOptional: false,
+    icon: Rocket,
   },
   [OnboardingStep.CERTIFICATE_ENROLLMENT]: {
     title: "Certificate Enrollment",
     description: "Download your TLS certificate to run a node",
     isOptional: false,
+    icon: Certificate,
   },
   [OnboardingStep.COMPLETED]: {
     title: "Completed",
     description: "Onboarding complete!",
     isOptional: false,
+    icon: Check,
   },
 };
 
-const STEP_ORDER: OnboardingStep[] = [
+export const STEP_ORDER: OnboardingStep[] = [
   OnboardingStep.CONFIGURE_MULTISIG,
   OnboardingStep.REGISTER_COORDINATOR,
   OnboardingStep.WAITING_APPROVAL,
@@ -80,11 +99,46 @@ const STEP_ORDER: OnboardingStep[] = [
   OnboardingStep.CERTIFICATE_ENROLLMENT,
 ];
 
-interface OnboardingContextType extends OnboardingState {}
+export interface OnboardingStepInfo {
+  step: OnboardingStep;
+  title: string;
+  description: string;
+  isOptional: boolean;
+  isCompleted: boolean;
+  isActive: boolean;
+  isBlocked: boolean;
+  blockReason?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  content?: React.ReactNode;
+}
 
-const OnboardingContext = createContext<OnboardingContextType | undefined>(
-  undefined
-);
+export interface OnboardingState {
+  currentStep: OnboardingStep;
+  currentStepInfo: OnboardingStepInfo | undefined;
+  currentStepContent: React.ReactNode | undefined;
+  steps: OnboardingStepInfo[];
+  isLoading: boolean;
+  isOnboardingComplete: boolean;
+
+  isMultisigConfigured: boolean;
+  isRegistered: boolean;
+  isApproved: boolean;
+  isPending: boolean;
+  stakedAmount: number;
+  minStakeRequired: number;
+  hasEnoughStake: boolean;
+  hasCrunch: boolean;
+  isCrunchFunded: boolean;
+  isCrunchStarted: boolean;
+  hasCertificate: boolean;
+
+  goToNextStep: () => void;
+  goToPreviousStep: () => void;
+  canGoNext: boolean;
+  canGoPrevious: boolean;
+}
+
+const OnboardingContext = createContext<OnboardingState | undefined>(undefined);
 
 export const useOnboarding = () => {
   const context = useContext(OnboardingContext);
@@ -99,11 +153,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const { isMultisigMode } = useWallet();
   const { crunches, crunchesLoading } = useGetCoordinatorCrunches();
   const { stakingInfo, stakingInfoLoading } = useGetStakingInfo();
+  const { poolConfig, poolConfigLoading } = useGetCoordinatorPoolConfig();
 
-  const MIN_STAKE_REQUIRED = 0;
-
-  const stakedAmount = stakingInfo?.stakedAmount || 0;
-  const crunchCount = crunches?.length || 0;
+  const minStakeRequired = poolConfig?.minActivationSelfStake ?? 0;
+  const stakedAmount = stakingInfo?.stakedAmount ?? 0;
+  const crunchCount = crunches?.length ?? 0;
   const firstCrunchState = crunches?.[0]?.state;
 
   const [stepIndex, setStepIndex] = useState(0);
@@ -116,9 +170,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
     const isPending = coordinatorStatus === CoordinatorStatus.PENDING;
     const isApproved = coordinatorStatus === CoordinatorStatus.APPROVED;
-
-    const hasEnoughStake = stakedAmount > MIN_STAKE_REQUIRED;
-
+    const hasEnoughStake = stakedAmount >= minStakeRequired;
     const hasCrunch = crunchCount > 0;
     const isCrunchFunded =
       firstCrunchState === "funded" || firstCrunchState === "started";
@@ -144,10 +196,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       [OnboardingStep.COMPLETED]: false,
     };
 
-    const currentStep = STEP_ORDER[stepIndex] || STEP_ORDER[0];
+    const currentStep = STEP_ORDER[stepIndex] ?? STEP_ORDER[0];
 
     const steps: OnboardingStepInfo[] = STEP_ORDER.map((step, index) => {
-      const config = STEP_CONFIG[step];
+      const config = STEPS_CONFIG[step];
       const isCompleted = completionMap[step];
       const isActive = index === stepIndex;
 
@@ -156,7 +208,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
       if (step === OnboardingStep.CREATE_CRUNCH && !hasEnoughStake) {
         isBlocked = true;
-        blockReason = `You need to stake at least ${MIN_STAKE_REQUIRED} CRNCH before creating a Crunch`;
+        blockReason = `You need to stake at least ${minStakeRequired.toLocaleString()} CRNCH before creating a Crunch`;
       }
 
       if (step === OnboardingStep.STAKE && !isApproved) {
@@ -169,6 +221,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         title: config.title,
         description: config.description,
         isOptional: config.isOptional,
+        icon: config.icon,
+        content: config.content,
         isCompleted,
         isActive,
         isBlocked,
@@ -176,18 +230,26 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       };
     });
 
+    const currentStepInfo = steps.find((s) => s.step === currentStep);
+
     return {
       currentStep,
+      currentStepInfo,
+      currentStepContent: currentStepInfo?.content,
       steps,
       maxStepIndex,
-      isLoading: authLoading || crunchesLoading || stakingInfoLoading,
+      isLoading:
+        authLoading ||
+        crunchesLoading ||
+        stakingInfoLoading ||
+        poolConfigLoading,
       isOnboardingComplete: isCrunchStarted,
       isMultisigConfigured,
       isRegistered,
       isApproved,
       isPending,
       stakedAmount,
-      minStakeRequired: MIN_STAKE_REQUIRED,
+      minStakeRequired,
       hasEnoughStake,
       hasCrunch,
       isCrunchFunded,
@@ -198,16 +260,16 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     coordinatorStatus,
     isMultisigMode,
     stakedAmount,
+    minStakeRequired,
     crunchCount,
     firstCrunchState,
     authLoading,
     crunchesLoading,
     stakingInfoLoading,
+    poolConfigLoading,
     stepIndex,
   ]);
 
-  console.log(stepIndex);
-  console.log(state);
   const canGoNext = stepIndex < state.maxStepIndex;
   const canGoPrevious = stepIndex > 0;
 
