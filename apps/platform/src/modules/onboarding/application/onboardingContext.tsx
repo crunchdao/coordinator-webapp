@@ -7,6 +7,8 @@ import {
   useMemo,
   useState,
   useCallback,
+  useEffect,
+  useRef,
 } from "react";
 import {
   Check,
@@ -161,6 +163,40 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const firstCrunchState = crunches?.[0]?.state;
 
   const [stepIndex, setStepIndex] = useState(0);
+  const hasInitialized = useRef(false);
+
+  const isLoading = authLoading || crunchesLoading || stakingInfoLoading || poolConfigLoading;
+
+  useEffect(() => {
+    if (isLoading || hasInitialized.current) return;
+    hasInitialized.current = true;
+
+    const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
+    const isApproved = coordinatorStatus === CoordinatorStatus.APPROVED;
+    const hasEnoughStake = stakedAmount >= minStakeRequired;
+    const hasCrunch = crunchCount > 0;
+    const isCrunchFunded = firstCrunchState === "funded" || firstCrunchState === "started";
+    const isCrunchStarted = firstCrunchState === "started";
+
+    let initialIndex = 0;
+    if (isMultisigMode) initialIndex = 1;
+    if (isRegistered) initialIndex = 2;
+    if (isApproved) initialIndex = 3;
+    if (hasEnoughStake) initialIndex = 4;
+    if (hasCrunch) initialIndex = 5;
+    if (isCrunchFunded) initialIndex = 6;
+    if (isCrunchStarted) initialIndex = 7;
+
+    setStepIndex(initialIndex);
+  }, [
+    isLoading,
+    coordinatorStatus,
+    isMultisigMode,
+    stakedAmount,
+    minStakeRequired,
+    crunchCount,
+    firstCrunchState,
+  ]);
 
   const state = useMemo((): Omit<
     OnboardingState,
@@ -238,11 +274,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       currentStepContent: currentStepInfo?.content,
       steps,
       maxStepIndex,
-      isLoading:
-        authLoading ||
-        crunchesLoading ||
-        stakingInfoLoading ||
-        poolConfigLoading,
+      isLoading,
       isOnboardingComplete: isCrunchStarted,
       isMultisigConfigured,
       isRegistered,
