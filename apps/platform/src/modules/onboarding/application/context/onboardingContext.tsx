@@ -101,10 +101,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     const isCrunchFunded = firstCrunch?.state === "funded" || firstCrunch?.state === "started";
     const isCrunchStarted = firstCrunch?.state === "started";
 
-    let currentStep: OnboardingStep = OnboardingStep.REGISTER_COORDINATOR;
+    let currentStep: OnboardingStep = OnboardingStep.CONFIGURE_MULTISIG;
 
     if (!isRegistered) {
-      currentStep = OnboardingStep.REGISTER_COORDINATOR;
+      currentStep = OnboardingStep.CONFIGURE_MULTISIG;
     } else if (isPending) {
       currentStep = OnboardingStep.WAITING_APPROVAL;
     } else if (isApproved && !hasEnoughStake) {
