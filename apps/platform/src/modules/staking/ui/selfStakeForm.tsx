@@ -50,11 +50,23 @@ export const SelfStakeForm: React.FC<SelfStakeFormProps> = ({
   const onSubmit = async (values: SelfStakeFormData) => {
     try {
       const action = async () => {
-        await delegate({ amount: values.amount, poolAddress });
-        toast({
-          title: "Success",
-          description: `Successfully staked ${values.amount} CRNCH`,
+        const result = await delegate({
+          amount: values.amount,
+          poolAddress,
         });
+
+        // In multisig mode, the transactionExecutor already triggers
+        // the proposal tracker — skip the immediate success feedback.
+        const isMultisig =
+          typeof result === "object" && result !== null && "isMultisig" in result && result.isMultisig;
+
+        if (!isMultisig) {
+          toast({
+            title: "Success",
+            description: `Successfully staked ${values.amount} CRNCH`,
+          });
+        }
+
         form.reset({ amount: 0 });
         handlers?.onSuccess?.();
       };
