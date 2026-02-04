@@ -31,6 +31,7 @@ import { MultisigForm } from "@/modules/wallet/ui/multisigForm";
 import { RegistrationForm } from "@/modules/crunch/ui/registrationForm";
 import { CrunchCreationForm } from "@/modules/crunch/ui/crunchCreationForm";
 import { OnboardingStakeForm } from "../ui/onboardingStakeForm";
+import { OnboardingFundCrunchForm } from "../ui/onboardingFundCrunchForm";
 import { OnboardingStep, StepConfig } from "../domain/types";
 
 const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
@@ -73,6 +74,7 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
     description: "Fund your Crunch with USDC rewards",
     isOptional: false,
     icon: Wallet,
+    content: <OnboardingFundCrunchForm />,
   },
   [OnboardingStep.START_CRUNCH]: {
     title: "Start Crunch",

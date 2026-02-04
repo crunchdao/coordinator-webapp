@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
-import { PublicKey } from "@solana/web3.js";
 import {
   getAssociatedTokenAddress,
   getAccount,
@@ -32,12 +31,11 @@ export const useGetUsdcBalance = () => {
       const ataAddress = await getAssociatedTokenAddress(
         USDC_TOKEN,
         authority,
-        isMultisigMode // allowOwnerOffCurve for multisig vault PDA
+        isMultisigMode
       );
 
       try {
         const account = await getAccount(connection, ataAddress);
-        // Convert from micro-USDC (6 decimals) to USDC
         return Number(account.amount) / 1_000_000;
       } catch (error) {
         if (error instanceof TokenAccountNotFoundError) {
@@ -47,7 +45,7 @@ export const useGetUsdcBalance = () => {
       }
     },
     enabled: !!authority && !!connection,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 30_000,
   });
 
   return {
