@@ -87,19 +87,21 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const { crunches, crunchesLoading } = useGetCoordinatorCrunches();
   const { stakingInfo, stakingInfoLoading } = useGetStakingInfo();
 
+  const stakedAmount = stakingInfo?.stakedAmount || 0;
+  const crunchCount = crunches?.length || 0;
+  const firstCrunchState = crunches?.[0]?.state;
+
   const state = useMemo((): OnboardingState => {
     const isMultisigConfigured = isMultisigMode;
     const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
     const isPending = coordinatorStatus === CoordinatorStatus.PENDING;
     const isApproved = coordinatorStatus === CoordinatorStatus.APPROVED;
 
-    const stakedAmount = stakingInfo?.stakedAmount || 0;
     const hasEnoughStake = stakedAmount > MIN_STAKE_REQUIRED;
 
-    const hasCrunch = (crunches?.length || 0) > 0;
-    const firstCrunch = crunches?.[0];
-    const isCrunchFunded = firstCrunch?.state === "funded" || firstCrunch?.state === "started";
-    const isCrunchStarted = firstCrunch?.state === "started";
+    const hasCrunch = crunchCount > 0;
+    const isCrunchFunded = firstCrunchState === "funded" || firstCrunchState === "started";
+    const isCrunchStarted = firstCrunchState === "started";
 
     let currentStep: OnboardingStep = OnboardingStep.CONFIGURE_MULTISIG;
 
@@ -181,8 +183,9 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   }, [
     coordinatorStatus,
     isMultisigMode,
-    crunches,
-    stakingInfo,
+    stakedAmount,
+    crunchCount,
+    firstCrunchState,
     authLoading,
     crunchesLoading,
     stakingInfoLoading,

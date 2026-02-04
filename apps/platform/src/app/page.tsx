@@ -4,24 +4,23 @@ import { Spinner } from "@crunch-ui/core";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/modules/auth/application/context/authContext";
-import { useOnboarding } from "@/modules/onboarding/application/context/onboardingContext";
+import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
-  const { isOnboardingComplete, isLoading: onboardingLoading } = useOnboarding();
+  const { isAuthenticated, isLoading, coordinatorStatus } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !onboardingLoading) {
+    if (!isLoading) {
       if (!isAuthenticated) {
         router.push(INTERNAL_LINKS.LOGIN);
-      } else if (isOnboardingComplete) {
-        router.push(INTERNAL_LINKS.DASHBOARD);
-      } else {
+      } else if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
         router.push(INTERNAL_LINKS.ONBOARDING);
+      } else {
+        router.push(INTERNAL_LINKS.DASHBOARD);
       }
     }
-  }, [isAuthenticated, isLoading, isOnboardingComplete, onboardingLoading, router]);
+  }, [isAuthenticated, isLoading, coordinatorStatus, router]);
 
   return <Spinner />;
 }

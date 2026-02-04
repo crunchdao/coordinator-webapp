@@ -24,7 +24,6 @@ import {
   Certificate,
 } from "@crunch-ui/icons";
 import { useAuth } from "@/modules/auth/application/context/authContext";
-import { useOnboarding } from "@/modules/onboarding/application/context/onboardingContext";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useWallet } from "../application/context/walletContext";
@@ -37,7 +36,6 @@ export function WalletSelector() {
   const { setVisible } = useWalletModal();
   const { coordinatorStatus, coordinator } = useAuth();
   const { authority, isMultisigMode } = useEffectiveAuthority();
-  const { isOnboardingComplete } = useOnboarding();
   const [multisigDialogOpen, setMultisigDialogOpen] = useState(false);
 
   if (!connected || !publicKey) {
@@ -96,8 +94,7 @@ export function WalletSelector() {
             <span>Multisig Settings</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          {coordinatorStatus === CoordinatorStatus.UNREGISTERED &&
-          !isOnboardingComplete ? (
+          {coordinatorStatus === CoordinatorStatus.UNREGISTERED ? (
             <DropdownMenuItem asChild>
               <Link href={INTERNAL_LINKS.ONBOARDING}>
                 <Coordinator className="h-4 w-4 mr-2" /> Get Started

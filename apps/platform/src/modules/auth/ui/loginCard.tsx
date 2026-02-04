@@ -3,25 +3,24 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
 import { WalletSelector } from "@/modules/wallet/ui/walletSelector";
 import { useAuth } from "@/modules/auth/application/context/authContext";
-import { useOnboarding } from "@/modules/onboarding/application/context/onboardingContext";
+import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 export function LoginCard() {
-  const { isAuthenticated, isLoading } = useAuth();
-  const { isOnboardingComplete, isLoading: onboardingLoading } = useOnboarding();
+  const { isAuthenticated, isLoading, coordinatorStatus } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !onboardingLoading && isAuthenticated) {
-      if (isOnboardingComplete) {
-        router.push(INTERNAL_LINKS.DASHBOARD);
-      } else {
+    if (!isLoading && isAuthenticated) {
+      if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
         router.push(INTERNAL_LINKS.ONBOARDING);
+      } else {
+        router.push(INTERNAL_LINKS.DASHBOARD);
       }
     }
-  }, [isAuthenticated, isLoading, isOnboardingComplete, onboardingLoading, router]);
+  }, [isAuthenticated, isLoading, coordinatorStatus, router]);
 
   return (
     <Card className="w-full max-w-md">

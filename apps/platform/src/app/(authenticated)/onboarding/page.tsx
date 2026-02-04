@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { OnboardingPanel } from "@/modules/onboarding/ui/onboardingPanel";
+import { OnboardingContent } from "@/modules/onboarding/ui/onboardingContent";
 
 export const metadata: Metadata = {
   title: "Get Started",
@@ -7,9 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function OnboardingPage() {
-  return (
-    <section className="w-full p-6 mx-auto">
-      <OnboardingPanel />
-    </section>
-  );
+  return <OnboardingContent />;
 }
