@@ -32,13 +32,10 @@ export const useFundCrunch = () => {
         program: coordinatorProgram,
       });
 
-      // Convert USDC to micro-USDC (6 decimals)
-      const amountInMicroUsdc = Math.floor(amount * 1_000_000);
-
-      // Use authority (vault in multisig mode, wallet otherwise) as the signer
+      // depositRewardUsdcInstruction handles USDC → micro-USDC conversion internally
       const instruction = await crunchService.depositRewardUsdcInstruction(
         crunchAddress,
-        amountInMicroUsdc,
+        amount,
         authority
       );
 
