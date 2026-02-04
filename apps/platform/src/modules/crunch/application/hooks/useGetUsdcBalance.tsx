@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useConnection } from "@solana/wallet-adapter-react";
-import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { PublicKey } from "@solana/web3.js";
 import {
   getAssociatedTokenAddress,
@@ -16,13 +16,13 @@ const getNetwork = () => {
 };
 
 export const useGetUsdcBalance = () => {
-  const { publicKey } = useWallet();
+  const { authority, isMultisigMode } = useEffectiveAuthority();
   const { connection } = useConnection();
 
   const query = useQuery({
-    queryKey: ["usdc-balance", publicKey?.toString()],
+    queryKey: ["usdc-balance", authority?.toString()],
     queryFn: async () => {
-      if (!publicKey || !connection) {
+      if (!authority || !connection) {
         return 0;
       }
 
@@ -31,7 +31,8 @@ export const useGetUsdcBalance = () => {
 
       const ataAddress = await getAssociatedTokenAddress(
         USDC_TOKEN,
-        new PublicKey(publicKey)
+        authority,
+        isMultisigMode // allowOwnerOffCurve for multisig vault PDA
       );
 
       try {
@@ -45,7 +46,7 @@ export const useGetUsdcBalance = () => {
         throw error;
       }
     },
-    enabled: !!publicKey && !!connection,
+    enabled: !!authority && !!connection,
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 

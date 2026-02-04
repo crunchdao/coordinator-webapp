@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { useStakingContext } from "@crunchdao/staking";
 import { convertToCrunch } from "@crunchdao/solana-utils";
 
 export const useGetStakingInfo = () => {
-  const { publicKey } = useWallet();
+  const { authority } = useEffectiveAuthority();
   const { stakingClient } = useStakingContext();
 
   const query = useQuery({
-    queryKey: ["staking-info", publicKey?.toString()],
+    queryKey: ["staking-info", authority?.toString()],
     queryFn: async () => {
-      if (!publicKey || !stakingClient) {
+      if (!authority || !stakingClient) {
         return {
           stakedAmount: 0,
           availableToStake: 0,
@@ -23,7 +23,7 @@ export const useGetStakingInfo = () => {
         const availableToStake = convertToCrunch(Number(availableToStakeBigInt));
         
         const stakingAmountsBigInt = await stakingClient.getUserStakingAmountPerCoordinator();
-        const selfStakedAmountBigInt = stakingAmountsBigInt.get(publicKey.toString()) || BigInt(0);
+        const selfStakedAmountBigInt = stakingAmountsBigInt.get(authority.toString()) || BigInt(0);
         const stakedAmount = convertToCrunch(Number(selfStakedAmountBigInt));
         
         // Convert all staking amounts to numbers
@@ -46,7 +46,7 @@ export const useGetStakingInfo = () => {
         };
       }
     },
-    enabled: !!publicKey && !!stakingClient,
+    enabled: !!authority && !!stakingClient,
     refetchInterval: 60_000,
   });
 
