@@ -14,6 +14,16 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CrunchValue } from "@crunchdao/solana-utils";
+
+/** Type guard for multisig transaction results */
+function isMultisigResult(result: unknown): boolean {
+  return (
+    typeof result === "object" &&
+    result !== null &&
+    "isMultisig" in result &&
+    (result as { isMultisig: boolean }).isMultisig === true
+  );
+}
 import {
   FormHandlers,
   PercentageSelector,
@@ -50,11 +60,22 @@ export const SelfUnstakeForm: React.FC<SelfUnstakeFormProps> = ({
   const onSubmit = async (values: SelfStakeFormData) => {
     try {
       const action = async () => {
-        await unstake({ amount: values.amount, poolAddress });
-        toast({
-          title: "Success",
-          description: `Successfully unstaked ${values.amount} CRNCH`,
+        const result = await unstake({
+          amount: values.amount,
+          poolAddress,
         });
+
+        // In multisig mode, the transactionExecutor already triggers
+        // the proposal tracker — skip the immediate success feedback.
+        const isMultisig = isMultisigResult(result);
+
+        if (!isMultisig) {
+          toast({
+            title: "Success",
+            description: `Successfully unstaked ${values.amount} CRNCH`,
+          });
+        }
+
         form.reset({ amount: 0 });
         handlers?.onSuccess?.();
       };

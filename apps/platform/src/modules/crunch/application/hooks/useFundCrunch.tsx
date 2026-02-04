@@ -6,6 +6,7 @@ import {
 } from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
+import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { PublicKey } from "@solana/web3.js";
 
 interface FundCrunchParams {
@@ -16,7 +17,9 @@ interface FundCrunchParams {
 export const useFundCrunch = () => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
-  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
+  const { executeTransaction, authority, isMultisigMode } =
+    useTransactionExecutor();
+  const { trackProposal } = useMultisigProposalTracker();
 
   const mutation = useMutation({
     mutationFn: async ({ crunchAddress, amount }: FundCrunchParams) => {
@@ -29,13 +32,10 @@ export const useFundCrunch = () => {
         program: coordinatorProgram,
       });
 
-      // Convert USDC to micro-USDC (6 decimals)
-      const amountInMicroUsdc = Math.floor(amount * 1_000_000);
-
-      // Use authority (vault in multisig mode, wallet otherwise) as the signer
+      // depositRewardUsdcInstruction handles USDC → micro-USDC conversion internally
       const instruction = await crunchService.depositRewardUsdcInstruction(
         crunchAddress,
-        amountInMicroUsdc,
+        amount,
         authority
       );
 
@@ -50,22 +50,35 @@ export const useFundCrunch = () => {
         amount,
         isMultisig: result.isMultisig,
         proposalUrl: result.proposalUrl,
+        transactionIndex: result.transactionIndex,
+        multisigPda: result.multisigPda,
       };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["coordinator-crunches"] });
-      queryClient.invalidateQueries({ queryKey: ["reward-vault-balance"] });
-
-      if (result.isMultisig) {
-        toast({
-          title: "Multisig proposal created",
-          description: `Proposal to fund ${result.amount} USDC has been submitted for approval.`,
+      const handleSuccess = () => {
+        queryClient.invalidateQueries({
+          queryKey: ["coordinator-crunches"],
         });
-      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["reward-vault-balance"],
+        });
         toast({
           title: "Crunch funded successfully",
           description: `Added ${result.amount} USDC to the reward vault.`,
         });
+      };
+
+      if (result.isMultisig && result.transactionIndex && result.multisigPda) {
+        trackProposal({
+          multisigPda: result.multisigPda,
+          transactionIndex: result.transactionIndex,
+          memo: `Fund crunch with ${result.amount} USDC`,
+          proposalUrl: result.proposalUrl,
+          signature: result.txHash,
+          onExecuted: handleSuccess,
+        });
+      } else {
+        handleSuccess();
       }
     },
     onError: (error) => {

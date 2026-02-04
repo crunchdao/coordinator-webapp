@@ -51,14 +51,14 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
       '@crunchdao/sdk':
-        specifier: ^8.3.4
-        version: 8.3.5(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        specifier: ^8.4.3
+        version: 8.4.3(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@crunchdao/solana-utils':
-        specifier: ^0.1.8
-        version: 0.1.8(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        specifier: ^0.2.0
+        version: 0.2.0(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@crunchdao/staking':
-        specifier: ^0.1.8
-        version: 0.1.8(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@crunchdao/sdk@8.3.5(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.1(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
+        specifier: ^0.2.1
+        version: 0.2.1(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@crunchdao/programs@10.0.0)(@crunchdao/sdk@8.4.3(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@tanstack/react-table@8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.1(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.1(react@19.2.4))
@@ -77,6 +77,9 @@ importers:
       '@solana/web3.js':
         specifier: ^1.98.4
         version: 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@sqds/multisig':
+        specifier: ^2.1.4
+        version: 2.1.4(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@tanstack/react-query':
         specifier: ^5.90.17
         version: 5.90.20(react@19.2.4)
@@ -632,23 +635,28 @@ packages:
   '@crunchdao/programs@11.0.0':
     resolution: {integrity: sha512-942tObIzmxwUdpSj7ZaVx/hSMtdFwIo+biBc1MfVMlosHLL5WljmNojDgy2U6QFI0fra+t+bPZLiSI/ilHASXQ==}
 
-  '@crunchdao/sdk@8.3.5':
-    resolution: {integrity: sha512-SGRQYNUpsT0pKwVkG5Z+OoIMnbc/kcrU6c4zxaiiCEKP9hgkd8rPxxrHMTu//HAuMxsw+UzowiVUkaFNWapkcw==}
+  '@crunchdao/programs@9.1.0':
+    resolution: {integrity: sha512-vvJIF51tiNphe5JDimTsshFWZpD0RqQEflAyntynpJ61KJ3LBPd0g9kGWFMGb5Z9Z/ZgDbK6OAc2mtoiqM/KJw==}
 
-  '@crunchdao/solana-utils@0.1.8':
-    resolution: {integrity: sha512-GkWhOCzOT0VKEr5h0FzXoepNTXbvLuj2ak9PHIxtWu56p0LE7YdfePgiPcmEOXItSCOYCFOGpIakb7GewKwHgA==}
+  '@crunchdao/sdk@8.4.3':
+    resolution: {integrity: sha512-J9Slun0dG2QZfIGjQ300ebyt/lBCH54p19utBa8weynA6xhNpu8ngRXDWBD4hBhWZOtfc/mLWTg4ofRkEy/R9g==}
+
+  '@crunchdao/solana-utils@0.2.0':
+    resolution: {integrity: sha512-VJpnSSTr2y5+1W1XTTkF/Gl50GEZs13O+KixHbrF8Zr4eCTp4+9pSfkFViH6zOQSDZRFGAQ2bhnAAUxqNywXVQ==}
     peerDependencies:
       '@coral-xyz/anchor': ^0.32.0
       '@solana/web3.js': ^1.95.0
       '@tanstack/react-query': ^5.0.0
       react: ^18.0.0 || ^19.0.0
 
-  '@crunchdao/staking@0.1.8':
-    resolution: {integrity: sha512-Hfcm5AWrOjkB6lteQaiSIgV+CD2O56Ekhii3aT9E/sdAF+/Ig0Iz5qxxWAb+5Zf3ycwEQUaurkl1RHC9AMyU3A==}
+  '@crunchdao/staking@0.2.1':
+    resolution: {integrity: sha512-urPnayMSTxONNn7ZayFJKWfP/z8tS85je1lpGRNvfBJoQoCNVrkdBLRQPsbo+NMwX5ZLtM9Yar+7d8wEQDitfA==}
     peerDependencies:
-      '@crunchdao/sdk': ^8.3.2
+      '@crunchdao/programs': 9.1.0
+      '@crunchdao/sdk': '>=8.4.0'
       '@solana/web3.js': ^1.95.0
       '@tanstack/react-query': ^5.0.0
+      '@tanstack/react-table': ^8.0.0
       react: ^18.0.0 || ^19.0.0
       react-hook-form: ^7.0.0
       zod: ^3.0.0 || ^4.0.0
@@ -4611,7 +4619,7 @@ packages:
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
@@ -7310,7 +7318,9 @@ snapshots:
 
   '@crunchdao/programs@11.0.0': {}
 
-  '@crunchdao/sdk@8.3.5(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@crunchdao/programs@9.1.0': {}
+
+  '@crunchdao/sdk@8.4.3(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@crunchdao/programs': 11.0.0
       '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -7323,13 +7333,14 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@crunchdao/solana-utils@0.1.8(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@crunchdao/solana-utils@0.2.0(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@coral-xyz/anchor': 0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@crunch-ui/core': 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
       '@crunch-ui/icons': 1.1.1(typescript@5.9.3)
       '@crunch-ui/utils': 1.2.1
-      '@crunchdao/sdk': 8.3.5(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@crunchdao/programs': 9.1.0
+      '@crunchdao/sdk': 8.4.3(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@tanstack/react-query': 5.90.20(react@19.2.4)
       p-retry: 6.2.1
@@ -7346,16 +7357,18 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@crunchdao/staking@0.1.8(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@crunchdao/sdk@8.3.5(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.1(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
+  '@crunchdao/staking@0.2.1(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@crunchdao/programs@10.0.0)(@crunchdao/sdk@8.4.3(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@tanstack/react-table@8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.71.1(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76)':
     dependencies:
       '@crunch-ui/core': 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
       '@crunch-ui/icons': 1.1.1(typescript@5.9.3)
       '@crunch-ui/utils': 1.2.1
-      '@crunchdao/sdk': 8.3.5(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      '@crunchdao/solana-utils': 0.1.8(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@crunchdao/programs': 10.0.0
+      '@crunchdao/sdk': 8.4.3(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@crunchdao/solana-utils': 0.2.0(@coral-xyz/anchor@0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@solana/web3.js@1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10))(@tanstack/react-query@5.90.20(react@19.2.4))(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(bufferutil@4.1.0)(fastestsmallesttextencoderdecoder@1.0.22)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@hookform/resolvers': 5.2.2(react-hook-form@7.71.1(react@19.2.4))
       '@solana/web3.js': 1.98.4(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@tanstack/react-query': 5.90.20(react@19.2.4)
+      '@tanstack/react-table': 8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
       react-hook-form: 7.71.1(react@19.2.4)
       zod: 3.25.76

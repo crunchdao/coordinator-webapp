@@ -6,6 +6,7 @@ import {
 } from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
+import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 
 interface StartCrunchParams {
   crunchName: string;
@@ -14,7 +15,9 @@ interface StartCrunchParams {
 export const useStartCrunch = () => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
-  const { executeTransaction, authority, isMultisigMode } = useTransactionExecutor();
+  const { executeTransaction, authority, isMultisigMode } =
+    useTransactionExecutor();
+  const { trackProposal } = useMultisigProposalTracker();
 
   const mutation = useMutation({
     mutationFn: async ({ crunchName }: StartCrunchParams) => {
@@ -43,21 +46,32 @@ export const useStartCrunch = () => {
         crunchName,
         isMultisig: result.isMultisig,
         proposalUrl: result.proposalUrl,
+        transactionIndex: result.transactionIndex,
+        multisigPda: result.multisigPda,
       };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["coordinator-crunches"] });
-
-      if (result.isMultisig) {
-        toast({
-          title: "Multisig proposal created",
-          description: `Proposal to start "${result.crunchName}" has been submitted for approval.`,
+      const handleSuccess = () => {
+        queryClient.invalidateQueries({
+          queryKey: ["coordinator-crunches"],
         });
-      } else {
         toast({
           title: "Crunch started successfully",
           description: `"${result.crunchName}" is now active.`,
         });
+      };
+
+      if (result.isMultisig && result.transactionIndex && result.multisigPda) {
+        trackProposal({
+          multisigPda: result.multisigPda,
+          transactionIndex: result.transactionIndex,
+          memo: `Start crunch: ${result.crunchName}`,
+          proposalUrl: result.proposalUrl,
+          signature: result.txHash,
+          onExecuted: handleSuccess,
+        });
+      } else {
+        handleSuccess();
       }
     },
     onError: (error) => {

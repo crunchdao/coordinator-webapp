@@ -9,23 +9,23 @@ import {
   useAmountChangeIndicator,
   useGetStakingPositions,
 } from "@crunchdao/staking";
-import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { SelfStakeButton } from "./selfStakeButton";
 import { SelfUnstakeButton } from "./selfUnstakeButton";
 
 export const SelfStakeCard = () => {
-  const { publicKey } = useWallet();
+  const { authority } = useEffectiveAuthority();
   const { stakingPositions, stakingPositionsLoading } =
     useGetStakingPositions();
   const isMutating = useIsMutating();
 
   const stakedAmount = useMemo(() => {
-    if (!publicKey || !stakingPositions) return 0;
+    if (!authority || !stakingPositions) return 0;
     const position = stakingPositions.find(
-      (p) => p.coordinatorStakeAddress === publicKey.toString()
+      (p) => p.coordinatorStakeAddress === authority.toString()
     );
     return position?.userStake ?? 0;
-  }, [publicKey, stakingPositions]);
+  }, [authority, stakingPositions]);
 
   const changeType = useAmountChangeIndicator(stakedAmount, 3_000);
   const loading = stakingPositionsLoading || isMutating > 0;
@@ -58,14 +58,14 @@ export const SelfStakeCard = () => {
             <CrunchValue amount={stakedAmount} />
           )}
         </div>
-        {publicKey && (
+        {authority && (
           <div className="flex gap-2">
             <SelfStakeButton
-              poolAddress={publicKey.toString()}
+              poolAddress={authority.toString()}
               loading={loading}
             />
             <SelfUnstakeButton
-              poolAddress={publicKey.toString()}
+              poolAddress={authority.toString()}
               stakedAmount={stakedAmount}
               loading={loading}
             />

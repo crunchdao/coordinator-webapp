@@ -6,8 +6,8 @@ import {
   CrunchServiceWithContext,
 } from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { Transaction } from "@solana/web3.js";
+import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
+import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useRouter } from "next/navigation";
@@ -15,12 +15,14 @@ import { useRouter } from "next/navigation";
 export const useCreateCrunch = () => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
-  const { publicKey } = useWallet();
+  const { executeTransaction, authority, isMultisigMode } =
+    useTransactionExecutor();
+  const { trackProposal } = useMultisigProposalTracker();
   const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: async (data: CreateCrunchFormData) => {
-      if (!anchorProvider || !publicKey) {
+      if (!anchorProvider || !authority) {
         throw new Error("Wallet not connected");
       }
 
@@ -35,33 +37,53 @@ export const useCreateCrunch = () => {
           payoutAmount: data.payoutAmount,
           maxModelsPerCruncher: data.maxModelsPerCruncher,
         },
-        publicKey
+        authority
       );
 
-      const transaction = new Transaction();
-      transaction.add(instruction);
+      const result = await executeTransaction({
+        instructions: [instruction],
+        partialSigners: [],
+        memo: `Create crunch: ${data.name}`,
+      });
 
-      const { blockhash } = await anchorProvider.connection.getLatestBlockhash(
-        "confirmed"
-      );
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = publicKey;
-
-      const txHash = await anchorProvider.sendAndConfirm(transaction);
-
-      return { success: true, txHash, crunchName: data.name };
+      return {
+        success: true,
+        txHash: result.signature,
+        crunchName: data.name,
+        isMultisig: result.isMultisig,
+        proposalUrl: result.proposalUrl,
+        transactionIndex: result.transactionIndex,
+        multisigPda: result.multisigPda,
+      };
     },
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["coordinator-crunches"] });
-      toast({
-        title: "Crunch created successfully",
-        description: `Your crunch "${result.crunchName}" has been created.`,
-      });
-      router.push(
-        generateLink(INTERNAL_LINKS.LEADERBOARD, {
-          crunchname: result.crunchName,
-        })
-      );
+      const handleSuccess = () => {
+        queryClient.invalidateQueries({
+          queryKey: ["coordinator-crunches"],
+        });
+        toast({
+          title: "Crunch created successfully",
+          description: `Your crunch "${result.crunchName}" has been created.`,
+        });
+        router.push(
+          generateLink(INTERNAL_LINKS.LEADERBOARD, {
+            crunchname: result.crunchName,
+          })
+        );
+      };
+
+      if (result.isMultisig && result.transactionIndex && result.multisigPda) {
+        trackProposal({
+          multisigPda: result.multisigPda,
+          transactionIndex: result.transactionIndex,
+          memo: `Create crunch: ${result.crunchName}`,
+          proposalUrl: result.proposalUrl,
+          signature: result.txHash,
+          onExecuted: handleSuccess,
+        });
+      } else {
+        handleSuccess();
+      }
     },
     onError: (error) => {
       console.error("Crunch creation error:", error);
@@ -75,8 +97,10 @@ export const useCreateCrunch = () => {
 
   return {
     createCrunch: mutation.mutate,
+    createCrunchAsync: mutation.mutateAsync,
     createCrunchLoading: mutation.isPending,
     createCrunchError: mutation.error,
     createCrunchData: mutation.data,
+    isMultisigMode,
   };
 };
