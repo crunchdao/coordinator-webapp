@@ -23,7 +23,7 @@ export function OnboardingWaitingApproval() {
   return (
     <div className="flex flex-col text-center items-center gap-6 py-8 bg-muted text-foreground rounded">
       <p className="body max-w-md">
-        Your application is being reviewed by the CrunchDAO team really soon.
+        Your application is being reviewed by the CrunchDAO team.
       </p>
 
       <div className="relative">
