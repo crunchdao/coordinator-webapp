@@ -72,7 +72,7 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
     description: "Create your first Crunch challenge",
     isOptional: false,
     icon: Cube,
-    content: <CrunchCreationForm onSuccess={() => {}} />,
+    content: <CrunchCreationForm />,
   },
   [OnboardingStep.FUND_CRUNCH]: {
     title: "Fund Crunch",
@@ -200,13 +200,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     if (isCrunchFunded) max = 5;
     if (isCrunchStarted) max = 7;
     return max;
-  }, [
-    isApproved,
-    hasEnoughStake,
-    hasCrunch,
-    isCrunchFunded,
-    isCrunchStarted,
-  ]);
+  }, [isApproved, hasEnoughStake, hasCrunch, isCrunchFunded, isCrunchStarted]);
 
   const initialStepIndex = useMemo(() => {
     if (hasCertificate) return 7;
@@ -266,8 +260,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     if (!hasInitialized.current) return;
     const wasCompleted = prevCompletedRef.current;
     prevCompletedRef.current = isCurrentStepCompleted;
-    
-    if (wasCompleted === false && isCurrentStepCompleted && stepIndex < maxStepIndex) {
+
+    if (
+      wasCompleted === false &&
+      isCurrentStepCompleted &&
+      stepIndex < maxStepIndex
+    ) {
       setStepIndex((i) => i + 1);
     }
   }, [isCurrentStepCompleted, stepIndex, maxStepIndex]);
