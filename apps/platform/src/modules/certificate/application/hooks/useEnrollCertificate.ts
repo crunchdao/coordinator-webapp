@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { PublicKey } from "@solana/web3.js";
 import {
@@ -109,6 +109,7 @@ export const useEnrollCertificate = () => {
   const { executeTransaction, authority, isMultisigMode } =
     useTransactionExecutor();
   const { trackProposal } = useMultisigProposalTracker();
+  const queryClient = useQueryClient();
 
   // Store pending certificate data for multisig mode so we can
   // download the ZIP after the proposal is executed
@@ -210,6 +211,11 @@ export const useEnrollCertificate = () => {
               );
               downloadBlob(zipBlob, "issued-certificate.zip");
 
+              // Invalidate the enrollment status query to refresh the UI
+              queryClient.invalidateQueries({
+                queryKey: ["certificate-enrollment-status"],
+              });
+
               toast({
                 title: "Certificate downloaded",
                 description:
@@ -262,6 +268,11 @@ export const useEnrollCertificate = () => {
       };
     },
     onSuccess: (result) => {
+      // Invalidate the enrollment status query to refresh the UI
+      queryClient.invalidateQueries({
+        queryKey: ["certificate-enrollment-status"],
+      });
+
       if ("isMultisig" in result && result.isMultisig) {
         toast({
           title: "Multisig proposal created",

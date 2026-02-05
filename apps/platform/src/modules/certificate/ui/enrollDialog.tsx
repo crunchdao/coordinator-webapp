@@ -44,13 +44,13 @@ export function EnrollDialog({ open, onOpenChange }: EnrollDialogProps) {
         {isEnrolling && (
           <LoadingOverlay
             title="Enrolling Certificate"
-            subtitle="Please sign the message with your wallet..."
+            subtitle="Please confirm the transaction with your wallet..."
           />
         )}
         <DialogHeader>
           <DialogTitle>Enroll Certificate</DialogTitle>
           <DialogDescription>
-            Generate and sign a TLS certificate for your coordinator node.
+            Generate and register a TLS certificate for your coordinator node.
           </DialogDescription>
         </DialogHeader>
 
@@ -60,10 +60,8 @@ export function EnrollDialog({ open, onOpenChange }: EnrollDialogProps) {
               <p className="text-sm text-muted-foreground">This will:</p>
               <ol className="list-decimal list-inside text-sm text-muted-foreground space-y-1">
                 <li>Generate a new TLS certificate</li>
-                <li>
-                  Fetch your hotkey from your Coordinator account on Solana
-                </li>
-                <li>Request your wallet signature</li>
+                <li>Compute the certificate hash</li>
+                <li>Register the certificate hash on-chain</li>
                 <li>Download a ZIP file with your certificate files</li>
               </ol>
 
@@ -90,7 +88,7 @@ export function EnrollDialog({ open, onOpenChange }: EnrollDialogProps) {
                 Certificate enrolled successfully!
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                Your certificate files have been downloaded.
+                Your certificate files have been downloaded and registered on-chain.
               </p>
             </div>
           )}
