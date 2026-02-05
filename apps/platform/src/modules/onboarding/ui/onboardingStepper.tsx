@@ -2,7 +2,6 @@
 
 import { cn } from "@crunch-ui/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@crunch-ui/core";
-import { Check } from "@crunch-ui/icons";
 import { useOnboarding } from "../application/onboardingContext";
 
 export function OnboardingStepper() {
@@ -50,7 +49,7 @@ export function OnboardingStepper() {
                 <div
                   className={cn(
                     "ml-2 w-8 h-0.5 mt-1",
-                    step.isCompleted ? "bg-success" : "bg-muted-foreground/30"
+                    "bg-muted-foreground/30"
                   )}
                 />
               )}

@@ -86,7 +86,7 @@ export function EnrollDialog({ open, onOpenChange }: EnrollDialogProps) {
             </>
           ) : (
             <div className="text-center py-4">
-              <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+              <p className="text-sm text-green-600 font-medium">
                 Certificate enrolled successfully!
               </p>
               <p className="text-sm text-muted-foreground mt-1">

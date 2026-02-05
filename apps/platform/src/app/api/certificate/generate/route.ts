@@ -45,7 +45,6 @@ export async function POST() {
         }),
       }
     );
-    console.log(response);
 
     if (!response.ok) {
       const errorText = await response.text();

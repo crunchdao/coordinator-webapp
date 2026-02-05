@@ -33,20 +33,20 @@ export function OnboardingPanel() {
   }
 
   return (
-    <section className="w-3xl p-6 mx-auto">
+    <section className="w-4xl p-6 mx-auto">
       <Card>
         <CardHeader className="text-center">
           <CardTitle>Get Started</CardTitle>
-          <CardDescription className="text-center">
-            In order to deploy your first Crunch, you need to complete the
-            following steps:
+          <CardDescription className="text-center max-w-lg mx-auto">
+            Ready to deploy your first Crunch? Complete the following steps and
+            deploy your first Crunch on the Crunch Protocol.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
             <OnboardingStepper />
 
-            <div className="flex justify-between gap-3 pt-4 mb-3">
+            <div className="flex justify-between gap-3 pt-4 mb-3 border-b pb-3">
               {currentStepInfo && (
                 <div>
                   <div>
@@ -56,9 +56,7 @@ export function OnboardingPanel() {
                     </p>
                   </div>
                   {currentStepInfo.isBlocked && currentStepInfo.blockReason && (
-                    <p className="text-sm text-amber-600 dark:text-amber-400">
-                      {currentStepInfo.blockReason}
-                    </p>
+                    <p className="body">{currentStepInfo.blockReason}</p>
                   )}
                 </div>
               )}

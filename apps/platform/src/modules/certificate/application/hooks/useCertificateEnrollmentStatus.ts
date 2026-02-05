@@ -98,7 +98,6 @@ export const useCertificateEnrollmentStatus = () => {
   const { connection } = useConnection();
   const { authority, ready } = useEffectiveAuthority();
 
-  console.log(authority?.toString());
   const query = useQuery<EnrollmentStatus>({
     queryKey: ["certificate-enrollment-status", authority?.toString()],
     queryFn: async (): Promise<EnrollmentStatus> => {

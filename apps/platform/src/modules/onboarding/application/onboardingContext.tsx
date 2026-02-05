@@ -37,6 +37,7 @@ import { OnboardingStartCrunchForm } from "../ui/onboardingStartCrunchForm";
 import { EnrollForm } from "@/modules/certificate/ui/enrollForm";
 import { useCertificateEnrollmentStatus } from "@/modules/certificate/application/hooks/useCertificateEnrollmentStatus";
 import { OnboardingCompletedStep } from "../ui/onboardingCompletedStep";
+import { OnboardingWaitingApproval } from "../ui/onboardingWaitingApproval";
 import { OnboardingStep, StepConfig } from "../domain/types";
 
 const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
@@ -59,6 +60,7 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
     description: "Your registration is being reviewed",
     isOptional: false,
     icon: Hourglass,
+    content: <OnboardingWaitingApproval />,
   },
   [OnboardingStep.STAKE]: {
     title: "Stake Tokens",
@@ -192,7 +194,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const isCrunchFunded = vaultBalance > 0 || firstCrunchState === "started";
   const isCrunchStarted = firstCrunchState === "started";
   const hasCertificate = enrollmentStatus?.enrolled === true;
-  console.log(enrollmentStatus);
 
   const maxStepIndex = useMemo(() => {
     let max = 1;
@@ -212,11 +213,30 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     isCrunchStarted,
   ]);
 
+  const initialStepIndex = useMemo(() => {
+    if (isCrunchStarted) return 8;
+    if (isCrunchFunded) return 6;
+    if (hasCrunch) return 5;
+    if (hasEnoughStake) return 4;
+    if (isApproved) return 3;
+    if (isRegistered) return 2;
+    if (isMultisigConfigured) return 1;
+    return 0;
+  }, [
+    isMultisigConfigured,
+    isRegistered,
+    isApproved,
+    hasEnoughStake,
+    hasCrunch,
+    isCrunchFunded,
+    isCrunchStarted,
+  ]);
+
   useEffect(() => {
     if (isLoading || hasInitialized.current) return;
     hasInitialized.current = true;
-    setStepIndex(maxStepIndex > 0 ? maxStepIndex : 0);
-  }, [isLoading, maxStepIndex]);
+    setStepIndex(initialStepIndex);
+  }, [isLoading, initialStepIndex]);
 
   const completionMap: Record<OnboardingStep, boolean> = useMemo(
     () => ({
@@ -241,6 +261,16 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       hasCertificate,
     ]
   );
+
+  const currentStep = STEP_ORDER[stepIndex] ?? STEP_ORDER[0];
+  const isCurrentStepCompleted = completionMap[currentStep];
+
+  useEffect(() => {
+    if (!hasInitialized.current) return;
+    if (isCurrentStepCompleted && stepIndex < maxStepIndex) {
+      setStepIndex((i) => i + 1);
+    }
+  }, [isCurrentStepCompleted, stepIndex, maxStepIndex]);
 
   const steps: OnboardingStepInfo[] = useMemo(() => {
     return STEP_ORDER.map((step, index) => {
@@ -272,7 +302,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     });
   }, [completionMap, stepIndex, hasEnoughStake, minStakeRequired, isApproved]);
 
-  const currentStep = STEP_ORDER[stepIndex] ?? STEP_ORDER[0];
   const currentStepInfo = steps.find((s) => s.step === currentStep);
   const currentStepContent = currentStepInfo?.content;
 

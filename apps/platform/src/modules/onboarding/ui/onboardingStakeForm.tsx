@@ -110,7 +110,7 @@ export function OnboardingStakeForm() {
       )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="text-sm text-muted-foreground space-y-1">
+          <div className="body-sm text-muted-foreground space-y-1">
             <p className="flex justify-between">
               <span>Minimum required</span>
               <span className="font-medium text-foreground">
@@ -118,9 +118,9 @@ export function OnboardingStakeForm() {
               </span>
             </p>
             {remaining > 0 ? (
-              <p className="flex justify-between text-amber-600 dark:text-amber-400">
+              <p className="flex justify-between">
                 <span>Remaining to stake</span>
-                <span className="font-medium">
+                <span className="font-medium text-foreground">
                   {remaining.toLocaleString()} CRNCH
                 </span>
               </p>
