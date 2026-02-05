@@ -11,20 +11,8 @@ import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
-import {
-  CertificateData,
-  SignedMessage,
-  EnrollmentResult,
-} from "../../domain/types";
+import { CertificateData, EnrollmentResult } from "../../domain/types";
 import { createCertificateZip, downloadBlob } from "../utils/createZip";
-
-function uint8ArrayToBase64(bytes: Uint8Array): string {
-  let binary = "";
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}
 
 function base64ToUint8Array(base64: string): Uint8Array {
   const binary = atob(base64);
@@ -115,7 +103,6 @@ export const useEnrollCertificate = () => {
   // download the ZIP after the proposal is executed
   const pendingCertRef = useRef<{
     certificateData: CertificateData;
-    authorityAddress: string;
   } | null>(null);
 
   const mutation = useMutation({
@@ -159,7 +146,6 @@ export const useEnrollCertificate = () => {
         slot
       );
 
-      const authorityAddress = authority.toBase58();
       const enrollMemo = `Certificate enrollment (slot ${slot})`;
 
       // Execute the transaction (works for both direct and multisig modes)
@@ -173,7 +159,6 @@ export const useEnrollCertificate = () => {
         // Store cert data so we can download the ZIP after execution
         pendingCertRef.current = {
           certificateData,
-          authorityAddress,
         };
 
         // Track the multisig proposal so the countdown dialog appears
@@ -193,21 +178,8 @@ export const useEnrollCertificate = () => {
                 return;
               }
 
-              // For multisig, the on-chain certificate is now set
-              // Download the ZIP with transaction info
-              const signedMessage: SignedMessage = {
-                message_b64: uint8ArrayToBase64(
-                  new TextEncoder().encode(
-                    JSON.stringify({ cert_pub: pending.certificateData.certPub })
-                  )
-                ),
-                wallet_pubkey_b58: pending.authorityAddress,
-                signature_b64: result.signature,
-              };
-
               const zipBlob = await createCertificateZip(
-                pending.certificateData,
-                signedMessage
+                pending.certificateData
               );
               downloadBlob(zipBlob, "issued-certificate.zip");
 
@@ -249,22 +221,11 @@ export const useEnrollCertificate = () => {
       }
 
       // Direct mode: transaction is already executed, download the ZIP
-      const signedMessage: SignedMessage = {
-        message_b64: uint8ArrayToBase64(
-          new TextEncoder().encode(
-            JSON.stringify({ cert_pub: certificateData.certPub })
-          )
-        ),
-        wallet_pubkey_b58: authorityAddress,
-        signature_b64: result.signature,
-      };
-
-      const zipBlob = await createCertificateZip(certificateData, signedMessage);
+      const zipBlob = await createCertificateZip(certificateData);
       downloadBlob(zipBlob, "issued-certificate.zip");
 
       return {
         certificateData,
-        signedMessage,
       };
     },
     onSuccess: (result) => {

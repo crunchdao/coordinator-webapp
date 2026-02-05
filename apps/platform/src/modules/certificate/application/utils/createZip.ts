@@ -1,16 +1,14 @@
 import JSZip from "jszip";
-import { CertificateData, SignedMessage } from "../../domain/types";
+import { CertificateData } from "../../domain/types";
 
 export async function createCertificateZip(
-  certificateData: CertificateData,
-  signedMessage: SignedMessage
+  certificateData: CertificateData
 ): Promise<Blob> {
   const zip = new JSZip();
 
   zip.file("ca.crt", certificateData.caCert);
   zip.file("tls.key", certificateData.tlsKey);
   zip.file("tls.crt", certificateData.tlsCert);
-  zip.file("coordinator_msg.json", JSON.stringify(signedMessage, null, 2));
 
   const blob = await zip.generateAsync({ type: "blob" });
   return blob;
