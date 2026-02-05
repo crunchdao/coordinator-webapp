@@ -209,7 +209,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   ]);
 
   const initialStepIndex = useMemo(() => {
-    if (isCrunchStarted) return 7;
+    if (hasCertificate) return 7;
+    if (isCrunchStarted) return 6;
     if (isCrunchFunded) return 5;
     if (hasCrunch) return 4;
     if (hasEnoughStake) return 3;
@@ -225,6 +226,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     hasCrunch,
     isCrunchFunded,
     isCrunchStarted,
+    hasCertificate,
   ]);
 
   useEffect(() => {

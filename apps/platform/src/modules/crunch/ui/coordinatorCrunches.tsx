@@ -202,7 +202,6 @@ export function CoordinatorCrunches() {
 
       {selectedCrunch && (
         <>
-          {selectedCrunch.address}
           <FundCrunchDialog
             open={fundDialogOpen}
             onOpenChange={setFundDialogOpen}
