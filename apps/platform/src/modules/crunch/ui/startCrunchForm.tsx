@@ -24,10 +24,7 @@ export function StartCrunchForm({
   const { startCrunch, startCrunchLoading } = useStartCrunch();
 
   const handleStart = () => {
-    startCrunch(
-      { crunchName },
-      { onSuccess }
-    );
+    startCrunch({ crunchName }, { onSuccess });
   };
 
   return (
@@ -65,9 +62,11 @@ export function StartCrunchForm({
           </div>
         )}
 
-        <p className="text-sm text-muted-foreground">
-          Once started, crunchers will be able to register and participate.
-        </p>
+        {currentState !== "started" && (
+          <p className="text-sm text-muted-foreground">
+            Once started, crunchers will be able to register and participate.
+          </p>
+        )}
 
         <Button
           className="ml-auto block"

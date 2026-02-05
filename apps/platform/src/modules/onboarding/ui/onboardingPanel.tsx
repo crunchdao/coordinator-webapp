@@ -35,36 +35,20 @@ export function OnboardingPanel() {
   return (
     <section className="w-3xl p-6 mx-auto">
       <Card>
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle>Get Started</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-center">
             In order to deploy your first Crunch, you need to complete the
             following steps:
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-3">
             <OnboardingStepper />
-            <div className="flex justify-between gap-3 pt-4">
-              <Button
-                variant="outline"
-                size="icon-sm"
-                onClick={goToPreviousStep}
-                disabled={!canGoPrevious}
-              >
-                <ChevronLeft />
-              </Button>
-              <Button
-                size="icon-sm"
-                onClick={goToNextStep}
-                disabled={!canGoNext}
-              >
-                <ChevronRight />
-              </Button>
-            </div>
-            <div className="space-y-4">
+
+            <div className="flex justify-between gap-3 pt-4 mb-3">
               {currentStepInfo && (
-                <>
+                <div>
                   <div>
                     <h3 className="font-semibold">{currentStepInfo.title}</h3>
                     <p className="text-sm text-muted-foreground">
@@ -76,10 +60,28 @@ export function OnboardingPanel() {
                       {currentStepInfo.blockReason}
                     </p>
                   )}
-                </>
+                </div>
               )}
-              {currentStepContent}
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  onClick={goToPreviousStep}
+                  disabled={!canGoPrevious}
+                >
+                  <ChevronLeft />
+                </Button>
+                <Button
+                  size="icon-sm"
+                  onClick={goToNextStep}
+                  disabled={!canGoNext}
+                >
+                  <ChevronRight />
+                </Button>
+              </div>
             </div>
+
+            {currentStepContent}
           </div>
         </CardContent>
       </Card>
