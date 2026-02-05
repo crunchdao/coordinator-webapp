@@ -12,14 +12,8 @@ import {
 } from "@crunch-ui/core";
 import { Check, Copy, InfoCircle } from "@crunch-ui/icons";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { EnrollDialog } from "./enrollDialog";
 import { useCertificateEnrollmentStatus } from "../application/hooks/useCertificateEnrollmentStatus";
-
-const solanaCluster =
-  process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta"
-    ? ("mainnet-beta" as const)
-    : ("devnet" as const);
 
 function truncateMiddle(str: string, maxLen: number = 40): string {
   if (str.length <= maxLen) return str;
@@ -57,6 +51,10 @@ function CopyableValue({
   );
 }
 
+function formatDateTime(timestamp: number): string {
+  return new Date(timestamp * 1000).toLocaleString();
+}
+
 interface EnrollFormProps {
   showStatus?: boolean;
 }
@@ -68,7 +66,6 @@ export function EnrollForm({ showStatus = false }: EnrollFormProps) {
     useCertificateEnrollmentStatus();
 
   const isEnrolled = enrollmentStatus?.enrolled === true;
-  const isStale = isEnrolled && !enrollmentStatus.hotkeyMatch;
 
   if (enrollmentStatusLoading) {
     return <Skeleton className="h-24 w-full" />;
@@ -80,71 +77,47 @@ export function EnrollForm({ showStatus = false }: EnrollFormProps) {
         {showStatus && connected && (
           <p className="body-xs text-muted-foreground flex justify-between">
             <span>Status</span>
-            <Badge
-              variant={
-                isEnrolled ? (isStale ? "destructive" : "success") : "secondary"
-              }
-            >
-              {isEnrolled ? (isStale ? "Stale" : "Enrolled") : "Not Enrolled"}
+            <Badge variant={isEnrolled ? "success" : "secondary"}>
+              {isEnrolled ? "Enrolled" : "Not Enrolled"}
             </Badge>
           </p>
         )}
 
         {isEnrolled ? (
           <div className="space-y-4">
-            {isStale ? (
-              <Alert variant="warning">
-                <InfoCircle className="w-4 h-4" />
-                <AlertDescription>
-                  Hotkey rotated — re-enrollment required
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <Alert variant="success">
-                <Check className="w-4 h-4" />
-                <AlertDescription>
-                  <AlertTitle>Certificate enrolled</AlertTitle>
-                  {enrollmentStatus.blockTime && (
-                    <span className="body-xs text-muted-foreground">
-                      (
-                      {new Date(
-                        enrollmentStatus.blockTime * 1000
-                      ).toLocaleDateString()}
-                      )
-                    </span>
-                  )}
-                </AlertDescription>
-              </Alert>
-            )}
+            <Alert variant="success">
+              <Check className="w-4 h-4" />
+              <AlertDescription>
+                <AlertTitle>Certificate enrolled</AlertTitle>
+              </AlertDescription>
+            </Alert>
 
             <div className="body-xs text-muted-foreground space-y-1">
               <p className="flex justify-between gap-2">
-                <span>Hotkey</span>
-                <CopyableValue value={enrollmentStatus.hotkey} />
+                <span>Primary cert hash</span>
+                <CopyableValue value={enrollmentStatus.primaryCertHash} />
               </p>
-              {isStale && enrollmentStatus.currentHotkey && (
-                <p className="flex justify-between gap-2">
-                  <span>Current hotkey</span>
-                  <CopyableValue value={enrollmentStatus.currentHotkey} />
-                </p>
+              <p className="flex justify-between gap-2">
+                <span>Primary updated</span>
+                <span>{formatDateTime(enrollmentStatus.primaryUpdatedAt)}</span>
+              </p>
+              {enrollmentStatus.secondaryCertHash && (
+                <>
+                  <p className="flex justify-between gap-2">
+                    <span>Secondary cert hash</span>
+                    <CopyableValue value={enrollmentStatus.secondaryCertHash} />
+                  </p>
+                  <p className="flex justify-between gap-2">
+                    <span>Secondary updated</span>
+                    <span>{formatDateTime(enrollmentStatus.secondaryUpdatedAt)}</span>
+                  </p>
+                </>
               )}
-              <p className="flex justify-between gap-2">
-                <span>Cert public key</span>
-                <CopyableValue value={enrollmentStatus.certPub} />
-              </p>
-              <p className="flex justify-between gap-2">
-                <span>Transaction</span>
-                <SolanaAddressLink
-                  address={enrollmentStatus.signature}
-                  type="tx"
-                  cluster={solanaCluster}
-                />
-              </p>
             </div>
 
             <Button
               className="ml-auto block"
-              variant={isStale ? "destructive" : "outline"}
+              variant="outline"
               onClick={() => setDialogOpen(true)}
               disabled={!connected}
             >

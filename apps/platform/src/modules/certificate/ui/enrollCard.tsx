@@ -19,7 +19,6 @@ export function EnrollCard() {
     useCertificateEnrollmentStatus();
 
   const isEnrolled = enrollmentStatus?.enrolled === true;
-  const isStale = isEnrolled && !enrollmentStatus.hotkeyMatch;
 
   return (
     <Card>
@@ -28,20 +27,12 @@ export function EnrollCard() {
           <div>
             <CardTitle>Certificate Enrollment</CardTitle>
             <CardDescription>
-              Generate and sign a TLS certificate for your coordinator node
+              Generate and register a TLS certificate for your coordinator node
             </CardDescription>
           </div>
           {connected && !enrollmentStatusLoading && (
-            <Badge
-              variant={
-                isEnrolled ? (isStale ? "destructive" : "success") : "secondary"
-              }
-            >
-              {isEnrolled
-                ? isStale
-                  ? "Stale — Re-enroll Required"
-                  : "Enrolled"
-                : "Not Enrolled"}
+            <Badge variant={isEnrolled ? "success" : "secondary"}>
+              {isEnrolled ? "Enrolled" : "Not Enrolled"}
             </Badge>
           )}
           {connected && enrollmentStatusLoading && (
