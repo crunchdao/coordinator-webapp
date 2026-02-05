@@ -89,9 +89,6 @@ export function EnrollForm({ showStatus = false }: EnrollFormProps) {
               <Check className="w-4 h-4" />
               <AlertDescription>
                 <AlertTitle>Certificate enrolled</AlertTitle>
-                <span className="body-xs text-muted-foreground">
-                  ({formatDate(enrollmentStatus.primaryUpdatedAt)})
-                </span>
               </AlertDescription>
             </Alert>
 
@@ -100,17 +97,21 @@ export function EnrollForm({ showStatus = false }: EnrollFormProps) {
                 <span>Primary cert hash</span>
                 <CopyableValue value={enrollmentStatus.primaryCertHash} />
               </p>
+              <p className="flex justify-between gap-2">
+                <span>Primary updated</span>
+                <span>{formatDate(enrollmentStatus.primaryUpdatedAt)}</span>
+              </p>
               {enrollmentStatus.secondaryCertHash && (
-                <p className="flex justify-between gap-2">
-                  <span>Secondary cert hash</span>
-                  <CopyableValue value={enrollmentStatus.secondaryCertHash} />
-                </p>
-              )}
-              {enrollmentStatus.secondaryCertHash && (
-                <p className="flex justify-between gap-2">
-                  <span>Secondary updated</span>
-                  <span>{formatDate(enrollmentStatus.secondaryUpdatedAt)}</span>
-                </p>
+                <>
+                  <p className="flex justify-between gap-2">
+                    <span>Secondary cert hash</span>
+                    <CopyableValue value={enrollmentStatus.secondaryCertHash} />
+                  </p>
+                  <p className="flex justify-between gap-2">
+                    <span>Secondary updated</span>
+                    <span>{formatDate(enrollmentStatus.secondaryUpdatedAt)}</span>
+                  </p>
+                </>
               )}
             </div>
 
