@@ -1,20 +1,22 @@
 import { useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
-import { TransactionInstruction, PublicKey, Connection } from "@solana/web3.js";
-import { useConnection } from "@solana/wallet-adapter-react";
+import { PublicKey } from "@solana/web3.js";
+import {
+  getCoordinatorProgram,
+  getCoordinatorCertificate,
+  setCoordinatorCertificateInstruction,
+} from "@crunchdao/sdk";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
+import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import {
   CertificateData,
   SignedMessage,
   EnrollmentResult,
 } from "../../domain/types";
-import {
-  createCertificateZip,
-  downloadBlob,
-} from "../utils/createZip";
+import { createCertificateZip, downloadBlob } from "../utils/createZip";
 
 function uint8ArrayToBase64(bytes: Uint8Array): string {
   let binary = "";
@@ -24,59 +26,67 @@ function uint8ArrayToBase64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-// Memo program ID
-const MEMO_PROGRAM_ID = new PublicKey(
-  "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"
-);
-
-function createMemoInstruction(
-  message: string,
-  signer: PublicKey
-): TransactionInstruction {
-  return new TransactionInstruction({
-    keys: [{ pubkey: signer, isSigner: true, isWritable: false }],
-    programId: MEMO_PROGRAM_ID,
-    data: Buffer.from(message, "utf-8"),
-  });
+function base64ToUint8Array(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
 }
 
 /**
- * Find the execution transaction signature for a memo containing cert_pub
- * by searching the vault's recent transactions.
+ * Compute SHA-256 hash of the certificate public key (DER format)
+ * Returns the hash as an array of numbers (32 bytes)
  */
-async function findMemoExecutionSignature(
-  connection: Connection,
+async function computeCertHash(certPubB64: string): Promise<number[]> {
+  const certPubDer = base64ToUint8Array(certPubB64);
+  // Create a new ArrayBuffer to satisfy TypeScript's BufferSource type
+  const buffer = new Uint8Array(certPubDer).buffer as ArrayBuffer;
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  return Array.from(new Uint8Array(hashBuffer));
+}
+
+/**
+ * Check if a certificate hash is empty (all zeros)
+ */
+function isEmptyHash(hash: number[]): boolean {
+  return hash.every((byte) => byte === 0);
+}
+
+/**
+ * Determine which slot to use for certificate rotation
+ * - If no certificate exists → slot 0 (primary)
+ * - If certificate exists and secondary is empty → slot 1 (secondary)
+ * - If both are filled → overwrite the oldest one
+ */
+async function determineSlot(
+  coordinatorProgram: ReturnType<typeof getCoordinatorProgram>,
   authority: PublicKey
-): Promise<string | null> {
-  try {
-    const signatures = await connection.getSignaturesForAddress(authority, {
-      limit: 10,
-    });
+): Promise<number> {
+  const cert = await getCoordinatorCertificate(coordinatorProgram, authority);
 
-    for (const sigInfo of signatures) {
-      if (sigInfo.err) continue;
-      const tx = await connection.getParsedTransaction(sigInfo.signature, {
-        maxSupportedTransactionVersion: 0,
-      });
-      if (!tx?.meta?.logMessages) continue;
-
-      const hasCertMemo = tx.meta.logMessages.some(
-        (log) => log.includes("Memo") && log.includes("cert_pub")
-      );
-      if (hasCertMemo) {
-        return sigInfo.signature;
-      }
-    }
-  } catch (e) {
-    console.warn("Failed to find memo execution signature:", e);
+  // No certificate exists → use slot 0 (primary)
+  if (!cert) {
+    return 0;
   }
-  return null;
+
+  // Secondary slot is empty → use slot 1
+  if (isEmptyHash(cert.certHashSecondary)) {
+    return 1;
+  }
+
+  // Both filled → overwrite the oldest one
+  const primaryUpdated = cert.primaryUpdatedAt.toNumber();
+  const secondaryUpdated = cert.secondaryUpdatedAt.toNumber();
+
+  return primaryUpdated <= secondaryUpdated ? 0 : 1;
 }
 
 type EnrollmentStep =
   | "idle"
   | "generating"
-  | "fetching_hotkey"
+  | "determining_slot"
   | "signing"
   | "proposing"
   | "downloading"
@@ -94,8 +104,8 @@ export type EnrollmentResultExtended =
   | MultisigEnrollmentResult;
 
 export const useEnrollCertificate = () => {
-  const { publicKey, signMessage } = useWallet();
-  const { connection } = useConnection();
+  const { publicKey } = useWallet();
+  const { anchorProvider } = useAnchorProvider();
   const { executeTransaction, authority, isMultisigMode } =
     useTransactionExecutor();
   const { trackProposal } = useMultisigProposalTracker();
@@ -104,7 +114,6 @@ export const useEnrollCertificate = () => {
   // download the ZIP after the proposal is executed
   const pendingCertRef = useRef<{
     certificateData: CertificateData;
-    message: string;
     authorityAddress: string;
   } | null>(null);
 
@@ -118,6 +127,11 @@ export const useEnrollCertificate = () => {
         throw new Error("Authority not available");
       }
 
+      if (!anchorProvider) {
+        throw new Error("Anchor provider not available");
+      }
+
+      // Generate certificate
       const certResponse = await fetch("/api/certificate/generate", {
         method: "POST",
       });
@@ -129,104 +143,96 @@ export const useEnrollCertificate = () => {
 
       const certificateData: CertificateData = await certResponse.json();
 
-      // Use the effective authority (multisig vault or wallet) for hotkey lookup
-      const authorityAddress = authority.toBase58();
-      const hotkeyResponse = await fetch(
-        `/api/certificate/hotkey?wallet=${encodeURIComponent(authorityAddress)}`
+      // Compute SHA-256 hash of the certificate public key (DER format)
+      const certHash = await computeCertHash(certificateData.certPub);
+
+      // Get coordinator program and determine which slot to use
+      const coordinatorProgram = getCoordinatorProgram(anchorProvider);
+      const slot = await determineSlot(coordinatorProgram, authority);
+
+      // Create the setCoordinatorCertificate instruction
+      const setCertInstruction = await setCoordinatorCertificateInstruction(
+        coordinatorProgram,
+        authority,
+        certHash,
+        slot
       );
 
-      if (!hotkeyResponse.ok) {
-        const error = await hotkeyResponse.json();
-        throw new Error(error.error || "Failed to fetch hotkey");
-      }
+      const authorityAddress = authority.toBase58();
+      const enrollMemo = `Certificate enrollment (slot ${slot})`;
 
-      const { hotkey } = await hotkeyResponse.json();
-
-      const message = JSON.stringify({
-        cert_pub: certificateData.certPub,
-        hotkey: hotkey,
+      // Execute the transaction (works for both direct and multisig modes)
+      const result = await executeTransaction({
+        instructions: [setCertInstruction],
+        memo: enrollMemo,
       });
 
-      // Multisig mode: create a memo transaction and propose it
-      if (isMultisigMode) {
-        const memoInstruction = createMemoInstruction(message, authority);
-
-        const enrollMemo = `Certificate enrollment for hotkey: ${hotkey.slice(0, 8)}...`;
-        const result = await executeTransaction({
-          instructions: [memoInstruction],
-          memo: enrollMemo,
-        });
-
+      // Multisig mode: track proposal and download ZIP after execution
+      if (result.isMultisig && result.transactionIndex && result.multisigPda) {
         // Store cert data so we can download the ZIP after execution
         pendingCertRef.current = {
           certificateData,
-          message,
           authorityAddress,
         };
 
         // Track the multisig proposal so the countdown dialog appears
-        // The onExecuted callback downloads the certificate ZIP with the
-        // execution transaction signature
-        if (result.isMultisig && result.transactionIndex && result.multisigPda) {
-          trackProposal({
-            multisigPda: result.multisigPda,
-            transactionIndex: result.transactionIndex,
-            memo: enrollMemo,
-            proposalUrl: result.proposalUrl,
-            signature: result.signature,
-            onExecuted: async () => {
-              try {
-                const pending = pendingCertRef.current;
-                if (!pending) {
-                  console.warn(
-                    "[EnrollCertificate] onExecuted but no pending cert data"
-                  );
-                  return;
-                }
-
-                // Find the execution transaction signature on-chain
-                const executionSignature = await findMemoExecutionSignature(
-                  connection,
-                  authority
+        trackProposal({
+          multisigPda: result.multisigPda,
+          transactionIndex: result.transactionIndex,
+          memo: enrollMemo,
+          proposalUrl: result.proposalUrl,
+          signature: result.signature,
+          onExecuted: async () => {
+            try {
+              const pending = pendingCertRef.current;
+              if (!pending) {
+                console.warn(
+                  "[EnrollCertificate] onExecuted but no pending cert data"
                 );
-
-                const zipBlob = await createCertificateZip(
-                  pending.certificateData,
-                  {
-                    message_b64: uint8ArrayToBase64(
-                      new TextEncoder().encode(pending.message)
-                    ),
-                    wallet_pubkey_b58: pending.authorityAddress,
-                    signature_b64: executionSignature || "",
-                  }
-                );
-                downloadBlob(zipBlob, "issued-certificate.zip");
-
-                toast({
-                  title: "Certificate downloaded",
-                  description: executionSignature
-                    ? "Certificate ZIP with execution signature has been downloaded."
-                    : "Certificate ZIP has been downloaded.",
-                });
-              } catch (error) {
-                console.error(
-                  "[EnrollCertificate] Failed to download certificate after execution:",
-                  error
-                );
-                toast({
-                  title: "Failed to download certificate",
-                  description:
-                    error instanceof Error
-                      ? error.message
-                      : "An error occurred while downloading the certificate.",
-                  variant: "destructive",
-                });
-              } finally {
-                pendingCertRef.current = null;
+                return;
               }
-            },
-          });
-        }
+
+              // For multisig, the on-chain certificate is now set
+              // Download the ZIP with transaction info
+              const signedMessage: SignedMessage = {
+                message_b64: uint8ArrayToBase64(
+                  new TextEncoder().encode(
+                    JSON.stringify({ cert_pub: pending.certificateData.certPub })
+                  )
+                ),
+                wallet_pubkey_b58: pending.authorityAddress,
+                signature_b64: result.signature,
+              };
+
+              const zipBlob = await createCertificateZip(
+                pending.certificateData,
+                signedMessage
+              );
+              downloadBlob(zipBlob, "issued-certificate.zip");
+
+              toast({
+                title: "Certificate downloaded",
+                description:
+                  "Certificate ZIP has been downloaded. Your certificate is now registered on-chain.",
+              });
+            } catch (error) {
+              console.error(
+                "[EnrollCertificate] Failed to download certificate after execution:",
+                error
+              );
+              toast({
+                title: "Failed to download certificate",
+                description:
+                  error instanceof Error
+                    ? error.message
+                    : "An error occurred while downloading the certificate.",
+                variant: "destructive",
+              });
+            } finally {
+              pendingCertRef.current = null;
+            }
+          },
+        });
 
         return {
           certificateData,
@@ -236,24 +242,18 @@ export const useEnrollCertificate = () => {
         };
       }
 
-      // Direct mode: sign the message with the wallet
-      if (!signMessage) {
-        throw new Error("Wallet does not support message signing");
-      }
-
-      const messageBytes = new TextEncoder().encode(message);
-      const signature = await signMessage(messageBytes);
-
+      // Direct mode: transaction is already executed, download the ZIP
       const signedMessage: SignedMessage = {
-        message_b64: uint8ArrayToBase64(messageBytes),
+        message_b64: uint8ArrayToBase64(
+          new TextEncoder().encode(
+            JSON.stringify({ cert_pub: certificateData.certPub })
+          )
+        ),
         wallet_pubkey_b58: authorityAddress,
-        signature_b64: uint8ArrayToBase64(signature),
+        signature_b64: result.signature,
       };
 
-      const zipBlob = await createCertificateZip(
-        certificateData,
-        signedMessage
-      );
+      const zipBlob = await createCertificateZip(certificateData, signedMessage);
       downloadBlob(zipBlob, "issued-certificate.zip");
 
       return {
@@ -271,7 +271,8 @@ export const useEnrollCertificate = () => {
       } else {
         toast({
           title: "Certificate enrolled successfully",
-          description: "Your certificate files have been downloaded.",
+          description:
+            "Your certificate files have been downloaded and registered on-chain.",
         });
       }
     },
