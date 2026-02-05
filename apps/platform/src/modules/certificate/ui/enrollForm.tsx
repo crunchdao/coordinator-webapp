@@ -51,8 +51,8 @@ function CopyableValue({
   );
 }
 
-function formatDate(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleDateString();
+function formatDateTime(timestamp: number): string {
+  return new Date(timestamp * 1000).toLocaleString();
 }
 
 interface EnrollFormProps {
@@ -99,7 +99,7 @@ export function EnrollForm({ showStatus = false }: EnrollFormProps) {
               </p>
               <p className="flex justify-between gap-2">
                 <span>Primary updated</span>
-                <span>{formatDate(enrollmentStatus.primaryUpdatedAt)}</span>
+                <span>{formatDateTime(enrollmentStatus.primaryUpdatedAt)}</span>
               </p>
               {enrollmentStatus.secondaryCertHash && (
                 <>
@@ -109,7 +109,7 @@ export function EnrollForm({ showStatus = false }: EnrollFormProps) {
                   </p>
                   <p className="flex justify-between gap-2">
                     <span>Secondary updated</span>
-                    <span>{formatDate(enrollmentStatus.secondaryUpdatedAt)}</span>
+                    <span>{formatDateTime(enrollmentStatus.secondaryUpdatedAt)}</span>
                   </p>
                 </>
               )}
