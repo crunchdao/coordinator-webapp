@@ -199,20 +199,6 @@ export function CoordinatorCrunches() {
           </Card>
         ))}
       </div>
-      <div className="flex justify-end mt-8">
-        <Link
-          href={INTERNAL_LINKS.CREATE_CRUNCH}
-          onClick={(e) => {
-            if (crunches?.length > 0) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <Button>
-            Create Crunch <Plus />
-          </Button>
-        </Link>
-      </div>
 
       {selectedCrunch && (
         <>

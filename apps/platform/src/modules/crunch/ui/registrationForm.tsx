@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -16,14 +17,23 @@ import { useAuth } from "@/modules/auth/application/context/authContext";
 import { registrationSchema } from "../application/schemas/registration";
 import { CoordinatorStatus, RegistrationFormData } from "../domain/types";
 import { useRegisterCoordinator } from "../application/hooks/useRegisterCoordinator";
+import { useGetCoordinator } from "../application/hooks/useGetCoordinator";
 
 export function RegistrationForm() {
+  const { coordinator } = useGetCoordinator();
+
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
       organizationName: "",
     },
   });
+
+  useEffect(() => {
+    if (coordinator?.data?.name) {
+      form.reset({ organizationName: coordinator.data.name });
+    }
+  }, [coordinator?.data?.name, form]);
 
   const { registerCoordinator, registerCoordinatorLoading } =
     useRegisterCoordinator();

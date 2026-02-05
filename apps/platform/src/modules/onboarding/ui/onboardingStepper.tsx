@@ -6,37 +6,43 @@ import { Check } from "@crunch-ui/icons";
 import { useOnboarding } from "../application/onboardingContext";
 
 export function OnboardingStepper() {
-  const { steps } = useOnboarding();
+  const { steps, goToStep, maxStepIndex } = useOnboarding();
 
   return (
     <div className="flex flex-row gap-2">
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
         const Icon = step.icon;
+        const isClickable = index <= maxStepIndex;
 
-        const stateClasses = step.isCompleted
-          ? "bg-success border-success text-success-foreground"
-          : step.isActive
-          ? "bg-primary border-primary text-primary-foreground"
-          : "border-muted-foreground/30 text-muted-foreground/50";
+        const stateClasses =
+          step.isCompleted && !step.isActive
+            ? "border-success text-success-foreground"
+            : step.isActive && !step.isCompleted
+            ? "bg-primary border-primary text-primary-foreground"
+            : step.isActive && step.isCompleted
+            ? "bg-success border-success"
+            : "border-muted-foreground/30 text-muted-foreground/50";
 
         return (
           <div key={step.step} className="flex gap-3 mx-auto">
             <div className="flex items-center">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div
+                  <button
+                    type="button"
+                    onClick={() => isClickable && goToStep(index)}
+                    disabled={!isClickable}
                     className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 cursor-default",
-                      stateClasses
+                      "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-transform",
+                      stateClasses,
+                      isClickable
+                        ? "cursor-pointer hover:scale-110"
+                        : "cursor-not-allowed"
                     )}
                   >
-                    {step.isCompleted ? (
-                      <Check className="w-4 h-4" />
-                    ) : (
-                      <Icon className="w-4 h-4" />
-                    )}
-                  </div>
+                    <Icon />
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent>{step.title}</TooltipContent>
               </Tooltip>

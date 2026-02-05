@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
   Button,
+  Spinner,
 } from "@crunch-ui/core";
 import { ChevronLeft, ChevronRight } from "@crunch-ui/icons";
 import { useOnboarding } from "../application/onboardingContext";
@@ -15,7 +16,6 @@ import { OnboardingStepper } from "./onboardingStepper";
 export function OnboardingPanel() {
   const {
     isLoading,
-    isOnboardingComplete,
     currentStepInfo,
     currentStepContent,
     goToNextStep,
@@ -25,59 +25,64 @@ export function OnboardingPanel() {
   } = useOnboarding();
 
   if (isLoading) {
-    return null;
-  }
-
-  if (isOnboardingComplete) {
-    return null;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Spinner />
+      </div>
+    );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Get Started</CardTitle>
-        <CardDescription>
-          In order to deploy your first Crunch, you need to complete the
-          following steps:
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-8">
-          <OnboardingStepper />
-          <div className="space-y-4">
-            {currentStepInfo && (
-              <>
-                <div>
-                  <h3 className="font-semibold">{currentStepInfo.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {currentStepInfo.description}
-                  </p>
-                </div>
-                {currentStepInfo.isBlocked && currentStepInfo.blockReason && (
-                  <p className="text-sm text-amber-600 dark:text-amber-400">
-                    {currentStepInfo.blockReason}
-                  </p>
-                )}
-              </>
-            )}
-            {currentStepContent}
-            <div className="flex justify-between pt-4">
+    <section className="w-3xl p-6 mx-auto">
+      <Card>
+        <CardHeader>
+          <CardTitle>Get Started</CardTitle>
+          <CardDescription>
+            In order to deploy your first Crunch, you need to complete the
+            following steps:
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-8">
+            <OnboardingStepper />
+            <div className="flex justify-between gap-3 pt-4">
               <Button
                 variant="outline"
+                size="icon-sm"
                 onClick={goToPreviousStep}
                 disabled={!canGoPrevious}
               >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                Previous
+                <ChevronLeft />
               </Button>
-              <Button onClick={goToNextStep} disabled={!canGoNext}>
-                Next
-                <ChevronRight className="w-4 h-4 ml-1" />
+              <Button
+                size="icon-sm"
+                onClick={goToNextStep}
+                disabled={!canGoNext}
+              >
+                <ChevronRight />
               </Button>
             </div>
+            <div className="space-y-4">
+              {currentStepInfo && (
+                <>
+                  <div>
+                    <h3 className="font-semibold">{currentStepInfo.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {currentStepInfo.description}
+                    </p>
+                  </div>
+                  {currentStepInfo.isBlocked && currentStepInfo.blockReason && (
+                    <p className="text-sm text-amber-600 dark:text-amber-400">
+                      {currentStepInfo.blockReason}
+                    </p>
+                  )}
+                </>
+              )}
+              {currentStepContent}
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </section>
   );
 }

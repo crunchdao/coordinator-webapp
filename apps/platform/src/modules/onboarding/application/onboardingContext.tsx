@@ -33,6 +33,10 @@ import { RegistrationForm } from "@/modules/crunch/ui/registrationForm";
 import { CrunchCreationForm } from "@/modules/crunch/ui/crunchCreationForm";
 import { OnboardingStakeForm } from "../ui/onboardingStakeForm";
 import { OnboardingFundCrunchForm } from "../ui/onboardingFundCrunchForm";
+import { OnboardingStartCrunchForm } from "../ui/onboardingStartCrunchForm";
+import { EnrollForm } from "@/modules/certificate/ui/enrollForm";
+import { useCertificateEnrollmentStatus } from "@/modules/certificate/application/hooks/useCertificateEnrollmentStatus";
+import { OnboardingCompletedStep } from "../ui/onboardingCompletedStep";
 import { OnboardingStep, StepConfig } from "../domain/types";
 
 const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
@@ -82,18 +86,21 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
     description: "Launch your Crunch to start accepting submissions",
     isOptional: false,
     icon: Rocket,
+    content: <OnboardingStartCrunchForm />,
   },
   [OnboardingStep.CERTIFICATE_ENROLLMENT]: {
     title: "Certificate Enrollment",
     description: "Download your TLS certificate to run a node",
     isOptional: false,
     icon: Certificate,
+    content: <EnrollForm showStatus />,
   },
   [OnboardingStep.COMPLETED]: {
     title: "Completed",
     description: "Onboarding complete!",
     isOptional: false,
     icon: Check,
+    content: <OnboardingCompletedStep />,
   },
 };
 
@@ -106,6 +113,7 @@ export const STEP_ORDER: OnboardingStep[] = [
   OnboardingStep.FUND_CRUNCH,
   OnboardingStep.START_CRUNCH,
   OnboardingStep.CERTIFICATE_ENROLLMENT,
+  OnboardingStep.COMPLETED,
 ];
 
 export interface OnboardingStepInfo extends StepConfig {
@@ -138,8 +146,10 @@ export interface OnboardingState {
 
   goToNextStep: () => void;
   goToPreviousStep: () => void;
+  goToStep: (index: number) => void;
   canGoNext: boolean;
   canGoPrevious: boolean;
+  maxStepIndex: number;
 }
 
 const OnboardingContext = createContext<OnboardingState | undefined>(undefined);
@@ -162,7 +172,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [stepIndex, setStepIndex] = useState(0);
   const hasInitialized = useRef(false);
 
-  const isLoading = authLoading || crunchesLoading || stakingInfoLoading || poolConfigLoading;
+  const isLoading =
+    authLoading || crunchesLoading || stakingInfoLoading || poolConfigLoading;
   const minStakeRequired = poolConfig?.minActivationSelfStake ?? 0;
   const stakedAmount = stakingInfo?.stakedAmount ?? 0;
   const crunchCount = crunches?.length ?? 0;
@@ -170,6 +181,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const firstCrunchState = firstCrunch?.state;
 
   const { vaultBalance } = useGetRewardVaultBalance(firstCrunch?.rewardVault);
+  const { enrollmentStatus } = useCertificateEnrollmentStatus();
 
   const isMultisigConfigured = isMultisigMode;
   const isRegistered = coordinatorStatus !== CoordinatorStatus.UNREGISTERED;
@@ -179,6 +191,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const hasCrunch = crunchCount > 0;
   const isCrunchFunded = vaultBalance > 0 || firstCrunchState === "started";
   const isCrunchStarted = firstCrunchState === "started";
+  const hasCertificate = enrollmentStatus?.enrolled === true;
+  console.log(enrollmentStatus);
 
   const maxStepIndex = useMemo(() => {
     let max = 1;
@@ -187,9 +201,16 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     if (hasEnoughStake) max = 4;
     if (hasCrunch) max = 5;
     if (isCrunchFunded) max = 6;
-    if (isCrunchStarted) max = 7;
+    if (isCrunchStarted) max = 8;
     return max;
-  }, [isRegistered, isApproved, hasEnoughStake, hasCrunch, isCrunchFunded, isCrunchStarted]);
+  }, [
+    isRegistered,
+    isApproved,
+    hasEnoughStake,
+    hasCrunch,
+    isCrunchFunded,
+    isCrunchStarted,
+  ]);
 
   useEffect(() => {
     if (isLoading || hasInitialized.current) return;
@@ -197,17 +218,29 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     setStepIndex(maxStepIndex > 0 ? maxStepIndex : 0);
   }, [isLoading, maxStepIndex]);
 
-  const completionMap: Record<OnboardingStep, boolean> = useMemo(() => ({
-    [OnboardingStep.CONFIGURE_MULTISIG]: isMultisigConfigured,
-    [OnboardingStep.REGISTER_COORDINATOR]: isRegistered,
-    [OnboardingStep.WAITING_APPROVAL]: isApproved,
-    [OnboardingStep.STAKE]: hasEnoughStake,
-    [OnboardingStep.CREATE_CRUNCH]: hasCrunch,
-    [OnboardingStep.FUND_CRUNCH]: isCrunchFunded,
-    [OnboardingStep.START_CRUNCH]: isCrunchStarted,
-    [OnboardingStep.CERTIFICATE_ENROLLMENT]: false,
-    [OnboardingStep.COMPLETED]: false,
-  }), [isMultisigConfigured, isRegistered, isApproved, hasEnoughStake, hasCrunch, isCrunchFunded, isCrunchStarted]);
+  const completionMap: Record<OnboardingStep, boolean> = useMemo(
+    () => ({
+      [OnboardingStep.CONFIGURE_MULTISIG]: isMultisigConfigured,
+      [OnboardingStep.REGISTER_COORDINATOR]: isRegistered,
+      [OnboardingStep.WAITING_APPROVAL]: isApproved,
+      [OnboardingStep.STAKE]: hasEnoughStake,
+      [OnboardingStep.CREATE_CRUNCH]: hasCrunch,
+      [OnboardingStep.FUND_CRUNCH]: isCrunchFunded,
+      [OnboardingStep.START_CRUNCH]: isCrunchStarted,
+      [OnboardingStep.CERTIFICATE_ENROLLMENT]: hasCertificate,
+      [OnboardingStep.COMPLETED]: false,
+    }),
+    [
+      isMultisigConfigured,
+      isRegistered,
+      isApproved,
+      hasEnoughStake,
+      hasCrunch,
+      isCrunchFunded,
+      isCrunchStarted,
+      hasCertificate,
+    ]
+  );
 
   const steps: OnboardingStepInfo[] = useMemo(() => {
     return STEP_ORDER.map((step, index) => {
@@ -254,6 +287,15 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     if (canGoPrevious) setStepIndex((i) => i - 1);
   }, [canGoPrevious]);
 
+  const goToStep = useCallback(
+    (index: number) => {
+      if (index >= 0 && index <= maxStepIndex) {
+        setStepIndex(index);
+      }
+    },
+    [maxStepIndex]
+  );
+
   const value: OnboardingState = {
     currentStep,
     currentStepInfo,
@@ -271,11 +313,13 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     hasCrunch,
     isCrunchFunded,
     isCrunchStarted,
-    hasCertificate: false,
+    hasCertificate,
     goToNextStep,
     goToPreviousStep,
+    goToStep,
     canGoNext,
     canGoPrevious,
+    maxStepIndex,
   };
 
   return (
