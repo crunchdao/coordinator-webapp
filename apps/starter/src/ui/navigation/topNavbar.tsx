@@ -3,7 +3,6 @@ import Link from "next/link";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { NavigationItems } from "./navigationItems";
 import { Badge } from "@crunch-ui/core";
-import { SwitchToPlatformDialog } from "@/modules/settings/ui/switchToPlatformDialog";
 
 export const TopNavbar: React.FC = () => {
   return (
@@ -25,7 +24,7 @@ export const TopNavbar: React.FC = () => {
         </div>
         <div className="flex items-center gap-3">
           <NavigationItems />
-          <SwitchToPlatformDialog />
+          {/*<SwitchToPlatformDialog />*/}
         </div>
       </nav>
       <div className="bg-border/30 min-h-px w-full" />
