@@ -8,7 +8,7 @@ export function OnboardingStepper() {
   const { steps, goToStep, maxStepIndex } = useOnboarding();
 
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex items-center">
       {steps.map((step, index) => {
         const isLast = index === steps.length - 1;
         const Icon = step.icon;
@@ -24,36 +24,29 @@ export function OnboardingStepper() {
             : "border-muted-foreground/30 text-muted-foreground/50";
 
         return (
-          <div key={step.step} className="flex gap-3 mx-auto">
-            <div className="flex items-center">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    onClick={() => isClickable && goToStep(index)}
-                    disabled={!isClickable}
-                    className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-transform",
-                      stateClasses,
-                      isClickable
-                        ? "cursor-pointer hover:scale-110"
-                        : "cursor-not-allowed"
-                    )}
-                  >
-                    <Icon />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>{step.title}</TooltipContent>
-              </Tooltip>
-              {!isLast && (
-                <div
+          <div key={step.step} className={cn("flex items-center", !isLast && "flex-1")}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => isClickable && goToStep(index)}
+                  disabled={!isClickable}
                   className={cn(
-                    "ml-2 w-8 h-0.5 mt-1",
-                    "bg-muted-foreground/30"
+                    "w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm font-medium border-2 transition-transform",
+                    stateClasses,
+                    isClickable
+                      ? "cursor-pointer hover:scale-110"
+                      : "cursor-not-allowed"
                   )}
-                />
-              )}
-            </div>
+                >
+                  <Icon />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>{step.title}</TooltipContent>
+            </Tooltip>
+            {!isLast && (
+              <div className="flex-1 h-0.5 mx-2 bg-muted-foreground/30" />
+            )}
           </div>
         );
       })}

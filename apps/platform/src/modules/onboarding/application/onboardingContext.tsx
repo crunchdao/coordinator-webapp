@@ -37,7 +37,6 @@ import { OnboardingStartCrunchForm } from "../ui/onboardingStartCrunchForm";
 import { EnrollForm } from "@/modules/certificate/ui/enrollForm";
 import { useCertificateEnrollmentStatus } from "@/modules/certificate/application/hooks/useCertificateEnrollmentStatus";
 import { OnboardingCompletedStep } from "../ui/onboardingCompletedStep";
-import { OnboardingWaitingApproval } from "../ui/onboardingWaitingApproval";
 import { OnboardingStep, StepConfig } from "../domain/types";
 
 const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
@@ -60,7 +59,6 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
     description: "Your registration is being reviewed",
     isOptional: false,
     icon: Hourglass,
-    content: <OnboardingWaitingApproval />,
   },
   [OnboardingStep.STAKE]: {
     title: "Stake Tokens",
@@ -109,7 +107,6 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
 export const STEP_ORDER: OnboardingStep[] = [
   OnboardingStep.CONFIGURE_MULTISIG,
   OnboardingStep.REGISTER_COORDINATOR,
-  OnboardingStep.WAITING_APPROVAL,
   OnboardingStep.STAKE,
   OnboardingStep.CREATE_CRUNCH,
   OnboardingStep.FUND_CRUNCH,
@@ -197,15 +194,13 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
   const maxStepIndex = useMemo(() => {
     let max = 1;
-    if (isRegistered) max = 2;
-    if (isApproved) max = 3;
-    if (hasEnoughStake) max = 4;
-    if (hasCrunch) max = 5;
-    if (isCrunchFunded) max = 6;
-    if (isCrunchStarted) max = 8;
+    if (isApproved) max = 2;
+    if (hasEnoughStake) max = 3;
+    if (hasCrunch) max = 4;
+    if (isCrunchFunded) max = 5;
+    if (isCrunchStarted) max = 7;
     return max;
   }, [
-    isRegistered,
     isApproved,
     hasEnoughStake,
     hasCrunch,
@@ -214,12 +209,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   ]);
 
   const initialStepIndex = useMemo(() => {
-    if (isCrunchStarted) return 8;
-    if (isCrunchFunded) return 6;
-    if (hasCrunch) return 5;
-    if (hasEnoughStake) return 4;
-    if (isApproved) return 3;
-    if (isRegistered) return 2;
+    if (isCrunchStarted) return 7;
+    if (isCrunchFunded) return 5;
+    if (hasCrunch) return 4;
+    if (hasEnoughStake) return 3;
+    if (isApproved) return 2;
+    if (isRegistered) return 1;
     if (isMultisigConfigured) return 1;
     return 0;
   }, [
@@ -241,7 +236,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const completionMap: Record<OnboardingStep, boolean> = useMemo(
     () => ({
       [OnboardingStep.CONFIGURE_MULTISIG]: isMultisigConfigured,
-      [OnboardingStep.REGISTER_COORDINATOR]: isRegistered,
+      [OnboardingStep.REGISTER_COORDINATOR]: isApproved,
       [OnboardingStep.WAITING_APPROVAL]: isApproved,
       [OnboardingStep.STAKE]: hasEnoughStake,
       [OnboardingStep.CREATE_CRUNCH]: hasCrunch,
@@ -252,7 +247,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     }),
     [
       isMultisigConfigured,
-      isRegistered,
       isApproved,
       hasEnoughStake,
       hasCrunch,
@@ -264,10 +258,14 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
   const currentStep = STEP_ORDER[stepIndex] ?? STEP_ORDER[0];
   const isCurrentStepCompleted = completionMap[currentStep];
+  const prevCompletedRef = useRef<boolean | null>(null);
 
   useEffect(() => {
     if (!hasInitialized.current) return;
-    if (isCurrentStepCompleted && stepIndex < maxStepIndex) {
+    const wasCompleted = prevCompletedRef.current;
+    prevCompletedRef.current = isCurrentStepCompleted;
+    
+    if (wasCompleted === false && isCurrentStepCompleted && stepIndex < maxStepIndex) {
       setStepIndex((i) => i + 1);
     }
   }, [isCurrentStepCompleted, stepIndex, maxStepIndex]);
