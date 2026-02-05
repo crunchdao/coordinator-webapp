@@ -6,7 +6,8 @@ export const useCanAccess = () => {
 
   const hasAllowedStatus =
     coordinatorStatus === CoordinatorStatus.APPROVED ||
-    coordinatorStatus === CoordinatorStatus.PENDING;
+    coordinatorStatus === CoordinatorStatus.PENDING ||
+    coordinatorStatus === CoordinatorStatus.UNREGISTERED;
 
   const canAccess = isAuthenticated && hasAllowedStatus;
 

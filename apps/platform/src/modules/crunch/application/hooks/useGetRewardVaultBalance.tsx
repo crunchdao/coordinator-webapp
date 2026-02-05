@@ -3,13 +3,13 @@ import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { getAccount, TokenAccountNotFoundError } from "@solana/spl-token";
 
-export const useGetRewardVaultBalance = (rewardVaultAddress: PublicKey) => {
+export const useGetRewardVaultBalance = (rewardVaultAddress?: PublicKey) => {
   const { connection } = useConnection();
 
   const query = useQuery({
-    queryKey: ["reward-vault-balance", rewardVaultAddress.toString()],
+    queryKey: ["reward-vault-balance", rewardVaultAddress?.toString()],
     queryFn: async () => {
-      if (!connection) {
+      if (!connection || !rewardVaultAddress) {
         return 0;
       }
 

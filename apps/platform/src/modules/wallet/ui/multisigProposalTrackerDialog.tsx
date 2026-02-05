@@ -9,8 +9,11 @@ import {
   Button,
   Spinner,
   Badge,
+  Alert,
+  AlertDescription,
   toast,
 } from "@crunch-ui/core";
+import { Check } from "@crunch-ui/icons";
 import {
   useMultisigProposalTracker,
   ProposalStatusKind,
@@ -56,8 +59,8 @@ function getStepState(
 function StepIndicator({ state }: { state: "done" | "active" | "pending" }) {
   if (state === "done") {
     return (
-      <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
-        ✓
+      <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white">
+        <Check className="w-3.5 h-3.5" />
       </div>
     );
   }
@@ -107,35 +110,23 @@ function ApprovalCountdown({
 
   const remaining = Math.max(0, threshold - approvals);
   const isApproved =
-    status === "Approved" ||
-    status === "Executing" ||
-    status === "Executed";
+    status === "Approved" || status === "Executing" || status === "Executed";
 
   if (isApproved) {
     return (
-      <div className="flex items-center gap-2 rounded-lg bg-green-500/10 px-3 py-2">
-        <span className="text-2xl font-bold text-green-500">✓</span>
-        <span className="text-sm text-green-600 font-medium">
-          All approvals received
-        </span>
-      </div>
+      <Alert variant="success">
+        <Check className="w-4 h-4" />
+        <AlertDescription>All approvals received</AlertDescription>
+      </Alert>
     );
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2">
-      <span className="text-3xl font-bold tabular-nums text-foreground">
-        {remaining}
-      </span>
-      <div className="flex flex-col">
-        <span className="text-sm font-medium text-foreground">
-          approval{remaining !== 1 ? "s" : ""} remaining
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {approvals} of {threshold} received
-        </span>
-      </div>
-    </div>
+    <Alert variant="info">
+      <AlertDescription>
+        <span className="font-semibold">{remaining}</span> approval{remaining !== 1 ? "s" : ""} remaining ({approvals} of {threshold} received)
+      </AlertDescription>
+    </Alert>
   );
 }
 
@@ -163,8 +154,7 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
     (status === "Active" || status === "Draft") &&
     !isActing;
 
-  const canExecute =
-    isMember && status === "Approved" && !isActing;
+  const canExecute = isMember && status === "Approved" && !isActing;
 
   const handleApprove = async () => {
     setActionError(null);
@@ -230,14 +220,12 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Approval countdown */}
               <ApprovalCountdown
                 approvals={approvals.length}
                 threshold={threshold}
                 status={status}
               />
 
-              {/* Stepper */}
               <div className="space-y-3">
                 {STEPS.map((step) => {
                   const state = getStepState(step.key, status);
@@ -246,9 +234,7 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
                       <StepIndicator state={state} />
                       <p
                         className={`text-sm font-medium ${
-                          state === "pending"
-                            ? "text-muted-foreground/50"
-                            : ""
+                          state === "pending" ? "text-muted-foreground/50" : ""
                         }`}
                       >
                         {step.label}
@@ -258,7 +244,6 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
                 })}
               </div>
 
-              {/* Action buttons */}
               {!isTerminal && isMember && (
                 <div className="flex gap-2 pt-2">
                   {canApprove && (
@@ -273,7 +258,8 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
                   )}
                   {hasApproved && status === "Active" && (
                     <p className="text-xs text-muted-foreground self-center">
-                      ✓ You approved — waiting for others
+                      <Check className="w-3 h-3 inline" /> You approved —
+                      waiting for others
                     </p>
                   )}
                   {canExecute && (
@@ -290,14 +276,12 @@ export const MultisigProposalTrackerDialog: React.FC = () => {
                 </div>
               )}
 
-              {/* Error display */}
               {(error || actionError) && (
                 <p className="text-xs text-destructive">
                   {actionError || error}
                 </p>
               )}
 
-              {/* Info text */}
               {!isTerminal && !isMember && (
                 <p className="text-xs text-muted-foreground text-center">
                   Approve and execute this proposal in your Squads multisig to

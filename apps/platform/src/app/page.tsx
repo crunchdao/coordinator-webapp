@@ -1,27 +1,26 @@
 "use client";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { Spinner } from "@crunch-ui/core";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 
 export default function Home() {
-  const { isAuthenticated, coordinatorStatus, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, coordinatorStatus } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (!isLoading) {
-      if (isAuthenticated) {
-        if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
-          redirect(INTERNAL_LINKS.REGISTER);
-        } else {
-          redirect(INTERNAL_LINKS.DASHBOARD);
-        }
+      if (!isAuthenticated) {
+        router.push(INTERNAL_LINKS.LOGIN);
+      } else if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
+        router.push(INTERNAL_LINKS.ONBOARDING);
       } else {
-        redirect(INTERNAL_LINKS.LOGIN);
+        router.push(INTERNAL_LINKS.DASHBOARD);
       }
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, coordinatorStatus, router]);
 
   return <Spinner />;
 }

@@ -22,7 +22,10 @@ export const TopNavbar: React.FC = () => {
             Starter
           </Badge>
         </div>
-        <NavigationItems />
+        <div className="flex items-center gap-3">
+          <NavigationItems />
+          {/*<SwitchToPlatformDialog />*/}
+        </div>
       </nav>
       <div className="bg-border/30 min-h-px w-full" />
     </>

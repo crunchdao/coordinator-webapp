@@ -105,10 +105,9 @@ export const useCertificateEnrollmentStatus = () => {
 
       try {
         // Get recent transaction signatures for this authority
-        const signatures = await connection.getSignaturesForAddress(
-          authority,
-          { limit: 50 }
-        );
+        const signatures = await connection.getSignaturesForAddress(authority, {
+          limit: 50,
+        });
 
         let memoResult: {
           certPub: string;
@@ -120,10 +119,9 @@ export const useCertificateEnrollmentStatus = () => {
         for (const sigInfo of signatures) {
           if (sigInfo.err) continue;
 
-          const tx = await connection.getParsedTransaction(
-            sigInfo.signature,
-            { maxSupportedTransactionVersion: 0 }
-          );
+          const tx = await connection.getParsedTransaction(sigInfo.signature, {
+            maxSupportedTransactionVersion: 0,
+          });
 
           if (!tx?.meta?.logMessages) continue;
 
@@ -179,7 +177,8 @@ export const useCertificateEnrollmentStatus = () => {
           certPub: memoResult.certPub,
           hotkey: memoResult.hotkey,
           currentHotkey,
-          hotkeyMatch: currentHotkey !== null && currentHotkey === memoResult.hotkey,
+          hotkeyMatch:
+            currentHotkey !== null && currentHotkey === memoResult.hotkey,
         };
       } catch (error) {
         console.error("Error checking certificate enrollment:", error);

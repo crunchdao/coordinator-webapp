@@ -8,17 +8,13 @@ import {
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
-import { generateLink } from "@crunch-ui/utils";
-import { INTERNAL_LINKS } from "@/utils/routes";
-import { useRouter } from "next/navigation";
 
-export const useCreateCrunch = () => {
+export const useCreateCrunch = (onSuccess?: (crunchName: string) => void) => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
   const { executeTransaction, authority, isMultisigMode } =
     useTransactionExecutor();
   const { trackProposal } = useMultisigProposalTracker();
-  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: async (data: CreateCrunchFormData) => {
@@ -65,11 +61,7 @@ export const useCreateCrunch = () => {
           title: "Crunch created successfully",
           description: `Your crunch "${result.crunchName}" has been created.`,
         });
-        router.push(
-          generateLink(INTERNAL_LINKS.LEADERBOARD, {
-            crunchname: result.crunchName,
-          })
-        );
+        onSuccess?.(result.crunchName);
       };
 
       if (result.isMultisig && result.transactionIndex && result.multisigPda) {

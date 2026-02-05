@@ -60,7 +60,9 @@ const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
       anchorProvider={anchorProvider}
       cluster={cluster}
       owner={authority ?? undefined}
-      transactionExecutor={isMultisigMode ? stakingTransactionExecutor : undefined}
+      transactionExecutor={
+        isMultisigMode ? stakingTransactionExecutor : undefined
+      }
     >
       {children}
     </StakingProvider>

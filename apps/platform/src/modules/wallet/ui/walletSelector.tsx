@@ -19,7 +19,6 @@ import {
   Wallet,
   SmallCross,
   Coordinator,
-  Switch,
   QuestionMark,
   Lock,
   Certificate,
@@ -38,14 +37,6 @@ export function WalletSelector() {
   const { coordinatorStatus, coordinator } = useAuth();
   const { authority, isMultisigMode } = useEffectiveAuthority();
   const [multisigDialogOpen, setMultisigDialogOpen] = useState(false);
-
-  const handleSelectChange = (value: string) => {
-    if (value === "connect-new") {
-      setVisible(true);
-    } else if (value === "disconnect") {
-      disconnect();
-    }
-  };
 
   if (!connected || !publicKey) {
     return (
@@ -91,6 +82,7 @@ export function WalletSelector() {
                   Vault (authority)
                 </span>
                 <SolanaAddressLink
+                  className="body-2xs!"
                   copyable={false}
                   address={authority.toString()}
                 />
@@ -103,17 +95,10 @@ export function WalletSelector() {
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           {coordinatorStatus === CoordinatorStatus.UNREGISTERED ? (
-            <DropdownMenuItem>
-              <Link
-                className="flex items-center mr-auto"
-                href={INTERNAL_LINKS.REGISTER}
-              >
-                <Coordinator className="h-4 w-4 mr-2" /> Registration
+            <DropdownMenuItem asChild>
+              <Link href={INTERNAL_LINKS.ONBOARDING}>
+                <Coordinator className="h-4 w-4 mr-2" /> Get Started
               </Link>
-              <SolanaAddressLink
-                copyable={false}
-                address={publicKey.toString()}
-              />
             </DropdownMenuItem>
           ) : (
             <DropdownMenuLabel className="gap-3 [&>span]:ml-1 flex items-center">
@@ -144,9 +129,14 @@ export function WalletSelector() {
               </span>
             </DropdownMenuLabel>
           )}
-          <DropdownMenuItem onSelect={() => handleSelectChange("connect-new")}>
-            <Switch className="h-4 w-4 mr-2" />
-            <span>Connect Another Wallet</span>
+          <DropdownMenuItem>
+            <Wallet className="h-4 w-4 mr-2" />
+            <span className="mr-auto">Your Wallet</span>
+            <SolanaAddressLink
+              className="body-xs text-muted-foreground"
+              copyable={false}
+              address={publicKey.toString()}
+            />
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Link
@@ -159,7 +149,7 @@ export function WalletSelector() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-destructive"
-            onSelect={() => handleSelectChange("disconnect")}
+            onSelect={() => disconnect()}
           >
             <SmallCross className="h-4 w-4 mr-2" />
             <span>Disconnect</span>

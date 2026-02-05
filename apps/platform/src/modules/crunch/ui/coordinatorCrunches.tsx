@@ -11,7 +11,6 @@ import {
 } from "@crunch-ui/core";
 import { useGetCoordinatorCrunches } from "../application/hooks/useGetCoordinatorCrunches";
 import Link from "next/link";
-import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { CircleCheck, Cube, Payout, Plus, Wallet } from "@crunch-ui/icons";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
@@ -101,7 +100,7 @@ export function CoordinatorCrunches() {
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {crunches.map((crunch) => (
-          <Card key={crunch.name}>
+          <Card className="bg-background" key={crunch.name}>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">{crunch.name}</CardTitle>
@@ -136,6 +135,18 @@ export function CoordinatorCrunches() {
                   {(crunch.payoutAmount.toNumber() / 10 ** 6).toLocaleString()}{" "}
                   USDC
                 </p>
+                {crunchAccountService && (
+                  <p className="text-sm line-clamp-2">
+                    <span className="font-medium text-foreground">
+                      <Wallet /> Crunch Address:
+                    </span>{" "}
+                    <SolanaAddressLink
+                      address={crunchAccountService
+                        .getCrunchAddress(crunch.name)
+                        .toString()}
+                    />
+                  </p>
+                )}
                 <p className="text-sm line-clamp-2">
                   <span className="font-medium text-foreground">
                     <Wallet /> Reward Vault:
@@ -187,20 +198,6 @@ export function CoordinatorCrunches() {
             </CardContent>
           </Card>
         ))}
-      </div>
-      <div className="flex justify-end mt-8">
-        <Link
-          href={INTERNAL_LINKS.CREATE_CRUNCH}
-          onClick={(e) => {
-            if (crunches?.length > 0) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <Button>
-            Create Crunch <Plus />
-          </Button>
-        </Link>
       </div>
 
       {selectedCrunch && (

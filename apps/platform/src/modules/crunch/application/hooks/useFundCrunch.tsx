@@ -14,7 +14,7 @@ interface FundCrunchParams {
   amount: number;
 }
 
-export const useFundCrunch = () => {
+export const useFundCrunch = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
   const { executeTransaction, authority, isMultisigMode } =
@@ -32,7 +32,6 @@ export const useFundCrunch = () => {
         program: coordinatorProgram,
       });
 
-      // depositRewardUsdcInstruction handles USDC → micro-USDC conversion internally
       const instruction = await crunchService.depositRewardUsdcInstruction(
         crunchAddress,
         amount,
@@ -66,6 +65,7 @@ export const useFundCrunch = () => {
           title: "Crunch funded successfully",
           description: `Added ${result.amount} USDC to the reward vault.`,
         });
+        onSuccess?.();
       };
 
       if (result.isMultisig && result.transactionIndex && result.multisigPda) {

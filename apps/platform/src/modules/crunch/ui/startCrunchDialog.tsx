@@ -1,17 +1,13 @@
 "use client";
+
 import {
   AlertDialog,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  Badge,
-  Button,
 } from "@crunch-ui/core";
-import { useStartCrunch } from "../application/hooks/useStartCrunch";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
+import { StartCrunchForm } from "./startCrunchForm";
 
 interface StartCrunchDialogProps {
   open: boolean;
@@ -26,55 +22,20 @@ export function StartCrunchDialog({
   crunchName,
   currentState,
 }: StartCrunchDialogProps) {
-  const { startCrunch, startCrunchLoading } = useStartCrunch();
-
-  const handleStart = () => {
-    startCrunch(
-      { crunchName },
-      {
-        onSuccess: () => {
-          onOpenChange(false);
-        },
-      }
-    );
-  };
-
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
-        {startCrunchLoading && (
-          <LoadingOverlay
-            title="Starting Crunch"
-            subtitle="Processing your transaction..."
-          />
-        )}
         <AlertDialogHeader>
           <AlertDialogTitle>Start Crunch</AlertDialogTitle>
-          <AlertDialogDescription asChild>
-            <div className="space-y-3">
-              <p>
-                Are you sure you want to start "{crunchName}"? Once started,
-                crunchers will be able to register and participate.
-              </p>
-              <div className="flex items-center gap-2 text-sm">
-                <span className="text-foreground">Current Status:</span>
-                <Badge variant="secondary">{currentState}</Badge>
-              </div>
-            </div>
+          <AlertDialogDescription>
+            Are you sure you want to start "{crunchName}"?
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={startCrunchLoading}>
-            Cancel
-          </AlertDialogCancel>
-          <Button
-            onClick={handleStart}
-            disabled={startCrunchLoading}
-            loading={startCrunchLoading}
-          >
-            Start Crunch
-          </Button>
-        </AlertDialogFooter>
+        <StartCrunchForm
+          crunchName={crunchName}
+          currentState={currentState}
+          onSuccess={() => onOpenChange(false)}
+        />
       </AlertDialogContent>
     </AlertDialog>
   );

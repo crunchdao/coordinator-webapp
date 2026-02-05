@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -16,8 +17,19 @@ import { useAuth } from "@/modules/auth/application/context/authContext";
 import { registrationSchema } from "../application/schemas/registration";
 import { CoordinatorStatus, RegistrationFormData } from "../domain/types";
 import { useRegisterCoordinator } from "../application/hooks/useRegisterCoordinator";
+import { useGetCoordinator } from "../application/hooks/useGetCoordinator";
+import { OnboardingWaitingApproval } from "@/modules/onboarding/ui/onboardingWaitingApproval";
 
 export function RegistrationForm() {
+  const { coordinator } = useGetCoordinator();
+  const { registerCoordinator, registerCoordinatorLoading } =
+    useRegisterCoordinator();
+  const { coordinatorStatus, isCheckingCoordinator } = useAuth();
+
+  const organizationName = coordinator?.data?.name;
+  const isPending = coordinatorStatus === CoordinatorStatus.PENDING;
+  const isApproved = coordinatorStatus === CoordinatorStatus.APPROVED;
+
   const form = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
@@ -25,13 +37,19 @@ export function RegistrationForm() {
     },
   });
 
-  const { registerCoordinator, registerCoordinatorLoading } =
-    useRegisterCoordinator();
-  const { coordinatorStatus, isCheckingCoordinator } = useAuth();
+  useEffect(() => {
+    if (organizationName) {
+      form.reset({ organizationName });
+    }
+  }, [organizationName, form]);
 
   const onSubmit = (data: RegistrationFormData) => {
     registerCoordinator(data);
   };
+
+  if (isPending || isApproved) {
+    return <OnboardingWaitingApproval />;
+  }
 
   const isDisabled =
     coordinatorStatus !== CoordinatorStatus.UNREGISTERED ||
@@ -57,15 +75,14 @@ export function RegistrationForm() {
             </FormItem>
           )}
         />
-        <div>
-          <Button
-            disabled={isDisabled}
-            type="submit"
-            loading={registerCoordinatorLoading}
-          >
-            Register
-          </Button>
-        </div>
+        <Button
+          className="ml-auto block"
+          disabled={isDisabled}
+          type="submit"
+          loading={registerCoordinatorLoading}
+        >
+          Register
+        </Button>
       </form>
     </Form>
   );

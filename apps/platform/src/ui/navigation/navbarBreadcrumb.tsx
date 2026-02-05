@@ -2,7 +2,6 @@
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { useGetCoordinatorCrunches } from "@/modules/crunch/application/hooks/useGetCoordinatorCrunches";
 import {
   Breadcrumb,
@@ -16,19 +15,18 @@ import {
   DropdownMenuTrigger,
 } from "@crunch-ui/core";
 import { ChevronDown } from "@crunch-ui/icons";
-import { INTERNAL_LINKS } from "@/utils/routes";
+import { INTERNAL_LINKS, PAGE_LABELS } from "@/utils/routes";
 
 export const NavbarBreadcrumb: React.FC = () => {
-  const { coordinator, coordinatorStatus, isLoading } = useAuth();
+  const { coordinator, isLoading } = useAuth();
   const { crunches, crunchesPending } = useGetCoordinatorCrunches();
   const params = useParams();
   const pathname = usePathname();
 
   const currentCrunchName = params.crunchname as string;
-  const unregistered =
-    !isLoading && coordinatorStatus === CoordinatorStatus.UNREGISTERED;
-
   const coordinatorName = coordinator?.name;
+  const pathSegment = pathname.split("/")[1];
+  const pageLabel = PAGE_LABELS[pathSegment] || pathSegment;
 
   return (
     <Breadcrumb>
@@ -37,13 +35,13 @@ export const NavbarBreadcrumb: React.FC = () => {
         <BreadcrumbItem className="text-foreground">
           {isLoading ? (
             <Skeleton className="w-32 h-4" />
-          ) : unregistered ? (
-            <Link href={INTERNAL_LINKS.REGISTER}>Register</Link>
-          ) : (
+          ) : currentCrunchName ? (
             <Link href={INTERNAL_LINKS.DASHBOARD}>{coordinatorName}</Link>
+          ) : (
+            <span>{coordinatorName || pageLabel}</span>
           )}
         </BreadcrumbItem>
-        {!unregistered && currentCrunchName && (
+        {currentCrunchName && (
           <>
             <BreadcrumbSeparator>/</BreadcrumbSeparator>
             <BreadcrumbItem className="text-foreground normal-case">
