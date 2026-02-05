@@ -54,12 +54,6 @@ const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
     icon: Coordinator,
     content: <RegistrationForm />,
   },
-  [OnboardingStep.WAITING_APPROVAL]: {
-    title: "Waiting for Approval",
-    description: "Your registration is being reviewed",
-    isOptional: false,
-    icon: Hourglass,
-  },
   [OnboardingStep.STAKE]: {
     title: "Stake Tokens",
     description: "Stake CRNCH tokens on yourself",
@@ -201,7 +195,14 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     if (isCrunchStarted) max = 6;
     if (hasCertificate) max = 7;
     return max;
-  }, [isApproved, hasEnoughStake, hasCrunch, isCrunchFunded, isCrunchStarted, hasCertificate]);
+  }, [
+    isApproved,
+    hasEnoughStake,
+    hasCrunch,
+    isCrunchFunded,
+    isCrunchStarted,
+    hasCertificate,
+  ]);
 
   const initialStepIndex = useMemo(() => {
     if (hasCertificate) return 7;
@@ -234,7 +235,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     () => ({
       [OnboardingStep.CONFIGURE_MULTISIG]: isMultisigConfigured,
       [OnboardingStep.REGISTER_COORDINATOR]: isApproved,
-      [OnboardingStep.WAITING_APPROVAL]: isApproved,
       [OnboardingStep.STAKE]: hasEnoughStake,
       [OnboardingStep.CREATE_CRUNCH]: hasCrunch,
       [OnboardingStep.FUND_CRUNCH]: isCrunchFunded,
