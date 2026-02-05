@@ -14,7 +14,6 @@ import {
   Check,
   Lock,
   Coordinator,
-  Hourglass,
   Trophy,
   Cube,
   Wallet,
