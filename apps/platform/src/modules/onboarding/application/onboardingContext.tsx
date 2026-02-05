@@ -198,9 +198,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     if (hasEnoughStake) max = 3;
     if (hasCrunch) max = 4;
     if (isCrunchFunded) max = 5;
-    if (isCrunchStarted) max = 7;
+    if (isCrunchStarted) max = 6;
+    if (hasCertificate) max = 7;
     return max;
-  }, [isApproved, hasEnoughStake, hasCrunch, isCrunchFunded, isCrunchStarted]);
+  }, [isApproved, hasEnoughStake, hasCrunch, isCrunchFunded, isCrunchStarted, hasCertificate]);
 
   const initialStepIndex = useMemo(() => {
     if (hasCertificate) return 7;
