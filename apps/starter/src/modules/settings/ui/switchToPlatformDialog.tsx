@@ -11,7 +11,12 @@ import {
 } from "@crunch-ui/core";
 import { Copy, Check } from "@crunch-ui/icons";
 
-const SWITCH_COMMANDS = ["make down", "make deploy-platform"];
+const SWITCH_COMMANDS = [
+  "git clone https://github.com/crunchdao/coordinator-webapp",
+  "pnpm install",
+  "pnpm build",
+  "pnpm start",
+];
 
 export const SwitchToPlatformDialog: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -34,8 +39,8 @@ export const SwitchToPlatformDialog: React.FC = () => {
         <DialogHeader>
           <DialogTitle>Ready to deploy your Crunch?</DialogTitle>
           <DialogDescription>
-            Switch to the full Platform to register as a coordinator, stake,
-            and publish your Crunch to the hub.
+            Switch to the full Platform to register as a coordinator, stake, and
+            publish your Crunch to the hub.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 pt-4">
