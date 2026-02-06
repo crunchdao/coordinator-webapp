@@ -29,7 +29,6 @@ function base64ToUint8Array(base64: string): Uint8Array {
  */
 async function computeCertHash(certPubB64: string): Promise<number[]> {
   const certPubDer = base64ToUint8Array(certPubB64);
-  // Create a new ArrayBuffer to satisfy TypeScript's BufferSource type
   const buffer = new Uint8Array(certPubDer).buffer as ArrayBuffer;
   const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
   return Array.from(new Uint8Array(hashBuffer));
