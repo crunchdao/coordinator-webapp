@@ -1,11 +1,10 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { getLeaderboard } from "../../infrastructure/services";
 
 export function useGetLeaderboard() {
-  const params = useParams();
-  const crunchName = params.crunchname as string;
+  const { crunchName } = useCrunchContext();
 
   const query = useQuery({
     queryKey: ["leaderboard", crunchName],

@@ -41,7 +41,7 @@ export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
       onSuccess(crunchName);
     } else {
       router.push(
-        generateLink(INTERNAL_LINKS.LEADERBOARD, { crunchname: crunchName })
+        generateLink(INTERNAL_LINKS.CRUNCH_OVERVIEW, { crunchname: crunchName })
       );
     }
   };
