@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Button,
@@ -11,74 +10,80 @@ import {
   Textarea,
 } from "@crunch-ui/core";
 import { DataTable } from "@coordinator/ui/src/data-table";
-import { Prize } from "@crunchdao/sdk";
+import { PreparedPrize } from "@crunchdao/sdk";
+import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { prizesSchema } from "../application/schemas/prizesSchema";
+import { usePreparePrizes } from "../application/hooks/usePreparePrizes";
 import { ZodError } from "zod";
+import { useState } from "react";
 
 const EXAMPLE_JSON = `[
   { "prizeId": "round-1-model-abc", "timestamp": 1700000000, "model": "model-id-here", "prize": 1000000 },
   { "prizeId": "round-1-model-def", "timestamp": 1700000000, "model": "model-id-here", "prize": 500000 }
 ]`;
 
-const columns: ColumnDef<Prize>[] = [
+const preparedColumns: ColumnDef<PreparedPrize>[] = [
   {
-    accessorKey: "prizeId",
-    header: "Prize ID",
+    accessorKey: "cruncherName",
+    header: "Cruncher",
   },
   {
-    accessorKey: "model",
-    header: "Model",
+    accessorKey: "cruncherIndex",
+    header: "Index",
+  },
+  {
+    accessorKey: "cruncherAddress",
+    header: "Address",
+    cell: ({ row }) => (
+      <SolanaAddressLink address={row.original.cruncherAddress.toString()} />
+    ),
   },
   {
     accessorKey: "prize",
     header: "Prize (raw)",
     cell: ({ row }) => row.original.prize.toLocaleString(),
   },
-  {
-    accessorKey: "timestamp",
-    header: "Timestamp",
-    cell: ({ row }) =>
-      new Date(row.original.timestamp * 1000).toLocaleString(),
-  },
 ];
 
 interface PrizesInputProps {
   rawText: string;
   onRawTextChange: (text: string) => void;
-  onPrizesConfirmed: (prizes: Prize[]) => void;
+  onPrizesPrepared: (prizes: PreparedPrize[]) => void;
 }
 
 export function PrizesInput({
   rawText,
   onRawTextChange,
-  onPrizesConfirmed,
+  onPrizesPrepared,
 }: PrizesInputProps) {
-  const [confirmedPrizes, setConfirmedPrizes] = useState<Prize[] | null>(null);
+  const { preparePrizes, preparePrizesLoading } = usePreparePrizes();
+  const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleConfirm = () => {
+  const handlePrepare = async () => {
     setError(null);
-    setConfirmedPrizes(null);
+    setPreparedPrizes(null);
 
     try {
       const parsed = JSON.parse(rawText);
       const prizes = prizesSchema.parse(parsed);
-      setConfirmedPrizes(prizes);
-      onPrizesConfirmed(prizes);
+      const prepared = await preparePrizes(prizes);
+      setPreparedPrizes(prepared);
+      onPrizesPrepared(prepared);
     } catch (e) {
       if (e instanceof ZodError) {
         setError(e.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join(", "));
       } else if (e instanceof SyntaxError) {
         setError("Invalid JSON");
-      } else {
-        setError(e instanceof Error ? e.message : "Unknown error");
+      } else if (e instanceof Error) {
+        setError(e.message);
       }
     }
   };
 
   const handleClear = () => {
     onRawTextChange("");
-    setConfirmedPrizes(null);
+    setPreparedPrizes(null);
     setError(null);
   };
 
@@ -98,8 +103,12 @@ export function PrizesInput({
           />
           {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex gap-2">
-            <Button onClick={handleConfirm} disabled={!rawText.trim()}>
-              Confirm Prizes
+            <Button
+              onClick={handlePrepare}
+              disabled={!rawText.trim() || preparePrizesLoading}
+              loading={preparePrizesLoading}
+            >
+              Prepare Prizes
             </Button>
             <Button variant="outline" onClick={handleClear}>
               Clear
@@ -108,13 +117,15 @@ export function PrizesInput({
         </CardContent>
       </Card>
 
-      {confirmedPrizes && (
+      {preparedPrizes && (
         <Card>
           <CardHeader>
-            <CardTitle>Confirmed Prizes ({confirmedPrizes.length})</CardTitle>
+            <CardTitle>
+              Prepared Prizes ({preparedPrizes.length} crunchers)
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable columns={columns} data={confirmedPrizes} />
+            <DataTable columns={preparedColumns} data={preparedPrizes} />
           </CardContent>
         </Card>
       )}
