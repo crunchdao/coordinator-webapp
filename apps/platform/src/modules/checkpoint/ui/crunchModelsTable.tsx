@@ -32,7 +32,7 @@ export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
     },
     {
       accessorKey: "modelKey",
-      header: "Model Key",
+      header: "Model",
       cell: ({ row }) => <SolanaAddressLink address={row.original.modelKey} />,
     },
     {

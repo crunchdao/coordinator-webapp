@@ -1,15 +1,26 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@crunch-ui/core";
 import { PreparedPrize, Prize } from "@crunchdao/sdk";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useCreateCheckpoint } from "../application/hooks/useCreateCheckpoint";
 import { CrunchModelsTable } from "./crunchModelsTable";
 import { PrizesInput } from "./prizesInput";
 
 export function CreateCheckpoint() {
   const { crunchName, crunchData } = useCrunchContext();
-  const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(null);
+  const { createCheckpoint, createCheckpointLoading, isMultisigMode } =
+    useCreateCheckpoint();
+  const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(
+    null
+  );
   const [rawPrizes, setRawPrizes] = useState("");
 
   const handleAddModel = useCallback(
@@ -37,6 +48,11 @@ export function CreateCheckpoint() {
     [rawPrizes]
   );
 
+  const handleCreateCheckpoint = async () => {
+    if (!preparedPrizes) return;
+    await createCheckpoint(preparedPrizes);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -60,6 +76,16 @@ export function CreateCheckpoint() {
         rawText={rawPrizes}
         onRawTextChange={setRawPrizes}
         onPrizesPrepared={setPreparedPrizes}
+        createCheckpointLoading={createCheckpointLoading}
+        createCheckpointButton={
+          <Button
+            onClick={handleCreateCheckpoint}
+            loading={createCheckpointLoading}
+            disabled={createCheckpointLoading || !preparedPrizes}
+          >
+            Create Checkpoint
+          </Button>
+        }
       />
     </div>
   );
