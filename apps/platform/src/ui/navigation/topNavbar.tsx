@@ -7,7 +7,7 @@ import { NavbarBreadcrumb } from "./navbarBreadcrumb";
 export const TopNavbar: React.FC = () => {
   return (
     <>
-      <nav className="w-full py-4 px-6 bg-card flex items-center gap-3">
+      <nav className="w-full py-4 px-6 bg-card/50 flex items-center gap-3">
         <Link href={INTERNAL_LINKS.ROOT}>
           <Image
             priority

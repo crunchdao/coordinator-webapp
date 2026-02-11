@@ -17,7 +17,7 @@ export default function LeaderboardConfigurationPage() {
   const { resetColumns, resetColumnsLoading } = useResetColumns();
 
   return (
-    <>
+    <section className="p-6 space-y-3">
       <ColumnSettingsTable
         columns={columns}
         loading={columnsLoading}
@@ -35,6 +35,6 @@ export default function LeaderboardConfigurationPage() {
         columns={columns}
         loading={leaderboardLoading || columnsLoading}
       />
-    </>
+    </section>
   );
 }

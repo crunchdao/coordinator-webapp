@@ -10,6 +10,7 @@ export type Environment = "staging" | "production";
 export interface PlatformConfig {
   env: Environment;
   solana: SolanaConfig;
+  cpiBaseUrl: string;
 }
 
 const getSolanaNetwork = (): WalletAdapterNetwork => {
@@ -51,4 +52,5 @@ export const config: PlatformConfig = {
     network: getSolanaNetwork(),
     rpcUrl: getSolanaRpcUrl(),
   },
+  cpiBaseUrl: process.env.NEXT_PUBLIC_CPI_BASE_URL || "https://cpi.crunchdao.io",
 };

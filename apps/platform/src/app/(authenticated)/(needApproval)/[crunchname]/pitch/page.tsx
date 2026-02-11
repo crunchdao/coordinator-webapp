@@ -7,5 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function PitchPage() {
-  return <PitchForm />;
+  return (
+    <section className="p-6 space-y-3">
+      <PitchForm />
+    </section>
+  );
 }

@@ -24,6 +24,7 @@ export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 export interface CoordinatorData {
   status: CoordinatorStatus;
+  address: string | null;
   data: CoordinatorState | null;
 }
 
@@ -82,3 +83,46 @@ export enum OrganizerApplicationReviewStatus {
 }
 
 export type GetOrganizerApplicationResponse = OrganizerApplicationResponse;
+
+export type CoordinatorCpiState = "Pending" | "Approved" | "Rejected";
+
+export interface CoordinatorCpi {
+  address: string;
+  state: CoordinatorCpiState;
+  name: string;
+  owner: string;
+}
+
+export interface GetCoordinatorsParams {
+  owner?: string;
+}
+
+export type CrunchState =
+  | "Created"
+  | "Started"
+  | "Ended"
+  | "MarginPaidout"
+  | "Drained";
+
+export interface CrunchCruncher {
+  address: string;
+  name: string;
+  cruncherIndex: number;
+}
+
+export interface Crunch {
+  address: string;
+  coordinator: string;
+  rewardVault: string;
+  state: CrunchState;
+  maxModelsPerCruncher: number;
+  payoutAmount: string;
+  name: string;
+  crunchers: CrunchCruncher[];
+}
+
+export interface GetCrunchesParams {
+  crunchNames?: string[];
+  coordinator?: string;
+  state?: CrunchState;
+}
