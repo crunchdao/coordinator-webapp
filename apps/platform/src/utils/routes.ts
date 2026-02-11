@@ -6,6 +6,7 @@ export const INTERNAL_LINKS = {
   CREATE_CRUNCH: "/create-crunch",
   CERTIFICATE_ENROLL: "/certificate-enrollment",
   CRUNCH_OVERVIEW: "/:crunchname",
+  MODELS: "/:crunchname/models",
   CHECKPOINTS: "/:crunchname/checkpoints",
   CHECKPOINT_CREATE: "/:crunchname/create-checkpoint",
   LEADERBOARD: "/:crunchname/leaderboard",
@@ -30,6 +31,10 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.CRUNCH_OVERVIEW,
     label: "Overview",
+  },
+  {
+    path: INTERNAL_LINKS.MODELS,
+    label: "Models",
   },
   {
     path: INTERNAL_LINKS.CHECKPOINTS,

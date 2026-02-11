@@ -1,39 +1,49 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@crunch-ui/core";
+import { Badge, Button } from "@crunch-ui/core";
 import { DataTable } from "@coordinator/ui/src/data-table";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
-import {
-  useGetCrunchModels,
-  CrunchModelDetail,
-} from "@/modules/crunch/application/hooks/useGetCrunchModels";
+import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useGetModelStates } from "@/modules/models/application/hooks/useGetModelStates";
+import { ModelState } from "@/modules/models/domain/types";
 
 interface CrunchModelsTableProps {
   onAddModel: (modelId: string) => void;
 }
 
 export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
-  const { models, modelsLoading } = useGetCrunchModels();
+  const { crunchName } = useCrunchContext();
+  const { modelStates, modelStatesLoading } = useGetModelStates({
+    crunchNames: [crunchName],
+  });
 
-  const columns: ColumnDef<CrunchModelDetail>[] = [
+  const columns: ColumnDef<ModelState>[] = [
     {
-      accessorKey: "modelId",
+      accessorKey: "model.id",
       header: "Model ID",
     },
     {
-      accessorKey: "cruncherIndex",
-      header: "Cruncher Index",
+      accessorKey: "desiredState",
+      header: "State",
+      cell: ({ row }) => (
+        <Badge
+          variant={row.original.desiredState === "START" ? "success" : "secondary"}
+          size="sm"
+        >
+          {row.original.desiredState}
+        </Badge>
+      ),
     },
     {
-      accessorKey: "owner",
-      header: "Owner",
-      cell: ({ row }) => <SolanaAddressLink address={row.original.owner} />,
-    },
-    {
-      accessorKey: "modelKey",
+      accessorKey: "model.address",
       header: "Model",
-      cell: ({ row }) => <SolanaAddressLink address={row.original.modelKey} />,
+      cell: ({ row }) => <SolanaAddressLink address={row.original.model.address} />,
+    },
+    {
+      accessorKey: "cruncherPubKey",
+      header: "Cruncher",
+      cell: ({ row }) => <SolanaAddressLink address={row.original.cruncherPubKey} />,
     },
     {
       id: "actions",
@@ -43,14 +53,14 @@ export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onAddModel(row.original.modelId)}
+            onClick={() => onAddModel(row.original.model.id)}
           >
-            Add to Prizes
+            Add
           </Button>
         </div>
       ),
     },
   ];
 
-  return <DataTable columns={columns} data={models} loading={modelsLoading} />;
+  return <DataTable columns={columns} data={modelStates} loading={modelStatesLoading} />;
 }

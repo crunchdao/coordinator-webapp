@@ -11,7 +11,7 @@ export const BasicNavbar: React.FC = () => {
 
   return (
     <nav className="sticky top-0 left-0 right-0 py-4 px-6 z-40 w-full backdrop-blur-sm bg-card/50">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         {ROUTE_CONFIG.map((route) => {
           const routePath = crunchname
             ? generateLink(route.path, { crunchname })
@@ -22,7 +22,7 @@ export const BasicNavbar: React.FC = () => {
             <Link
               key={route.path}
               className={cn(
-                "body-sm inline-flex items-center hover:underline",
+                "title-xs uppercase inline-flex items-center hover:underline",
                 isActive ? "text-foreground" : "text-muted-foreground"
               )}
               href={routePath}
