@@ -15,7 +15,7 @@ export default function MetricsPage() {
   const { resetWidgets, resetWidgetsLoading } = useResetWidgets();
 
   return (
-    <>
+    <section className="p-6 space-y-3">
       <MetricSettingsTable
         widgets={widgets || []}
         loading={widgetsLoading}
@@ -28,10 +28,7 @@ export default function MetricsPage() {
         deleteLoading={removeWidgetLoading}
         resetLoading={resetWidgetsLoading}
       />
-      <MetricsDashboard
-        widgets={widgets}
-        widgetsLoading={widgetsLoading}
-      />
-    </>
+      <MetricsDashboard widgets={widgets} widgetsLoading={widgetsLoading} />
+    </section>
   );
 }
