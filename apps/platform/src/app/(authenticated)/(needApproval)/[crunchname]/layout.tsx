@@ -12,7 +12,7 @@ export default function CrunchLayout({
       <RestrictedWrapper showDefaultMessage={false}>
         <BasicNavbar />
       </RestrictedWrapper>
-      <div className="p-6 space-y-3">{children}</div>
+      <div className="space-y-3">{children}</div>
     </CrunchProvider>
   );
 }

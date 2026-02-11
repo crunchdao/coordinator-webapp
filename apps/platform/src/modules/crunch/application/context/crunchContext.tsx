@@ -15,6 +15,7 @@ interface CrunchContextValue {
   crunchName: string;
   crunchAddress: PublicKey | null;
   crunchData: CrunchAccount | null;
+  crunchState: string;
   isLoading: boolean;
 }
 
@@ -42,14 +43,19 @@ export function CrunchProvider({ children }: { children: React.ReactNode }) {
     enabled: !!crunchAccountService && !!crunchAddress,
   });
 
+  const crunchState = crunchData?.state
+    ? Object.keys(crunchData.state)[0]
+    : "unknown";
+
   const value = useMemo<CrunchContextValue>(
     () => ({
       crunchName,
       crunchAddress,
       crunchData: crunchData ?? null,
+      crunchState,
       isLoading,
     }),
-    [crunchName, crunchAddress, crunchData, isLoading]
+    [crunchName, crunchAddress, crunchData, crunchState, isLoading]
   );
 
   return (
