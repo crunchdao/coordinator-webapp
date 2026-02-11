@@ -2,8 +2,7 @@
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/modules/auth/application/context/authContext";
-import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
-import { useGetCoordinatorCpi } from "@/modules/crunch/application/hooks/useGetCoordinatorCpi";
+import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 import {
   Breadcrumb,
@@ -21,10 +20,9 @@ import { INTERNAL_LINKS, PAGE_LABELS } from "@/utils/routes";
 
 export const NavbarBreadcrumb: React.FC = () => {
   const { coordinator: authCoordinator, isLoading } = useAuth();
-  const { authority } = useEffectiveAuthority();
-  const { coordinator } = useGetCoordinatorCpi(authority?.toString());
+  const { coordinator } = useGetCoordinator();
   const { crunches, crunchesLoading } = useGetCrunches(
-    coordinator ? { coordinator: coordinator.address } : undefined
+    coordinator?.address ? { coordinator: coordinator.address } : undefined
   );
   const params = useParams();
   const pathname = usePathname();
@@ -50,13 +48,13 @@ export const NavbarBreadcrumb: React.FC = () => {
         {currentCrunchName && (
           <>
             <BreadcrumbSeparator>/</BreadcrumbSeparator>
-            <BreadcrumbItem className="text-foreground normal-case">
+            <BreadcrumbItem className="text-foreground normal-case!">
               {crunchesLoading ? (
                 <Skeleton className="w-32 h-4" />
               ) : crunches && crunches.length > 1 ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center gap-1 normal-case!">
-                    {currentCrunchName}
+                    {currentCrunchName?.toLocaleLowerCase()}
                     <ChevronDown className="size-3" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
@@ -71,7 +69,11 @@ export const NavbarBreadcrumb: React.FC = () => {
                       const newPath = pathSegments.join("/");
 
                       return (
-                        <DropdownMenuItem key={index} asChild>
+                        <DropdownMenuItem
+                          className="normal-case!"
+                          key={index}
+                          asChild
+                        >
                           <Link href={newPath}>{crunch.name}</Link>
                         </DropdownMenuItem>
                       );

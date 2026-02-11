@@ -3,17 +3,13 @@
 import { PublicKey } from "@solana/web3.js";
 import { Skeleton } from "@crunch-ui/core";
 import { FundCrunchForm } from "@/modules/crunch/ui/fundCrunchForm";
-import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
-import { useGetCoordinatorCpi } from "@/modules/crunch/application/hooks/useGetCoordinatorCpi";
+import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 
 export function OnboardingFundCrunchForm() {
-  const { authority } = useEffectiveAuthority();
-  const { coordinator, coordinatorLoading } = useGetCoordinatorCpi(
-    authority?.toString()
-  );
+  const { coordinator, coordinatorLoading } = useGetCoordinator();
   const { crunches, crunchesLoading } = useGetCrunches(
-    coordinator ? { coordinator: coordinator.address } : undefined
+    coordinator?.address ? { coordinator: coordinator.address } : undefined
   );
 
   const firstCrunch = crunches[0];

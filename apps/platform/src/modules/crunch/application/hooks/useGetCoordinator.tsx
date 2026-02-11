@@ -1,68 +1,55 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
-import { getCoordinatorProgram, getCoordinator } from "@crunchdao/sdk";
-import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
+import { PublicKey } from "@solana/web3.js";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
+import { getCoordinators } from "../../infrastructure/service";
 import {
   CoordinatorStatus,
   CoordinatorData,
 } from "@/modules/crunch/domain/types";
 
-export const useGetCoordinator = (): {
-  coordinator: CoordinatorData | undefined;
-  coordinatorLoading: boolean;
-  isMultisigMode: boolean;
-} => {
+const CPI_STATE_TO_STATUS: Record<string, CoordinatorStatus> = {
+  Pending: CoordinatorStatus.PENDING,
+  Approved: CoordinatorStatus.APPROVED,
+  Rejected: CoordinatorStatus.REJECTED,
+};
+
+export const useGetCoordinator = () => {
   const { authority, isMultisigMode, ready } = useEffectiveAuthority();
-  const { anchorProvider } = useAnchorProvider();
 
   const query = useQuery<CoordinatorData>({
     queryKey: ["coordinator", authority?.toString(), isMultisigMode],
     queryFn: async (): Promise<CoordinatorData> => {
-      if (!authority || !anchorProvider) {
-        return {
-          status: CoordinatorStatus.UNREGISTERED,
-          data: null,
-        };
+      if (!authority) {
+        return { status: CoordinatorStatus.UNREGISTERED, address: null, data: null };
       }
 
-      try {
-        const coordinatorProgram = getCoordinatorProgram(anchorProvider);
-        const coordinator = await getCoordinator(
-          coordinatorProgram,
-          authority
-        );
+      const coordinators = await getCoordinators({ owner: authority.toString() });
 
-        if (!coordinator) {
-          return {
-            status: CoordinatorStatus.UNREGISTERED,
-            data: null,
-          };
-        }
-
-        let status: CoordinatorStatus;
-        if (coordinator.state.pending) {
-          status = CoordinatorStatus.PENDING;
-        } else if (coordinator.state.approved) {
-          status = CoordinatorStatus.APPROVED;
-        } else if (coordinator.state.rejected) {
-          status = CoordinatorStatus.REJECTED;
-        } else {
-          status = CoordinatorStatus.UNREGISTERED;
-        }
-
-        return {
-          status,
-          data: coordinator,
-        };
-      } catch (error) {
-        console.warn("Error fetching coordinator:", error);
-        return {
-          status: CoordinatorStatus.UNREGISTERED,
-          data: null,
-        };
+      if (coordinators.length === 0) {
+        return { status: CoordinatorStatus.UNREGISTERED, address: null, data: null };
       }
+
+      const cpi = coordinators[0];
+      const status = CPI_STATE_TO_STATUS[cpi.state] ?? CoordinatorStatus.UNREGISTERED;
+
+      return {
+        status,
+        address: cpi.address,
+        data: {
+          state: {
+            ...(status === CoordinatorStatus.PENDING && { pending: {} }),
+            ...(status === CoordinatorStatus.APPROVED && { approved: {} }),
+            ...(status === CoordinatorStatus.REJECTED && { rejected: {} }),
+          },
+          owner: new PublicKey(cpi.owner),
+          bump: 0,
+          name: cpi.name,
+        },
+      };
     },
-    enabled: !!authority && !!anchorProvider && ready,
+    enabled: !!authority && ready,
     refetchInterval: (query) => {
       if (query.state.data?.status === CoordinatorStatus.PENDING) {
         return 30_000;

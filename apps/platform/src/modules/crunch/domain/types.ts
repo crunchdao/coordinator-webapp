@@ -24,6 +24,7 @@ export type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 export interface CoordinatorData {
   status: CoordinatorStatus;
+  address: string | null;
   data: CoordinatorState | null;
 }
 

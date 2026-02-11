@@ -19,8 +19,7 @@ import {
   CreateCrunchFormData,
 } from "../application/schemas/crunchCreation";
 import { useCreateCrunch } from "../application/hooks/useCreateCrunch";
-import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
-import { useGetCoordinatorCpi } from "../application/hooks/useGetCoordinatorCpi";
+import { useGetCoordinator } from "../application/hooks/useGetCoordinator";
 import { useGetCrunches } from "../application/hooks/useGetCrunches";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "../domain/types";
@@ -35,10 +34,9 @@ interface CrunchCreationFormProps {
 export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
   const router = useRouter();
   const { coordinatorStatus } = useAuth();
-  const { authority } = useEffectiveAuthority();
-  const { coordinator } = useGetCoordinatorCpi(authority?.toString());
+  const { coordinator } = useGetCoordinator();
   const { crunches } = useGetCrunches(
-    coordinator ? { coordinator: coordinator.address } : undefined
+    coordinator?.address ? { coordinator: coordinator.address } : undefined
   );
   const firstCrunch = crunches?.[0];
 

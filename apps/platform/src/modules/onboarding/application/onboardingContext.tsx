@@ -23,9 +23,8 @@ import {
 } from "@crunch-ui/icons";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { useGetCoordinatorCpi } from "@/modules/crunch/application/hooks/useGetCoordinatorCpi";
+import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
-import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { useGetStakingInfo } from "@/modules/staking/application/hooks/useGetStakingInfo";
 import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks/useGetCoordinatorPoolConfig";
 import { useGetRewardVaultBalance } from "@/modules/crunch/application/hooks/useGetRewardVaultBalance";
@@ -160,12 +159,9 @@ export const useOnboarding = () => {
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const { coordinatorStatus, isLoading: authLoading } = useAuth();
   const { isMultisigMode } = useWallet();
-  const { authority } = useEffectiveAuthority();
-  const { coordinator, coordinatorLoading } = useGetCoordinatorCpi(
-    authority?.toString()
-  );
+  const { coordinator, coordinatorLoading } = useGetCoordinator();
   const { crunches, crunchesLoading: crunchesLoadingRaw } = useGetCrunches(
-    coordinator ? { coordinator: coordinator.address } : undefined
+    coordinator?.address ? { coordinator: coordinator.address } : undefined
   );
   const crunchesLoading = coordinatorLoading || crunchesLoadingRaw;
   const { stakingInfo, stakingInfoLoading } = useGetStakingInfo();
