@@ -10,7 +10,10 @@ import {
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
 import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
+import { useRouter } from "next/navigation";
+import { generateLink } from "@crunch-ui/utils";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 export function useCreateCheckpoint() {
   const queryClient = useQueryClient();
@@ -19,6 +22,7 @@ export function useCreateCheckpoint() {
   const { executeTransaction, authority, isMultisigMode } =
     useTransactionExecutor();
   const { trackProposal } = useMultisigProposalTracker();
+  const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: async (preparedPrizes: PreparedPrize[]) => {
@@ -55,6 +59,9 @@ export function useCreateCheckpoint() {
           title: "Checkpoint created",
           description: `Checkpoint for "${crunchName}" has been created.`,
         });
+        router.push(
+          generateLink(INTERNAL_LINKS.CHECKPOINTS, { crunchname: crunchName })
+        );
       };
 
       if (result.isMultisig && result.transactionIndex && result.multisigPda) {

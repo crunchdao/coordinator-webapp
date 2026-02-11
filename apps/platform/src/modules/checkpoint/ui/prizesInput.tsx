@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Button,
@@ -7,16 +8,21 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
   Textarea,
 } from "@crunch-ui/core";
 import { DataTable } from "@coordinator/ui/src/data-table";
-import { PreparedPrize } from "@crunchdao/sdk";
+import { PreparedPrize, Prize } from "@crunchdao/sdk";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { prizesSchema } from "../application/schemas/prizesSchema";
 import { usePreparePrizes } from "../application/hooks/usePreparePrizes";
 import { ZodError } from "zod";
-import { useState } from "react";
 import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
+import { CrunchModelsTable } from "@/modules/models/ui/crunchModelsTable";
 
 const EXAMPLE_JSON = `[{ "prizeId": "round-1-model-abc", "timestamp": 1700000000, "model": "model-id", "prize": 1000000 }]`;
 
@@ -49,7 +55,6 @@ interface PrizesInputProps {
   onPrizesPrepared: (prizes: PreparedPrize[]) => void;
   createCheckpointButton: React.ReactNode;
   createCheckpointLoading?: boolean;
-  extraActions?: React.ReactNode;
 }
 
 export function PrizesInput({
@@ -58,13 +63,39 @@ export function PrizesInput({
   onPrizesPrepared,
   createCheckpointButton,
   createCheckpointLoading,
-  extraActions,
 }: PrizesInputProps) {
   const { preparePrizes, preparePrizesLoading } = usePreparePrizes();
   const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(
     null
   );
   const [error, setError] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const handleAddModel = useCallback(
+    (modelId: string, prize: number) => {
+      const current: Prize[] = rawText.trim()
+        ? (() => {
+            try {
+              return JSON.parse(rawText);
+            } catch {
+              return [];
+            }
+          })()
+        : [];
+
+      const entry: Prize = {
+        prizeId: `prize-${modelId}`,
+        timestamp: Math.floor(Date.now() / 1000),
+        model: modelId,
+        prize,
+      };
+
+      const updated = [...current, entry];
+      onRawTextChange(JSON.stringify(updated, null, 2));
+      setSheetOpen(false);
+    },
+    [rawText, onRawTextChange]
+  );
 
   const handlePrepare = async () => {
     setError(null);
@@ -111,6 +142,22 @@ export function PrizesInput({
           />
           {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="flex gap-2">
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline">Import from models</Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="sm:max-w-xl w-full overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle>Select a model</SheetTitle>
+                </SheetHeader>
+                <div className="mt-4">
+                  <CrunchModelsTable onAddModel={handleAddModel} />
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Button variant="outline" onClick={handleClear}>
+              Clear
+            </Button>
             <Button
               onClick={handlePrepare}
               disabled={!rawText.trim() || preparePrizesLoading}
@@ -118,10 +165,6 @@ export function PrizesInput({
             >
               Prepare Prizes
             </Button>
-            <Button variant="outline" onClick={handleClear}>
-              Clear
-            </Button>
-            {extraActions}
           </div>
         </CardContent>
       </Card>
