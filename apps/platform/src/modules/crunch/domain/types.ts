@@ -84,8 +84,6 @@ export enum OrganizerApplicationReviewStatus {
 
 export type GetOrganizerApplicationResponse = OrganizerApplicationResponse;
 
-// CPI indexed types
-
 export type CoordinatorCpiState = "Pending" | "Approved" | "Rejected";
 
 export interface CoordinatorCpi {

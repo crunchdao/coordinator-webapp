@@ -5,7 +5,7 @@ import { getCrunch } from "../../infrastructure/service";
 
 export function useGetCrunch(address?: string) {
   const query = useQuery({
-    queryKey: ["cpi-crunch", address],
+    queryKey: ["crunch", address],
     queryFn: () => getCrunch(address!),
     enabled: !!address,
   });

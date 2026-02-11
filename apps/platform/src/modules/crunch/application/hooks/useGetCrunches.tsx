@@ -6,7 +6,7 @@ import { GetCrunchesParams } from "../../domain/types";
 
 export function useGetCrunches(params?: GetCrunchesParams) {
   const query = useQuery({
-    queryKey: ["cpi-crunches", params],
+    queryKey: ["crunches", params],
     queryFn: () => getCrunches(params),
     enabled: !!params,
   });
