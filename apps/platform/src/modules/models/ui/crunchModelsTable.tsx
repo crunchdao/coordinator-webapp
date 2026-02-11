@@ -1,7 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge, Button } from "@crunch-ui/core";
+import { Button, Input } from "@crunch-ui/core";
 import { DataTable } from "@coordinator/ui/src/data-table";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
@@ -9,7 +10,7 @@ import { useGetModelStates } from "@/modules/models/application/hooks/useGetMode
 import { ModelState } from "@/modules/models/domain/types";
 
 interface CrunchModelsTableProps {
-  onAddModel: (modelId: string) => void;
+  onAddModel: (modelId: string, prize: number) => void;
 }
 
 export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
@@ -17,6 +18,7 @@ export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
   const { modelStates, modelStatesLoading } = useGetModelStates({
     crunchNames: [crunchName],
   });
+  const prizesRef = useRef<Record<string, string>>({});
 
   const columns: ColumnDef<ModelState>[] = [
     {
@@ -24,26 +26,24 @@ export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
       header: "Model ID",
     },
     {
-      accessorKey: "desiredState",
-      header: "State",
-      cell: ({ row }) => (
-        <Badge
-          variant={row.original.desiredState === "START" ? "success" : "secondary"}
-          size="sm"
-        >
-          {row.original.desiredState}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "model.address",
-      header: "Model",
-      cell: ({ row }) => <SolanaAddressLink address={row.original.model.address} />,
-    },
-    {
       accessorKey: "cruncherPubKey",
       header: "Cruncher",
       cell: ({ row }) => <SolanaAddressLink address={row.original.cruncherPubKey} />,
+    },
+    {
+      id: "prize",
+      header: "Prize",
+      cell: ({ row }) => (
+        <Input
+          type="number"
+          placeholder="0"
+          className="w-24 h-8"
+          defaultValue=""
+          onChange={(e) => {
+            prizesRef.current[row.original.model.id] = e.target.value;
+          }}
+        />
+      ),
     },
     {
       id: "actions",
@@ -53,7 +53,12 @@ export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onAddModel(row.original.model.id)}
+            onClick={() =>
+              onAddModel(
+                row.original.model.id,
+                Number(prizesRef.current[row.original.model.id] || 0)
+              )
+            }
           >
             Add
           </Button>

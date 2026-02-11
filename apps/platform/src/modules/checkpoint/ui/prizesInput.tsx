@@ -49,6 +49,7 @@ interface PrizesInputProps {
   onPrizesPrepared: (prizes: PreparedPrize[]) => void;
   createCheckpointButton: React.ReactNode;
   createCheckpointLoading?: boolean;
+  extraActions?: React.ReactNode;
 }
 
 export function PrizesInput({
@@ -57,6 +58,7 @@ export function PrizesInput({
   onPrizesPrepared,
   createCheckpointButton,
   createCheckpointLoading,
+  extraActions,
 }: PrizesInputProps) {
   const { preparePrizes, preparePrizesLoading } = usePreparePrizes();
   const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(
@@ -119,6 +121,7 @@ export function PrizesInput({
             <Button variant="outline" onClick={handleClear}>
               Clear
             </Button>
+            {extraActions}
           </div>
         </CardContent>
       </Card>

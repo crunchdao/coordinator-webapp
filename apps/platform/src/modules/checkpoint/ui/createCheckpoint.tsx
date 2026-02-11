@@ -3,28 +3,27 @@
 import { useState, useCallback } from "react";
 import {
   Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@crunch-ui/core";
 import { PreparedPrize, Prize } from "@crunchdao/sdk";
-import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useCreateCheckpoint } from "../application/hooks/useCreateCheckpoint";
-import { CrunchModelsTable } from "./crunchModelsTable";
 import { PrizesInput } from "./prizesInput";
+import { CrunchModelsTable } from "@/modules/models/ui/crunchModelsTable";
 
 export function CreateCheckpoint() {
-  const { crunchName, crunchData } = useCrunchContext();
   const { createCheckpoint, createCheckpointLoading } = useCreateCheckpoint();
   const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(
     null
   );
   const [rawPrizes, setRawPrizes] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleAddModel = useCallback(
-    (modelId: string) => {
+    (modelId: string, prize: number) => {
       const current: Prize[] = rawPrizes.trim()
         ? (() => {
             try {
@@ -39,11 +38,12 @@ export function CreateCheckpoint() {
         prizeId: `prize-${modelId}`,
         timestamp: Math.floor(Date.now() / 1000),
         model: modelId,
-        prize: 0,
+        prize,
       };
 
       const updated = [...current, entry];
       setRawPrizes(JSON.stringify(updated, null, 2));
+      setSheetOpen(false);
     },
     [rawPrizes]
   );
@@ -54,36 +54,39 @@ export function CreateCheckpoint() {
   };
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Registered Models</CardTitle>
-          <CardDescription>
-            <p className="text-sm text-muted-foreground">
-              {crunchName}
-            </p>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CrunchModelsTable onAddModel={handleAddModel} />
-        </CardContent>
-      </Card>
-
-      <PrizesInput
-        rawText={rawPrizes}
-        onRawTextChange={setRawPrizes}
-        onPrizesPrepared={setPreparedPrizes}
-        createCheckpointLoading={createCheckpointLoading}
-        createCheckpointButton={
-          <Button
-            onClick={handleCreateCheckpoint}
-            loading={createCheckpointLoading}
-            disabled={createCheckpointLoading || !preparedPrizes}
+    <PrizesInput
+      rawText={rawPrizes}
+      onRawTextChange={setRawPrizes}
+      onPrizesPrepared={setPreparedPrizes}
+      createCheckpointLoading={createCheckpointLoading}
+      extraActions={
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline">Import from models</Button>
+          </SheetTrigger>
+          <SheetContent
+            side="right"
+            className="sm:max-w-xl w-full overflow-y-auto"
+            
           >
-            Create Checkpoint
-          </Button>
-        }
-      />
-    </>
+            <SheetHeader>
+              <SheetTitle>Select a model</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4">
+              <CrunchModelsTable onAddModel={handleAddModel} />
+            </div>
+          </SheetContent>
+        </Sheet>
+      }
+      createCheckpointButton={
+        <Button
+          onClick={handleCreateCheckpoint}
+          loading={createCheckpointLoading}
+          disabled={createCheckpointLoading || !preparedPrizes}
+        >
+          Create Checkpoint
+        </Button>
+      }
+    />
   );
 }
