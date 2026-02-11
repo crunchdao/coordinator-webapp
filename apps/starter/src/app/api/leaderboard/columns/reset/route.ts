@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { initialColumns } from "@coordinator/leaderboard/src/domain/initial-config";
+import { fetchReportSchema } from "@/app/api/_lib/reportSchema";
 
 const CONFIG_FILE = path.join(
   process.cwd(),
@@ -20,12 +21,16 @@ async function ensureConfigDir() {
 
 export async function POST() {
   try {
+    const schema = await fetchReportSchema();
+    const backendColumns = schema?.leaderboard_columns || initialColumns;
+
     await ensureConfigDir();
     await fs.writeFile(
       CONFIG_FILE,
-      JSON.stringify(initialColumns, null, 2),
+      JSON.stringify(backendColumns, null, 2),
       "utf-8"
     );
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error resetting columns:", error);
