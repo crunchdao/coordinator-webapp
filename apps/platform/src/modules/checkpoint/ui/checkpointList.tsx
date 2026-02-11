@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
   Select,
@@ -81,9 +82,12 @@ export function CheckpointList() {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>
-            {crunchName} — {sortedCheckpoints.length} checkpoint(s)
-          </CardTitle>
+          <div>
+            <CardTitle>Checkpoints</CardTitle>
+            <CardDescription>
+              {sortedCheckpoints.length} checkpoint(s) created
+            </CardDescription>
+          </div>
           <div className="flex items-center gap-2">
             <Select
               value={statusFilter}

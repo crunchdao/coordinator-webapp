@@ -3,5 +3,9 @@
 import { CreateCheckpoint } from "@/modules/checkpoint/ui/createCheckpoint";
 
 export default function CheckpointPage() {
-  return <CreateCheckpoint />;
+  return (
+    <section className="p-6 space-y-3">
+      <CreateCheckpoint />
+    </section>
+  );
 }
