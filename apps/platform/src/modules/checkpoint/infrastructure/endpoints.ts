@@ -1,6 +1,6 @@
-const CPI_BASE_URL = "https://cpi.crunchdao.io";
+import { config } from "@/config";
 
 export const endpoints = {
-  getCheckpoints: () => `${CPI_BASE_URL}/checkpoints`,
-  getCheckpoint: (address: string) => `${CPI_BASE_URL}/checkpoints/${address}`,
+  getCheckpoints: () => `${config.cpiBaseUrl}/checkpoints`,
+  getCheckpoint: (address: string) => `${config.cpiBaseUrl}/checkpoints/${address}`,
 };
