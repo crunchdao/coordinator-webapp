@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@crunch-ui/core";
@@ -15,9 +16,8 @@ import { CrunchModelsTable } from "./crunchModelsTable";
 import { PrizesInput } from "./prizesInput";
 
 export function CreateCheckpoint() {
-  const { crunchName, crunchData } = useCrunchContext();
-  const { createCheckpoint, createCheckpointLoading, isMultisigMode } =
-    useCreateCheckpoint();
+  const { crunchData } = useCrunchContext();
+  const { createCheckpoint, createCheckpointLoading } = useCreateCheckpoint();
   const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(
     null
   );
@@ -54,18 +54,15 @@ export function CreateCheckpoint() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Create Checkpoint</h1>
-        <p className="text-sm text-muted-foreground">
-          {crunchName} — Last checkpoint index:{" "}
-          {crunchData?.lastCheckpointIndex ?? "—"}
-        </p>
-      </div>
-
+    <>
       <Card>
         <CardHeader>
           <CardTitle>Registered Models</CardTitle>
+          <CardDescription>
+            <p className="text-sm text-muted-foreground">
+              Last checkpoint index: {crunchData?.lastCheckpointIndex ?? 0}
+            </p>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <CrunchModelsTable onAddModel={handleAddModel} />
@@ -87,6 +84,6 @@ export function CreateCheckpoint() {
           </Button>
         }
       />
-    </div>
+    </>
   );
 }

@@ -45,7 +45,7 @@ export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
             size="sm"
             onClick={() => onAddModel(row.original.modelId)}
           >
-            Add to Prizes JSON
+            Add to Prizes
           </Button>
         </div>
       ),

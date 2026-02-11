@@ -35,9 +35,7 @@ export function CrunchOverview() {
     );
   }
 
-  const state = crunchData.state
-    ? Object.keys(crunchData.state)[0]
-    : "unknown";
+  const state = crunchData.state ? Object.keys(crunchData.state)[0] : "unknown";
 
   return (
     <>
@@ -62,14 +60,10 @@ export function CrunchOverview() {
               <SolanaAddressLink address={crunchAddress!.toString()} />
 
               <span className="text-muted-foreground">Reward Vault</span>
-              <SolanaAddressLink
-                address={crunchData.rewardVault.toString()}
-              />
+              <SolanaAddressLink address={crunchData.rewardVault.toString()} />
 
               <span className="text-muted-foreground">Vault Balance</span>
-              <RewardVaultBalance
-                rewardVaultAddress={crunchData.rewardVault}
-              />
+              <RewardVaultBalance rewardVaultAddress={crunchData.rewardVault} />
 
               <span className="text-muted-foreground">Payout Amount</span>
               <span>
@@ -97,22 +91,16 @@ export function CrunchOverview() {
         </Card>
 
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setFundDialogOpen(true)}
-          >
+          <Button variant="outline" onClick={() => setFundDialogOpen(true)}>
             Fund Crunch
           </Button>
           {state !== "started" && (
-            <Button
-              variant="outline"
-              onClick={() => setStartDialogOpen(true)}
-            >
+            <Button variant="outline" onClick={() => setStartDialogOpen(true)}>
               Start Crunch
             </Button>
           )}
           <Link
-            href={generateLink(INTERNAL_LINKS.CHECKPOINT, {
+            href={generateLink(INTERNAL_LINKS.CHECKPOINT_CREATE, {
               crunchname: crunchName,
             })}
           >
