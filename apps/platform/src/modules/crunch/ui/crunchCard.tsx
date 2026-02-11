@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { Badge, Card } from "@crunch-ui/core";
 import { generateLink } from "@crunch-ui/utils";
-import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 interface CrunchCardProps {
@@ -41,9 +40,9 @@ export function CrunchCard({ name, state, address }: CrunchCardProps) {
           </div>
         </div>
         {address && (
-          <div className="p-4">
+          <div className="p-4 pt-0">
             <p className="body-sm text-muted-foreground">
-              <SolanaAddressLink address={address} />
+              {address.slice(0, 6)}...{address.slice(-6)}
             </p>
           </div>
         )}

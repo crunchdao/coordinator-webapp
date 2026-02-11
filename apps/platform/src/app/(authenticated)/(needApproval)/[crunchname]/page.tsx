@@ -8,7 +8,9 @@ export default function CrunchOverviewPage() {
   return (
     <>
       <section className="relative flex items-end justify-start">
-        <h1 className="z-10 absolute display font-bold p-6">{crunchName}</h1>
+        <h1 className="z-10 absolute display-sm font-bold px-6 py-12">
+          {crunchName}
+        </h1>
         <Image
           src="/images/banner.webp"
           alt={crunchName}

@@ -82,3 +82,33 @@ export enum OrganizerApplicationReviewStatus {
 }
 
 export type GetOrganizerApplicationResponse = OrganizerApplicationResponse;
+
+export type CrunchState =
+  | "Created"
+  | "Started"
+  | "Ended"
+  | "MarginPaidout"
+  | "Drained";
+
+export interface CrunchCruncher {
+  address: string;
+  name: string;
+  cruncherIndex: number;
+}
+
+export interface Crunch {
+  address: string;
+  coordinator: string;
+  rewardVault: string;
+  state: CrunchState;
+  maxModelsPerCruncher: number;
+  payoutAmount: string;
+  name: string;
+  crunchers: CrunchCruncher[];
+}
+
+export interface GetCrunchesParams {
+  crunchNames?: string[];
+  coordinator?: string;
+  state?: CrunchState;
+}

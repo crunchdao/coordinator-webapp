@@ -1,5 +1,9 @@
+import axios from "axios";
 import apiClient from "@coordinator/utils/src/api";
+import { cpiEndpoints } from "./endpoints";
 import {
+  Crunch,
+  GetCrunchesParams,
   GetOrganizerApplicationResponse,
   OrganizerApplicationPayload,
   UpdateOrganizerApplicationPayload,
@@ -40,6 +44,23 @@ export const updateOrganizerApplication = async (
     organizerEndpoints.updateApplication(applicationId),
     payload
   );
+  return response.data;
+};
 
+export const getCrunches = async (
+  params?: GetCrunchesParams
+): Promise<Crunch[]> => {
+  const response = await axios.get(cpiEndpoints.getCrunches(), {
+    params: {
+      crunchNames: params?.crunchNames,
+      coordinator: params?.coordinator,
+      state: params?.state,
+    },
+  });
+  return response.data;
+};
+
+export const getCrunch = async (address: string): Promise<Crunch> => {
+  const response = await axios.get(cpiEndpoints.getCrunch(address));
   return response.data;
 };

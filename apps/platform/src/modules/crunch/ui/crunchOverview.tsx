@@ -27,12 +27,7 @@ export function CrunchOverview() {
   const [startDialogOpen, setStartDialogOpen] = useState(false);
 
   if (isLoading || !crunchData) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-48 w-full rounded-lg" />
-        <Skeleton className="h-64 w-full" />
-      </div>
-    );
+    return <Skeleton className="h-96 w-full" />;
   }
 
   return (
