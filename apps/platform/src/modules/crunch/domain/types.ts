@@ -83,6 +83,21 @@ export enum OrganizerApplicationReviewStatus {
 
 export type GetOrganizerApplicationResponse = OrganizerApplicationResponse;
 
+// CPI indexed types
+
+export type CoordinatorCpiState = "Pending" | "Approved" | "Rejected";
+
+export interface CoordinatorCpi {
+  address: string;
+  state: CoordinatorCpiState;
+  name: string;
+  owner: string;
+}
+
+export interface GetCoordinatorsParams {
+  owner?: string;
+}
+
 export type CrunchState =
   | "Created"
   | "Started"

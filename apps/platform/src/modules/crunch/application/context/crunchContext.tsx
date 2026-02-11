@@ -2,19 +2,12 @@
 
 import { createContext, useContext, useMemo } from "react";
 import { useParams } from "next/navigation";
-import { PublicKey } from "@solana/web3.js";
-import { useQuery } from "@tanstack/react-query";
-import {
-  getCoordinatorProgram,
-  CrunchAccountServiceWithContext,
-  CrunchAccount,
-} from "@crunchdao/sdk";
-import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
+import { useGetCrunches } from "../hooks/useGetCrunches";
+import { Crunch } from "../../domain/types";
 
 interface CrunchContextValue {
   crunchName: string;
-  crunchAddress: PublicKey | null;
-  crunchData: CrunchAccount | null;
+  crunchData: Crunch | null;
   crunchState: string;
   isLoading: boolean;
 }
@@ -24,38 +17,22 @@ const CrunchContext = createContext<CrunchContextValue | null>(null);
 export function CrunchProvider({ children }: { children: React.ReactNode }) {
   const params = useParams();
   const crunchName = params.crunchname as string;
-  const { anchorProvider } = useAnchorProvider();
 
-  const crunchAccountService = useMemo(() => {
-    if (!anchorProvider) return null;
-    const program = getCoordinatorProgram(anchorProvider);
-    return CrunchAccountServiceWithContext({ program });
-  }, [anchorProvider]);
-
-  const crunchAddress = useMemo(() => {
-    if (!crunchAccountService || !crunchName) return null;
-    return crunchAccountService.getCrunchAddress(crunchName);
-  }, [crunchAccountService, crunchName]);
-
-  const { data: crunchData, isLoading } = useQuery({
-    queryKey: ["crunch-detail", crunchName],
-    queryFn: () => crunchAccountService!.getCrunch(crunchAddress!),
-    enabled: !!crunchAccountService && !!crunchAddress,
+  const { crunches, crunchesLoading } = useGetCrunches({
+    crunchNames: [crunchName],
   });
 
-  const crunchState = crunchData?.state
-    ? Object.keys(crunchData.state)[0]
-    : "unknown";
+  const crunchData = crunches.length > 0 ? crunches[0] : null;
+  const crunchState = crunchData?.state?.toLowerCase() ?? "unknown";
 
   const value = useMemo<CrunchContextValue>(
     () => ({
       crunchName,
-      crunchAddress,
-      crunchData: crunchData ?? null,
+      crunchData,
       crunchState,
-      isLoading,
+      isLoading: crunchesLoading,
     }),
-    [crunchName, crunchAddress, crunchData, crunchState, isLoading]
+    [crunchName, crunchData, crunchState, crunchesLoading]
   );
 
   return (

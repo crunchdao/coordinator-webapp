@@ -19,7 +19,9 @@ import {
   CreateCrunchFormData,
 } from "../application/schemas/crunchCreation";
 import { useCreateCrunch } from "../application/hooks/useCreateCrunch";
-import { useGetCoordinatorCrunches } from "../application/hooks/useGetCoordinatorCrunches";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
+import { useGetCoordinatorCpi } from "../application/hooks/useGetCoordinatorCpi";
+import { useGetCrunches } from "../application/hooks/useGetCrunches";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { CoordinatorStatus } from "../domain/types";
 import { useRouter } from "next/navigation";
@@ -33,7 +35,11 @@ interface CrunchCreationFormProps {
 export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
   const router = useRouter();
   const { coordinatorStatus } = useAuth();
-  const { crunches } = useGetCoordinatorCrunches();
+  const { authority } = useEffectiveAuthority();
+  const { coordinator } = useGetCoordinatorCpi(authority?.toString());
+  const { crunches } = useGetCrunches(
+    coordinator ? { coordinator: coordinator.address } : undefined
+  );
   const firstCrunch = crunches?.[0];
 
   const handleSuccess = (crunchName: string) => {
@@ -61,7 +67,7 @@ export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
     if (firstCrunch) {
       form.reset({
         name: firstCrunch.name,
-        payoutAmount: firstCrunch.payoutAmount?.toNumber() / 1_000_000 || 10000,
+        payoutAmount: Number(firstCrunch.payoutAmount) / 1_000_000 || 10000,
         maxModelsPerCruncher: firstCrunch.maxModelsPerCruncher || 5,
       });
     }

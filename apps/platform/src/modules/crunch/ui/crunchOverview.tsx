@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { PublicKey } from "@solana/web3.js";
 import {
   Button,
   Card,
@@ -20,8 +20,7 @@ import { StartCrunchDialog } from "./startCrunchDialog";
 import { RewardVaultBalance } from "./rewardVaultBalance";
 
 export function CrunchOverview() {
-  const { crunchName, crunchAddress, crunchData, crunchState, isLoading } =
-    useCrunchContext();
+  const { crunchName, crunchData, crunchState, isLoading } = useCrunchContext();
 
   const [fundDialogOpen, setFundDialogOpen] = useState(false);
   const [startDialogOpen, setStartDialogOpen] = useState(false);
@@ -29,6 +28,10 @@ export function CrunchOverview() {
   if (isLoading || !crunchData) {
     return <Skeleton className="h-96 w-full" />;
   }
+
+  const rewardVaultPubkey = new PublicKey(crunchData.rewardVault);
+  const crunchAddressPubkey = new PublicKey(crunchData.address);
+  const payoutAmount = Number(crunchData.payoutAmount) / 10 ** 6;
 
   return (
     <>
@@ -39,27 +42,21 @@ export function CrunchOverview() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-y-3 text-sm">
             <span className="text-muted-foreground">Crunch Address</span>
-            <SolanaAddressLink address={crunchAddress!.toString()} />
+            <SolanaAddressLink address={crunchData.address} />
 
             <span className="text-muted-foreground">Reward Vault</span>
-            <SolanaAddressLink address={crunchData.rewardVault.toString()} />
+            <SolanaAddressLink address={crunchData.rewardVault} />
 
             <span className="text-muted-foreground">Vault Balance</span>
-            <RewardVaultBalance rewardVaultAddress={crunchData.rewardVault} />
+            <RewardVaultBalance rewardVaultAddress={rewardVaultPubkey} />
 
             <span className="text-muted-foreground">Payout Amount</span>
-            <span>
-              {(crunchData.payoutAmount.toNumber() / 10 ** 6).toLocaleString()}{" "}
-              USDC
-            </span>
+            <span>{payoutAmount.toLocaleString()} USDC</span>
 
             <span className="text-muted-foreground">
               Max Models per Cruncher
             </span>
             <span>{crunchData.maxModelsPerCruncher}</span>
-
-            <span className="text-muted-foreground">Last Checkpoint Index</span>
-            <span>{crunchData.lastCheckpointIndex}</span>
 
             <span className="text-muted-foreground">Crunchers</span>
             <span>{crunchData.crunchers.length}</span>
@@ -88,22 +85,18 @@ export function CrunchOverview() {
         </CardContent>
       </Card>
 
-      {crunchAddress && (
-        <>
-          <FundCrunchDialog
-            open={fundDialogOpen}
-            onOpenChange={setFundDialogOpen}
-            crunchName={crunchName}
-            crunchAddress={crunchAddress}
-          />
-          <StartCrunchDialog
-            open={startDialogOpen}
-            onOpenChange={setStartDialogOpen}
-            crunchName={crunchName}
-            currentState={crunchState}
-          />
-        </>
-      )}
+      <FundCrunchDialog
+        open={fundDialogOpen}
+        onOpenChange={setFundDialogOpen}
+        crunchName={crunchName}
+        crunchAddress={crunchAddressPubkey}
+      />
+      <StartCrunchDialog
+        open={startDialogOpen}
+        onOpenChange={setStartDialogOpen}
+        crunchName={crunchName}
+        currentState={crunchState}
+      />
     </>
   );
 }

@@ -2,7 +2,9 @@
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/modules/auth/application/context/authContext";
-import { useGetCoordinatorCrunches } from "@/modules/crunch/application/hooks/useGetCoordinatorCrunches";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
+import { useGetCoordinatorCpi } from "@/modules/crunch/application/hooks/useGetCoordinatorCpi";
+import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,13 +20,17 @@ import { ChevronDown } from "@crunch-ui/icons";
 import { INTERNAL_LINKS, PAGE_LABELS } from "@/utils/routes";
 
 export const NavbarBreadcrumb: React.FC = () => {
-  const { coordinator, isLoading } = useAuth();
-  const { crunches, crunchesPending } = useGetCoordinatorCrunches();
+  const { coordinator: authCoordinator, isLoading } = useAuth();
+  const { authority } = useEffectiveAuthority();
+  const { coordinator } = useGetCoordinatorCpi(authority?.toString());
+  const { crunches, crunchesLoading } = useGetCrunches(
+    coordinator ? { coordinator: coordinator.address } : undefined
+  );
   const params = useParams();
   const pathname = usePathname();
 
   const currentCrunchName = params.crunchname as string;
-  const coordinatorName = coordinator?.name;
+  const coordinatorName = authCoordinator?.name;
   const pathSegment = pathname.split("/")[1];
   const pageLabel = PAGE_LABELS[pathSegment] || pathSegment;
 
@@ -45,7 +51,7 @@ export const NavbarBreadcrumb: React.FC = () => {
           <>
             <BreadcrumbSeparator>/</BreadcrumbSeparator>
             <BreadcrumbItem className="text-foreground normal-case">
-              {crunchesPending ? (
+              {crunchesLoading ? (
                 <Skeleton className="w-32 h-4" />
               ) : crunches && crunches.length > 1 ? (
                 <DropdownMenu>

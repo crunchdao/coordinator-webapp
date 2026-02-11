@@ -8,6 +8,7 @@ export function useGetCrunches(params?: GetCrunchesParams) {
   const query = useQuery({
     queryKey: ["cpi-crunches", params],
     queryFn: () => getCrunches(params),
+    enabled: !!params,
   });
 
   return {

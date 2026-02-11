@@ -10,6 +10,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import { PublicKey } from "@solana/web3.js";
 import {
   Check,
   Lock,
@@ -22,7 +23,9 @@ import {
 } from "@crunch-ui/icons";
 import { useAuth } from "@/modules/auth/application/context/authContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { useGetCoordinatorCrunches } from "@/modules/crunch/application/hooks/useGetCoordinatorCrunches";
+import { useGetCoordinatorCpi } from "@/modules/crunch/application/hooks/useGetCoordinatorCpi";
+import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { useGetStakingInfo } from "@/modules/staking/application/hooks/useGetStakingInfo";
 import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks/useGetCoordinatorPoolConfig";
 import { useGetRewardVaultBalance } from "@/modules/crunch/application/hooks/useGetRewardVaultBalance";
@@ -157,7 +160,14 @@ export const useOnboarding = () => {
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const { coordinatorStatus, isLoading: authLoading } = useAuth();
   const { isMultisigMode } = useWallet();
-  const { crunches, crunchesLoading } = useGetCoordinatorCrunches();
+  const { authority } = useEffectiveAuthority();
+  const { coordinator, coordinatorLoading } = useGetCoordinatorCpi(
+    authority?.toString()
+  );
+  const { crunches, crunchesLoading: crunchesLoadingRaw } = useGetCrunches(
+    coordinator ? { coordinator: coordinator.address } : undefined
+  );
+  const crunchesLoading = coordinatorLoading || crunchesLoadingRaw;
   const { stakingInfo, stakingInfoLoading } = useGetStakingInfo();
   const { poolConfig, poolConfigLoading } = useGetCoordinatorPoolConfig();
 
@@ -170,9 +180,16 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const stakedAmount = stakingInfo?.stakedAmount ?? 0;
   const crunchCount = crunches?.length ?? 0;
   const firstCrunch = crunches?.[0];
-  const firstCrunchState = firstCrunch?.state;
+  const firstCrunchState = firstCrunch?.state?.toLowerCase();
 
-  const { vaultBalance } = useGetRewardVaultBalance(firstCrunch?.rewardVault);
+  const rewardVaultPubkey = useMemo(
+    () =>
+      firstCrunch?.rewardVault
+        ? new PublicKey(firstCrunch.rewardVault)
+        : undefined,
+    [firstCrunch]
+  );
+  const { vaultBalance } = useGetRewardVaultBalance(rewardVaultPubkey);
   const { enrollmentStatus } = useCertificateEnrollmentStatus();
 
   const isMultisigConfigured = isMultisigMode;

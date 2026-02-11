@@ -16,7 +16,7 @@ import { CrunchModelsTable } from "./crunchModelsTable";
 import { PrizesInput } from "./prizesInput";
 
 export function CreateCheckpoint() {
-  const { crunchData } = useCrunchContext();
+  const { crunchName, crunchData } = useCrunchContext();
   const { createCheckpoint, createCheckpointLoading } = useCreateCheckpoint();
   const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(
     null
@@ -60,7 +60,7 @@ export function CreateCheckpoint() {
           <CardTitle>Registered Models</CardTitle>
           <CardDescription>
             <p className="text-sm text-muted-foreground">
-              Last checkpoint index: {crunchData?.lastCheckpointIndex ?? 0}
+              {crunchName}
             </p>
           </CardDescription>
         </CardHeader>

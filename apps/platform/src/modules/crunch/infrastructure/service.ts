@@ -2,6 +2,8 @@ import axios from "axios";
 import apiClient from "@coordinator/utils/src/api";
 import { cpiEndpoints } from "./endpoints";
 import {
+  CoordinatorCpi,
+  GetCoordinatorsParams,
   Crunch,
   GetCrunchesParams,
   GetOrganizerApplicationResponse,
@@ -44,6 +46,17 @@ export const updateOrganizerApplication = async (
     organizerEndpoints.updateApplication(applicationId),
     payload
   );
+  return response.data;
+};
+
+export const getCoordinators = async (
+  params?: GetCoordinatorsParams
+): Promise<CoordinatorCpi[]> => {
+  const response = await axios.get(cpiEndpoints.getCoordinators(), {
+    params: {
+      owner: params?.owner,
+    },
+  });
   return response.data;
 };
 

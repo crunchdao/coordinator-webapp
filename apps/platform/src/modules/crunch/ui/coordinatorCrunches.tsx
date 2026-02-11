@@ -1,29 +1,25 @@
 "use client";
 
-import { useMemo } from "react";
 import { Button, Skeleton } from "@crunch-ui/core";
-import { useGetCoordinatorCrunches } from "../application/hooks/useGetCoordinatorCrunches";
 import Link from "next/link";
 import { INTERNAL_LINKS } from "@/utils/routes";
-import {
-  getCoordinatorProgram,
-  CrunchAccountServiceWithContext,
-} from "@crunchdao/sdk";
-import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
+import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
+import { useGetCoordinatorCpi } from "../application/hooks/useGetCoordinatorCpi";
+import { useGetCrunches } from "../application/hooks/useGetCrunches";
 import { CrunchCard } from "./crunchCard";
 
 export function CoordinatorCrunches() {
-  const { crunches, crunchesLoading, crunchesPending } =
-    useGetCoordinatorCrunches();
-  const { anchorProvider } = useAnchorProvider();
+  const { authority, ready } = useEffectiveAuthority();
 
-  const crunchAccountService = useMemo(() => {
-    if (!anchorProvider) return null;
-    const coordinatorProgram = getCoordinatorProgram(anchorProvider);
-    return CrunchAccountServiceWithContext({ program: coordinatorProgram });
-  }, [anchorProvider]);
+  const { coordinator, coordinatorLoading } = useGetCoordinatorCpi(
+    authority?.toString()
+  );
 
-  if (crunchesLoading || crunchesPending) {
+  const { crunches, crunchesLoading } = useGetCrunches(
+    coordinator ? { coordinator: coordinator.address } : undefined
+  );
+
+  if (!ready || coordinatorLoading || crunchesLoading) {
     return (
       <div className="grid gap-4">
         <Skeleton className="h-6 w-2/3" />
@@ -33,7 +29,7 @@ export function CoordinatorCrunches() {
     );
   }
 
-  if (!crunches || crunches.length === 0) {
+  if (crunches.length === 0) {
     return (
       <div className="space-y-3">
         <p className="text-muted-foreground">
@@ -52,10 +48,8 @@ export function CoordinatorCrunches() {
         <CrunchCard
           key={crunch.name}
           name={crunch.name}
-          state={crunch.state ?? "unknown"}
-          address={crunchAccountService
-            ?.getCrunchAddress(crunch.name)
-            .toBase58()}
+          state={crunch.state?.toLowerCase() ?? "unknown"}
+          address={crunch.address}
         />
       ))}
     </div>
