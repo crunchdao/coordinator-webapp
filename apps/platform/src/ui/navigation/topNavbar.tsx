@@ -3,6 +3,7 @@ import Link from "next/link";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { WalletConnection } from "@/modules/wallet/ui/walletConnection";
 import { NavbarBreadcrumb } from "./navbarBreadcrumb";
+import { EnvironmentSwitcher } from "@/modules/environment/ui/environmentSwitcher";
 
 export const TopNavbar: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ export const TopNavbar: React.FC = () => {
         </Link>
         <NavbarBreadcrumb />
         <div className="ml-auto flex gap-6 items-center">
+          <EnvironmentSwitcher />
           <WalletConnection />
         </div>
       </nav>

@@ -7,12 +7,7 @@ import {
   TokenAccountNotFoundError,
 } from "@solana/spl-token";
 import { getNetworkConstants } from "@crunchdao/sdk";
-
-const getNetwork = () => {
-  return process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta"
-    ? "mainnet"
-    : "devnet";
-};
+import { getConfig } from "@/config";
 
 export const useGetUsdcBalance = () => {
   const { authority, isMultisigMode } = useEffectiveAuthority();
@@ -25,7 +20,8 @@ export const useGetUsdcBalance = () => {
         return 0;
       }
 
-      const network = getNetwork();
+      const { solana } = getConfig();
+      const network = solana.cluster === "mainnet-beta" ? "mainnet" : "devnet";
       const { USDC_TOKEN } = getNetworkConstants(network);
 
       const ataAddress = await getAssociatedTokenAddress(

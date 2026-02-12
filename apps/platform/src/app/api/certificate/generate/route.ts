@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
 import * as crypto from "crypto";
+import { cookies } from "next/headers";
+import { getConfigFor, type Environment } from "@/config";
 
 const DEFAULT_DAYS_VALID = 99 * 365;
-
-function getCrunchDaoApiUrl(): string {
-  const hubUrl = process.env.NEXT_PUBLIC_API_URL || "";
-  if (hubUrl.includes("crunchdao.io")) {
-    return "https://api.hub.crunchdao.io/";
-  }
-  return "https://api.hub.crunchdao.com/";
-}
 
 interface TlsIssueResponse {
   authorityCertificatePemString: string;
@@ -27,9 +21,11 @@ export async function POST() {
       format: "pem",
     }) as string;
 
-    const apiUrl = getCrunchDaoApiUrl();
+    const cookieStore = await cookies();
+    const env = (cookieStore.get("coordinator-environment")?.value ?? "staging") as Environment;
+    const { hubApiBaseUrl } = getConfigFor(env);
     const response = await fetch(
-      `${apiUrl}v1/security-credentials/tls/issue-certificate`,
+      `${hubApiBaseUrl}/v1/security-credentials/tls/issue-certificate`,
       {
         method: "POST",
         headers: {
