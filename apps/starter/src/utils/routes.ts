@@ -7,11 +7,14 @@ export const INTERNAL_LINKS = {
   SETTINGS: "/settings",
   MODELS: "/models",
   LOGS: "/logs",
+  FEEDS: "/feeds",
 } as const;
 
-type RouteConfig = {
+export type RouteConfig = {
   path: string;
   label: string;
+  /** When set, this route is only shown if the check returns true. */
+  visibilityKey?: string;
 };
 
 export const ROUTE_CONFIG: RouteConfig[] = [
@@ -30,6 +33,11 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.LOGS,
     label: "Logs",
+  },
+  {
+    path: INTERNAL_LINKS.FEEDS,
+    label: "Feeds",
+    visibilityKey: "feeds",
   },
   {
     path: INTERNAL_LINKS.SETTINGS,
