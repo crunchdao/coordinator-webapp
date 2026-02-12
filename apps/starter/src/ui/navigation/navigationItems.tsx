@@ -3,15 +3,31 @@ import Link from "next/link";
 import { cn, generateLink } from "@crunch-ui/utils";
 import { usePathname, useParams } from "next/navigation";
 import { ROUTE_CONFIG } from "@/utils/routes";
+import { useGetFeeds } from "@/modules/feed/application/hooks/useGetFeeds";
+
+function useRouteVisibility(): Record<string, boolean> {
+  const { feeds } = useGetFeeds();
+  return {
+    feeds: feeds.length > 0,
+  };
+}
 
 export const NavigationItems: React.FC = () => {
   const pathname = usePathname();
   const params = useParams();
   const crunchname = params.crunchname as string;
+  const visibility = useRouteVisibility();
 
   return (
     <nav className="flex items-center gap-3">
       {ROUTE_CONFIG.map((route) => {
+        if (
+          route.visibilityKey &&
+          !visibility[route.visibilityKey]
+        ) {
+          return null;
+        }
+
         const routePath = crunchname
           ? generateLink(route.path, { crunchname })
           : route.path;

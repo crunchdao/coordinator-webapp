@@ -10,9 +10,11 @@ export const INTERNAL_LINKS = {
   FEEDS: "/feeds",
 } as const;
 
-type RouteConfig = {
+export type RouteConfig = {
   path: string;
   label: string;
+  /** When set, this route is only shown if the check returns true. */
+  visibilityKey?: string;
 };
 
 export const ROUTE_CONFIG: RouteConfig[] = [
@@ -35,6 +37,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.FEEDS,
     label: "Feeds",
+    visibilityKey: "feeds",
   },
   {
     path: INTERNAL_LINKS.SETTINGS,
