@@ -18,7 +18,7 @@ import {
   Input,
   Skeleton,
 } from "@crunch-ui/core";
-import { config } from "@/config";
+import { getConfig } from "@/config";
 import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
 import { CoordinatorStatus } from "@/modules/crunch/domain/types";
 import { faucetRequestSchema } from "../application/schemas/faucet-request";
@@ -39,7 +39,8 @@ export function FaucetCard() {
   const { requestFaucet, requestFaucetLoading } = useRequestFaucet();
   const { coordinator, coordinatorLoading } = useGetCoordinator();
 
-  const isDevnet = config.solana.network !== "mainnet-beta";
+  const { solana } = getConfig();
+  const isDevnet = solana.network !== "mainnet-beta";
   const isApprovedCoordinator =
     coordinator?.status === CoordinatorStatus.APPROVED;
 

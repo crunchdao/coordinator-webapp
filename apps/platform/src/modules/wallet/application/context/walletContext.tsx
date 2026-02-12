@@ -15,7 +15,7 @@ import {
 import { LedgerWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl, PublicKey } from "@solana/web3.js";
-import { config } from "@/config";
+import { getConfig } from "@/config";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 import { useWallet as useSolanaWallet } from "@solana/wallet-adapter-react";
@@ -117,16 +117,17 @@ export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
     [multisigAddress, setMultisigAddress, clearMultisigAddress]
   );
 
-  const network = config.solana.network;
+  const { solana } = getConfig();
+  const network = solana.network;
 
   const endpoint = useMemo(() => {
     try {
-      return config.solana.rpcUrl;
+      return solana.rpcUrl;
     } catch (error) {
       console.warn("Using default cluster URL:", error);
       return clusterApiUrl(network);
     }
-  }, [network]);
+  }, [solana.rpcUrl, network]);
 
   const wallets = useMemo(() => [new LedgerWalletAdapter()], []);
 

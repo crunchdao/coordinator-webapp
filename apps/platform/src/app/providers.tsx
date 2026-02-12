@@ -12,6 +12,7 @@ import { MultisigProposalTrackerDialog } from "@/modules/wallet/ui/multisigPropo
 import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { useQueryClient } from "@tanstack/react-query";
 import type { TransactionExecutor } from "@crunchdao/solana-utils";
+import { EnvironmentProvider, useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { anchorProvider } = useAnchorProvider();
@@ -20,10 +21,8 @@ const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { trackProposal } = useMultisigProposalTracker();
   const queryClient = useQueryClient();
 
-  const cluster =
-    process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta"
-      ? "mainnet-beta"
-      : "devnet";
+  const { config } = useEnvironment();
+  const cluster = config.solana.cluster;
 
   const stakingTransactionExecutor: TransactionExecutor =
     useCallback<TransactionExecutor>(
@@ -69,9 +68,11 @@ const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   );
 };
 
-const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
+const InnerProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { environment } = useEnvironment();
+
   return (
-    <WalletProvider>
+    <WalletProvider key={environment}>
       <AuthProvider>
         <MultisigProposalTrackerProvider>
           <StakingWrapper>
@@ -83,6 +84,14 @@ const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
         </MultisigProposalTrackerProvider>
       </AuthProvider>
     </WalletProvider>
+  );
+};
+
+const Providers: React.FC<{ children: ReactNode }> = ({ children }) => {
+  return (
+    <EnvironmentProvider>
+      <InnerProviders>{children}</InnerProviders>
+    </EnvironmentProvider>
   );
 };
 

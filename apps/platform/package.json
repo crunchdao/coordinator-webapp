@@ -38,6 +38,7 @@
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-zoom": "^2.2.0",
     "geist": "^1.5.1",
+    "js-cookie": "^3.0.5",
     "jszip": "^3.10.1",
     "lodash.uniqby": "^4.7.0",
     "next": "16.1.2",
@@ -50,6 +51,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/js-cookie": "^3.0.6",
     "@types/lodash.uniqby": "^4.7.9",
     "@types/node": "25.0.9",
     "@types/react": "19.2.8",

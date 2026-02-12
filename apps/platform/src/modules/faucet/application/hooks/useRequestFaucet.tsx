@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { getConfig } from "@/config";
 
 export const useRequestFaucet = () => {
   const queryClient = useQueryClient();
@@ -14,7 +15,8 @@ export const useRequestFaucet = () => {
         throw new Error("Wallet not connected");
       }
 
-      if (process.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet-beta") {
+      const { solana } = getConfig();
+      if (solana.cluster === "mainnet-beta") {
         throw new Error("Faucet is only available on devnet");
       }
 
