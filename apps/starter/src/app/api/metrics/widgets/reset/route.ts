@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
 import { initialConfig } from "@coordinator/metrics/src/domain/initial-config";
+import { fetchReportSchema } from "@/app/api/_lib/reportSchema";
 
 const CONFIG_FILE = path.join(process.cwd(), "config", "metrics-widgets.json");
 
@@ -16,12 +17,16 @@ async function ensureConfigDir() {
 
 export async function POST() {
   try {
+    const schema = await fetchReportSchema();
+    const backendWidgets = schema?.metrics_widgets || initialConfig;
+
     await ensureConfigDir();
     await fs.writeFile(
       CONFIG_FILE,
-      JSON.stringify(initialConfig, null, 2),
+      JSON.stringify(backendWidgets, null, 2),
       "utf-8"
     );
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error resetting widgets:", error);
