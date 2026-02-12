@@ -1,31 +1,66 @@
 "use client";
 
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@crunch-ui/core";
 import { useEnvironment } from "../application/context/environmentContext";
-import type { Environment } from "@/config";
+import { getConfigFor, type Environment } from "@/config";
 
-const environments: { value: Environment; label: string }[] = [
-  { value: "staging", label: "Staging" },
-  { value: "production", label: "Production" },
-];
+const environments: Environment[] = ["staging", "production"];
+
+const labels: Record<Environment, string> = {
+  staging: "Staging",
+  production: "Production",
+};
 
 export const EnvironmentSwitcher: React.FC = () => {
   const { environment, switchEnvironment } = useEnvironment();
 
   return (
-    <div className="flex items-center gap-1 rounded-md border border-border bg-muted p-0.5 text-xs">
-      {environments.map(({ value, label }) => (
-        <button
-          key={value}
-          onClick={() => switchEnvironment(value)}
-          className={`rounded px-2.5 py-1 font-medium transition-colors cursor-pointer ${
-            environment === value
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
+    <Tabs
+      value={environment}
+      onValueChange={(value) => switchEnvironment(value as Environment)}
+    >
+      <TabsList size="sm">
+        {environments.map((env) => {
+          const config = getConfigFor(env);
+
+          return (
+            <Tooltip key={env}>
+              <TooltipTrigger asChild>
+                <TabsTrigger value={env} size="sm">
+                  {labels[env]}
+                </TabsTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">
+                <div className="flex flex-col gap-1">
+                  <span>
+                    <span className="text-muted-foreground">Network:</span>{" "}
+                    {config.solana.cluster}
+                  </span>
+                  <span>
+                    <span className="text-muted-foreground">Hub:</span>{" "}
+                    {config.hubBaseUrl}
+                  </span>
+                  <span>
+                    <span className="text-muted-foreground">CPI:</span>{" "}
+                    {config.cpiBaseUrl}
+                  </span>
+                  <span>
+                    <span className="text-muted-foreground">RPC:</span>{" "}
+                    {config.solana.rpcUrl}
+                  </span>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </TabsList>
+    </Tabs>
   );
 };
