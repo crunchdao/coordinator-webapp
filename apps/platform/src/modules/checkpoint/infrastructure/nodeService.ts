@@ -19,20 +19,6 @@ export const getNodeCheckpoints = async (
 };
 
 /**
- * Create a manual checkpoint on the node (saves as PENDING).
- */
-export const createNodeCheckpoint = async (
-  crunchName: string,
-  prizes: { model: string; prize: number }[]
-): Promise<NodeCheckpoint> => {
-  const response = await apiClient.post(
-    `/crunches/${crunchName}/reports/checkpoints`,
-    { prizes }
-  );
-  return response.data;
-};
-
-/**
  * Confirm a checkpoint was submitted on-chain (sends tx_hash back to node).
  */
 export const confirmNodeCheckpoint = async (
