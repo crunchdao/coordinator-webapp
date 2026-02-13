@@ -5,6 +5,12 @@ export interface NodeHealth {
   status: string;
 }
 
+export interface NodeInfo {
+  crunch_id: string;
+  crunch_address: string;
+  network: string;
+}
+
 export interface NodeModel {
   model_id: string;
   model_name: string;
@@ -34,6 +40,11 @@ export interface NodeSnapshot {
   result_summary: Record<string, number>;
   created_at: string;
 }
+
+export const getNodeInfo = async (nodeUrl: string): Promise<NodeInfo> => {
+  const response = await nodeClient.get(`${nodeUrl}/info`);
+  return response.data;
+};
 
 export const getNodeHealth = async (nodeUrl: string): Promise<NodeHealth> => {
   // Try /healthz first, fall back to /reports/models as a connectivity check

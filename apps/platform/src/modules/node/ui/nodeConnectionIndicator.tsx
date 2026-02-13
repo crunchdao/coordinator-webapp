@@ -10,16 +10,53 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@crunch-ui/core";
 import { Settings } from "@crunch-ui/icons";
 import { useNodeConnection } from "../application/context/nodeConnectionContext";
 import { useNodeStatus } from "../application/hooks/useNodeStatus";
+import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+
+type ConnectionState = "online" | "mismatch" | "offline";
 
 export function NodeConnectionIndicator() {
   const { nodeUrl, setNodeUrl, isDefault } = useNodeConnection();
   const { nodeStatus } = useNodeStatus();
+  const { crunchData } = useCrunchContext();
   const [open, setOpen] = useState(false);
   const [editUrl, setEditUrl] = useState(nodeUrl);
+
+  // Determine connection state
+  const addressMismatch =
+    nodeStatus.isOnline &&
+    nodeStatus.info?.crunch_address &&
+    crunchData?.address &&
+    nodeStatus.info.crunch_address !== crunchData.address;
+
+  const connectionState: ConnectionState = !nodeStatus.isOnline
+    ? "offline"
+    : addressMismatch
+      ? "mismatch"
+      : "online";
+
+  const dotColor = {
+    online: "bg-green-500",
+    mismatch: "bg-yellow-500",
+    offline: "bg-red-500",
+  }[connectionState];
+
+  const nodeLabel = nodeStatus.info?.crunch_id
+    ? `Node: ${nodeStatus.info.crunch_id}`
+    : "Crunch Node";
+
+  const tooltipText =
+    connectionState === "mismatch"
+      ? `Address mismatch!\nNode: ${nodeStatus.info?.crunch_address}\nCrunch: ${crunchData?.address}`
+      : connectionState === "online"
+        ? `Connected to ${nodeUrl}`
+        : "Node offline";
 
   const handleOpen = () => {
     setEditUrl(nodeUrl);
@@ -39,15 +76,23 @@ export function NodeConnectionIndicator() {
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={handleOpen} className="gap-1.5">
-        <span
-          className={`h-2 w-2 rounded-full shrink-0 ${
-            nodeStatus.isOnline ? "bg-green-500" : "bg-red-500"
-          }`}
-        />
-        <Settings className="h-3.5 w-3.5" />
-        <span className="text-xs">Crunch Node</span>
-      </Button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleOpen}
+            className="gap-1.5"
+          >
+            <span className={`h-2 w-2 rounded-full shrink-0 ${dotColor}`} />
+            <Settings className="h-3.5 w-3.5" />
+            <span className="text-xs">{nodeLabel}</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs whitespace-pre-line">
+          {tooltipText}
+        </TooltipContent>
+      </Tooltip>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
@@ -61,10 +106,20 @@ export function NodeConnectionIndicator() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Badge
-                variant={nodeStatus.isOnline ? "success" : "destructive"}
+                variant={
+                  connectionState === "online"
+                    ? "success"
+                    : connectionState === "mismatch"
+                      ? "warning"
+                      : "destructive"
+                }
                 size="sm"
               >
-                {nodeStatus.isOnline ? "Online" : "Offline"}
+                {connectionState === "online"
+                  ? "Online"
+                  : connectionState === "mismatch"
+                    ? "Address Mismatch"
+                    : "Offline"}
               </Badge>
               {isDefault && (
                 <Badge variant="outline" size="sm">
@@ -72,6 +127,50 @@ export function NodeConnectionIndicator() {
                 </Badge>
               )}
             </div>
+
+            {nodeStatus.isOnline && nodeStatus.info && (
+              <div className="rounded-md border p-3 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Crunch ID</span>
+                  <span className="font-medium">
+                    {nodeStatus.info.crunch_id}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Network</span>
+                  <span className="font-medium">
+                    {nodeStatus.info.network}
+                  </span>
+                </div>
+                {nodeStatus.info.crunch_address && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground shrink-0">
+                      Node Address
+                    </span>
+                    <span className="font-mono text-xs truncate">
+                      {nodeStatus.info.crunch_address}
+                    </span>
+                  </div>
+                )}
+                {crunchData?.address && (
+                  <div className="flex justify-between gap-4">
+                    <span className="text-muted-foreground shrink-0">
+                      Crunch Address
+                    </span>
+                    <span className="font-mono text-xs truncate">
+                      {crunchData.address}
+                    </span>
+                  </div>
+                )}
+                {addressMismatch && (
+                  <p className="text-xs text-yellow-600">
+                    ⚠ The node&apos;s crunch address does not match this
+                    crunch&apos;s on-chain address. Make sure you&apos;re
+                    connected to the right node.
+                  </p>
+                )}
+              </div>
+            )}
 
             {nodeStatus.isOnline && (
               <div className="grid grid-cols-3 gap-3 text-sm">
