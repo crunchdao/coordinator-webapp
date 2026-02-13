@@ -36,8 +36,18 @@ export interface NodeSnapshot {
 }
 
 export const getNodeHealth = async (nodeUrl: string): Promise<NodeHealth> => {
-  const response = await nodeClient.get(`${nodeUrl}/healthz`);
-  return response.data;
+  // Try /healthz first, fall back to /reports/models as a connectivity check
+  try {
+    const response = await nodeClient.get(`${nodeUrl}/healthz`);
+    return response.data;
+  } catch {
+    // Older nodes may not have /healthz — try any reports endpoint
+    const response = await nodeClient.get(`${nodeUrl}/reports/models`);
+    if (response.status === 200) {
+      return { status: "ok" };
+    }
+    throw new Error("Node unreachable");
+  }
 };
 
 export const getNodeModels = async (nodeUrl: string): Promise<NodeModel[]> => {
