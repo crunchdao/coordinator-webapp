@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { PublicKey } from "@solana/web3.js";
 import {
   Button,
@@ -11,9 +10,7 @@ import {
   CardTitle,
   Skeleton,
 } from "@crunch-ui/core";
-import { generateLink } from "@crunch-ui/utils";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
-import { INTERNAL_LINKS } from "@/utils/routes";
 import { useCrunchContext } from "../application/context/crunchContext";
 import { FundCrunchDialog } from "./fundCrunchDialog";
 import { StartCrunchDialog } from "./startCrunchDialog";
@@ -74,13 +71,7 @@ export function CrunchOverview() {
                 Start Crunch
               </Button>
             )}
-            <Link
-              href={generateLink(INTERNAL_LINKS.CHECKPOINT_CREATE, {
-                crunchname: crunchName,
-              })}
-            >
-              <Button>Create Checkpoint</Button>
-            </Link>
+
           </div>
         </CardContent>
       </Card>

@@ -2,9 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
 import {
-  Button,
   Card,
   CardContent,
   CardDescription,
@@ -16,10 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@crunch-ui/core";
-import { generateLink } from "@crunch-ui/utils";
 import { DataTable } from "@coordinator/ui/src/data-table";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
-import { INTERNAL_LINKS } from "@/utils/routes";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useGetCheckpoints } from "../application/hooks/useGetCheckpoints";
 import { Checkpoint, CheckpointStatus } from "../domain/types";
@@ -106,13 +102,7 @@ export function CheckpointList() {
                 ))}
               </SelectContent>
             </Select>
-            <Link
-              href={generateLink(INTERNAL_LINKS.CHECKPOINT_CREATE, {
-                crunchname: crunchName,
-              })}
-            >
-              <Button>Create Checkpoint</Button>
-            </Link>
+
           </div>
         </div>
       </CardHeader>
