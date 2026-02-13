@@ -15,7 +15,10 @@ import { generateLink } from "@crunch-ui/utils";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { NodeCheckpoint } from "../../domain/nodeTypes";
-import { confirmNodeCheckpoint } from "../../infrastructure/nodeService";
+import {
+  confirmNodeCheckpoint,
+  updateNodeCheckpointStatus,
+} from "../../infrastructure/nodeService";
 
 const FRAC64_MULTIPLIER = 1_000_000_000;
 
@@ -109,7 +112,7 @@ export function useSubmitNodeCheckpoint() {
     },
     onSuccess: (result) => {
       const handleSuccess = async () => {
-        // Confirm back to the node
+        // Confirm to node (PENDING → SUBMITTED) then mark CLAIMABLE
         if (result.signature) {
           try {
             await confirmNodeCheckpoint(
@@ -117,8 +120,13 @@ export function useSubmitNodeCheckpoint() {
               result.nodeCheckpointId,
               result.signature
             );
+            await updateNodeCheckpointStatus(
+              crunchName,
+              result.nodeCheckpointId,
+              "CLAIMABLE"
+            );
           } catch (err) {
-            console.warn("Failed to confirm checkpoint to node:", err);
+            console.warn("Failed to update checkpoint status on node:", err);
           }
         }
 

@@ -20,6 +20,7 @@ export const getNodeCheckpoints = async (
 
 /**
  * Confirm a checkpoint was submitted on-chain (sends tx_hash back to node).
+ * Transitions: PENDING → SUBMITTED
  */
 export const confirmNodeCheckpoint = async (
   crunchName: string,
@@ -29,5 +30,20 @@ export const confirmNodeCheckpoint = async (
   await apiClient.post(
     `/crunches/${crunchName}/reports/checkpoints/${checkpointId}/confirm`,
     { tx_hash: txHash }
+  );
+};
+
+/**
+ * Update checkpoint status on the node.
+ * Transitions: SUBMITTED → CLAIMABLE, CLAIMABLE → PAID
+ */
+export const updateNodeCheckpointStatus = async (
+  crunchName: string,
+  checkpointId: string,
+  newStatus: string
+): Promise<void> => {
+  await apiClient.patch(
+    `/crunches/${crunchName}/reports/checkpoints/${checkpointId}/status`,
+    { status: newStatus }
   );
 };
