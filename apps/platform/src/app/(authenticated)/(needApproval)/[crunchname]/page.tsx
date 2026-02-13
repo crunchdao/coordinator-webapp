@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { CrunchOverview } from "@/modules/crunch/ui/crunchOverview";
+import { NodeStatusOverview } from "@/modules/node/ui/nodeStatusOverview";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 
 export default function CrunchOverviewPage() {
@@ -21,7 +22,8 @@ export default function CrunchOverviewPage() {
         />
         <div className="absolute h-1/2 w-full bg-gradient-to-t from-background to-transparent bottom-0" />
       </section>
-      <section className="p-6 pt-0">
+      <section className="p-6 pt-0 space-y-6">
+        <NodeStatusOverview />
         <CrunchOverview />
       </section>
     </>
