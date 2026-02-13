@@ -1,18 +1,18 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useNodeConnection } from "../context/nodeConnectionContext";
 import {
   getNodeHealth,
   getNodeModels,
   getNodeFeeds,
   getNodeSnapshots,
+  getNodeCheckpoints,
   NodeHealth,
   NodeModel,
   NodeFeed,
   NodeSnapshot,
-} from "../../infrastructure/nodeStatusService";
-import { getNodeCheckpoints } from "@/modules/checkpoint/infrastructure/nodeService";
+} from "../../infrastructure/nodeService";
 import { NodeCheckpoint } from "@/modules/checkpoint/domain/nodeTypes";
 
 export interface NodeStatus {
@@ -25,44 +25,39 @@ export interface NodeStatus {
 }
 
 export function useNodeStatus() {
-  const { crunchName } = useCrunchContext();
+  const { nodeUrl } = useNodeConnection();
 
   const healthQuery = useQuery({
-    queryKey: ["node-health", crunchName],
-    queryFn: () => getNodeHealth(crunchName),
-    enabled: !!crunchName,
+    queryKey: ["node-health", nodeUrl],
+    queryFn: () => getNodeHealth(nodeUrl),
     retry: false,
     refetchInterval: 15_000,
   });
 
   const modelsQuery = useQuery({
-    queryKey: ["node-models", crunchName],
-    queryFn: () => getNodeModels(crunchName),
-    enabled: !!crunchName,
+    queryKey: ["node-models", nodeUrl],
+    queryFn: () => getNodeModels(nodeUrl),
     retry: false,
     refetchInterval: 30_000,
   });
 
   const feedsQuery = useQuery({
-    queryKey: ["node-feeds", crunchName],
-    queryFn: () => getNodeFeeds(crunchName),
-    enabled: !!crunchName,
+    queryKey: ["node-feeds", nodeUrl],
+    queryFn: () => getNodeFeeds(nodeUrl),
     retry: false,
     refetchInterval: 15_000,
   });
 
   const snapshotsQuery = useQuery({
-    queryKey: ["node-snapshots", crunchName],
-    queryFn: () => getNodeSnapshots(crunchName, 5),
-    enabled: !!crunchName,
+    queryKey: ["node-snapshots", nodeUrl],
+    queryFn: () => getNodeSnapshots(nodeUrl, 5),
     retry: false,
     refetchInterval: 30_000,
   });
 
   const checkpointsQuery = useQuery({
-    queryKey: ["node-checkpoints-recent", crunchName],
-    queryFn: () => getNodeCheckpoints(crunchName),
-    enabled: !!crunchName,
+    queryKey: ["node-checkpoints-recent", nodeUrl],
+    queryFn: () => getNodeCheckpoints(nodeUrl),
     retry: false,
     refetchInterval: 30_000,
   });

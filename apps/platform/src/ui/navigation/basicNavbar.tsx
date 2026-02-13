@@ -5,6 +5,7 @@ import { usePathname, useParams } from "next/navigation";
 import { Badge } from "@crunch-ui/core";
 import { ROUTE_CONFIG } from "@/utils/routes";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { NodeConnectionIndicator } from "@/modules/node/ui/nodeConnectionIndicator";
 
 export const BasicNavbar: React.FC = () => {
   const pathname = usePathname();
@@ -34,7 +35,8 @@ export const BasicNavbar: React.FC = () => {
             </Link>
           );
         })}
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
+          <NodeConnectionIndicator />
           <Badge
             variant={crunchState === "started" ? "success" : "secondary"}
             size="sm"

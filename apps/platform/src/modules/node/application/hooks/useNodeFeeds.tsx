@@ -1,23 +1,16 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
-import {
-  getNodeFeedTail,
-  FeedRecord,
-} from "../../infrastructure/feedService";
-import {
-  getNodeFeeds,
-  NodeFeed,
-} from "../../infrastructure/nodeStatusService";
+import { useNodeConnection } from "../context/nodeConnectionContext";
+import { getNodeFeedTail } from "../../infrastructure/feedService";
+import { getNodeFeeds } from "../../infrastructure/nodeService";
 
 export function useNodeFeeds() {
-  const { crunchName } = useCrunchContext();
+  const { nodeUrl } = useNodeConnection();
 
   const feedsQuery = useQuery({
-    queryKey: ["node-feeds", crunchName],
-    queryFn: () => getNodeFeeds(crunchName),
-    enabled: !!crunchName,
+    queryKey: ["node-feeds", nodeUrl],
+    queryFn: () => getNodeFeeds(nodeUrl),
     retry: false,
     refetchInterval: 15_000,
   });
@@ -34,12 +27,11 @@ export function useNodeFeedTail(params?: {
   subject?: string;
   limit?: number;
 }) {
-  const { crunchName } = useCrunchContext();
+  const { nodeUrl } = useNodeConnection();
 
   const query = useQuery({
-    queryKey: ["node-feed-tail", crunchName, params],
-    queryFn: () => getNodeFeedTail(crunchName, params),
-    enabled: !!crunchName,
+    queryKey: ["node-feed-tail", nodeUrl, params],
+    queryFn: () => getNodeFeedTail(nodeUrl, params),
     retry: false,
     refetchInterval: 5_000,
   });
