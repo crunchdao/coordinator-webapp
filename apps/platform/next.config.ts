@@ -26,10 +26,15 @@ const nextConfig: NextConfig = {
         source: "/api/metrics/:path*",
         destination: "/api/metrics/:path*",
       },
-      // Proxy node report API: /api/crunches/{name}/reports/* → node /reports/*
+      // Proxy node API: /api/crunches/{name}/reports/* → node /reports/*
       {
         source: "/api/crunches/:crunchName/reports/:path*",
         destination: `${NODE_API_URL}/reports/:path*`,
+      },
+      // Proxy node healthz
+      {
+        source: "/api/crunches/:crunchName/healthz",
+        destination: `${NODE_API_URL}/healthz`,
       },
     ];
   },
