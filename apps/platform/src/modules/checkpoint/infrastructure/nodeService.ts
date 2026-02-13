@@ -3,7 +3,6 @@ import { NodeCheckpoint } from "../domain/nodeTypes";
 
 /**
  * Fetch checkpoints from the coordinator node's report API.
- * Uses the Hub proxy pattern: /crunches/{crunchName}/reports/...
  */
 export const getNodeCheckpoints = async (
   crunchName: string,
@@ -15,6 +14,20 @@ export const getNodeCheckpoints = async (
   const response = await apiClient.get(
     `/crunches/${crunchName}/reports/checkpoints`,
     { params }
+  );
+  return response.data;
+};
+
+/**
+ * Create a manual checkpoint on the node (saves as PENDING).
+ */
+export const createNodeCheckpoint = async (
+  crunchName: string,
+  prizes: { model: string; prize: number }[]
+): Promise<NodeCheckpoint> => {
+  const response = await apiClient.post(
+    `/crunches/${crunchName}/reports/checkpoints`,
+    { prizes }
   );
   return response.data;
 };
