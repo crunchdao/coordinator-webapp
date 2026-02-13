@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useNodeConnection } from "../context/nodeConnectionContext";
 import {
   getNodeHealth,
+  getNodeInfo,
   getNodeModels,
   getNodeFeeds,
   getNodeSnapshots,
   getNodeCheckpoints,
   NodeHealth,
+  NodeInfo,
   NodeModel,
   NodeFeed,
   NodeSnapshot,
@@ -17,6 +19,7 @@ import { NodeCheckpoint } from "@/modules/checkpoint/domain/nodeTypes";
 
 export interface NodeStatus {
   health: NodeHealth | null;
+  info: NodeInfo | null;
   models: NodeModel[];
   feeds: NodeFeed[];
   snapshots: NodeSnapshot[];
@@ -32,6 +35,13 @@ export function useNodeStatus() {
     queryFn: () => getNodeHealth(nodeUrl),
     retry: false,
     refetchInterval: 15_000,
+  });
+
+  const infoQuery = useQuery({
+    queryKey: ["node-info", nodeUrl],
+    queryFn: () => getNodeInfo(nodeUrl),
+    retry: false,
+    refetchInterval: 60_000,
   });
 
   const modelsQuery = useQuery({
@@ -67,6 +77,7 @@ export function useNodeStatus() {
   return {
     nodeStatus: {
       health: healthQuery.data ?? null,
+      info: infoQuery.data ?? null,
       models: modelsQuery.data ?? [],
       feeds: feedsQuery.data ?? [],
       snapshots: snapshotsQuery.data ?? [],
