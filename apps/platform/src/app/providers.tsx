@@ -14,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import type { TransactionExecutor } from "@crunchdao/solana-utils";
 import { EnvironmentProvider, useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
+
 const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { anchorProvider } = useAnchorProvider();
   const { authority, isMultisigMode } = useEffectiveAuthority();
