@@ -110,6 +110,21 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
     metricParams
   );
 
+  const barWidgetOriginals = useMemo(() => {
+    const map: Record<number, BarChartDefinition> = {};
+    (widgets || []).forEach((w) => {
+      if (
+        "nativeConfiguration" in w &&
+        w.nativeConfiguration &&
+        "type" in w.nativeConfiguration &&
+        w.nativeConfiguration.type === "bar"
+      ) {
+        map[w.id] = w as BarChartDefinition;
+      }
+    });
+    return map;
+  }, [widgets]);
+
   if (widgetsLoading || modelsLoading || dataLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -123,21 +138,6 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
       <p className="text-muted-foreground text-center">No metrics configured</p>
     );
   }
-
-  const barWidgetOriginals = useMemo(() => {
-    const map: Record<number, BarChartDefinition> = {};
-    widgets.forEach((w) => {
-      if (
-        "nativeConfiguration" in w &&
-        w.nativeConfiguration &&
-        "type" in w.nativeConfiguration &&
-        w.nativeConfiguration.type === "bar"
-      ) {
-        map[w.id] = w as BarChartDefinition;
-      }
-    });
-    return map;
-  }, [widgets]);
 
   return (
     <Card displayCorners>
