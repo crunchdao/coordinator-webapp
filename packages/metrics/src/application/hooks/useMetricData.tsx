@@ -20,6 +20,7 @@ export const useMetricData = (
               projectIds: params.modelIds.join(","),
               start: params.start,
               end: params.end,
+              ...(params.includeEnsembles ? { include_ensembles: true } : {}),
             },
           });
           return { widgetId: widget.id, data: response.data };

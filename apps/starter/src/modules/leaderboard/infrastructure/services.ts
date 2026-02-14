@@ -14,9 +14,12 @@ export type GetModelsResponse = {
 }[];
 
 export const getLeaderboard = async (
-  leaderboardEndpoint: string
+  leaderboardEndpoint: string,
+  includeEnsembles?: boolean
 ): Promise<Leaderboard> => {
-  const response = await apiClient.get(leaderboardEndpoint);
+  const response = await apiClient.get(leaderboardEndpoint, {
+    params: includeEnsembles ? { include_ensembles: true } : {},
+  });
   return response.data;
 };
 

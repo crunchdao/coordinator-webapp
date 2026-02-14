@@ -33,4 +33,5 @@ export interface GetMetricDataParams {
   modelIds: string[];
   start: string;
   end: string;
+  includeEnsembles?: boolean;
 }

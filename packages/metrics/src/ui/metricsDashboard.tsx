@@ -23,6 +23,7 @@ export interface MetricsDashboardProps {
   modelsLoading?: boolean;
   widgets?: Widget[];
   widgetsLoading?: boolean;
+  includeEnsembles?: boolean;
 }
 
 export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
@@ -30,6 +31,7 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   modelsLoading = false,
   widgets = [],
   widgetsLoading = false,
+  includeEnsembles = false,
 }) => {
   const [selectedModelIds, setSelectedModelIds] = useState<string[] | null>(
     null
@@ -92,8 +94,9 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
       modelIds,
       start: start.toISOString(),
       end: end.toISOString(),
+      includeEnsembles,
     };
-  }, [selectedModels]);
+  }, [selectedModels, includeEnsembles]);
 
   const { widgets: widgetsWithData, isLoading: dataLoading } = useMetricData(
     widgets,

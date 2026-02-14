@@ -5,14 +5,14 @@ import { useGlobalSettings } from "@/modules/settings/application/hooks/useGloba
 import { initialSettings } from "@/modules/settings/domain/initial-config";
 import { getLeaderboard, getModelList } from "../../infrastructure/services";
 
-export function useGetLeaderboard() {
+export function useGetLeaderboard(includeEnsembles = false) {
   const { settings } = useGlobalSettings();
 
   const leaderboardQuery = useQuery({
-    queryKey: ["leaderboard", settings?.endpoints?.leaderboard],
+    queryKey: ["leaderboard", settings?.endpoints?.leaderboard, includeEnsembles],
     queryFn: async () => {
       const endpoint = settings?.endpoints?.leaderboard || initialSettings.endpoints.leaderboard;
-      return getLeaderboard(endpoint);
+      return getLeaderboard(endpoint, includeEnsembles);
     },
     enabled: !!settings,
     retry: false,
