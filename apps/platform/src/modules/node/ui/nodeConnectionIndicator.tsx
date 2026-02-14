@@ -32,8 +32,9 @@ export function NodeConnectionIndicator() {
   const addressMismatch =
     nodeStatus.isOnline &&
     nodeStatus.info?.crunch_address &&
-    crunchData?.address &&
-    nodeStatus.info.crunch_address !== crunchData.address;
+    crunchData !== null &&
+    (!crunchData.address ||
+      nodeStatus.info.crunch_address !== crunchData.address);
 
   const connectionState: ConnectionState = !nodeStatus.isOnline
     ? "offline"
