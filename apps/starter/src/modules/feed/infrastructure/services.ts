@@ -3,8 +3,8 @@ import { endpoints } from "./endpoints";
 import { FeedSummary, FeedTailRecord } from "../domain/types";
 
 export type FeedTailFilters = {
-  source?: string;
-  subject?: string;
+  provider?: string;
+  asset?: string;
   kind?: string;
   granularity?: string;
   limit?: number;
@@ -20,11 +20,11 @@ export const getFeedsTail = async (
 ): Promise<FeedTailRecord[]> => {
   const response = await apiClient.get(endpoints.getFeedsTail(), {
     params: {
-      source: filters.source,
-      subject: filters.subject,
+      provider: filters.provider,
+      asset: filters.asset,
       kind: filters.kind,
       granularity: filters.granularity,
-      limit: filters.limit ?? 50,
+      limit: filters.limit ?? 10,
     },
   });
   return response.data;

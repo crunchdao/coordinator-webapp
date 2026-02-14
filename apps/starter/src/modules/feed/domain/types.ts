@@ -1,6 +1,6 @@
 export type FeedSummary = {
-  source: string;
-  subject: string;
+  provider: string;
+  asset: string;
   kind: string;
   granularity: string;
   record_count: number;
@@ -11,12 +11,12 @@ export type FeedSummary = {
 };
 
 export type FeedTailRecord = {
-  source: string;
-  subject: string;
+  provider: string;
+  asset: string;
   kind: string;
   granularity: string;
   ts_event: string;
   ts_ingested: string;
-  values: Record<string, number | string>;
+  values: Record<string, unknown>;
   meta: Record<string, unknown>;
 };

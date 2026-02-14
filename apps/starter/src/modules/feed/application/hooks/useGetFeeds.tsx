@@ -7,13 +7,11 @@ export function useGetFeeds() {
   const query = useQuery({
     queryKey: ["feeds"],
     queryFn: getFeeds,
-    retry: false,
-    refetchInterval: 15_000,
+    refetchInterval: 10_000,
   });
 
   return {
     feeds: query.data || [],
     feedsLoading: query.isPending,
-    feedsError: query.error,
   };
 }
