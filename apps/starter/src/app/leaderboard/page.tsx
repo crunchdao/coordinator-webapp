@@ -1,6 +1,8 @@
 "use client";
+import { useState } from "react";
 import { LeaderboardTable } from "@coordinator/leaderboard/src/ui/leaderboardTable";
 import { ColumnSettingsTable } from "@coordinator/leaderboard/src/ui/columnSettingsTable";
+import { Switch, Label } from "@crunch-ui/core";
 import { useGetLeaderboard } from "@/modules/leaderboard/application/hooks/useGetLeaderboard";
 import { useLeaderboardColumns } from "@/modules/leaderboard/application/hooks/useLeaderboardColumns";
 import { useAddColumn } from "@/modules/leaderboard/application/hooks/useAddColumn";
@@ -9,7 +11,8 @@ import { useRemoveColumn } from "@/modules/leaderboard/application/hooks/useRemo
 import { useResetColumns } from "@/modules/leaderboard/application/hooks/useResetColumns";
 
 export default function LeaderboardConfigurationPage() {
-  const { leaderboard, leaderboardLoading } = useGetLeaderboard();
+  const [showEnsembles, setShowEnsembles] = useState(false);
+  const { leaderboard, leaderboardLoading } = useGetLeaderboard(showEnsembles);
   const { columns, columnsLoading } = useLeaderboardColumns();
   const { addColumn, addColumnLoading } = useAddColumn();
   const { updateColumn, updateColumnLoading } = useUpdateColumn();
@@ -30,6 +33,16 @@ export default function LeaderboardConfigurationPage() {
         deleteLoading={removeColumnLoading}
         resetLoading={resetColumnsLoading}
       />
+      <div className="flex items-center gap-2 py-2">
+        <Switch
+          id="show-ensembles"
+          checked={showEnsembles}
+          onCheckedChange={setShowEnsembles}
+        />
+        <Label htmlFor="show-ensembles" className="text-sm cursor-pointer">
+          Show Ensembles
+        </Label>
+      </div>
       <LeaderboardTable
         leaderboard={leaderboard}
         columns={columns}
