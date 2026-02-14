@@ -112,6 +112,58 @@ describe("widgetFormDataSchema", () => {
     });
   });
 
+  describe("CHART type - bar", () => {
+    const validBarChart = {
+      type: "CHART" as const,
+      displayName: "Multi-Metric",
+      order: 1,
+      endpointUrl: "/api/data",
+      chartType: "bar" as const,
+      categoryProperty: "metric",
+      valueProperties: [{ name: "value", label: "Value" }],
+    };
+
+    it("accepts valid bar chart", () => {
+      const result = widgetFormDataSchema.safeParse(validBarChart);
+      expect(result.success).toBe(true);
+    });
+
+    it("requires categoryProperty for bar chart", () => {
+      const result = widgetFormDataSchema.safeParse({
+        ...validBarChart,
+        categoryProperty: undefined,
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("requires at least one valueProperty for bar chart", () => {
+      const result = widgetFormDataSchema.safeParse({
+        ...validBarChart,
+        valueProperties: [],
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("requires valueProperty name to be non-empty", () => {
+      const result = widgetFormDataSchema.safeParse({
+        ...validBarChart,
+        valueProperties: [{ name: "" }],
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts bar chart with optional fields", () => {
+      const result = widgetFormDataSchema.safeParse({
+        ...validBarChart,
+        stacked: true,
+        horizontal: true,
+        barFormat: "decimal-2",
+        groupByProperty: "model_id",
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe("optional fields", () => {
     it("accepts tooltip", () => {
       const result = widgetFormDataSchema.safeParse({
