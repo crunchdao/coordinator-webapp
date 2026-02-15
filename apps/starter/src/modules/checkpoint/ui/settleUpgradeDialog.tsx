@@ -11,12 +11,7 @@ import {
 } from "@crunch-ui/core";
 import { Copy, Check } from "@crunch-ui/icons";
 
-const SWITCH_COMMANDS = [
-  "git clone https://github.com/crunchdao/coordinator-webapp",
-  "pnpm install",
-  "pnpm build",
-  "pnpm start",
-];
+const SWITCH_COMMAND = "make platform";
 
 interface SettleUpgradeDialogProps {
   open: boolean;
@@ -27,7 +22,7 @@ export function SettleUpgradeDialog({ open, onOpenChange }: SettleUpgradeDialogP
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(SWITCH_COMMANDS.join("\n"));
+    await navigator.clipboard.writeText(SWITCH_COMMAND);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -49,9 +44,7 @@ export function SettleUpgradeDialog({ open, onOpenChange }: SettleUpgradeDialogP
           </p>
           <div className="flex items-start gap-2 relative">
             <pre className="flex-1 bg-muted px-3 py-2 rounded-md font-mono text-sm">
-              {SWITCH_COMMANDS.map((cmd, i) => (
-                <div key={i}>{cmd}</div>
-              ))}
+              {SWITCH_COMMAND}
             </pre>
             <Button
               variant="outline"
