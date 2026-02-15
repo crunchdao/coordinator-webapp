@@ -51,7 +51,7 @@ export default function StrategiesPage() {
 
   const fetchStrategies = async () => {
     try {
-      const res = await fetch("/api/strategies/");
+      const res = await fetch("/api/strategies");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setStrategies(data);
