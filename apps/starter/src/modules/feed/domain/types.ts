@@ -17,6 +17,6 @@ export type FeedTailRecord = {
   granularity: string;
   ts_event: string;
   ts_ingested: string;
-  values: Record<string, unknown>;
+  values: Record<string, number | string>;
   meta: Record<string, unknown>;
 };

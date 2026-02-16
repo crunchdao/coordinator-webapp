@@ -4,6 +4,7 @@ export const INTERNAL_LINKS = {
   DASHBOARD: "/dashboard",
   LEADERBOARD: "/leaderboard",
   METRICS: "/metrics",
+  STRATEGIES: "/strategies",
   SETTINGS: "/settings",
   MODELS: "/models",
   LOGS: "/logs",
@@ -27,6 +28,10 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.METRICS,
     label: "Metrics",
+  },
+  {
+    path: INTERNAL_LINKS.STRATEGIES,
+    label: "Strategies",
   },
   {
     path: INTERNAL_LINKS.MODELS,

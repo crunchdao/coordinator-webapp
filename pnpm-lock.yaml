@@ -161,7 +161,7 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       eslint-config-next:
         specifier: ^16.1.2
-        version: 16.1.6(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.2(jiti@2.6.1))
@@ -216,6 +216,9 @@ importers:
       chartjs-adapter-date-fns:
         specifier: ^3.0.0
         version: 3.0.0(chart.js@4.5.1)(date-fns@4.1.0)
+      chartjs-chart-financial:
+        specifier: ^0.2.1
+        version: 0.2.1(chart.js@4.5.1)
       chartjs-plugin-zoom:
         specifier: ^2.2.0
         version: 2.2.0(chart.js@4.5.1)
@@ -264,7 +267,7 @@ importers:
         version: 9.39.2(jiti@2.6.1)
       eslint-config-next:
         specifier: ^16.1.2
-        version: 16.1.6(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+        version: 16.1.6(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@9.39.2(jiti@2.6.1))
@@ -4127,6 +4130,11 @@ packages:
     peerDependencies:
       chart.js: '>=2.8.0'
       date-fns: '>=2.0.0'
+
+  chartjs-chart-financial@0.2.1:
+    resolution: {integrity: sha512-RI3zrszyf2YdW7ME8I5XDsicy6YaU+uA1XZmGddR3rdcQlGf4pSgGFK8O0PWPO5Szdc8wZ8qpns++yib6pWBaw==}
+    peerDependencies:
+      chart.js: ^4.0.0
 
   chartjs-plugin-zoom@2.2.0:
     resolution: {integrity: sha512-in6kcdiTlP6npIVLMd4zXZ08PDUXC52gZ4FAy5oyjk1zX3gKarXMAof7B9eFiisf9WOC3bh2saHg+J5WtLXZeA==}
@@ -12594,6 +12602,10 @@ snapshots:
     dependencies:
       chart.js: 4.5.1
       date-fns: 4.1.0
+
+  chartjs-chart-financial@0.2.1(chart.js@4.5.1):
+    dependencies:
+      chart.js: 4.5.1
 
   chartjs-plugin-zoom@2.2.0(chart.js@4.5.1):
     dependencies:
