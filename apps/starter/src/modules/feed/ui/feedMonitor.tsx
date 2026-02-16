@@ -61,6 +61,7 @@ const feedSummaryColumns: ColumnDef<FeedSummary>[] = [
   },
 ];
 
+
 const feedRecordColumns: ColumnDef<FeedTailRecord>[] = [
   {
     id: "time",
