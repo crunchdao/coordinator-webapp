@@ -6,6 +6,7 @@ import { useAddWidget } from "@/modules/metrics/application/hooks/useAddWidget";
 import { useUpdateWidget } from "@/modules/metrics/application/hooks/useUpdateWidget";
 import { useRemoveWidget } from "@/modules/metrics/application/hooks/useRemoveWidget";
 import { useResetWidgets } from "@/modules/metrics/application/hooks/useResetWidgets";
+import { useNodeStatus } from "@/modules/node/application/hooks/useNodeStatus";
 
 export default function MetricsPage() {
   const { widgets, widgetsLoading } = useGetWidgets();
@@ -13,6 +14,13 @@ export default function MetricsPage() {
   const { updateWidget, updateWidgetLoading } = useUpdateWidget();
   const { removeWidget, removeWidgetLoading } = useRemoveWidget();
   const { resetWidgets, resetWidgetsLoading } = useResetWidgets();
+  const { nodeStatus } = useNodeStatus();
+
+  const models = nodeStatus.models.map((m) => ({
+    model_id: m.model_id,
+    model_name: m.model_name,
+    cruncher_name: m.cruncher_name,
+  }));
 
   return (
     <section className="p-6 space-y-3">
@@ -28,7 +36,12 @@ export default function MetricsPage() {
         deleteLoading={removeWidgetLoading}
         resetLoading={resetWidgetsLoading}
       />
-      <MetricsDashboard widgets={widgets} widgetsLoading={widgetsLoading} />
+      <MetricsDashboard
+        widgets={widgets}
+        widgetsLoading={widgetsLoading}
+        models={models}
+        modelsLoading={!nodeStatus.isOnline}
+      />
     </section>
   );
 }

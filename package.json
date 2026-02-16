@@ -12,11 +12,14 @@
     "build:starter": "turbo build --filter=@coordinator/starter",
     "build:platform": "turbo build --filter=@coordinator/platform",
     "lint": "turbo lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "changeset": "changeset"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.8",
     "turbo": "^2.4.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "vitest": "^4.0.18"
   }
 }
