@@ -47,6 +47,9 @@ export const NodeConnectionProvider: FC<{ children: ReactNode }> = ({
       queryClient.invalidateQueries({ queryKey: ["node-snapshots"] });
       queryClient.invalidateQueries({ queryKey: ["node-checkpoints"] });
       queryClient.invalidateQueries({ queryKey: ["node-checkpoints-recent"] });
+      queryClient.invalidateQueries({ queryKey: ["backfill-feeds"] });
+      queryClient.invalidateQueries({ queryKey: ["backfill-jobs"] });
+      queryClient.invalidateQueries({ queryKey: ["backfill-index"] });
     },
     [crunchName, queryClient]
   );

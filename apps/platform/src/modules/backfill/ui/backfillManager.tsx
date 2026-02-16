@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ColumnDef } from "@tanstack/react-table";
 import {
   Badge,
   Button,
@@ -18,13 +17,19 @@ import {
   SelectTrigger,
   SelectValue,
   Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@crunch-ui/core";
-import { DataTable } from "@coordinator/ui/src/data-table";
+import { cn } from "@crunch-ui/utils";
 import { useBackfillFeeds } from "../application/hooks/useBackfillFeeds";
 import { useBackfillJobs } from "../application/hooks/useBackfillJobs";
 import { useStartBackfill } from "../application/hooks/useStartBackfill";
 import { useBackfillIndex } from "../application/hooks/useBackfillIndex";
-import { BackfillFeed, BackfillFile, BackfillJob } from "../domain/types";
+import { BackfillFeed, BackfillJob } from "../domain/types";
 
 function formatDate(iso: string) {
   const date = new Date(iso);
@@ -32,14 +37,8 @@ function formatDate(iso: string) {
   return date.toLocaleString();
 }
 
-function feedLabel(feed: { source: string; subject: string; kind: string; granularity: string }) {
-  return [feed.source, feed.subject, feed.kind, feed.granularity]
-    .filter(Boolean)
-    .join(" / ");
-}
-
 function feedKey(feed: BackfillFeed) {
-  return `${feed.source}|${feed.subject}|${feed.kind}|${feed.granularity}`;
+  return `${feed.source}:${feed.subject}:${feed.kind}:${feed.granularity}`;
 }
 
 function JobStatusBadge({ status }: { status: string }) {
@@ -56,134 +55,16 @@ function JobStatusBadge({ status }: { status: string }) {
   );
 }
 
-function ProgressCell({ job }: { job: BackfillJob }) {
-  if (job.status === "RUNNING") {
-    const pct = job.progress_pct ?? 0;
-    return (
-      <div className="space-y-1 min-w-32">
-        <div className="w-full bg-muted rounded-full h-2">
-          <div
-            className="bg-primary h-2 rounded-full transition-all duration-300"
-            style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
-          />
-        </div>
-        <span className="text-xs text-muted-foreground">
-          {pct.toFixed(0)}%
-        </span>
-      </div>
-    );
-  }
-  if (job.status === "COMPLETED") {
-    return <span className="text-xs text-muted-foreground">100%</span>;
-  }
-  if (job.error) {
-    return (
-      <span
-        className="text-xs text-destructive truncate max-w-48 block"
-        title={job.error}
-      >
-        {job.error}
-      </span>
-    );
-  }
-  return <span>-</span>;
+function ProgressBar({ pct }: { pct: number }) {
+  return (
+    <div className="w-full bg-muted rounded-full h-2">
+      <div
+        className="bg-primary h-2 rounded-full transition-all duration-300"
+        style={{ width: `${Math.min(100, Math.max(0, pct))}%` }}
+      />
+    </div>
+  );
 }
-
-const jobColumns: ColumnDef<BackfillJob>[] = [
-  {
-    accessorKey: "kind",
-    header: "Kind",
-  },
-  {
-    accessorKey: "granularity",
-    header: "Granularity",
-  },
-  {
-    accessorKey: "source",
-    header: "Source",
-    cell: ({ row }) => row.original.source || "-",
-  },
-  {
-    accessorKey: "subject",
-    header: "Subject",
-    cell: ({ row }) => row.original.subject || "-",
-  },
-  {
-    id: "status",
-    header: "Status",
-    cell: ({ row }) => <JobStatusBadge status={row.original.status} />,
-  },
-  {
-    id: "progress",
-    header: "Progress",
-    cell: ({ row }) => <ProgressCell job={row.original} />,
-  },
-  {
-    accessorKey: "records_written",
-    header: "Records",
-    cell: ({ row }) => row.original.records_written.toLocaleString(),
-  },
-  {
-    accessorKey: "pages_fetched",
-    header: "Pages",
-  },
-  {
-    id: "created",
-    header: "Created",
-    cell: ({ row }) => (
-      <span className="text-xs">{formatDate(row.original.created_at)}</span>
-    ),
-  },
-];
-
-const fileColumns: ColumnDef<BackfillFile>[] = [
-  {
-    id: "path",
-    header: "File",
-    cell: ({ row }) => {
-      const file = row.original;
-      const filePath =
-        file.path ||
-        [file.source, file.subject, file.kind, file.granularity, file.filename]
-          .filter(Boolean)
-          .join("/");
-      return <span className="font-mono text-xs">{filePath}</span>;
-    },
-  },
-  {
-    id: "size",
-    header: "Size",
-    cell: ({ row }) => {
-      const bytes = row.original.size_bytes;
-      return (
-        <span className="text-xs">
-          {bytes ? `${(bytes / 1024).toFixed(1)} KB` : "-"}
-        </span>
-      );
-    },
-  },
-  {
-    id: "download",
-    header: "",
-    cell: ({ row }) => {
-      const file = row.original;
-      const filePath =
-        file.path ||
-        [file.source, file.subject, file.kind, file.granularity, file.filename]
-          .filter(Boolean)
-          .join("/");
-      return (
-        <a
-          href={`/api/data/backfill/${filePath}`}
-          download
-          className="text-xs text-primary underline"
-        >
-          Download
-        </a>
-      );
-    },
-  },
-];
 
 function StartBackfillCard({
   feeds,
@@ -242,7 +123,7 @@ function StartBackfillCard({
                   const key = feedKey(feed);
                   return (
                     <SelectItem key={key} value={key}>
-                      {feedLabel(feed)}
+                      {key}
                     </SelectItem>
                   );
                 })}
@@ -289,7 +170,7 @@ function StartBackfillCard({
   );
 }
 
-function JobsCard({
+function JobsTable({
   jobs,
   loading,
 }: {
@@ -312,14 +193,78 @@ function JobsCard({
         <CardDescription>{sorted.length} job(s)</CardDescription>
       </CardHeader>
       <CardContent>
-        <DataTable columns={jobColumns} data={sorted} loading={loading} />
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <Spinner />
+          </div>
+        ) : sorted.length === 0 ? (
+          <p className="text-center text-muted-foreground py-8">
+            No backfill jobs yet.
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Feed</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Progress</TableHead>
+                <TableHead>Records</TableHead>
+                <TableHead>Pages</TableHead>
+                <TableHead>Created</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sorted.map((job) => (
+                <TableRow
+                  key={job.id}
+                  className={cn(job.status === "RUNNING" && "bg-muted/30")}
+                >
+                  <TableCell className="font-mono text-xs">
+                    {job.source}:{job.subject}:{job.kind}:{job.granularity}
+                  </TableCell>
+                  <TableCell>
+                    <JobStatusBadge status={job.status} />
+                  </TableCell>
+                  <TableCell className="min-w-32">
+                    {job.status === "RUNNING" ? (
+                      <div className="space-y-1">
+                        <ProgressBar pct={job.progress_pct ?? 0} />
+                        <span className="text-xs text-muted-foreground">
+                          {(job.progress_pct ?? 0).toFixed(0)}%
+                        </span>
+                      </div>
+                    ) : job.status === "COMPLETED" ? (
+                      <span className="text-xs text-muted-foreground">
+                        100%
+                      </span>
+                    ) : job.error ? (
+                      <span
+                        className="text-xs text-destructive truncate max-w-48 block"
+                        title={job.error}
+                      >
+                        {job.error}
+                      </span>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell>{job.records_written.toLocaleString()}</TableCell>
+                  <TableCell>{job.pages_fetched}</TableCell>
+                  <TableCell className="text-xs">
+                    {formatDate(job.created_at)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );
 }
 
 function DataFilesCard() {
-  const { files, filesLoading } = useBackfillIndex();
+  const { files, filesLoading, nodeUrl } = useBackfillIndex();
 
   if (filesLoading) {
     return (
@@ -338,6 +283,9 @@ function DataFilesCard() {
 
   if (files.length === 0) return null;
 
+  const buildDownloadUrl = (filePath: string) =>
+    `${nodeUrl}/data/backfill/${filePath}`;
+
   return (
     <Card displayCorners>
       <CardHeader>
@@ -347,7 +295,43 @@ function DataFilesCard() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <DataTable columns={fileColumns} data={files} />
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>File</TableHead>
+              <TableHead>Size</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {files.map((file, idx) => {
+              const filePath =
+                file.path ||
+                `${file.source}/${file.subject}/${file.kind}/${file.granularity}/${file.filename}`;
+              return (
+                <TableRow key={filePath || idx}>
+                  <TableCell className="font-mono text-xs">
+                    {filePath}
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    {file.size_bytes
+                      ? `${(file.size_bytes / 1024).toFixed(1)} KB`
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    <a
+                      href={buildDownloadUrl(filePath)}
+                      download
+                      className="text-xs text-primary underline"
+                    >
+                      Download
+                    </a>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
@@ -368,7 +352,7 @@ export function BackfillManager() {
   return (
     <div className="space-y-6">
       <StartBackfillCard feeds={feeds} hasRunningJob={hasRunningJob} />
-      <JobsCard jobs={jobs} loading={jobsLoading} />
+      <JobsTable jobs={jobs} loading={jobsLoading} />
       <DataFilesCard />
     </div>
   );
