@@ -6,11 +6,18 @@ import {
   CardHeader,
   CardTitle,
   Spinner,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
 } from "@crunch-ui/core";
+import { InfoCircle } from "@crunch-ui/icons";
 import { MetricWidget } from "@crunchdao/chart";
+import type { Widget as SharedWidget, ChartWidget } from "@crunchdao/chart";
 import MultiSelectDropdown from "@coordinator/ui/src/multi-select-dropdown";
-import { GetMetricDataParams, Widget } from "../domain/types";
+import { GetMetricDataParams, Widget, BarChartDefinition } from "../domain/types";
 import { useMetricData } from "../application/hooks/useMetricData";
+import { BarChart } from "./barChart";
+import { MetricFilters } from "@crunchdao/chart";
 
 export interface MetricsModelItem {
   model_id: string | number;
@@ -103,6 +110,21 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
     metricParams
   );
 
+  const barWidgetOriginals = useMemo(() => {
+    const map: Record<number, BarChartDefinition> = {};
+    (widgets || []).forEach((w) => {
+      if (
+        "nativeConfiguration" in w &&
+        w.nativeConfiguration &&
+        "type" in w.nativeConfiguration &&
+        w.nativeConfiguration.type === "bar"
+      ) {
+        map[w.id] = w as BarChartDefinition;
+      }
+    });
+    return map;
+  }, [widgets]);
+
   if (widgetsLoading || modelsLoading || dataLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -137,14 +159,98 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
         </div>
       </CardHeader>
       <CardContent className="space-y-8">
-        {widgetsWithData.map((widget) => (
-          <MetricWidget
-            key={widget.id}
-            widget={widget}
-            getModelLabel={getModelLabel}
-          />
-        ))}
+        {widgetsWithData.map((widget, index) => {
+          const originalWidget = widgets[index];
+          const isBarChart =
+            originalWidget &&
+            "nativeConfiguration" in originalWidget &&
+            originalWidget.nativeConfiguration &&
+            "type" in originalWidget.nativeConfiguration &&
+            originalWidget.nativeConfiguration.type === "bar";
+
+          if (isBarChart) {
+            const barWidget = originalWidget as BarChartDefinition;
+            const chartWidget = widget as ChartWidget;
+            return (
+              <BarChartWidget
+                key={widget.id}
+                barWidget={barWidget}
+                data={chartWidget.data || []}
+                getModelLabel={getModelLabel}
+              />
+            );
+          }
+
+          return (
+            <MetricWidget
+              key={widget.id}
+              widget={widget}
+              getModelLabel={getModelLabel}
+            />
+          );
+        })}
       </CardContent>
     </Card>
+  );
+};
+
+// Internal wrapper for bar chart widgets with filter support
+type MetricItem = Record<string, string | number | null | boolean | undefined>;
+
+interface BarChartWidgetProps {
+  barWidget: BarChartDefinition;
+  data: MetricItem[];
+  getModelLabel: (id: string | number) => string;
+}
+
+const BarChartWidget: React.FC<BarChartWidgetProps> = ({
+  barWidget,
+  data,
+  getModelLabel,
+}) => {
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string | string[]>
+  >({});
+
+  const config = barWidget.nativeConfiguration;
+  const hasFilters = (config.filterConfig?.length ?? 0) > 0;
+
+  const handleFilterChange = (property: string, value: string | string[]) => {
+    setSelectedFilters((prev) => ({ ...prev, [property]: value }));
+  };
+
+  return (
+    <div>
+      <div className="flex items-end justify-between mb-2">
+        <h3 className="title-sm">
+          {barWidget.displayName}
+          {barWidget.tooltip && (
+            <Tooltip>
+              <TooltipTrigger className="ml-3">
+                <InfoCircle />
+              </TooltipTrigger>
+              <TooltipContent>{barWidget.tooltip}</TooltipContent>
+            </Tooltip>
+          )}
+        </h3>
+        {hasFilters && data.length > 0 && (
+          <div className="flex items-end gap-3 flex-wrap">
+            <MetricFilters
+              filters={config.filterConfig || []}
+              data={data}
+              onFilterChange={handleFilterChange}
+              selectedFilters={selectedFilters}
+            />
+          </div>
+        )}
+      </div>
+      <BarChart
+        data={data}
+        config={config}
+        projectIdProperty="model_id"
+        getLabel={getModelLabel}
+        selectedFilters={selectedFilters}
+      />
+    </div>
   );
 };

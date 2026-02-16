@@ -36,8 +36,8 @@ export const FeedMonitor: React.FC = () => {
 
   const { records, recordsLoading } = useGetFeedTail(
     {
-      provider: selectedFeed?.provider,
-      asset: selectedFeed?.asset,
+      source: selectedFeed?.source,
+      subject: selectedFeed?.subject,
       kind: selectedFeed?.kind,
       granularity: selectedFeed?.granularity,
       limit: 10,
@@ -102,7 +102,7 @@ export const FeedMonitor: React.FC = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {feed.provider}:{feed.asset}:{feed.kind}:{feed.granularity}
+                        {feed.source}:{feed.subject}:{feed.kind}:{feed.granularity}
                       </TableCell>
                       <TableCell>{feed.record_count.toLocaleString()}</TableCell>
                       <TableCell>{feed.oldest_ts ? formatDate(feed.oldest_ts) : "-"}</TableCell>
@@ -134,7 +134,7 @@ export const FeedMonitor: React.FC = () => {
             <div className="space-y-2">
               {records.map((record, idx) => (
                 <pre
-                  key={`${record.provider}-${record.asset}-${record.ts_event}-${idx}`}
+                  key={`${record.source}-${record.subject}-${record.ts_event}-${idx}`}
                   className="text-xs p-3 rounded-md bg-muted overflow-x-auto"
                 >
                   {JSON.stringify(
@@ -158,12 +158,12 @@ export const FeedMonitor: React.FC = () => {
 };
 
 function feedKey(feed: {
-  provider: string;
-  asset: string;
+  source: string;
+  subject: string;
   kind: string;
   granularity: string;
 }) {
-  return [feed.provider, feed.asset, feed.kind, feed.granularity].join(":");
+  return [feed.source, feed.subject, feed.kind, feed.granularity].join(":");
 }
 
 function isFeedUp(watermarkTs: string | null, granularity: string) {
