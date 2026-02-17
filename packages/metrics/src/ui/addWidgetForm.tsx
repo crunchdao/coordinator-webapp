@@ -20,7 +20,7 @@ import {
   TooltipTrigger,
 } from "@crunch-ui/core";
 import { Chart, Link, InfoCircle } from "@crunch-ui/icons";
-import { Widget, LineChartDefinition, GaugeDefinition } from "../domain/types";
+import { Widget, LineChartDefinition, GaugeDefinition, BarChartDefinition } from "../domain/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,6 +29,7 @@ import {
 } from "../application/schemas/widgetFormSchema";
 import { LineChartFields } from "./lineChartFields";
 import { GaugeFields } from "./gaugeFields";
+import { BarChartFields } from "./barChartFields";
 
 interface AddWidgetFormProps {
   onSubmit: () => void;
@@ -70,6 +71,19 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             ...base,
             chartType: "gauge",
             percentage: config.percentage,
+            filterConfig: config.filterConfig,
+            noDataMessage: config.noDataMessage,
+          };
+        } else if ("type" in config && config.type === "bar") {
+          return {
+            ...base,
+            chartType: "bar",
+            categoryProperty: config.categoryProperty,
+            valueProperties: config.valueProperties,
+            barFormat: config.format,
+            stacked: config.stacked,
+            horizontal: config.horizontal,
+            groupByProperty: config.groupByProperty,
             filterConfig: config.filterConfig,
             noDataMessage: config.noDataMessage,
           };
@@ -139,6 +153,25 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             noDataMessage: data.noDataMessage,
           },
         } as Omit<GaugeDefinition, "id">;
+      } else if (data.chartType === "bar") {
+        widgetData = {
+          type: "CHART",
+          displayName: data.displayName,
+          tooltip: data.tooltip || null,
+          order: data.order,
+          endpointUrl: data.endpointUrl,
+          nativeConfiguration: {
+            type: "bar",
+            categoryProperty: data.categoryProperty || "",
+            valueProperties: data.valueProperties || [],
+            format: data.barFormat,
+            stacked: data.stacked || false,
+            horizontal: data.horizontal || false,
+            groupByProperty: data.groupByProperty,
+            filterConfig: data.filterConfig,
+            noDataMessage: data.noDataMessage,
+          },
+        } as Omit<BarChartDefinition, "id">;
       } else if (data.chartType === "line") {
         widgetData = {
           type: "CHART",
@@ -244,6 +277,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="line">Line Chart</SelectItem>
+                    <SelectItem value="bar">Bar Chart</SelectItem>
                     <SelectItem value="gauge">Gauge</SelectItem>
                   </SelectContent>
                 </Select>
@@ -367,6 +401,11 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
         {/* Line Chart Configuration */}
         {widgetType === "CHART" && chartType === "line" && (
           <LineChartFields form={form} />
+        )}
+
+        {/* Bar Chart Configuration */}
+        {widgetType === "CHART" && chartType === "bar" && (
+          <BarChartFields form={form} />
         )}
 
         {/* Gauge Configuration */}

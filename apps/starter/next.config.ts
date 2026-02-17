@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
     "@coordinator/ui",
     "@coordinator/leaderboard",
     "@coordinator/metrics",
+    "@coordinator/backfill",
   ],
   async rewrites() {
     return [

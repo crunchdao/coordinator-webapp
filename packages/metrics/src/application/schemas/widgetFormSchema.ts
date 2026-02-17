@@ -21,6 +21,12 @@ const yAxisSeriesSchema = z.object({
   color: z.string().optional(),
 });
 
+const valuePropertySchema = z.object({
+  name: z.string().min(1, "Property name is required"),
+  label: z.string().optional(),
+  color: z.string().optional(),
+});
+
 export const widgetFormDataSchema = z
   .object({
     type: z.enum(["CHART", "IFRAME"]),
@@ -30,7 +36,7 @@ export const widgetFormDataSchema = z
     endpointUrl: z.string().min(2),
 
     // Chart specific fields
-    chartType: z.enum(["line", "gauge"]).optional(),
+    chartType: z.enum(["line", "gauge", "bar"]).optional(),
 
     // Line chart fields
     xAxisName: z.string().optional(),
@@ -44,6 +50,13 @@ export const widgetFormDataSchema = z
 
     // Gauge fields
     percentage: z.boolean().optional(),
+
+    // Bar chart fields
+    categoryProperty: z.string().optional(),
+    valueProperties: z.array(valuePropertySchema).optional(),
+    barFormat: z.string().optional(),
+    stacked: z.boolean().optional(),
+    horizontal: z.boolean().optional(),
 
     // Common filter config
     filterConfig: z.array(filterConfigSchema).optional(),
@@ -63,6 +76,14 @@ export const widgetFormDataSchema = z
       if (data.chartType === "line") {
         return (
           !!data.xAxisName && !!data.yAxisSeries && data.yAxisSeries.length > 0
+        );
+      }
+
+      if (data.chartType === "bar") {
+        return (
+          !!data.categoryProperty &&
+          !!data.valueProperties &&
+          data.valueProperties.length > 0
         );
       }
     }

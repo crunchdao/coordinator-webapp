@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
 import apiClient from "@coordinator/utils/src/api";
 import type { Widget as SharedWidget, ChartWidget } from "@crunchdao/chart";
-import { Widget, LineChartDefinition, GaugeDefinition, GetMetricDataParams } from "../../domain/types";
+import { Widget, LineChartDefinition, GaugeDefinition, BarChartDefinition, GetMetricDataParams } from "../../domain/types";
 
 export const useMetricData = (
   widgets: Widget[],
@@ -20,6 +20,7 @@ export const useMetricData = (
               projectIds: params.modelIds.join(","),
               start: params.start,
               end: params.end,
+              ...(params.includeEnsembles ? { include_ensembles: true } : {}),
             },
           });
           return { widgetId: widget.id, data: response.data };
@@ -57,7 +58,7 @@ export const useMetricData = (
         };
       }
 
-      const chartWidget = widget as LineChartDefinition | GaugeDefinition;
+      const chartWidget = widget as LineChartDefinition | GaugeDefinition | BarChartDefinition;
       return {
         id: widget.id,
         name: widget.displayName,

@@ -4,10 +4,13 @@ export const INTERNAL_LINKS = {
   DASHBOARD: "/dashboard",
   LEADERBOARD: "/leaderboard",
   METRICS: "/metrics",
+  STRATEGIES: "/strategies",
   SETTINGS: "/settings",
   MODELS: "/models",
   LOGS: "/logs",
   FEEDS: "/feeds",
+  CHECKPOINTS: "/checkpoints",
+  BACKFILL: "/backfill",
 } as const;
 
 export type RouteConfig = {
@@ -27,6 +30,10 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     label: "Metrics",
   },
   {
+    path: INTERNAL_LINKS.STRATEGIES,
+    label: "Strategies",
+  },
+  {
     path: INTERNAL_LINKS.MODELS,
     label: "Models",
   },
@@ -37,6 +44,15 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.FEEDS,
     label: "Feeds",
+    visibilityKey: "feeds",
+  },
+  {
+    path: INTERNAL_LINKS.CHECKPOINTS,
+    label: "Checkpoints",
+  },
+  {
+    path: INTERNAL_LINKS.BACKFILL,
+    label: "Backfill",
     visibilityKey: "feeds",
   },
   {
