@@ -33,7 +33,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/api/models/:path*",
-        destination: `${API_URL}/reports/models/:path*`,
+        destination: `${MODEL_ORCHESTRATOR_URL}/models/:path*`,
       },
       {
         source: "/api/:path*",
