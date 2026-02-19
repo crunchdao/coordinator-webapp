@@ -2,12 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { getAccount, TokenAccountNotFoundError } from "@solana/spl-token";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 export const useGetRewardVaultBalance = (rewardVaultAddress?: PublicKey) => {
   const { connection } = useConnection();
+  const { environment } = useEnvironment();
 
   const query = useQuery({
-    queryKey: ["reward-vault-balance", rewardVaultAddress?.toString()],
+    queryKey: ["reward-vault-balance", environment, rewardVaultAddress?.toString()],
     queryFn: async () => {
       if (!connection || !rewardVaultAddress) {
         return 0;

@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type FC,
@@ -13,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   type Environment,
   type PlatformConfig,
+  DEFAULT_ENV,
   getEnvironment,
   setEnvironment as persistEnvironment,
   getConfigFor,
@@ -29,8 +31,23 @@ const EnvironmentContext = createContext<EnvironmentContextValue | null>(null);
 export const EnvironmentProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [environment, setEnvironment] = useState<Environment>(getEnvironment);
+  // Always start with the default so SSR and first client render match.
+  // The real cookie value is synced in useEffect below.
+  const [environment, setEnvironment] = useState<Environment>(DEFAULT_ENV);
   const queryClient = useQueryClient();
+
+  // After hydration, read the persisted environment from the cookie.
+  // Use switchEnvironment so the query cache is also cleared.
+  useEffect(() => {
+    const persisted = getEnvironment();
+    if (persisted !== DEFAULT_ENV) {
+      persistEnvironment(persisted);
+      setEnvironment(persisted);
+      queryClient.clear();
+    }
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const switchEnvironment = useCallback(
     (env: Environment) => {

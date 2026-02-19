@@ -11,7 +11,9 @@ import {
   toast,
 } from "@crunch-ui/core";
 import { Check, Copy, InfoCircle } from "@crunch-ui/icons";
+import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 import { EnrollDialog } from "./enrollDialog";
 import { useCertificateEnrollmentStatus } from "../application/hooks/useCertificateEnrollmentStatus";
 
@@ -62,6 +64,7 @@ interface EnrollFormProps {
 export function EnrollForm({ showStatus = false }: EnrollFormProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { connected } = useWallet();
+  const { config } = useEnvironment();
   const { enrollmentStatus, enrollmentStatusLoading } =
     useCertificateEnrollmentStatus();
 
@@ -93,6 +96,15 @@ export function EnrollForm({ showStatus = false }: EnrollFormProps) {
             </Alert>
 
             <div className="body-xs text-muted-foreground space-y-1">
+              <p className="flex justify-between items-center gap-2">
+                <span>On-chain account</span>
+                <SolanaAddressLink
+                  address={enrollmentStatus.accountAddress}
+                  cluster={config.solana.cluster}
+                  truncate
+                  copyable
+                />
+              </p>
               <p className="flex justify-between gap-2">
                 <span>Primary cert hash</span>
                 <CopyableValue value={enrollmentStatus.primaryCertHash} />

@@ -7,6 +7,7 @@ import {
   getCoordinatorPoolConfig,
 } from "@crunchdao/sdk";
 import { convertToCrunch } from "@crunchdao/solana-utils";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 export interface CoordinatorPoolConfigData {
   minActivationSelfStake: number;
@@ -16,9 +17,10 @@ export interface CoordinatorPoolConfigData {
 
 export const useGetCoordinatorPoolConfig = () => {
   const { anchorProvider } = useAnchorProvider();
+  const { environment } = useEnvironment();
 
   const query = useQuery({
-    queryKey: ["coordinator-pool-config"],
+    queryKey: ["coordinator-pool-config", environment],
     queryFn: async (): Promise<CoordinatorPoolConfigData> => {
       if (!anchorProvider) {
         throw new Error("Anchor provider not available");

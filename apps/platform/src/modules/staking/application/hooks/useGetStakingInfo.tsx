@@ -2,13 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { useStakingContext } from "@crunchdao/staking";
 import { convertToCrunch } from "@crunchdao/solana-utils";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 export const useGetStakingInfo = () => {
   const { authority } = useEffectiveAuthority();
   const { stakingClient } = useStakingContext();
+  const { environment } = useEnvironment();
 
   const query = useQuery({
-    queryKey: ["staking-info", authority?.toString()],
+    queryKey: ["staking-info", environment, authority?.toString()],
     queryFn: async () => {
       if (!authority || !stakingClient) {
         return {
