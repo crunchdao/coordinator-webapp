@@ -2,10 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getCheckpoint } from "../../infrastructure/service";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 export function useGetCheckpoint(address?: string) {
+  const { environment } = useEnvironment();
+
   const query = useQuery({
-    queryKey: ["checkpoint", address],
+    queryKey: ["checkpoint", environment, address],
     queryFn: () => getCheckpoint(address!),
     enabled: !!address,
   });

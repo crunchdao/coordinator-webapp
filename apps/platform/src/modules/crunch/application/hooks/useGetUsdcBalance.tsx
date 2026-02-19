@@ -8,13 +8,15 @@ import {
 } from "@solana/spl-token";
 import { getNetworkConstants } from "@crunchdao/sdk";
 import { getConfig } from "@/config";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 export const useGetUsdcBalance = () => {
   const { authority, isMultisigMode } = useEffectiveAuthority();
   const { connection } = useConnection();
+  const { environment } = useEnvironment();
 
   const query = useQuery({
-    queryKey: ["usdc-balance", authority?.toString()],
+    queryKey: ["usdc-balance", environment, authority?.toString()],
     queryFn: async () => {
       if (!authority || !connection) {
         return 0;

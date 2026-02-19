@@ -41,7 +41,7 @@ const configs: Record<Environment, PlatformConfig> = {
 };
 
 const COOKIE_KEY = "coordinator-environment";
-const DEFAULT_ENV: Environment = "staging";
+export const DEFAULT_ENV: Environment = "staging";
 
 function isValidEnvironment(value: unknown): value is Environment {
   return value === "staging" || value === "production";

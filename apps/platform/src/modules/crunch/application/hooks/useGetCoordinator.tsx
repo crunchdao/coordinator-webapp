@@ -8,6 +8,7 @@ import {
   CoordinatorStatus,
   CoordinatorData,
 } from "@/modules/crunch/domain/types";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 const CPI_STATE_TO_STATUS: Record<string, CoordinatorStatus> = {
   Pending: CoordinatorStatus.PENDING,
@@ -17,9 +18,10 @@ const CPI_STATE_TO_STATUS: Record<string, CoordinatorStatus> = {
 
 export const useGetCoordinator = () => {
   const { authority, isMultisigMode, ready } = useEffectiveAuthority();
+  const { environment } = useEnvironment();
 
   const query = useQuery<CoordinatorData>({
-    queryKey: ["coordinator", authority?.toString(), isMultisigMode],
+    queryKey: ["coordinator", environment, authority?.toString(), isMultisigMode],
     queryFn: async (): Promise<CoordinatorData> => {
       if (!authority) {
         return { status: CoordinatorStatus.UNREGISTERED, address: null, data: null };

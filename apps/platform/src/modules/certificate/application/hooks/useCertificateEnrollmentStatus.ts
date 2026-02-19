@@ -1,11 +1,14 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getCoordinatorProgram, getCoordinatorCertificate } from "@crunchdao/sdk";
+import { getCoordinatorProgram, getCoordinatorCertificate, getCoordinatorCertificateAddress } from "@crunchdao/sdk";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 export interface CertificateEnrollmentInfo {
   enrolled: true;
+  /** The on-chain account address (PDA) that holds the certificate data */
+  accountAddress: string;
   /** SHA-256 hash of the primary certificate (hex string) */
   primaryCertHash: string;
   /** SHA-256 hash of the secondary certificate (hex string), or null if empty */
@@ -46,9 +49,10 @@ function isEmptyHash(hash: number[]): boolean {
 export const useCertificateEnrollmentStatus = () => {
   const { authority, ready } = useEffectiveAuthority();
   const { anchorProvider } = useAnchorProvider();
+  const { environment } = useEnvironment();
 
   const query = useQuery<EnrollmentStatus>({
-    queryKey: ["certificate-enrollment-status", authority?.toString()],
+    queryKey: ["certificate-enrollment-status", environment, authority?.toString()],
     queryFn: async (): Promise<EnrollmentStatus> => {
       if (!authority || !anchorProvider) return null;
 
@@ -69,8 +73,11 @@ export const useCertificateEnrollmentStatus = () => {
           return { enrolled: false };
         }
 
+        const accountAddress = getCoordinatorCertificateAddress(authority);
+
         return {
           enrolled: true,
+          accountAddress: accountAddress.toString(),
           primaryCertHash: bytesToHex(cert.certHash),
           secondaryCertHash: isEmptyHash(cert.certHashSecondary)
             ? null
