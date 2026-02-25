@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
+  Alert,
+  AlertDescription,
   Button,
   Form,
   FormControl,
@@ -16,6 +18,7 @@ import {
   Skeleton,
   toast,
 } from "@crunch-ui/core";
+import { Check } from "@crunch-ui/icons";
 import {
   useDepositCrunch,
   useDelegate,
@@ -65,6 +68,8 @@ export function OnboardingStakeForm({ onSuccess }: OnboardingStakeFormProps) {
     );
   }
 
+  const hasEnoughStake = stakedAmount >= minStakeRequired;
+
   const onSubmit = async (values: FormData) => {
     try {
       // If staking from deposited funds, skip deposit step
@@ -111,6 +116,21 @@ export function OnboardingStakeForm({ onSuccess }: OnboardingStakeFormProps) {
       form.setValue("amount", newAmount);
     }
   };
+
+  if (hasEnoughStake) {
+    return (
+      <Alert variant="success">
+        <Check className="w-4 h-4" />
+        <AlertDescription>
+          You've staked{" "}
+          <span className="font-medium">
+            {stakedAmount.toLocaleString()} CRNCH
+          </span>{" "}
+          on yourself. You're ready to create your first Crunch!
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <>
@@ -185,14 +205,32 @@ export function OnboardingStakeForm({ onSuccess }: OnboardingStakeFormProps) {
                           onPercentageSelect={setAmountPercentage}
                           maxLabel="Max"
                         />
-                        <p className="body-xs text-muted-foreground w-full flex justify-between">
-                          {hasDepositedFunds ? "Deposited Balance" : "Wallet Balance"}
-                          <CrunchValue
-                            amount={availableBalance}
-                            showCurrency
-                            className="text-right"
-                          />
-                        </p>
+                        <div className="body-xs text-muted-foreground space-y-0.5">
+                          <p className="flex justify-between">
+                            <span>Wallet</span>
+                            <CrunchValue
+                              amount={walletBalance}
+                              showCurrency
+                              className="text-right"
+                            />
+                          </p>
+                          <p className="flex justify-between">
+                            <span>Unstaked</span>
+                            <CrunchValue
+                              amount={depositedBalance}
+                              showCurrency
+                              className="text-right"
+                            />
+                          </p>
+                          <p className="flex justify-between">
+                            <span>Self Staked</span>
+                            <CrunchValue
+                              amount={stakedAmount}
+                              showCurrency
+                              className="text-right"
+                            />
+                          </p>
+                        </div>
                       </div>
                     )}
                     {availableBalance === 0 && (

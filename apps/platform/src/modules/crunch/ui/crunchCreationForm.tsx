@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Alert,
+  AlertDescription,
   Button,
   Form,
   FormControl,
@@ -14,6 +16,7 @@ import {
   FormMessage,
   Input,
 } from "@crunch-ui/core";
+import { Check } from "@crunch-ui/icons";
 import {
   crunchCreationSchema,
   CreateCrunchFormData,
@@ -77,6 +80,17 @@ export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
 
   const isDisabled =
     coordinatorStatus !== CoordinatorStatus.APPROVED || createCrunchLoading;
+
+  if (firstCrunch) {
+    return (
+      <Alert variant="success">
+        <Check className="w-4 h-4" />
+        <AlertDescription>
+          Your Crunch <span className="font-medium">{firstCrunch.name}</span> has been created. You're ready to fund it and go live!
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <Form {...form}>
