@@ -20,6 +20,7 @@ import {
   useDepositCrunch,
   useDelegate,
   useGetCrnchAccount,
+  useGetDepositAccount,
   PercentageSelector,
 } from "@crunchdao/staking";
 import { CrunchValue } from "@crunchdao/solana-utils";
@@ -37,6 +38,7 @@ export function OnboardingStakeForm() {
   const { authority } = useEffectiveAuthority();
   const { minStakeRequired, stakedAmount } = useOnboarding();
   const { crnchAccount, crnchAccountLoading } = useGetCrnchAccount();
+  const { depositAccount, depositAccountLoading } = useGetDepositAccount();
   const { deposit, depositLoading } = useDepositCrunch();
   const { delegate, delegateLoading } = useDelegate();
   const [step, setStep] = useState<"idle" | "depositing" | "staking">("idle");
@@ -48,9 +50,10 @@ export function OnboardingStakeForm() {
 
   const amount = form.watch("amount");
   const walletBalance = crnchAccount?.amount ?? 0;
+  const depositedBalance = depositAccount?.amount ?? 0;
   const remaining = Math.max(0, minStakeRequired - stakedAmount);
-  console.log(stakedAmount);
   const isLoading = depositLoading || delegateLoading;
+  const hasDepositedFunds = depositedBalance > 0;
 
   if (!authority) {
     return (
@@ -60,8 +63,11 @@ export function OnboardingStakeForm() {
 
   const onSubmit = async (values: FormData) => {
     try {
-      setStep("depositing");
-      await deposit({ amount: values.amount });
+      // If staking from deposited funds, skip deposit step
+      if (!hasDepositedFunds) {
+        setStep("depositing");
+        await deposit({ amount: values.amount });
+      }
 
       setStep("staking");
       await delegate({
@@ -71,7 +77,9 @@ export function OnboardingStakeForm() {
 
       toast({
         title: "Success",
-        description: `Successfully deposited and staked ${values.amount} CRNCH`,
+        description: hasDepositedFunds
+          ? `Successfully staked ${values.amount} CRNCH`
+          : `Successfully deposited and staked ${values.amount} CRNCH`,
       });
       form.reset({ amount: 0 });
     } catch (error) {
@@ -87,12 +95,14 @@ export function OnboardingStakeForm() {
     }
   };
 
+  const availableBalance = hasDepositedFunds ? depositedBalance : walletBalance;
+
   const setAmountPercentage = (percentage: number) => {
-    if (walletBalance > 0) {
+    if (availableBalance > 0) {
       const newAmount =
         percentage === 100
-          ? walletBalance
-          : parseFloat((walletBalance * (percentage / 100)).toFixed(6));
+          ? availableBalance
+          : parseFloat((availableBalance * (percentage / 100)).toFixed(6));
       form.setValue("amount", newAmount);
     }
   };
@@ -156,7 +166,7 @@ export function OnboardingStakeForm() {
                   />
                 </FormControl>
                 <FormMessage />
-                {crnchAccountLoading || isLoading ? (
+                {crnchAccountLoading || depositAccountLoading || isLoading ? (
                   <div className="flex gap-2 mt-1">
                     {Array.from({ length: 4 }, (_, i) => (
                       <Skeleton key={i} className="flex-1 h-8" />
@@ -164,25 +174,25 @@ export function OnboardingStakeForm() {
                   </div>
                 ) : (
                   <>
-                    {walletBalance > 0 && (
+                    {availableBalance > 0 && (
                       <div className="pt-1 flex flex-col gap-2">
                         <PercentageSelector
                           onPercentageSelect={setAmountPercentage}
                           maxLabel="Max"
                         />
                         <p className="body-xs text-muted-foreground w-full flex justify-between">
-                          Wallet Balance
+                          {hasDepositedFunds ? "Deposited Balance" : "Wallet Balance"}
                           <CrunchValue
-                            amount={walletBalance}
+                            amount={availableBalance}
                             showCurrency
                             className="text-right"
                           />
                         </p>
                       </div>
                     )}
-                    {walletBalance === 0 && (
+                    {availableBalance === 0 && (
                       <p className="body-xs text-muted-foreground">
-                        No CRNCH in wallet
+                        No CRNCH available
                       </p>
                     )}
                   </>
@@ -195,13 +205,13 @@ export function OnboardingStakeForm() {
             type="submit"
             disabled={
               isLoading ||
-              walletBalance === 0 ||
+              availableBalance === 0 ||
               amount <= 0 ||
-              amount > walletBalance
+              amount > availableBalance
             }
             loading={isLoading}
           >
-            Deposit & Stake
+            {hasDepositedFunds ? "Stake" : "Deposit & Stake"}
           </Button>
         </form>
       </Form>
