@@ -34,15 +34,17 @@ export const NavbarBreadcrumb: React.FC = () => {
 
   return (
     <Breadcrumb>
-      <BreadcrumbList className="[&_a]:lowercase!">
+      <BreadcrumbList className="[&_*]:!normal-case">
         <BreadcrumbSeparator>/</BreadcrumbSeparator>
         <BreadcrumbItem className="text-foreground">
           {isLoading ? (
             <Skeleton className="w-32 h-4" />
           ) : currentCrunchName ? (
-            <Link href={INTERNAL_LINKS.DASHBOARD}>{coordinatorName}</Link>
+            <Link href={INTERNAL_LINKS.DASHBOARD}>
+              {coordinatorName?.toLowerCase()}
+            </Link>
           ) : (
-            <span>{coordinatorName || pageLabel}</span>
+            <span>{coordinatorName?.toLowerCase() || pageLabel}</span>
           )}
         </BreadcrumbItem>
         {currentCrunchName && (
@@ -69,11 +71,7 @@ export const NavbarBreadcrumb: React.FC = () => {
                       const newPath = pathSegments.join("/");
 
                       return (
-                        <DropdownMenuItem
-                          className="normal-case!"
-                          key={index}
-                          asChild
-                        >
+                        <DropdownMenuItem key={index} asChild>
                           <Link href={newPath}>{crunch.name}</Link>
                         </DropdownMenuItem>
                       );
