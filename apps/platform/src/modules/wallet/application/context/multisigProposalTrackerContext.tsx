@@ -248,9 +248,7 @@ export const MultisigProposalTrackerProvider: React.FC<{
 
       const tx = new Transaction().add(approveIx);
       tx.feePayer = publicKey;
-      tx.recentBlockhash = (
-        await connection.getLatestBlockhash()
-      ).blockhash;
+      tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
       const signedTx = await signTransaction(tx);
       const signature = await connection.sendRawTransaction(
@@ -307,9 +305,7 @@ export const MultisigProposalTrackerProvider: React.FC<{
       } else {
         const tx = new Transaction().add(executeIx);
         tx.feePayer = publicKey;
-        tx.recentBlockhash = (
-          await connection.getLatestBlockhash()
-        ).blockhash;
+        tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const signedTx = await signTransaction(tx);
         const signature = await connection.sendRawTransaction(
@@ -334,12 +330,10 @@ export const MultisigProposalTrackerProvider: React.FC<{
 
   // Derived state: has the connected wallet already approved?
   const hasApproved =
-    !!publicKey &&
-    trackingState.approvals.some((a) => a.equals(publicKey));
+    !!publicKey && trackingState.approvals.some((a) => a.equals(publicKey));
 
   // Derived state: is the connected wallet a multisig member?
-  const isMember =
-    !!publicKey && members.some((m) => m.equals(publicKey));
+  const isMember = !!publicKey && members.some((m) => m.equals(publicKey));
 
   // Cleanup on unmount
   useEffect(() => {

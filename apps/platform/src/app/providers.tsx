@@ -12,7 +12,10 @@ import { MultisigProposalTrackerDialog } from "@/modules/wallet/ui/multisigPropo
 import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { useQueryClient } from "@tanstack/react-query";
 import type { TransactionExecutor } from "@crunchdao/solana-utils";
-import { EnvironmentProvider, useEnvironment } from "@/modules/environment/application/context/environmentContext";
+import {
+  EnvironmentProvider,
+  useEnvironment,
+} from "@/modules/environment/application/context/environmentContext";
 
 const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { anchorProvider } = useAnchorProvider();

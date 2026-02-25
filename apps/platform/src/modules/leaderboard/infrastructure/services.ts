@@ -8,7 +8,9 @@ import { endpoints } from "./endpoints";
 export const getLeaderboard = async (
   crunchName: string
 ): Promise<Leaderboard> => {
-  const response = await apiClient.get(`/crunches/${crunchName}/reports/leaderboard`);
+  const response = await apiClient.get(
+    `/crunches/${crunchName}/reports/leaderboard`
+  );
   return response.data;
 };
 

@@ -20,8 +20,8 @@ export default function DashboardPage() {
       <div className="flex [&_div]:flex-1 gap-3 w-full">
         <DepositedCard />
         <UnstackedCard />
-        <RewardCard />
         <SelfStakeCard />
+        <RewardCard />
       </div>
       <StakingLifecycle />
       <div className="flex flex-wrap max-lg:flex-col gap-3">

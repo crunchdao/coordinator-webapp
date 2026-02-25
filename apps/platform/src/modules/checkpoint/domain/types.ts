@@ -4,7 +4,10 @@ export interface CheckpointPrize {
   claimed: boolean;
 }
 
-export type CheckpointStatus = "LoadingPrizes" | "LoadedPrizes" | "FullyClaimed";
+export type CheckpointStatus =
+  | "LoadingPrizes"
+  | "LoadedPrizes"
+  | "FullyClaimed";
 
 export interface Checkpoint {
   address: string;

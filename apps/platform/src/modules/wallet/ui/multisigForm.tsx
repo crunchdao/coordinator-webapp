@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button, Input, Tooltip, TooltipContent, TooltipTrigger } from "@crunch-ui/core";
+import {
+  Button,
+  Input,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@crunch-ui/core";
 import { InfoCircle } from "@crunch-ui/icons";
 import { useWallet } from "../application/context/walletContext";
 
@@ -11,8 +17,17 @@ interface MultisigFormProps {
   onSkip?: () => void;
 }
 
-export function MultisigForm({ onSuccess, showSkip, onSkip }: MultisigFormProps) {
-  const { multisigAddress, setMultisigAddress, clearMultisigAddress, isMultisigMode } = useWallet();
+export function MultisigForm({
+  onSuccess,
+  showSkip,
+  onSkip,
+}: MultisigFormProps) {
+  const {
+    multisigAddress,
+    setMultisigAddress,
+    clearMultisigAddress,
+    isMultisigMode,
+  } = useWallet();
   const [address, setAddress] = useState(multisigAddress);
   const [error, setError] = useState("");
 
@@ -72,12 +87,17 @@ export function MultisigForm({ onSuccess, showSkip, onSkip }: MultisigFormProps)
           </Button>
         )}
         <Button onClick={handleSave}>Save</Button>
-        {showSkip && !isMultisigMode && (
-          <Button variant="ghost" onClick={onSkip}>
-            Skip
-          </Button>
-        )}
       </div>
+
+      {showSkip && !isMultisigMode && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Don&apos;t need multisig? Skip this step →
+        </button>
+      )}
     </div>
   );
 }

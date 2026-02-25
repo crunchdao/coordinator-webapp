@@ -6,7 +6,11 @@ import { StartCrunchForm } from "@/modules/crunch/ui/startCrunchForm";
 import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 
-export function OnboardingStartCrunchForm() {
+interface OnboardingStartCrunchFormProps {
+  onSuccess?: () => void;
+}
+
+export function OnboardingStartCrunchForm({ onSuccess }: OnboardingStartCrunchFormProps) {
   const { coordinator, coordinatorLoading } = useGetCoordinator();
   const { crunches, crunchesLoading } = useGetCrunches(
     coordinator?.address ? { coordinator: coordinator.address } : undefined
@@ -32,6 +36,7 @@ export function OnboardingStartCrunchForm() {
       crunchAddress={new PublicKey(firstCrunch.address)}
       currentState={firstCrunch.state?.toLowerCase() ?? "unknown"}
       showCrunchInfo
+      onSuccess={onSuccess}
     />
   );
 }

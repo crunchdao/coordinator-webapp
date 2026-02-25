@@ -26,7 +26,9 @@ export const useGetCoordinatorPoolConfig = () => {
 
       const coordinatorPoolProgram = getCoordinatorPoolProgram(anchorProvider);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const config = await getCoordinatorPoolConfig(coordinatorPoolProgram as any);
+      const config = await getCoordinatorPoolConfig(
+        coordinatorPoolProgram as any
+      );
 
       return {
         minActivationSelfStake: convertToCrunch(

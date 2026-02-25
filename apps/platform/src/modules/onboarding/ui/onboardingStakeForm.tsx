@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
+  Alert,
+  AlertDescription,
   Button,
   Form,
   FormControl,
@@ -16,10 +18,12 @@ import {
   Skeleton,
   toast,
 } from "@crunch-ui/core";
+import { Check } from "@crunch-ui/icons";
 import {
   useDepositCrunch,
   useDelegate,
   useGetCrnchAccount,
+  useGetDepositAccount,
   PercentageSelector,
 } from "@crunchdao/staking";
 import { CrunchValue } from "@crunchdao/solana-utils";
@@ -33,10 +37,15 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export function OnboardingStakeForm() {
+interface OnboardingStakeFormProps {
+  onSuccess?: () => void;
+}
+
+export function OnboardingStakeForm({ onSuccess }: OnboardingStakeFormProps) {
   const { authority } = useEffectiveAuthority();
   const { minStakeRequired, stakedAmount } = useOnboarding();
   const { crnchAccount, crnchAccountLoading } = useGetCrnchAccount();
+  const { depositAccount, depositAccountLoading } = useGetDepositAccount();
   const { deposit, depositLoading } = useDepositCrunch();
   const { delegate, delegateLoading } = useDelegate();
   const [step, setStep] = useState<"idle" | "depositing" | "staking">("idle");
@@ -48,8 +57,10 @@ export function OnboardingStakeForm() {
 
   const amount = form.watch("amount");
   const walletBalance = crnchAccount?.amount ?? 0;
+  const depositedBalance = depositAccount?.amount ?? 0;
   const remaining = Math.max(0, minStakeRequired - stakedAmount);
   const isLoading = depositLoading || delegateLoading;
+  const hasDepositedFunds = depositedBalance > 0;
 
   if (!authority) {
     return (
@@ -57,10 +68,15 @@ export function OnboardingStakeForm() {
     );
   }
 
+  const hasEnoughStake = stakedAmount >= minStakeRequired;
+
   const onSubmit = async (values: FormData) => {
     try {
-      setStep("depositing");
-      await deposit({ amount: values.amount });
+      // If staking from deposited funds, skip deposit step
+      if (!hasDepositedFunds) {
+        setStep("depositing");
+        await deposit({ amount: values.amount });
+      }
 
       setStep("staking");
       await delegate({
@@ -70,9 +86,12 @@ export function OnboardingStakeForm() {
 
       toast({
         title: "Success",
-        description: `Successfully deposited and staked ${values.amount} CRNCH`,
+        description: hasDepositedFunds
+          ? `Successfully staked ${values.amount} CRNCH`
+          : `Successfully deposited and staked ${values.amount} CRNCH`,
       });
       form.reset({ amount: 0 });
+      onSuccess?.();
     } catch (error) {
       console.error("Deposit & stake failed:", error);
       toast({
@@ -86,15 +105,32 @@ export function OnboardingStakeForm() {
     }
   };
 
+  const availableBalance = hasDepositedFunds ? depositedBalance : walletBalance;
+
   const setAmountPercentage = (percentage: number) => {
-    if (walletBalance > 0) {
+    if (availableBalance > 0) {
       const newAmount =
         percentage === 100
-          ? walletBalance
-          : parseFloat((walletBalance * (percentage / 100)).toFixed(6));
+          ? availableBalance
+          : parseFloat((availableBalance * (percentage / 100)).toFixed(6));
       form.setValue("amount", newAmount);
     }
   };
+
+  if (hasEnoughStake) {
+    return (
+      <Alert variant="success">
+        <Check className="w-4 h-4" />
+        <AlertDescription>
+          You've staked{" "}
+          <span className="font-medium">
+            {stakedAmount.toLocaleString()} CRNCH
+          </span>{" "}
+          on yourself. You're ready to create your first Crunch!
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <>
@@ -155,7 +191,7 @@ export function OnboardingStakeForm() {
                   />
                 </FormControl>
                 <FormMessage />
-                {crnchAccountLoading || isLoading ? (
+                {crnchAccountLoading || depositAccountLoading || isLoading ? (
                   <div className="flex gap-2 mt-1">
                     {Array.from({ length: 4 }, (_, i) => (
                       <Skeleton key={i} className="flex-1 h-8" />
@@ -163,25 +199,43 @@ export function OnboardingStakeForm() {
                   </div>
                 ) : (
                   <>
-                    {walletBalance > 0 && (
+                    {availableBalance > 0 && (
                       <div className="pt-1 flex flex-col gap-2">
                         <PercentageSelector
                           onPercentageSelect={setAmountPercentage}
                           maxLabel="Max"
                         />
-                        <p className="body-xs text-muted-foreground w-full flex justify-between">
-                          Wallet Balance
-                          <CrunchValue
-                            amount={walletBalance}
-                            showCurrency
-                            className="text-right"
-                          />
-                        </p>
+                        <div className="body-xs text-muted-foreground space-y-0.5">
+                          <p className="flex justify-between">
+                            <span>Wallet</span>
+                            <CrunchValue
+                              amount={walletBalance}
+                              showCurrency
+                              className="text-right"
+                            />
+                          </p>
+                          <p className="flex justify-between">
+                            <span>Unstaked</span>
+                            <CrunchValue
+                              amount={depositedBalance}
+                              showCurrency
+                              className="text-right"
+                            />
+                          </p>
+                          <p className="flex justify-between">
+                            <span>Self Staked</span>
+                            <CrunchValue
+                              amount={stakedAmount}
+                              showCurrency
+                              className="text-right"
+                            />
+                          </p>
+                        </div>
                       </div>
                     )}
-                    {walletBalance === 0 && (
+                    {availableBalance === 0 && (
                       <p className="body-xs text-muted-foreground">
-                        No CRNCH in wallet
+                        No CRNCH available
                       </p>
                     )}
                   </>
@@ -194,13 +248,13 @@ export function OnboardingStakeForm() {
             type="submit"
             disabled={
               isLoading ||
-              walletBalance === 0 ||
+              availableBalance === 0 ||
               amount <= 0 ||
-              amount > walletBalance
+              amount > availableBalance
             }
             loading={isLoading}
           >
-            Deposit & Stake
+            {hasDepositedFunds ? "Stake" : "Deposit & Stake"}
           </Button>
         </form>
       </Form>
