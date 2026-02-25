@@ -19,13 +19,18 @@ export const useGetStakingInfo = () => {
       }
 
       try {
-        const availableToStakeBigInt = await stakingClient.getAvailableAmountToStake();
-        const availableToStake = convertToCrunch(Number(availableToStakeBigInt));
-        
-        const stakingAmountsBigInt = await stakingClient.getUserStakingAmountPerCoordinator();
-        const selfStakedAmountBigInt = stakingAmountsBigInt.get(authority.toString()) || BigInt(0);
+        const availableToStakeBigInt =
+          await stakingClient.getAvailableAmountToStake();
+        const availableToStake = convertToCrunch(
+          Number(availableToStakeBigInt)
+        );
+
+        const stakingAmountsBigInt =
+          await stakingClient.getUserStakingAmountPerCoordinator();
+        const selfStakedAmountBigInt =
+          stakingAmountsBigInt.get(authority.toString()) || BigInt(0);
         const stakedAmount = convertToCrunch(Number(selfStakedAmountBigInt));
-        
+
         // Convert all staking amounts to numbers
         const stakingAmounts = new Map<string, number>();
         for (const [key, value] of stakingAmountsBigInt.entries()) {

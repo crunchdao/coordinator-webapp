@@ -16,7 +16,9 @@ const columns: ColumnDef<ModelState>[] = [
     header: "State",
     cell: ({ row }) => (
       <Badge
-        variant={row.original.desiredState === "START" ? "success" : "secondary"}
+        variant={
+          row.original.desiredState === "START" ? "success" : "secondary"
+        }
         size="sm"
       >
         {row.original.desiredState}
@@ -26,12 +28,16 @@ const columns: ColumnDef<ModelState>[] = [
   {
     accessorKey: "model.address",
     header: "Model",
-    cell: ({ row }) => <SolanaAddressLink address={row.original.model.address} />,
+    cell: ({ row }) => (
+      <SolanaAddressLink address={row.original.model.address} />
+    ),
   },
   {
     accessorKey: "cruncherPubKey",
     header: "Cruncher",
-    cell: ({ row }) => <SolanaAddressLink address={row.original.cruncherPubKey} />,
+    cell: ({ row }) => (
+      <SolanaAddressLink address={row.original.cruncherPubKey} />
+    ),
   },
   {
     accessorKey: "model.hardwareType",

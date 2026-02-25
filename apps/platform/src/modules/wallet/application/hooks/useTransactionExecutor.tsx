@@ -39,7 +39,7 @@ const MAX_POLL_DURATION_MS = 120_000;
 async function pollForConfirmation(
   connection: Connection,
   signature: string,
-  commitment: "confirmed" | "finalized" = "confirmed",
+  commitment: "confirmed" | "finalized" = "confirmed"
 ): Promise<void> {
   const deadline = Date.now() + MAX_POLL_DURATION_MS;
 
@@ -49,7 +49,7 @@ async function pollForConfirmation(
 
     if (status?.err) {
       throw new Error(
-        `Transaction ${signature} failed: ${JSON.stringify(status.err)}`,
+        `Transaction ${signature} failed: ${JSON.stringify(status.err)}`
       );
     }
 
@@ -67,8 +67,9 @@ async function pollForConfirmation(
   }
 
   throw new Error(
-    `Transaction ${signature} was not confirmed within ${MAX_POLL_DURATION_MS / 1000}s. ` +
-      "It may still succeed — check the Solana Explorer.",
+    `Transaction ${signature} was not confirmed within ${
+      MAX_POLL_DURATION_MS / 1000
+    }s. ` + "It may still succeed — check the Solana Explorer."
   );
 }
 
@@ -116,7 +117,7 @@ export const useTransactionExecutor = () => {
       transaction.add(...instructions);
 
       const { blockhash } = await anchorProvider.connection.getLatestBlockhash(
-        "confirmed",
+        "confirmed"
       );
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = walletPublicKey;
@@ -132,10 +133,9 @@ export const useTransactionExecutor = () => {
       // the node is slow to report signature statuses — they throw
       // "TransactionExpiredTimeoutError" / "TransactionExpiredBlockheight-
       // ExceededError" even when the transaction has already landed on-chain.
-      const signedTx =
-        await anchorProvider.wallet.signTransaction(transaction);
+      const signedTx = await anchorProvider.wallet.signTransaction(transaction);
       const signature = await anchorProvider.connection.sendRawTransaction(
-        signedTx.serialize(),
+        signedTx.serialize()
       );
 
       await pollForConfirmation(anchorProvider.connection, signature);
@@ -145,7 +145,7 @@ export const useTransactionExecutor = () => {
         isMultisig: false,
       };
     },
-    [anchorProvider, walletPublicKey, isMultisigMode, multisigService],
+    [anchorProvider, walletPublicKey, isMultisigMode, multisigService]
   );
 
   return {

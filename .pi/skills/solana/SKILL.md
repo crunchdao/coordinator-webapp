@@ -9,11 +9,11 @@ Query Solana blockchain data directly via RPC endpoints. **Always use CLI tools 
 
 ## RPC Endpoints
 
-| Cluster | URL |
-|---------|-----|
+| Cluster | URL                                   |
+| ------- | ------------------------------------- |
 | Mainnet | `https://api.mainnet-beta.solana.com` |
-| Devnet | `https://api.devnet.solana.com` |
-| Testnet | `https://api.testnet.solana.com` |
+| Devnet  | `https://api.devnet.solana.com`       |
+| Testnet | `https://api.testnet.solana.com`      |
 
 ## Common Operations
 
@@ -108,16 +108,16 @@ python3 .pi/skills/solana/decode_account.py \
 
 ### Field Types
 
-| Type | Description |
-|------|-------------|
-| `N` | N raw bytes, output as hex |
-| `u8` | Unsigned 8-bit integer |
-| `u16` | Unsigned 16-bit integer (little-endian) |
-| `u32` | Unsigned 32-bit integer (little-endian) |
-| `u64` | Unsigned 64-bit integer (little-endian) |
-| `i64` | Signed 64-bit integer (little-endian) |
-| `pubkey` | 32-byte public key (base58 encoded) |
-| `bool` | 1-byte boolean |
+| Type     | Description                                      |
+| -------- | ------------------------------------------------ |
+| `N`      | N raw bytes, output as hex                       |
+| `u8`     | Unsigned 8-bit integer                           |
+| `u16`    | Unsigned 16-bit integer (little-endian)          |
+| `u32`    | Unsigned 32-bit integer (little-endian)          |
+| `u64`    | Unsigned 64-bit integer (little-endian)          |
+| `i64`    | Signed 64-bit integer (little-endian)            |
+| `pubkey` | 32-byte public key (base58 encoded)              |
+| `bool`   | 1-byte boolean                                   |
 | `string` | Borsh string (4-byte length prefix + UTF-8 data) |
 
 ## Quick One-Liner: Fetch + Decode
@@ -146,6 +146,7 @@ solana find-program-derived-address <PROGRAM_ID> --seeds "seed1" "seed2"
 ```
 
 Or compute in Python:
+
 ```python
 from solders.pubkey import Pubkey
 program_id = Pubkey.from_string("<PROGRAM_ID>")

@@ -49,6 +49,7 @@ export function OnboardingStakeForm() {
   const amount = form.watch("amount");
   const walletBalance = crnchAccount?.amount ?? 0;
   const remaining = Math.max(0, minStakeRequired - stakedAmount);
+  console.log(stakedAmount);
   const isLoading = depositLoading || delegateLoading;
 
   if (!authority) {

@@ -28,7 +28,9 @@ export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
     {
       accessorKey: "cruncherPubKey",
       header: "Cruncher",
-      cell: ({ row }) => <SolanaAddressLink address={row.original.cruncherPubKey} />,
+      cell: ({ row }) => (
+        <SolanaAddressLink address={row.original.cruncherPubKey} />
+      ),
     },
     {
       id: "prize",
@@ -67,5 +69,11 @@ export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
     },
   ];
 
-  return <DataTable columns={columns} data={modelStates} loading={modelStatesLoading} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={modelStates}
+      loading={modelStatesLoading}
+    />
+  );
 }

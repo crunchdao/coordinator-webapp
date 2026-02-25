@@ -22,7 +22,8 @@ export async function POST() {
     }) as string;
 
     const cookieStore = await cookies();
-    const env = (cookieStore.get("coordinator-environment")?.value ?? "staging") as Environment;
+    const env = (cookieStore.get("coordinator-environment")?.value ??
+      "staging") as Environment;
     const { hubApiBaseUrl } = getConfigFor(env);
     const response = await fetch(
       `${hubApiBaseUrl}/v1/security-credentials/tls/issue-certificate`,

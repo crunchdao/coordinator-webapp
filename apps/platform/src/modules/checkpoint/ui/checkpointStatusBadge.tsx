@@ -12,8 +12,15 @@ const statusConfig: Record<
   FullyClaimed: { label: "Finished", variant: "secondary" },
 };
 
-export function CheckpointStatusBadge({ status }: { status: CheckpointStatus }) {
-  const config = statusConfig[status] ?? { label: status, variant: "warning" as const };
+export function CheckpointStatusBadge({
+  status,
+}: {
+  status: CheckpointStatus;
+}) {
+  const config = statusConfig[status] ?? {
+    label: status,
+    variant: "warning" as const,
+  };
 
   return (
     <Badge variant={config.variant} size="sm">

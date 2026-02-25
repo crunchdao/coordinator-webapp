@@ -9,10 +9,17 @@ export enum OnboardingStep {
   COMPLETED = "completed",
 }
 
+export interface StepComponentProps {
+  onSuccess?: () => void;
+  showSkip?: boolean;
+  onSkip?: () => void;
+}
+
 export interface StepConfig {
   title: string;
   description: string;
   isOptional: boolean;
   icon: React.ComponentType<{ className?: string }>;
-  content?: React.ReactNode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Component: React.ComponentType<any>;
 }

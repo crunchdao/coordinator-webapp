@@ -43,59 +43,60 @@ import { OnboardingStep, StepConfig } from "../domain/types";
 const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
   [OnboardingStep.CONFIGURE_MULTISIG]: {
     title: "Configure Multisig",
-    description: "Optionally configure a multisig wallet for enhanced security",
+    description:
+      "Optionally configure a multisig wallet for enhanced security — we highly recommend using a multisig for stronger protection",
     isOptional: true,
     icon: Lock,
-    content: <MultisigForm />,
+    Component: MultisigForm,
   },
   [OnboardingStep.REGISTER_COORDINATOR]: {
     title: "Register as Coordinator",
     description: "Register your organization on-chain",
     isOptional: false,
     icon: Coordinator,
-    content: <RegistrationForm />,
+    Component: RegistrationForm,
   },
   [OnboardingStep.STAKE]: {
     title: "Stake Tokens",
     description: "Stake CRNCH tokens on yourself",
     isOptional: false,
     icon: Trophy,
-    content: <OnboardingStakeForm />,
+    Component: OnboardingStakeForm,
   },
   [OnboardingStep.CREATE_CRUNCH]: {
     title: "Create Crunch",
     description: "Create your first Crunch challenge",
     isOptional: false,
     icon: Cube,
-    content: <CrunchCreationForm />,
+    Component: CrunchCreationForm,
   },
   [OnboardingStep.FUND_CRUNCH]: {
     title: "Fund Crunch",
     description: "Fund your Crunch with USDC rewards",
     isOptional: false,
     icon: Wallet,
-    content: <OnboardingFundCrunchForm />,
+    Component: OnboardingFundCrunchForm,
   },
   [OnboardingStep.START_CRUNCH]: {
     title: "Start Crunch",
     description: "Launch your Crunch to start accepting submissions",
     isOptional: false,
     icon: Rocket,
-    content: <OnboardingStartCrunchForm />,
+    Component: OnboardingStartCrunchForm,
   },
   [OnboardingStep.CERTIFICATE_ENROLLMENT]: {
     title: "Certificate Enrollment",
     description: "Download your TLS certificate to run a node",
     isOptional: false,
     icon: Certificate,
-    content: <EnrollForm showStatus />,
+    Component: EnrollForm,
   },
   [OnboardingStep.COMPLETED]: {
     title: "Completed",
     description: "Onboarding complete!",
     isOptional: false,
     icon: Check,
-    content: <OnboardingCompletedStep />,
+    Component: OnboardingCompletedStep,
   },
 };
 
@@ -121,7 +122,6 @@ export interface OnboardingStepInfo extends StepConfig {
 export interface OnboardingState {
   currentStep: OnboardingStep;
   currentStepInfo: OnboardingStepInfo | undefined;
-  currentStepContent: React.ReactNode | undefined;
   steps: OnboardingStepInfo[];
   isLoading: boolean;
   isOnboardingComplete: boolean;
@@ -314,7 +314,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   }, [completionMap, stepIndex, hasEnoughStake, minStakeRequired, isApproved]);
 
   const currentStepInfo = steps.find((s) => s.step === currentStep);
-  const currentStepContent = currentStepInfo?.content;
 
   const canGoNext = stepIndex < maxStepIndex;
   const canGoPrevious = stepIndex > 0;
@@ -339,7 +338,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const value: OnboardingState = {
     currentStep,
     currentStepInfo,
-    currentStepContent,
     steps,
     isLoading,
     isOnboardingComplete: isCrunchStarted,

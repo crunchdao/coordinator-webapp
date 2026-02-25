@@ -109,7 +109,9 @@ export function EnrollForm({ showStatus = false }: EnrollFormProps) {
                   </p>
                   <p className="flex justify-between gap-2">
                     <span>Secondary updated</span>
-                    <span>{formatDateTime(enrollmentStatus.secondaryUpdatedAt)}</span>
+                    <span>
+                      {formatDateTime(enrollmentStatus.secondaryUpdatedAt)}
+                    </span>
                   </p>
                 </>
               )}

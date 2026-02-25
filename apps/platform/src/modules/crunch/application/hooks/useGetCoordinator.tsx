@@ -22,17 +22,28 @@ export const useGetCoordinator = () => {
     queryKey: ["coordinator", authority?.toString(), isMultisigMode],
     queryFn: async (): Promise<CoordinatorData> => {
       if (!authority) {
-        return { status: CoordinatorStatus.UNREGISTERED, address: null, data: null };
+        return {
+          status: CoordinatorStatus.UNREGISTERED,
+          address: null,
+          data: null,
+        };
       }
 
-      const coordinators = await getCoordinators({ owner: authority.toString() });
+      const coordinators = await getCoordinators({
+        owner: authority.toString(),
+      });
 
       if (coordinators.length === 0) {
-        return { status: CoordinatorStatus.UNREGISTERED, address: null, data: null };
+        return {
+          status: CoordinatorStatus.UNREGISTERED,
+          address: null,
+          data: null,
+        };
       }
 
       const cpi = coordinators[0];
-      const status = CPI_STATE_TO_STATUS[cpi.state] ?? CoordinatorStatus.UNREGISTERED;
+      const status =
+        CPI_STATE_TO_STATUS[cpi.state] ?? CoordinatorStatus.UNREGISTERED;
 
       return {
         status,

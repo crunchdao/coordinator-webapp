@@ -10,7 +10,7 @@ export const useWaitForConfirmation = () => {
     ): Promise<void> => {
       for (let i = 0; i < maxAttempts; i++) {
         await new Promise((resolve) => setTimeout(resolve, delayMs));
-        
+
         try {
           const conditionMet = await checkCondition();
           if (conditionMet) {
@@ -20,7 +20,7 @@ export const useWaitForConfirmation = () => {
           console.warn(`Confirmation check attempt ${i + 1} failed:`, error);
         }
       }
-      
+
       throw new Error("Transaction confirmation timeout");
     },
     []

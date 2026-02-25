@@ -17,12 +17,13 @@ export function OnboardingPanel() {
   const {
     isLoading,
     currentStepInfo,
-    currentStepContent,
     goToNextStep,
     goToPreviousStep,
     canGoNext,
     canGoPrevious,
   } = useOnboarding();
+
+  const StepComponent = currentStepInfo?.Component;
 
   if (isLoading) {
     return (
@@ -79,7 +80,13 @@ export function OnboardingPanel() {
               </div>
             </div>
 
-            {currentStepContent}
+            {StepComponent && (
+              <StepComponent
+                onSuccess={goToNextStep}
+                showSkip={currentStepInfo?.isOptional}
+                onSkip={goToNextStep}
+              />
+            )}
           </div>
         </CardContent>
       </Card>
