@@ -34,7 +34,11 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export function OnboardingStakeForm() {
+interface OnboardingStakeFormProps {
+  onSuccess?: () => void;
+}
+
+export function OnboardingStakeForm({ onSuccess }: OnboardingStakeFormProps) {
   const { authority } = useEffectiveAuthority();
   const { minStakeRequired, stakedAmount } = useOnboarding();
   const { crnchAccount, crnchAccountLoading } = useGetCrnchAccount();
@@ -82,6 +86,7 @@ export function OnboardingStakeForm() {
           : `Successfully deposited and staked ${values.amount} CRNCH`,
       });
       form.reset({ amount: 0 });
+      onSuccess?.();
     } catch (error) {
       console.error("Deposit & stake failed:", error);
       toast({

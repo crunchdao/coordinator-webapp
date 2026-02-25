@@ -266,22 +266,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   );
 
   const currentStep = STEP_ORDER[stepIndex] ?? STEP_ORDER[0];
-  const isCurrentStepCompleted = completionMap[currentStep];
-  const prevCompletedRef = useRef<boolean | null>(null);
-
-  useEffect(() => {
-    if (!hasInitialized.current) return;
-    const wasCompleted = prevCompletedRef.current;
-    prevCompletedRef.current = isCurrentStepCompleted;
-
-    if (
-      wasCompleted === false &&
-      isCurrentStepCompleted &&
-      stepIndex < maxStepIndex
-    ) {
-      setStepIndex((i) => i + 1);
-    }
-  }, [isCurrentStepCompleted, stepIndex, maxStepIndex]);
 
   const steps: OnboardingStepInfo[] = useMemo(() => {
     return STEP_ORDER.map((step, index) => {

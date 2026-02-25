@@ -6,7 +6,11 @@ import { FundCrunchForm } from "@/modules/crunch/ui/fundCrunchForm";
 import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 
-export function OnboardingFundCrunchForm() {
+interface OnboardingFundCrunchFormProps {
+  onSuccess?: () => void;
+}
+
+export function OnboardingFundCrunchForm({ onSuccess }: OnboardingFundCrunchFormProps) {
   const { coordinator, coordinatorLoading } = useGetCoordinator();
   const { crunches, crunchesLoading } = useGetCrunches(
     coordinator?.address ? { coordinator: coordinator.address } : undefined
@@ -32,6 +36,7 @@ export function OnboardingFundCrunchForm() {
       crunchAddress={new PublicKey(firstCrunch.address)}
       rewardVault={new PublicKey(firstCrunch.rewardVault)}
       showCrunchInfo
+      onSuccess={onSuccess}
     />
   );
 }
