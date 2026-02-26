@@ -1,4 +1,4 @@
-import axios from "axios";
+import hubApiClient from "@/utils/api/hubApiClient";
 import {
   OverviewSliceItemResponse,
   OverviewSlicesListResponse,
@@ -12,7 +12,7 @@ export const getOverviewSlices = async (
   crunchName: string,
   locale?: Locale
 ): Promise<OverviewSlicesListResponse> => {
-  const response = await axios.get(overviewEndpoints.slices(crunchName), {
+  const response = await hubApiClient.get(overviewEndpoints.slices(crunchName), {
     params: { locale },
   });
   return response.data;
@@ -23,7 +23,7 @@ export const createOverviewSlice = async (
   body: CreateOverviewSliceBody,
   locale?: Locale
 ): Promise<OverviewSliceItemResponse> => {
-  const response = await axios.post(
+  const response = await hubApiClient.post(
     overviewEndpoints.slices(crunchName),
     body,
     { params: { locale } }
@@ -37,7 +37,7 @@ export const updateOverviewSlice = async (
   body: UpdateOverviewSliceBody,
   locale?: Locale
 ): Promise<OverviewSliceItemResponse> => {
-  const response = await axios.patch(
+  const response = await hubApiClient.patch(
     overviewEndpoints.slice(crunchName, sliceName),
     body,
     { params: { locale } }
@@ -50,7 +50,7 @@ export const deleteOverviewSlice = async (
   sliceName: string,
   locale?: Locale
 ): Promise<void> => {
-  await axios.delete(overviewEndpoints.slice(crunchName, sliceName), {
+  await hubApiClient.delete(overviewEndpoints.slice(crunchName, sliceName), {
     params: { locale },
   });
 };
