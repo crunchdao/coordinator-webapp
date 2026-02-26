@@ -216,42 +216,11 @@ export function PitchForm() {
           title="Content Slices"
         />
 
-        <div className="flex justify-between items-center">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setShowPreview(!showPreview)}
-            disabled={!slices || slices.length === 0}
-          >
-            {showPreview ? (
-              <>
-                <EyeClosed />
-                Hide Preview
-              </>
-            ) : (
-              <>
-                <Eye />
-                Show Preview
-              </>
-            )}
-          </Button>
-
+        <div className="flex justify-end items-center">
           <Button size="lg" onClick={form.handleSubmit(onSubmit)}>
             Download <Save />
           </Button>
         </div>
-
-        {showPreview && slices && slices.length > 0 && (
-          <div>
-            <h2 className="body-lg font-bold mb-2">Preview</h2>
-            <Card>
-              <CardHeader />
-              <CardContent>
-                <SlicesRenderer slices={slices} />
-              </CardContent>
-            </Card>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
