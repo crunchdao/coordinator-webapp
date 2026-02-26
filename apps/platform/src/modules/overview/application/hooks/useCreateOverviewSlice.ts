@@ -4,20 +4,20 @@ import { Locale, CreateOverviewSliceBody } from "../../domain/types";
 import { createOverviewSlice } from "../../infrastructure/service";
 
 export const useCreateOverviewSlice = (
-  crunchName: string,
+  crunchAddress: string,
   locale?: Locale
 ) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (data: CreateOverviewSliceBody) =>
-      createOverviewSlice(crunchName, data, locale),
+      createOverviewSlice(crunchAddress, data, locale),
     onSuccess: () => {
       toast({
         title: "Slice created successfully",
       });
       queryClient.invalidateQueries({
-        queryKey: ["overviewSlices", crunchName],
+        queryKey: ["overviewSlices", crunchAddress],
       });
     },
     onError: (error: Error) => {

@@ -3,13 +3,13 @@ import { Locale } from "../../domain/types";
 import { getOverviewSlices } from "../../infrastructure/service";
 
 export const useGetOverviewSlices = (
-  crunchName: string | undefined,
+  crunchAddress: string | undefined,
   locale?: Locale
 ) => {
   const query = useQuery({
-    queryKey: ["overviewSlices", crunchName, locale],
-    queryFn: () => getOverviewSlices(crunchName as string, locale),
-    enabled: !!crunchName,
+    queryKey: ["overviewSlices", crunchAddress, locale],
+    queryFn: () => getOverviewSlices(crunchAddress as string, locale),
+    enabled: !!crunchAddress,
     select: (data) => [...data].sort((a, b) => a.order - b.order),
   });
 

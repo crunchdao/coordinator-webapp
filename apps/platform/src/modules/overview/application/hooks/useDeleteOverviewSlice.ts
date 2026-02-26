@@ -4,20 +4,20 @@ import { Locale } from "../../domain/types";
 import { deleteOverviewSlice } from "../../infrastructure/service";
 
 export const useDeleteOverviewSlice = (
-  crunchName: string,
+  crunchAddress: string,
   locale?: Locale
 ) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (sliceName: string) =>
-      deleteOverviewSlice(crunchName, sliceName, locale),
+      deleteOverviewSlice(crunchAddress, sliceName, locale),
     onSuccess: () => {
       toast({
         title: "Slice deleted successfully",
       });
       queryClient.invalidateQueries({
-        queryKey: ["overviewSlices", crunchName],
+        queryKey: ["overviewSlices", crunchAddress],
       });
     },
     onError: (error: Error) => {

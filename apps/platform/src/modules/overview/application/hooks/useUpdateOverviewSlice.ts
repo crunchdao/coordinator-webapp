@@ -4,7 +4,7 @@ import { Locale, UpdateOverviewSliceBody } from "../../domain/types";
 import { updateOverviewSlice } from "../../infrastructure/service";
 
 export const useUpdateOverviewSlice = (
-  crunchName: string,
+  crunchAddress: string,
   locale?: Locale
 ) => {
   const queryClient = useQueryClient();
@@ -17,10 +17,10 @@ export const useUpdateOverviewSlice = (
       sliceName: string;
       body: UpdateOverviewSliceBody;
       locale?: Locale;
-    }) => updateOverviewSlice(crunchName, sliceName, body, locale),
+    }) => updateOverviewSlice(crunchAddress, sliceName, body, locale),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["overviewSlices", crunchName],
+        queryKey: ["overviewSlices", crunchAddress],
       });
     },
     onError: (error: Error) => {

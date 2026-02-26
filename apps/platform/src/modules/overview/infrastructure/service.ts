@@ -9,22 +9,22 @@ import {
 import { overviewEndpoints } from "./endpoints";
 
 export const getOverviewSlices = async (
-  crunchName: string,
+  crunchAddress: string,
   locale?: Locale
 ): Promise<OverviewSlicesListResponse> => {
-  const response = await hubApiClient.get(overviewEndpoints.slices(crunchName), {
+  const response = await hubApiClient.get(overviewEndpoints.slices(crunchAddress), {
     params: { locale },
   });
   return response.data;
 };
 
 export const createOverviewSlice = async (
-  crunchName: string,
+  crunchAddress: string,
   body: CreateOverviewSliceBody,
   locale?: Locale
 ): Promise<OverviewSliceItemResponse> => {
   const response = await hubApiClient.post(
-    overviewEndpoints.slices(crunchName),
+    overviewEndpoints.slices(crunchAddress),
     body,
     { params: { locale } }
   );
@@ -32,13 +32,13 @@ export const createOverviewSlice = async (
 };
 
 export const updateOverviewSlice = async (
-  crunchName: string,
+  crunchAddress: string,
   sliceName: string,
   body: UpdateOverviewSliceBody,
   locale?: Locale
 ): Promise<OverviewSliceItemResponse> => {
   const response = await hubApiClient.patch(
-    overviewEndpoints.slice(crunchName, sliceName),
+    overviewEndpoints.slice(crunchAddress, sliceName),
     body,
     { params: { locale } }
   );
@@ -46,11 +46,11 @@ export const updateOverviewSlice = async (
 };
 
 export const deleteOverviewSlice = async (
-  crunchName: string,
+  crunchAddress: string,
   sliceName: string,
   locale?: Locale
 ): Promise<void> => {
-  await hubApiClient.delete(overviewEndpoints.slice(crunchName, sliceName), {
+  await hubApiClient.delete(overviewEndpoints.slice(crunchAddress, sliceName), {
     params: { locale },
   });
 };
