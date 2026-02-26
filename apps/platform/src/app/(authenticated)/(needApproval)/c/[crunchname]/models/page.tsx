@@ -1,6 +1,9 @@
-"use client";
-
+import { Metadata } from "next";
 import { ModelsList } from "@/modules/models/ui/modelsList";
+
+export const metadata: Metadata = {
+  title: "Models",
+};
 
 export default function ModelsPage() {
   return (

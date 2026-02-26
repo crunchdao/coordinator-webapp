@@ -1,6 +1,22 @@
+import { Metadata } from "next";
 import { RestrictedWrapper } from "@/modules/auth/ui/restrictedWrapper";
 import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 import { CrunchProvider } from "@/modules/crunch/application/context/crunchContext";
+
+type Props = {
+  params: Promise<{ crunchname: string }>;
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { crunchname } = await params;
+
+  return {
+    title: {
+      template: `%s - ${crunchname} - CrunchDAO`,
+      default: `${crunchname} - CrunchDAO`,
+    },
+  };
+}
 
 export default function CrunchLayout({
   children,

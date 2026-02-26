@@ -1,6 +1,9 @@
-"use client";
-
+import { Metadata } from "next";
 import { CreateCheckpoint } from "@/modules/checkpoint/ui/createCheckpoint";
+
+export const metadata: Metadata = {
+  title: "Create Checkpoint",
+};
 
 export default function CheckpointPage() {
   return (
