@@ -44,7 +44,7 @@ export function OnboardingPanel() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 pt-4">
             <OnboardingStepper />
 
             <div className="flex justify-between gap-3 pt-4 mb-3 border-b pb-3">
