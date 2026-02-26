@@ -39,11 +39,12 @@ export const EnvironmentProvider: FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const stored = getEnvironment();
-    if (stored !== environment) {
+    if (stored !== DEFAULT_ENV) {
       setEnvironment(stored);
       queryClient.clear();
+      router.push(INTERNAL_LINKS.ROOT);
     }
-  }, []);
+  }, [queryClient, router]);
 
   const switchEnvironment = useCallback(
     (env: Environment) => {
