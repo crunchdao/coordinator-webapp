@@ -51,12 +51,11 @@ export function PitchForm() {
     });
   };
 
-  const handleUpdate = (slice: Slice, originalName: string) => {
+  const handleUpdate = (slice: Slice) => {
     const currentSlices = form.getValues("slices");
     const updatedSlices = currentSlices.map((s) =>
-      s.name === originalName ? slice : s
+      s.id === slice.id ? slice : s
     );
-    console.log(updatedSlices);
     form.setValue("slices", updatedSlices, { shouldDirty: true });
   };
 

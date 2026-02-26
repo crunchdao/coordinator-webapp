@@ -1,5 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "@crunch-ui/core";
+import { useMutation } from "@tanstack/react-query";
 import { Locale } from "../../domain/types";
 import { deleteOverviewSlice } from "../../infrastructure/service";
 
@@ -7,26 +6,9 @@ export const useDeleteOverviewSlice = (
   crunchAddress: string,
   locale?: Locale
 ) => {
-  const queryClient = useQueryClient();
-
   const mutation = useMutation({
     mutationFn: (sliceName: string) =>
       deleteOverviewSlice(crunchAddress, sliceName, locale),
-    onSuccess: () => {
-      toast({
-        title: "Slice deleted successfully",
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["overviewSlices", crunchAddress],
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Failed to delete slice",
-        description: error.message || "An error occurred",
-        variant: "destructive",
-      });
-    },
   });
 
   return {
