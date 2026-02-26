@@ -5,7 +5,6 @@ export const INTERNAL_LINKS = {
   ONBOARDING: "/get-started",
   CREATE_CRUNCH: "/create-crunch",
   CERTIFICATE_ENROLL: "/certificate-enrollment",
-  // Crunch routes (prefixed with /c/ to avoid collisions)
   CRUNCH_OVERVIEW: "/c/:crunchname",
   MODELS: "/c/:crunchname/models",
   CHECKPOINTS: "/c/:crunchname/checkpoints",
