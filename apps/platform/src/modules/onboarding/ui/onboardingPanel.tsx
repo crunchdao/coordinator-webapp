@@ -25,7 +25,7 @@ export function OnboardingPanel() {
 
   const StepComponent = currentStepInfo?.Component;
 
-  if (!isLoading) {
+  if (isLoading) {
     return (
       <div className="flex flex-1 items-center justify-center h-full">
         <Spinner />
