@@ -1,14 +1,12 @@
 import z from "zod";
-import {
-  pitchFormSchema,
-  pitchKeyMetricSchema,
-  pitchSliceSchema,
-  roadmapEventSchema,
-  teamMemberSchema,
-  PitchSliceType,
-} from "../application/schemas/pitch";
-
-export { PitchSliceType };
+import { pitchFormSchema } from "../application/schemas/pitch";
+export {
+  SliceType,
+  type Slice,
+  type KeyMetric,
+  type TimelineEvent,
+  type TeamMember,
+} from "@crunchdao/slices";
 
 export enum SeasonStatus {
   VOTING = "VOTING",
@@ -68,14 +66,4 @@ export interface Pitch {
   status: PitchStatus;
 }
 
-export interface BasePitchSlice {
-  id: string;
-  type: PitchSliceType;
-  order: number;
-}
-
 export type PitchFormData = z.infer<typeof pitchFormSchema>;
-export type PitchSlice = z.infer<typeof pitchSliceSchema>;
-export type PitchKeyMetric = z.infer<typeof pitchKeyMetricSchema>;
-export type TeamMember = z.infer<typeof teamMemberSchema>;
-export type RoadmapEvent = z.infer<typeof roadmapEventSchema>;

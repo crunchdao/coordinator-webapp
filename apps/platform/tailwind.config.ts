@@ -7,6 +7,8 @@ const config: Pick<Config, "content" | "presets"> = {
     "./src/**/*.{ts,tsx}",
     "../../packages/*/src/**/*.{ts,tsx}",
     "./node_modules/@crunch-ui/core/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@crunchdao/slices/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@crunchdao/staking/**/*.{js,ts,jsx,tsx}",
   ],
   presets: [
     {

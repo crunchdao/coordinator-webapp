@@ -17,10 +17,9 @@ import {
   CardTitle,
 } from "@crunch-ui/core";
 import { Save, Eye, EyeClosed } from "@crunch-ui/icons";
+import { SliceManager, SlicesRenderer, type Slice } from "@crunchdao/slices";
 import { pitchFormSchema } from "../application/schemas/pitch";
 import { PitchFormData } from "../domain/types";
-import { SliceManager } from "./sliceManager";
-import { SlicesRenderer } from "./pitchSlicesRenderer";
 
 export function PitchForm() {
   const [showPreview, setShowPreview] = useState(false);
@@ -43,6 +42,28 @@ export function PitchForm() {
     control: form.control,
     name: "slices",
   });
+
+  const handleCreate = (slice: Omit<Slice, "id">) => {
+    const currentSlices = form.getValues("slices");
+    const newSlice = { ...slice, id: Date.now() } as Slice;
+    form.setValue("slices", [...currentSlices, newSlice], {
+      shouldDirty: true,
+    });
+  };
+
+  const handleUpdate = (slice: Slice, originalName: string) => {
+    const currentSlices = form.getValues("slices");
+    const updatedSlices = currentSlices.map((s) =>
+      s.name === originalName ? slice : s
+    );
+    form.setValue("slices", updatedSlices, { shouldDirty: true });
+  };
+
+  const handleDelete = (slice: Slice) => {
+    const currentSlices = form.getValues("slices");
+    const filteredSlices = currentSlices.filter((s) => s.id !== slice.id);
+    form.setValue("slices", filteredSlices, { shouldDirty: true });
+  };
 
   const onSubmit = (data: PitchFormData) => {
     const json = JSON.stringify(data, null, 2);
@@ -184,7 +205,13 @@ export function PitchForm() {
               />
             </div>
             <div className="mt-8">
-              <SliceManager form={form} />
+              <SliceManager
+                slices={slices || []}
+                onCreate={handleCreate}
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+                title="Content Slices"
+              />
             </div>
 
             <div className="mt-8 flex justify-between items-center">

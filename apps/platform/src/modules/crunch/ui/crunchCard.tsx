@@ -15,7 +15,7 @@ interface CrunchCardProps {
 export function CrunchCard({ name, state, address }: CrunchCardProps) {
   return (
     <Link
-      href={generateLink(INTERNAL_LINKS.CRUNCH_OVERVIEW, {
+      href={generateLink(INTERNAL_LINKS.CRUNCH, {
         crunchname: name,
       })}
     >
