@@ -56,6 +56,7 @@ export function PitchForm() {
     const updatedSlices = currentSlices.map((s) =>
       s.name === originalName ? slice : s
     );
+    console.log(updatedSlices);
     form.setValue("slices", updatedSlices, { shouldDirty: true });
   };
 
@@ -83,9 +84,9 @@ export function PitchForm() {
       <CardHeader>
         <CardTitle>Pitch</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-8">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div>
             <CardTitle>Basic Information</CardTitle>
             <div className="grid gap-3 lg:grid-cols-2">
               <FormField
@@ -204,54 +205,53 @@ export function PitchForm() {
                 )}
               />
             </div>
-            <div className="mt-8">
-              <SliceManager
-                slices={slices || []}
-                onCreate={handleCreate}
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-                title="Content Slices"
-              />
-            </div>
-
-            <div className="mt-8 flex justify-between items-center">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowPreview(!showPreview)}
-                disabled={!slices || slices.length === 0}
-              >
-                {showPreview ? (
-                  <>
-                    <EyeClosed />
-                    Hide Preview
-                  </>
-                ) : (
-                  <>
-                    <Eye />
-                    Show Preview
-                  </>
-                )}
-              </Button>
-
-              <Button type="submit" size="lg">
-                Download <Save />
-              </Button>
-            </div>
-
-            {showPreview && slices && slices.length > 0 && (
-              <div className="mt-8">
-                <h2 className="body-lg font-bold mb-2">Preview</h2>
-                <Card>
-                  <CardHeader />
-                  <CardContent>
-                    <SlicesRenderer slices={slices} />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-          </form>
+          </div>
         </Form>
+
+        <SliceManager
+          slices={slices || []}
+          onCreate={handleCreate}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+          title="Content Slices"
+        />
+
+        <div className="flex justify-between items-center">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setShowPreview(!showPreview)}
+            disabled={!slices || slices.length === 0}
+          >
+            {showPreview ? (
+              <>
+                <EyeClosed />
+                Hide Preview
+              </>
+            ) : (
+              <>
+                <Eye />
+                Show Preview
+              </>
+            )}
+          </Button>
+
+          <Button size="lg" onClick={form.handleSubmit(onSubmit)}>
+            Download <Save />
+          </Button>
+        </div>
+
+        {showPreview && slices && slices.length > 0 && (
+          <div>
+            <h2 className="body-lg font-bold mb-2">Preview</h2>
+            <Card>
+              <CardHeader />
+              <CardContent>
+                <SlicesRenderer slices={slices} />
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

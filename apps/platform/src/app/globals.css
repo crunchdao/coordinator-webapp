@@ -103,3 +103,17 @@ html {
     box-shadow: 0 0 0 3px currentColor;
   }
 }
+
+@layer utilities {
+  .content-title {
+    @apply border-b pb-2 border-border font-bold w-full;
+  }
+
+  .size-line {
+    @apply inline h-4 align-text-top;
+  }
+
+  .container {
+    @apply px-5 mx-auto;
+  }
+}
