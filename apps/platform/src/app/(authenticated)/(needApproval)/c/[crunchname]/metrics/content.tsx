@@ -1,4 +1,5 @@
 "use client";
+
 import { MetricSettingsTable } from "@coordinator/metrics/src/ui/metricSettingsTable";
 import { MetricsDashboard } from "@coordinator/metrics/src/ui/metricsDashboard";
 import { useGetWidgets } from "@/modules/metrics/application/hooks/useGetWidgets";
@@ -7,7 +8,7 @@ import { useUpdateWidget } from "@/modules/metrics/application/hooks/useUpdateWi
 import { useRemoveWidget } from "@/modules/metrics/application/hooks/useRemoveWidget";
 import { useResetWidgets } from "@/modules/metrics/application/hooks/useResetWidgets";
 
-export default function MetricsPage() {
+export function MetricsContent() {
   const { widgets, widgetsLoading } = useGetWidgets();
   const { addWidget, addWidgetLoading } = useAddWidget();
   const { updateWidget, updateWidgetLoading } = useUpdateWidget();

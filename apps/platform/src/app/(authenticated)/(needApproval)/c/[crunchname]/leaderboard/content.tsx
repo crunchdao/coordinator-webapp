@@ -1,4 +1,5 @@
 "use client";
+
 import { LeaderboardTable } from "@coordinator/leaderboard/src/ui/leaderboardTable";
 import { ColumnSettingsTable } from "@coordinator/leaderboard/src/ui/columnSettingsTable";
 import { useGetLeaderboard } from "@/modules/leaderboard/application/hooks/useGetLeaderboard";
@@ -8,7 +9,7 @@ import { useUpdateColumn } from "@/modules/leaderboard/application/hooks/useUpda
 import { useRemoveColumn } from "@/modules/leaderboard/application/hooks/useRemoveColumn";
 import { useResetColumns } from "@/modules/leaderboard/application/hooks/useResetColumns";
 
-export default function LeaderboardConfigurationPage() {
+export function LeaderboardContent() {
   const { leaderboard, leaderboardLoading } = useGetLeaderboard();
   const { columns, columnsLoading } = useLeaderboardColumns();
   const { addColumn, addColumnLoading } = useAddColumn();

@@ -222,7 +222,7 @@ export const ApplicationForm = () => {
                     fieldRefs.current.evaluationMethod = el;
                   }}
                 >
-                  <FormLabel>Evalutation Method</FormLabel>
+                  <FormLabel>Evaluation Method</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
