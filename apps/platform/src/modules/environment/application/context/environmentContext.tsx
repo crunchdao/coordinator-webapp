@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type FC,
@@ -13,6 +14,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   type Environment,
   type PlatformConfig,
+  DEFAULT_ENV,
   getEnvironment,
   setEnvironment as persistEnvironment,
   getConfigFor,
@@ -29,7 +31,15 @@ const EnvironmentContext = createContext<EnvironmentContextValue | null>(null);
 export const EnvironmentProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [environment, setEnvironment] = useState<Environment>(getEnvironment);
+  const [environment, setEnvironment] = useState<Environment>(DEFAULT_ENV);
+
+  useEffect(() => {
+    const stored = getEnvironment();
+    if (stored !== environment) {
+      setEnvironment(stored);
+      queryClient.clear();
+    }
+  }, []);
   const queryClient = useQueryClient();
 
   const switchEnvironment = useCallback(
