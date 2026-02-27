@@ -5,6 +5,7 @@ export interface Competition {
   displayName: string;
   fullName: string;
   shortDescription: string;
+  url: string;
   start: string;
   end: string;
   visibility: CompetitionVisibility;

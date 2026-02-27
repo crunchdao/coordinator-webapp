@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { Badge, Card } from "@crunch-ui/core";
+import { useRouter } from "next/navigation";
+import { Badge, Button, Card } from "@crunch-ui/core";
+import { ExternalLink } from "@crunch-ui/icons";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useGetCompetition } from "@/modules/competition/application/hooks/useGetCompetition";
@@ -16,22 +16,31 @@ interface CrunchCardProps {
 }
 
 export function CrunchCard({ name, state, address }: CrunchCardProps) {
-  const { competition } = useGetCompetition(address);
+  const router = useRouter();
+  const { competition, competitionLoading, competitionExists } =
+    useGetCompetition(address);
+
   const cardImageUrl = competition?.cardImageUrl || DEFAULT_CARD_IMAGE;
 
-  return (
-    <Link
-      href={generateLink(INTERNAL_LINKS.CRUNCH, {
+  const handleCardClick = () => {
+    router.push(
+      generateLink(INTERNAL_LINKS.CRUNCH, {
         crunchname: name,
-      })}
+      })
+    );
+  };
+
+  return (
+    <Card
+      className="overflow-hidden bg-background transition-colors hover:bg-accent/50 cursor-pointer"
+      onClick={handleCardClick}
     >
-      <Card className="overflow-hidden bg-background transition-colors hover:bg-accent/50 cursor-pointer">
         <div className="relative h-64">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={cardImageUrl}
             alt={name}
-            fill
-            className="object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
           <Badge
             variant={state === "started" ? "success" : "secondary"}
@@ -45,14 +54,26 @@ export function CrunchCard({ name, state, address }: CrunchCardProps) {
             <h3 className="text-lg font-bold">{name}</h3>
           </div>
         </div>
-        {address && (
-          <div className="p-4 pt-0">
+        <div className="p-4 pt-0 flex justify-between items-center">
+          {address && (
             <p className="body-sm text-muted-foreground">
               {address.slice(0, 6)}...{address.slice(-6)}
             </p>
-          </div>
-        )}
+          )}
+          {competition && (
+            <a
+              href={`${competition.url}/competitions/${competition.name}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button variant="outline" size="sm">
+                <ExternalLink />
+                Hub
+              </Button>
+            </a>
+          )}
+        </div>
       </Card>
-    </Link>
   );
 }
