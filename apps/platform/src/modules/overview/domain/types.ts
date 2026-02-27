@@ -1,9 +1,6 @@
 import { Slice, SliceType } from "@crunchdao/slices";
 
-export enum Locale {
-  ENGLISH = "ENGLISH",
-  CHINESE = "CHINESE",
-}
+export { Locale } from "@/modules/common/types";
 
 export type OverviewSlice = Slice & {
   updatedAt: string;

@@ -12,19 +12,19 @@ import {
 } from "@crunch-ui/core";
 import { Locale } from "../domain/types";
 
-interface OverviewSliceHeaderProps {
+interface PitchSliceHeaderProps {
   locale: Locale;
   setLocale: (locale: Locale) => void;
 }
 
-export const OverviewSliceHeader: React.FC<OverviewSliceHeaderProps> = ({
+export const PitchSliceHeader: React.FC<PitchSliceHeaderProps> = ({
   locale,
   setLocale,
 }) => {
   return (
     <CardHeader>
       <div className="flex flex-1 flex-wrap justify-between items-center">
-        <CardTitle>Overview</CardTitle>
+        <CardTitle>Pitch</CardTitle>
         <div className="flex gap-2">
           <Select
             value={locale}
@@ -41,8 +41,8 @@ export const OverviewSliceHeader: React.FC<OverviewSliceHeaderProps> = ({
         </div>
       </div>
       <CardDescription>
-        This is the main page of your Crunch, it will helps the participants to
-        understand the details of the competition.
+        Create your pitch content to present your Crunch to potential
+        participants and investors.
       </CardDescription>
     </CardHeader>
   );

@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card, Spinner, toast } from "@crunch-ui/core";
+import { Button, Card, CardContent, Spinner, toast } from "@crunch-ui/core";
 import {
   SliceManager,
   useSlicesBatch,
@@ -106,24 +106,30 @@ export const OverviewSlicesView: React.FC = () => {
   }
 
   return (
-    <Card className="p-8">
+    <Card>
       <OverviewSliceHeader locale={locale} setLocale={setLocale} />
-      <SliceManager
-        slices={slices}
-        onCreate={handleCreate}
-        onUpdate={handleUpdate}
-        onDelete={handleDelete}
-      />
-      {isDirty && (
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={resetChanges} disabled={isSaving}>
-            Reset
-          </Button>
-          <Button onClick={handleSaveChanges} disabled={isSaving}>
-            Save Changes
-          </Button>
-        </div>
-      )}
+      <CardContent>
+        <SliceManager
+          slices={slices}
+          onCreate={handleCreate}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+        />
+        {isDirty && (
+          <div className="mt-6 flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={resetChanges}
+              disabled={isSaving}
+            >
+              Reset
+            </Button>
+            <Button onClick={handleSaveChanges} disabled={isSaving}>
+              Save Changes
+            </Button>
+          </div>
+        )}
+      </CardContent>
     </Card>
   );
 };

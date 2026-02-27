@@ -1,224 +1,182 @@
 "use client";
-import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useState, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
   Button,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
+  Spinner,
+  toast,
 } from "@crunch-ui/core";
-import { Save, Eye, EyeClosed } from "@crunch-ui/icons";
-import { SliceManager, SlicesRenderer, type Slice } from "@crunchdao/slices";
-import { pitchFormSchema } from "../application/schemas/pitch";
-import { PitchFormData } from "../domain/types";
+import {
+  SliceManager,
+  useSlicesBatch,
+  type CreateSliceData,
+  type UpdateSliceData,
+} from "@crunchdao/slices";
+import { Download } from "@crunch-ui/icons";
+import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useCurrentSeason } from "@/modules/season/application/hooks/useCurrentSeason";
+import { Locale } from "../domain/types";
+import { useGetPitchSlices } from "../application/hooks/useGetPitchSlices";
+import { useCreatePitchSlice } from "../application/hooks/useCreatePitchSlice";
+import { useUpdatePitchSlice } from "../application/hooks/useUpdatePitchSlice";
+import { useDeletePitchSlice } from "../application/hooks/useDeletePitchSlice";
+import { PitchSliceHeader } from "./pitchSliceHeader";
 
 export function PitchForm() {
-  const [showPreview, setShowPreview] = useState(false);
+  const queryClient = useQueryClient();
+  const { crunchData, isLoading: crunchLoading } = useCrunchContext();
+  const crunchAddress = crunchData?.address;
 
-  const form = useForm<PitchFormData>({
-    resolver: zodResolver(pitchFormSchema),
-    defaultValues: {
-      displayName: "",
-      shortDescription: "",
-      websiteUrl: undefined,
-      discordUrl: undefined,
-      twitterUrl: undefined,
-      externalUrl: undefined,
-      externalUrlText: undefined,
-      slices: [],
+  const { currentSeason, currentSeasonLoading } = useCurrentSeason();
+  const seasonNumber = currentSeason?.number;
+
+  const [locale, setLocale] = useState<Locale>(Locale.ENGLISH);
+
+  const { slices: serverSlices, slicesLoading } = useGetPitchSlices(
+    seasonNumber,
+    crunchAddress,
+    locale
+  );
+
+  const { createSliceAsync } = useCreatePitchSlice(
+    seasonNumber || 0,
+    crunchAddress || "",
+    locale
+  );
+  const { updateSliceAsync } = useUpdatePitchSlice(
+    seasonNumber || 0,
+    crunchAddress || "",
+    locale
+  );
+  const { deleteSlice } = useDeletePitchSlice(
+    seasonNumber || 0,
+    crunchAddress || "",
+    locale
+  );
+
+  const onCreate = useCallback(
+    async (data: CreateSliceData) => {
+      await createSliceAsync(data);
     },
-  });
+    [createSliceAsync]
+  );
 
-  const slices = useWatch({
-    control: form.control,
-    name: "slices",
-  });
+  const onUpdate = useCallback(
+    async (data: UpdateSliceData) => {
+      await updateSliceAsync({
+        sliceName: data.sliceName,
+        body: data.body,
+        locale,
+      });
+    },
+    [updateSliceAsync, locale]
+  );
 
-  const handleCreate = (slice: Omit<Slice, "id">) => {
-    const currentSlices = form.getValues("slices");
-    const newSlice = { ...slice, id: Date.now() } as Slice;
-    form.setValue("slices", [...currentSlices, newSlice], {
-      shouldDirty: true,
+  const onDeleteSlice = useCallback(
+    async (name: string) => {
+      await deleteSlice(name);
+    },
+    [deleteSlice]
+  );
+
+  const onBatchSuccess = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["pitchSlices", seasonNumber, crunchAddress],
     });
+    toast({ title: "Changes saved successfully" });
+  }, [queryClient, seasonNumber, crunchAddress]);
+
+  const {
+    slices,
+    isDirty,
+    isSaving,
+    handleCreate,
+    handleUpdate,
+    handleDelete,
+    saveChanges,
+    resetChanges,
+  } = useSlicesBatch({
+    serverSlices,
+    onCreate,
+    onUpdate,
+    onDelete: onDeleteSlice,
+    onSuccess: onBatchSuccess,
+  });
+
+  const handleSaveChanges = async () => {
+    try {
+      await saveChanges();
+    } catch (error) {
+      toast({
+        title: "Failed to save changes",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdate = (slice: Slice) => {
-    const currentSlices = form.getValues("slices");
-    const updatedSlices = currentSlices.map((s) =>
-      s.id === slice.id ? slice : s
-    );
-    form.setValue("slices", updatedSlices, { shouldDirty: true });
-  };
-
-  const handleDelete = (slice: Slice) => {
-    const currentSlices = form.getValues("slices");
-    const filteredSlices = currentSlices.filter((s) => s.id !== slice.id);
-    form.setValue("slices", filteredSlices, { shouldDirty: true });
-  };
-
-  const onSubmit = (data: PitchFormData) => {
-    const json = JSON.stringify(data, null, 2);
+  const handleDownloadJson = () => {
+    const json = JSON.stringify(slices, null, 2);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "pitch.json";
+    a.download = `pitch-${crunchData?.name || "slices"}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
+  if (crunchLoading || currentSeasonLoading || slicesLoading) {
+    return <Spinner className="mx-auto" />;
+  }
+
+  if (!currentSeason) {
+    return (
+      <Card>
+        <CardContent className="py-6">
+          <p className="text-center text-muted-foreground">
+            No active season found.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Pitch</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-8">
-        <Form {...form}>
-          <div>
-            <CardTitle>Basic Information</CardTitle>
-            <div className="grid gap-3 lg:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="displayName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Display Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter pitch display name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="shortDescription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Short Description</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter short description" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="websiteUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Website URL</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://example.com"
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="discordUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Discord URL</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://discord.gg/..."
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="twitterUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Twitter URL</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://twitter.com/..."
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="externalUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>External URL</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://..."
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="externalUrlText"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>External URL Text</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Link text" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-        </Form>
-
+      <PitchSliceHeader locale={locale} setLocale={setLocale} />
+      <CardContent>
         <SliceManager
-          slices={slices || []}
+          slices={slices}
           onCreate={handleCreate}
           onUpdate={handleUpdate}
           onDelete={handleDelete}
-          title="Content Slices"
         />
-
-        <div className="flex justify-end items-center">
-          <Button size="lg" onClick={form.handleSubmit(onSubmit)}>
-            Download <Save />
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={handleDownloadJson}>
+            <Download />
+            Export JSON
           </Button>
+          {isDirty && (
+            <>
+              <Button
+                variant="outline"
+                onClick={resetChanges}
+                disabled={isSaving}
+              >
+                Reset
+              </Button>
+              <Button onClick={handleSaveChanges} disabled={isSaving}>
+                Save Changes
+              </Button>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

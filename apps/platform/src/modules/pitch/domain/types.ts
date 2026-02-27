@@ -1,5 +1,8 @@
 import z from "zod";
+import { Slice, SliceType } from "@crunchdao/slices";
 import { pitchFormSchema } from "../application/schemas/pitch";
+import { Season } from "@/modules/season/domain/types";
+
 export {
   SliceType,
   type Slice,
@@ -8,23 +11,30 @@ export {
   type TeamMember,
 } from "@crunchdao/slices";
 
-export enum SeasonStatus {
-  VOTING = "VOTING",
-  OPEN = "OPEN",
-  CLOSED = "CLOSED",
+export { Locale } from "@/modules/common/types";
+export { type Season, SeasonStatus } from "@/modules/season/domain/types";
+
+export type PitchSlice = Slice & {
+  updatedAt: string;
+  createdAt: string;
+};
+
+export type PitchSlicesListResponse = PitchSlice[];
+
+export interface CreatePitchSliceBody {
+  name: string;
+  displayName: string;
+  type: SliceType;
+  nativeConfiguration: Record<string, unknown>;
+  order: number;
 }
 
-export interface Season {
-  id: number;
-  number: number;
-  displayName: string;
-  shortDescription: string;
-  description?: string;
-  status: SeasonStatus;
-  start: string;
-  end: string;
-  stakeGoal: number | string;
-  bannerImageUrl: string;
+export interface UpdatePitchSliceBody {
+  name?: string;
+  displayName?: string;
+  type?: SliceType;
+  nativeConfiguration?: Record<string, unknown>;
+  order?: number;
 }
 
 export enum PitchStatus {
