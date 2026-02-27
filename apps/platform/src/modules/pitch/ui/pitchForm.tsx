@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -17,7 +18,7 @@ import {
 } from "@crunchdao/slices";
 import { Download } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
-import { useCurrentSeason } from "@/modules/season/application/hooks/useCurrentSeason";
+import { useGetSeasons } from "@/modules/season/application/hooks/useGetSeasons";
 import { Locale } from "../domain/types";
 import { useGetPitchSlices } from "../application/hooks/useGetPitchSlices";
 import { useCreatePitchSlice } from "../application/hooks/useCreatePitchSlice";
@@ -26,33 +27,67 @@ import { useDeletePitchSlice } from "../application/hooks/useDeletePitchSlice";
 import { PitchSliceHeader } from "./pitchSliceHeader";
 
 export function PitchForm() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
+
   const { crunchData, isLoading: crunchLoading } = useCrunchContext();
   const crunchAddress = crunchData?.address;
 
-  const { currentSeason, currentSeasonLoading } = useCurrentSeason();
-  const seasonNumber = currentSeason?.number;
+  const { seasons: seasonsResponse, seasonsLoading } = useGetSeasons();
+  const seasons = useMemo(
+    () => seasonsResponse?.content ?? [],
+    [seasonsResponse]
+  );
+
+  const latestSeason = useMemo(() => {
+    if (!seasons.length) return undefined;
+    return seasons.reduce((latest, season) =>
+      season.number > latest.number ? season : latest
+    );
+  }, [seasons]);
+
+  const seasonFromUrl = searchParams.get("season");
+  const selectedSeasonNumber = useMemo(() => {
+    if (seasonFromUrl) {
+      const num = Number(seasonFromUrl);
+      if (seasons.some((s) => s.number === num)) {
+        return num;
+      }
+    }
+    return latestSeason?.number;
+  }, [seasonFromUrl, seasons, latestSeason]);
+
+  const handleSeasonChange = useCallback(
+    (seasonNumber: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("season", String(seasonNumber));
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [router, pathname, searchParams]
+  );
 
   const [locale, setLocale] = useState<Locale>(Locale.ENGLISH);
 
   const { slices: serverSlices, slicesLoading } = useGetPitchSlices(
-    seasonNumber,
+    selectedSeasonNumber,
     crunchAddress,
     locale
   );
 
   const { createSliceAsync } = useCreatePitchSlice(
-    seasonNumber || 0,
+    selectedSeasonNumber || 0,
     crunchAddress || "",
     locale
   );
   const { updateSliceAsync } = useUpdatePitchSlice(
-    seasonNumber || 0,
+    selectedSeasonNumber || 0,
     crunchAddress || "",
     locale
   );
   const { deleteSlice } = useDeletePitchSlice(
-    seasonNumber || 0,
+    selectedSeasonNumber || 0,
     crunchAddress || "",
     locale
   );
@@ -84,10 +119,10 @@ export function PitchForm() {
 
   const onBatchSuccess = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: ["pitchSlices", seasonNumber, crunchAddress],
+      queryKey: ["pitchSlices", selectedSeasonNumber, crunchAddress],
     });
     toast({ title: "Changes saved successfully" });
-  }, [queryClient, seasonNumber, crunchAddress]);
+  }, [queryClient, selectedSeasonNumber, crunchAddress]);
 
   const {
     slices,
@@ -132,52 +167,56 @@ export function PitchForm() {
     URL.revokeObjectURL(url);
   };
 
-  if (crunchLoading || currentSeasonLoading || slicesLoading) {
+  if (crunchLoading || seasonsLoading) {
     return <Spinner className="mx-auto" />;
-  }
-
-  if (!currentSeason) {
-    return (
-      <Card>
-        <CardContent className="py-6">
-          <p className="text-center text-muted-foreground">
-            No active season found.
-          </p>
-        </CardContent>
-      </Card>
-    );
   }
 
   return (
     <Card>
-      <PitchSliceHeader locale={locale} setLocale={setLocale} />
+      <PitchSliceHeader
+        locale={locale}
+        setLocale={setLocale}
+        seasons={seasons}
+        selectedSeasonNumber={selectedSeasonNumber}
+        onSeasonChange={handleSeasonChange}
+      />
       <CardContent>
-        <SliceManager
-          slices={slices}
-          onCreate={handleCreate}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-        />
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={handleDownloadJson}>
-            <Download />
-            Export JSON
-          </Button>
-          {isDirty && (
-            <>
-              <Button
-                variant="outline"
-                onClick={resetChanges}
-                disabled={isSaving}
-              >
-                Reset
+        {!seasons.length || !selectedSeasonNumber ? (
+          <p className="text-center text-muted-foreground py-6">
+            No active season found.
+          </p>
+        ) : slicesLoading ? (
+          <Spinner className="mx-auto py-6" />
+        ) : (
+          <>
+            <SliceManager
+              slices={slices}
+              onCreate={handleCreate}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+            />
+            <div className="mt-6 flex justify-end gap-2">
+              <Button variant="outline" onClick={handleDownloadJson}>
+                <Download />
+                Export JSON
               </Button>
-              <Button onClick={handleSaveChanges} disabled={isSaving}>
-                Save Changes
-              </Button>
-            </>
-          )}
-        </div>
+              {isDirty && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={resetChanges}
+                    disabled={isSaving}
+                  >
+                    Reset
+                  </Button>
+                  <Button onClick={handleSaveChanges} disabled={isSaving}>
+                    Save Changes
+                  </Button>
+                </>
+              )}
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
