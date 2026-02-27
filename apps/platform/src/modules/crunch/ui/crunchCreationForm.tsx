@@ -48,7 +48,7 @@ export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
       onSuccess(crunchName);
     } else {
       router.push(
-        generateLink(INTERNAL_LINKS.CRUNCH_OVERVIEW, {
+        generateLink(INTERNAL_LINKS.CRUNCH, {
           crunchname: crunchName,
         })
       );
@@ -88,7 +88,8 @@ export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
       <Alert variant="success">
         <Check className="w-4 h-4" />
         <AlertDescription>
-          Your Crunch <span className="font-medium">{firstCrunch.name}</span> has been created. You're ready to fund it and go live!
+          Your Crunch <span className="font-medium">{firstCrunch.name}</span>{" "}
+          has been created. You're ready to fund it and go live!
         </AlertDescription>
       </Alert>
     );

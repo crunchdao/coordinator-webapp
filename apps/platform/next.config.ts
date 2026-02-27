@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
     "@coordinator/leaderboard",
     "@coordinator/metrics",
   ],
+  async rewrites() {
+    return [
+      {
+        source: "/hub-staging/:path*",
+        destination: "https://api.hub.crunchdao.io/:path*",
+      },
+      {
+        source: "/hub-prod/:path*",
+        destination: "https://api.hub.crunchdao.com/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

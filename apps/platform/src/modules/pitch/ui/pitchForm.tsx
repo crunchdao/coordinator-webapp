@@ -1,230 +1,222 @@
 "use client";
-import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useState, useCallback, useMemo } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
   Button,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
+  Spinner,
+  toast,
 } from "@crunch-ui/core";
-import { Save, Eye, EyeClosed } from "@crunch-ui/icons";
-import { pitchFormSchema } from "../application/schemas/pitch";
-import { PitchFormData } from "../domain/types";
-import { SliceManager } from "./sliceManager";
-import { SlicesRenderer } from "./pitchSlicesRenderer";
+import {
+  SliceManager,
+  useSlicesBatch,
+  type CreateSliceData,
+  type UpdateSliceData,
+} from "@crunchdao/slices";
+import { Download } from "@crunch-ui/icons";
+import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useGetSeasons } from "@/modules/season/application/hooks/useGetSeasons";
+import { Locale } from "../domain/types";
+import { useGetPitchSlices } from "../application/hooks/useGetPitchSlices";
+import { useCreatePitchSlice } from "../application/hooks/useCreatePitchSlice";
+import { useUpdatePitchSlice } from "../application/hooks/useUpdatePitchSlice";
+import { useDeletePitchSlice } from "../application/hooks/useDeletePitchSlice";
+import { PitchSliceHeader } from "./pitchSliceHeader";
 
 export function PitchForm() {
-  const [showPreview, setShowPreview] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
-  const form = useForm<PitchFormData>({
-    resolver: zodResolver(pitchFormSchema),
-    defaultValues: {
-      displayName: "",
-      shortDescription: "",
-      websiteUrl: undefined,
-      discordUrl: undefined,
-      twitterUrl: undefined,
-      externalUrl: undefined,
-      externalUrlText: undefined,
-      slices: [],
+  const { crunchData, isLoading: crunchLoading } = useCrunchContext();
+  const crunchAddress = crunchData?.address;
+
+  const { seasons: seasonsResponse, seasonsLoading } = useGetSeasons();
+  const seasons = useMemo(
+    () => seasonsResponse?.content ?? [],
+    [seasonsResponse]
+  );
+
+  const latestSeason = useMemo(() => {
+    if (!seasons.length) return undefined;
+    return seasons.reduce((latest, season) =>
+      season.number > latest.number ? season : latest
+    );
+  }, [seasons]);
+
+  const seasonFromUrl = searchParams.get("season");
+  const selectedSeasonNumber = useMemo(() => {
+    if (seasonFromUrl) {
+      const num = Number(seasonFromUrl);
+      if (seasons.some((s) => s.number === num)) {
+        return num;
+      }
+    }
+    return latestSeason?.number;
+  }, [seasonFromUrl, seasons, latestSeason]);
+
+  const handleSeasonChange = useCallback(
+    (seasonNumber: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("season", String(seasonNumber));
+      router.push(`${pathname}?${params.toString()}`);
     },
+    [router, pathname, searchParams]
+  );
+
+  const [locale, setLocale] = useState<Locale>(Locale.ENGLISH);
+
+  const { slices: serverSlices, slicesLoading } = useGetPitchSlices(
+    selectedSeasonNumber,
+    crunchAddress,
+    locale
+  );
+
+  const { createSliceAsync } = useCreatePitchSlice(
+    selectedSeasonNumber || 0,
+    crunchAddress || "",
+    locale
+  );
+  const { updateSliceAsync } = useUpdatePitchSlice(
+    selectedSeasonNumber || 0,
+    crunchAddress || "",
+    locale
+  );
+  const { deleteSlice } = useDeletePitchSlice(
+    selectedSeasonNumber || 0,
+    crunchAddress || "",
+    locale
+  );
+
+  const onCreate = useCallback(
+    async (data: CreateSliceData) => {
+      await createSliceAsync(data);
+    },
+    [createSliceAsync]
+  );
+
+  const onUpdate = useCallback(
+    async (data: UpdateSliceData) => {
+      await updateSliceAsync({
+        sliceName: data.sliceName,
+        body: data.body,
+        locale,
+      });
+    },
+    [updateSliceAsync, locale]
+  );
+
+  const onDeleteSlice = useCallback(
+    async (name: string) => {
+      await deleteSlice(name);
+    },
+    [deleteSlice]
+  );
+
+  const onBatchSuccess = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["pitchSlices", selectedSeasonNumber, crunchAddress],
+    });
+    toast({ title: "Changes saved successfully" });
+  }, [queryClient, selectedSeasonNumber, crunchAddress]);
+
+  const {
+    slices,
+    isDirty,
+    isSaving,
+    handleCreate,
+    handleUpdate,
+    handleDelete,
+    saveChanges,
+    resetChanges,
+  } = useSlicesBatch({
+    serverSlices,
+    onCreate,
+    onUpdate,
+    onDelete: onDeleteSlice,
+    onSuccess: onBatchSuccess,
   });
 
-  const slices = useWatch({
-    control: form.control,
-    name: "slices",
-  });
+  const handleSaveChanges = async () => {
+    try {
+      await saveChanges();
+    } catch (error) {
+      toast({
+        title: "Failed to save changes",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    }
+  };
 
-  const onSubmit = (data: PitchFormData) => {
-    const json = JSON.stringify(data, null, 2);
+  const handleDownloadJson = () => {
+    const json = JSON.stringify(slices, null, 2);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "pitch.json";
+    a.download = `pitch-${crunchData?.name || "slices"}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
+  if (crunchLoading || seasonsLoading) {
+    return <Spinner className="mx-auto" />;
+  }
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Pitch</CardTitle>
-      </CardHeader>
+      <PitchSliceHeader
+        locale={locale}
+        setLocale={setLocale}
+        seasons={seasons}
+        selectedSeasonNumber={selectedSeasonNumber}
+        onSeasonChange={handleSeasonChange}
+      />
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardTitle>Basic Information</CardTitle>
-            <div className="grid gap-3 lg:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="displayName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Display Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter pitch display name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="shortDescription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Short Description</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter short description" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="websiteUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Website URL</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://example.com"
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="discordUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Discord URL</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://discord.gg/..."
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="twitterUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Twitter URL</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://twitter.com/..."
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="externalUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>External URL</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://..."
-                        {...field}
-                        value={field.value || ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="externalUrlText"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>External URL Text</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Link text" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="mt-8">
-              <SliceManager form={form} />
-            </div>
-
-            <div className="mt-8 flex justify-between items-center">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setShowPreview(!showPreview)}
-                disabled={!slices || slices.length === 0}
-              >
-                {showPreview ? (
-                  <>
-                    <EyeClosed />
-                    Hide Preview
-                  </>
-                ) : (
-                  <>
-                    <Eye />
-                    Show Preview
-                  </>
-                )}
+        {!seasons.length || !selectedSeasonNumber ? (
+          <p className="text-center text-muted-foreground py-6">
+            No active season found.
+          </p>
+        ) : slicesLoading ? (
+          <Spinner className="mx-auto py-6" />
+        ) : (
+          <>
+            <SliceManager
+              slices={slices}
+              onCreate={handleCreate}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+            />
+            <div className="mt-6 flex justify-end gap-2">
+              <Button variant="outline" onClick={handleDownloadJson}>
+                <Download />
+                Export JSON
               </Button>
-
-              <Button type="submit" size="lg">
-                Download <Save />
-              </Button>
+              {isDirty && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={resetChanges}
+                    disabled={isSaving}
+                  >
+                    Reset
+                  </Button>
+                  <Button onClick={handleSaveChanges} disabled={isSaving}>
+                    Save Changes
+                  </Button>
+                </>
+              )}
             </div>
-
-            {showPreview && slices && slices.length > 0 && (
-              <div className="mt-8">
-                <h2 className="body-lg font-bold mb-2">Preview</h2>
-                <Card>
-                  <CardHeader />
-                  <CardContent>
-                    <SlicesRenderer slices={slices} />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-          </form>
-        </Form>
+          </>
+        )}
       </CardContent>
     </Card>
   );

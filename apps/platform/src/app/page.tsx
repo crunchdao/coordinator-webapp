@@ -22,5 +22,9 @@ export default function Home() {
     }
   }, [isAuthenticated, isLoading, coordinatorStatus, router]);
 
-  return <Spinner />;
+  return (
+    <div className="w-screen h-screen bg-background flex items-center justify-center">
+      <Spinner />
+    </div>
+  );
 }
