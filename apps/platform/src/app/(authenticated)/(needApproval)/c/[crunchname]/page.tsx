@@ -1,23 +1,28 @@
 "use client";
-import Image from "next/image";
+
 import { CrunchOverview } from "@/modules/crunch/ui/crunchOverview";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useGetCompetition } from "@/modules/competition/application/hooks/useGetCompetition";
 
-export default function CrunchOverviewPage() {
-  const { crunchName } = useCrunchContext();
+const DEFAULT_BANNER_IMAGE = "/images/banner.webp";
+
+export default function CrunchPage() {
+  const { crunchName, crunchData } = useCrunchContext();
+  const { competition } = useGetCompetition(crunchData?.address);
+
+  const bannerImageUrl = competition?.bannerImageUrl || DEFAULT_BANNER_IMAGE;
+
   return (
     <>
       <section className="relative flex items-end justify-start">
         <h1 className="z-10 absolute display-sm font-bold px-6 py-12">
           {crunchName}
         </h1>
-        <Image
-          src="/images/banner.webp"
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={bannerImageUrl}
           alt={crunchName}
-          width={1280}
-          height={900}
           className="w-full object-cover object-center max-h-[290px] transition-opacity duration-300"
-          priority
         />
         <div className="absolute h-1/2 w-full bg-gradient-to-t from-background to-transparent bottom-0" />
       </section>
