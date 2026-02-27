@@ -13,7 +13,6 @@ const hubApiClient = axios.create({
 
 hubApiClient.interceptors.request.use((config) => {
   const env = getConfig().env;
-  console.log(env);
   config.baseURL = env === "production" ? "/hub-prod" : "/hub-staging";
   return config;
 });
@@ -27,6 +26,11 @@ hubApiClient.interceptors.response.use(
       } ${error.config?.url} - ${
         error.response?.data?.message || "Unknown error"
       }`;
+    }
+
+    const status = error.response?.status;
+    if (status === 404) {
+      return Promise.reject(error);
     }
 
     if (typeof window !== "undefined") {
