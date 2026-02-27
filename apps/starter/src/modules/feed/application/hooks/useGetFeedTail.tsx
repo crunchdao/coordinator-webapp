@@ -3,16 +3,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { FeedTailFilters, getFeedsTail } from "../../infrastructure/services";
 
-export function useGetFeedTail(filters: FeedTailFilters, enabled: boolean) {
+export function useGetFeedTail(
+  filters: FeedTailFilters,
+  enabled: boolean,
+  refetchIntervalMs: number | false
+) {
   const query = useQuery({
     queryKey: ["feeds-tail", filters],
     queryFn: () => getFeedsTail(filters),
     enabled,
-    refetchInterval: 5_000,
+    refetchInterval: refetchIntervalMs,
   });
 
   return {
     records: query.data || [],
     recordsLoading: query.isPending,
+    recordsRefetching: query.isRefetching,
   };
 }

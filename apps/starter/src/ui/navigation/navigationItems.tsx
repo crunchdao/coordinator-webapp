@@ -6,7 +6,7 @@ import { ROUTE_CONFIG } from "@/utils/routes";
 import { useGetFeeds } from "@/modules/feed/application/hooks/useGetFeeds";
 
 function useRouteVisibility(): Record<string, boolean> {
-  const { feeds } = useGetFeeds();
+  const { feeds } = useGetFeeds(false);
   return {
     feeds: feeds.length > 0,
   };
