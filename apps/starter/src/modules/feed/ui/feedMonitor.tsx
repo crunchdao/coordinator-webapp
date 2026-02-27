@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -19,8 +20,34 @@ import { cn } from "@crunch-ui/utils";
 import { useGetFeeds } from "../application/hooks/useGetFeeds";
 import { useGetFeedTail } from "../application/hooks/useGetFeedTail";
 
+/** Minimum poll interval — never poll faster than this. */
+const MIN_POLL_MS = 5_000;
+
 export const FeedMonitor: React.FC = () => {
-  const { feeds, feedsLoading } = useGetFeeds();
+  const [paused, setPaused] = useState(false);
+
+  // ── Derive poll intervals from feed granularity ───────────────────
+  // First fetch uses the feeds list to figure out the right cadence.
+  // We do an initial fetch without polling, then enable polling once
+  // we know the granularity.
+  const feedsInitial = useGetFeeds(false);
+
+  const minGranularitySec = useMemo(() => {
+    if (feedsInitial.feeds.length === 0) return null;
+    return Math.min(
+      ...feedsInitial.feeds.map((f) => parseGranularitySeconds(f.granularity))
+    );
+  }, [feedsInitial.feeds]);
+
+  const feedsPollMs = useMemo(() => {
+    if (paused || minGranularitySec === null) return false as const;
+    return Math.max(MIN_POLL_MS, minGranularitySec * 1000);
+  }, [paused, minGranularitySec]);
+
+  // Once we know the interval, this hook takes over (first result is
+  // already cached by the initial fetch via the same query key).
+  const { feeds, feedsLoading, feedsRefetching } = useGetFeeds(feedsPollMs);
+
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,22 +61,61 @@ export const FeedMonitor: React.FC = () => {
     [feeds, selectedKey]
   );
 
-  const { records, recordsLoading } = useGetFeedTail(
+  const tailPollMs = useMemo(() => {
+    if (paused || !selectedFeed) return false as const;
+    const sec = parseGranularitySeconds(selectedFeed.granularity);
+    return Math.max(MIN_POLL_MS, sec * 1000);
+  }, [paused, selectedFeed]);
+
+  const { records, recordsLoading, recordsRefetching } = useGetFeedTail(
     {
       provider: selectedFeed?.provider,
       asset: selectedFeed?.asset,
       kind: selectedFeed?.kind,
       granularity: selectedFeed?.granularity,
-      limit: 10,
+      limit: 20,
     },
-    !!selectedFeed
+    !!selectedFeed,
+    tailPollMs
   );
+
+  const isRefetching = feedsRefetching || recordsRefetching;
+  const pollLabel = feedsPollMs
+    ? formatInterval(feedsPollMs)
+    : null;
+  const tailPollLabel = tailPollMs
+    ? formatInterval(tailPollMs)
+    : null;
 
   return (
     <div className="grid gap-6">
       <Card displayCorners>
         <CardHeader>
-          <CardTitle>Feed Indexing</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CardTitle>Feed Indexing</CardTitle>
+              {!paused && pollLabel && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span
+                    className={cn(
+                      "inline-block h-2 w-2 rounded-full",
+                      isRefetching
+                        ? "bg-green-500 animate-pulse"
+                        : "bg-green-500"
+                    )}
+                  />
+                  <span>Live · every {pollLabel}</span>
+                </div>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPaused((p) => !p)}
+            >
+              {paused ? "▶ Resume" : "⏸ Pause"}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -118,7 +184,22 @@ export const FeedMonitor: React.FC = () => {
 
       <Card displayCorners>
         <CardHeader>
-          <CardTitle>Latest Records (tail 10)</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Latest Records (tail 20)</CardTitle>
+            {!paused && selectedFeed && records.length > 0 && tailPollLabel && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span
+                  className={cn(
+                    "inline-block h-2 w-2 rounded-full",
+                    recordsRefetching
+                      ? "bg-green-500 animate-pulse"
+                      : "bg-green-500"
+                  )}
+                />
+                <span>Polling every {tailPollLabel}</span>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {!selectedFeed ? (
@@ -157,6 +238,8 @@ export const FeedMonitor: React.FC = () => {
   );
 };
 
+// ── Helpers ──────────────────────────────────────────────────────────
+
 function feedKey(feed: {
   provider: string;
   asset: string;
@@ -189,6 +272,14 @@ function parseGranularitySeconds(granularity: string): number {
     return (Number(cleaned.slice(0, -1)) || 1) * 3600;
   }
   return 60;
+}
+
+function formatInterval(ms: number): string {
+  const sec = ms / 1000;
+  if (sec < 60) return `${sec}s`;
+  const min = sec / 60;
+  if (Number.isInteger(min)) return `${min}m`;
+  return `${sec}s`;
 }
 
 function formatDate(value: string) {
