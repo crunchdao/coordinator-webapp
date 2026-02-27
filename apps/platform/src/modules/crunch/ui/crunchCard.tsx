@@ -5,6 +5,9 @@ import Image from "next/image";
 import { Badge, Card } from "@crunch-ui/core";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { useGetCompetition } from "@/modules/competition/application/hooks/useGetCompetition";
+
+const DEFAULT_CARD_IMAGE = "/images/competition-card-generic.webp";
 
 interface CrunchCardProps {
   name: string;
@@ -13,6 +16,9 @@ interface CrunchCardProps {
 }
 
 export function CrunchCard({ name, state, address }: CrunchCardProps) {
+  const { competition } = useGetCompetition(address);
+  const cardImageUrl = competition?.cardImageUrl || DEFAULT_CARD_IMAGE;
+
   return (
     <Link
       href={generateLink(INTERNAL_LINKS.CRUNCH, {
@@ -22,7 +28,7 @@ export function CrunchCard({ name, state, address }: CrunchCardProps) {
       <Card className="overflow-hidden bg-background transition-colors hover:bg-accent/50 cursor-pointer">
         <div className="relative h-64">
           <Image
-            src="/images/competition-card-generic.webp"
+            src={cardImageUrl}
             alt={name}
             fill
             className="object-cover"
