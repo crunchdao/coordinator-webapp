@@ -1,6 +1,6 @@
 "use client";
 
-import { CrunchOverview } from "@/modules/crunch/ui/crunchOverview";
+import { CrunchTabs } from "@/modules/crunch/ui/crunchTabs";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useGetCompetition } from "@/modules/competition/application/hooks/useGetCompetition";
 
@@ -16,7 +16,7 @@ export default function CrunchPage() {
     <>
       <section className="relative flex items-end justify-start">
         <h1 className="z-10 absolute display-sm font-bold px-6 py-12">
-          {crunchName}
+          {competition?.displayName || crunchName}
         </h1>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -27,7 +27,7 @@ export default function CrunchPage() {
         <div className="absolute h-1/2 w-full bg-gradient-to-t from-background to-transparent bottom-0" />
       </section>
       <section className="p-6 pt-0">
-        <CrunchOverview />
+        <CrunchTabs />
       </section>
     </>
   );
