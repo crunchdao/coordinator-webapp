@@ -9,6 +9,7 @@ import {
   type CreateSliceData,
   type UpdateSliceData,
 } from "@crunchdao/slices";
+import { Download } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { Locale } from "../domain/types";
 import { useGetOverviewSlices } from "../application/hooks/useGetOverviewSlices";
@@ -101,6 +102,19 @@ export const OverviewSlicesView: React.FC = () => {
     }
   };
 
+  const handleDownloadJson = () => {
+    const json = JSON.stringify(slices, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `overview-${crunchData?.name || "slices"}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   if (crunchLoading || slicesLoading) {
     return <Spinner className="mx-auto" />;
   }
@@ -115,20 +129,26 @@ export const OverviewSlicesView: React.FC = () => {
           onUpdate={handleUpdate}
           onDelete={handleDelete}
         />
-        {isDirty && (
-          <div className="mt-6 flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={resetChanges}
-              disabled={isSaving}
-            >
-              Reset
-            </Button>
-            <Button onClick={handleSaveChanges} disabled={isSaving}>
-              Save Changes
-            </Button>
-          </div>
-        )}
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="outline" onClick={handleDownloadJson}>
+            <Download />
+            Export JSON
+          </Button>
+          {isDirty && (
+            <>
+              <Button
+                variant="outline"
+                onClick={resetChanges}
+                disabled={isSaving}
+              >
+                Reset
+              </Button>
+              <Button onClick={handleSaveChanges} disabled={isSaving}>
+                Save Changes
+              </Button>
+            </>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
