@@ -12,8 +12,7 @@ const cpiApiClient = axios.create({
 });
 
 cpiApiClient.interceptors.request.use((config) => {
-  const env = getConfig().env;
-  config.baseURL = env === "production" ? "/cpi-prod" : "/cpi-staging";
+  config.baseURL = getConfig().cpiBaseUrl;
   return config;
 });
 
