@@ -8,6 +8,11 @@ import { INTERNAL_LINKS } from "@/utils/routes";
 
 const HUB_TOKEN_COOKIE = "hub-access-token";
 
+const isValidRedirectPath = (path: string | null): path is string => {
+  if (!path) return false;
+  return path.startsWith("/") && !path.startsWith("//");
+};
+
 export default function HubOAuthPage() {
   const router = useRouter();
 
@@ -26,7 +31,10 @@ export default function HubOAuthPage() {
           expires: 1,
         });
 
-        router.replace(state || INTERNAL_LINKS.DASHBOARD);
+        const redirectTo = isValidRedirectPath(state)
+          ? state
+          : INTERNAL_LINKS.DASHBOARD;
+        router.replace(redirectTo);
         return;
       }
     }
