@@ -56,18 +56,26 @@ export function HubAuthProvider({ children }: HubAuthProviderProps) {
       return;
     }
 
+    let active = true;
+
     const fetchUser = async () => {
       try {
         const user = await getHubMe();
-        setUser(user);
+        if (active) setUser(user);
       } catch {
-        Cookies.remove(HUB_TOKEN_COOKIE);
-        setToken(null);
-        setUser(null);
+        if (active) {
+          Cookies.remove(HUB_TOKEN_COOKIE);
+          setToken(null);
+          setUser(null);
+        }
       }
     };
 
     fetchUser();
+
+    return () => {
+      active = false;
+    };
   }, [token]);
 
   const login = useCallback(() => {
