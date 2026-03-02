@@ -28,6 +28,7 @@ export default function HubOAuthPage() {
         Cookies.set(HUB_TOKEN_COOKIE, accessToken, {
           sameSite: "strict",
           secure: window.location.protocol === "https:",
+          path: "/",
           expires: 1,
         });
 
