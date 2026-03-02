@@ -3,8 +3,8 @@ import { INTERNAL_LINKS } from "@/utils/routes";
 import { Spinner } from "@crunch-ui/core";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { useAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 
 export default function Home() {
   const { isAuthenticated, isLoading, coordinatorStatus } = useAuth();

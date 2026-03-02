@@ -21,16 +21,16 @@ import {
   Rocket,
   Certificate,
 } from "@crunch-ui/icons";
-import { useAuth } from "@/modules/auth/application/context/authContext";
+import { useAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 import { useGetStakingInfo } from "@/modules/staking/application/hooks/useGetStakingInfo";
 import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks/useGetCoordinatorPoolConfig";
 import { useGetRewardVaultBalance } from "@/modules/crunch/application/hooks/useGetRewardVaultBalance";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { MultisigForm } from "@/modules/wallet/ui/multisigForm";
-import { RegistrationForm } from "@/modules/crunch/ui/registrationForm";
+import { RegistrationForm } from "@/modules/coordinator/ui/registrationForm";
 import { CrunchCreationForm } from "@/modules/crunch/ui/crunchCreationForm";
 import { OnboardingStakeForm } from "../ui/onboardingStakeForm";
 import { OnboardingFundCrunchForm } from "../ui/onboardingFundCrunchForm";

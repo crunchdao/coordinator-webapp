@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "../application/context/authContext";
+import { useAuth } from "../application/context/coordinatorAuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";

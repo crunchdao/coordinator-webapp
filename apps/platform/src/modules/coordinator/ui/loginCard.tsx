@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
 import { WalletSelector } from "@/modules/wallet/ui/walletSelector";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { useAuth } from "../application/context/coordinatorAuthContext";
+import { CoordinatorStatus } from "../domain/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";

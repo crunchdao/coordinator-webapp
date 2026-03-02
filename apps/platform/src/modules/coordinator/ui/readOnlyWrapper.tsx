@@ -1,6 +1,6 @@
 "use client";
 import { ReactNode } from "react";
-import { useAuth } from "../application/context/authContext";
+import { useAuth } from "../application/context/coordinatorAuthContext";
 
 interface ReadOnlyWrapperProps {
   children: ReactNode;

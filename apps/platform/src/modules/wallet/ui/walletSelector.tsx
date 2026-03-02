@@ -23,8 +23,8 @@ import {
   Lock,
   Certificate,
 } from "@crunch-ui/icons";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { useAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useWallet } from "../application/context/walletContext";
 import { useEffectiveAuthority } from "../application/hooks/useEffectiveAuthority";

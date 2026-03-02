@@ -10,8 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@crunch-ui/core";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { useAuth } from "../application/context/coordinatorAuthContext";
+import { CoordinatorStatus } from "../domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 export function RegistrationCard() {

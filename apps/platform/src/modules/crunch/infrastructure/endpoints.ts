@@ -1,5 +1,4 @@
-export const coordinatorEndpoints = {
-  getCoordinators: () => "/coordinators",
+export const crunchEndpoints = {
   getCrunches: () => "/crunches",
   getCrunch: (address: string) => `/crunches/${address}`,
 };

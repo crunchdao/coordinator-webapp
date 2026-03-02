@@ -3,7 +3,7 @@
 import { PublicKey } from "@solana/web3.js";
 import { Skeleton } from "@crunch-ui/core";
 import { StartCrunchForm } from "@/modules/crunch/ui/startCrunchForm";
-import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 
 interface OnboardingStartCrunchFormProps {

@@ -22,10 +22,10 @@ import {
   CreateCrunchFormData,
 } from "../application/schemas/crunchCreation";
 import { useCreateCrunch } from "../application/hooks/useCreateCrunch";
-import { useGetCoordinator } from "../application/hooks/useGetCoordinator";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "../application/hooks/useGetCrunches";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "../domain/types";
+import { useAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { useRouter } from "next/navigation";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";

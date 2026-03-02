@@ -1,8 +1,8 @@
 "use client";
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
+import { useAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 import {
   Breadcrumb,

@@ -13,7 +13,7 @@ import {
   FormMessage,
   Input,
 } from "@crunch-ui/core";
-import { useAuth } from "@/modules/auth/application/context/authContext";
+import { useAuth } from "../application/context/coordinatorAuthContext";
 import { registrationSchema } from "../application/schemas/registration";
 import { CoordinatorStatus, RegistrationFormData } from "../domain/types";
 import { useRegisterCoordinator } from "../application/hooks/useRegisterCoordinator";

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { RestrictedWrapper } from "@/modules/auth/ui/restrictedWrapper";
+import { RestrictedWrapper } from "@/modules/coordinator/ui/restrictedWrapper";
 import { BasicNavbar } from "@/ui/navigation/basicNavbar";
 import { CrunchProvider } from "@/modules/crunch/application/context/crunchContext";
 

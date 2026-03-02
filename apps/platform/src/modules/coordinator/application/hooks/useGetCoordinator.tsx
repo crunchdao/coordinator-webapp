@@ -4,10 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PublicKey } from "@solana/web3.js";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { getCoordinators } from "../../infrastructure/service";
-import {
-  CoordinatorStatus,
-  CoordinatorData,
-} from "@/modules/crunch/domain/types";
+import { CoordinatorStatus, CoordinatorData } from "../../domain/types";
 
 const CPI_STATE_TO_STATUS: Record<string, CoordinatorStatus> = {
   Pending: CoordinatorStatus.PENDING,

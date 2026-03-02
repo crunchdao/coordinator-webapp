@@ -1,5 +1,5 @@
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
-import { useAuth } from "../context/authContext";
+import { CoordinatorStatus } from "../../domain/types";
+import { useAuth } from "../context/coordinatorAuthContext";
 
 export const useCanAccess = () => {
   const { coordinatorStatus, isAuthenticated } = useAuth();
