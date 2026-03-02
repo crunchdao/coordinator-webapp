@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { Spinner } from "@crunch-ui/core";
 import { INTERNAL_LINKS } from "@/utils/routes";
-
-const HUB_TOKEN_COOKIE = "hub-access-token";
+import { HUB_TOKEN_COOKIE } from "@/modules/hub/domain/types";
 
 const isValidRedirectPath = (path: string | null): path is string => {
   if (!path) return false;

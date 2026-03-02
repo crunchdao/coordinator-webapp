@@ -10,11 +10,9 @@ import {
 } from "react";
 import Cookies from "js-cookie";
 import { getConfig } from "@/config";
-import { HubUser } from "../../domain/types";
+import { HubUser, HUB_TOKEN_COOKIE } from "../../domain/types";
 import { getHubMe } from "../../infrastructure/service";
 import { INTERNAL_LINKS } from "@/utils/routes";
-
-const HUB_TOKEN_COOKIE = "hub-access-token";
 
 interface HubAuthContextType {
   isAuthenticated: boolean;
