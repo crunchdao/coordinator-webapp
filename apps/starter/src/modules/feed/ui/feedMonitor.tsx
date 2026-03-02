@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Badge,
   Button,
@@ -87,6 +87,9 @@ export const FeedMonitor: React.FC = () => {
     ? formatInterval(tailPollMs)
     : null;
 
+  const feedsCountdown = useCountdown(feedsPollMs, feedsRefetching);
+  const tailCountdown = useCountdown(tailPollMs, recordsRefetching);
+
   return (
     <div className="grid gap-6">
       <Card displayCorners>
@@ -104,7 +107,7 @@ export const FeedMonitor: React.FC = () => {
                         : "bg-green-500"
                     )}
                   />
-                  <span>Live · every {pollLabel}</span>
+                  <span>Live · every {pollLabel}{feedsCountdown !== null ? ` · ${feedsCountdown}s` : ""}</span>
                 </div>
               )}
             </div>
@@ -196,7 +199,7 @@ export const FeedMonitor: React.FC = () => {
                       : "bg-green-500"
                   )}
                 />
-                <span>Polling every {tailPollLabel}</span>
+                <span>Polling every {tailPollLabel}{tailCountdown !== null ? ` · ${tailCountdown}s` : ""}</span>
               </div>
             )}
           </div>
@@ -237,6 +240,46 @@ export const FeedMonitor: React.FC = () => {
     </div>
   );
 };
+
+// ── Countdown hook ──────────────────────────────────────────────────
+
+/**
+ * Returns the number of seconds remaining until the next poll.
+ * Resets whenever `isRefetching` transitions from true → false (i.e. a
+ * fetch just completed). Returns null when paused / no interval.
+ */
+function useCountdown(intervalMs: number | false, isRefetching: boolean): number | null {
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const lastFetchRef = useRef<number>(Date.now());
+
+  // Reset the anchor time whenever a refetch finishes
+  const prevRefetching = useRef(isRefetching);
+  useEffect(() => {
+    if (prevRefetching.current && !isRefetching) {
+      lastFetchRef.current = Date.now();
+    }
+    prevRefetching.current = isRefetching;
+  }, [isRefetching]);
+
+  useEffect(() => {
+    if (!intervalMs) {
+      setRemaining(null);
+      return;
+    }
+
+    const tick = () => {
+      const elapsed = Date.now() - lastFetchRef.current;
+      const left = Math.max(0, Math.ceil((intervalMs - elapsed) / 1000));
+      setRemaining(left);
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+
+  return remaining;
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
