@@ -73,17 +73,12 @@ export function HubAuthProvider({ children }: HubAuthProviderProps) {
   }, [token]);
 
   const login = useCallback(() => {
-    const { hubBaseUrl } = getConfig();
-    const clientId = process.env.NEXT_PUBLIC_HUB_OAUTH_CLIENT_ID;
-
-    if (!clientId) {
-      return;
-    }
+    const { hubBaseUrl, hubOAuthClientId } = getConfig();
 
     const redirectUri = window.location.origin + INTERNAL_LINKS.HUB_OAUTH;
     const returnUrl = window.location.pathname;
     const params = new URLSearchParams({
-      client_id: clientId,
+      client_id: hubOAuthClientId,
       redirect_uri: redirectUri,
       response_type: "token",
       scope: "user",

@@ -36,13 +36,13 @@ export const BasicNavbar: React.FC = () => {
           );
         })}
         <div className="ml-auto flex items-center gap-4">
-          <HubLoginButton />
           <Badge
             variant={crunchState === "started" ? "success" : "secondary"}
             size="sm"
           >
             {crunchState}
           </Badge>
+          <HubLoginButton />
         </div>
       </div>
     </nav>
