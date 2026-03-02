@@ -3,7 +3,7 @@
 import { Button, Skeleton } from "@crunch-ui/core";
 import Link from "next/link";
 import { INTERNAL_LINKS } from "@/utils/routes";
-import { useGetCoordinator } from "../application/hooks/useGetCoordinator";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "../application/hooks/useGetCrunches";
 import { CrunchCard } from "./crunchCard";
 

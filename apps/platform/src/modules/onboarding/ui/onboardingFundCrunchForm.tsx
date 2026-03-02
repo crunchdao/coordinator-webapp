@@ -4,7 +4,7 @@ import { PublicKey } from "@solana/web3.js";
 import { Alert, AlertDescription, Skeleton } from "@crunch-ui/core";
 import { Check } from "@crunch-ui/icons";
 import { FundCrunchForm } from "@/modules/crunch/ui/fundCrunchForm";
-import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 import { useGetRewardVaultBalance } from "@/modules/crunch/application/hooks/useGetRewardVaultBalance";
 

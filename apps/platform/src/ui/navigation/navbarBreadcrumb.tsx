@@ -1,8 +1,8 @@
 "use client";
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
+import { useCoordinatorAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 import {
   Breadcrumb,
@@ -19,7 +19,7 @@ import { ChevronDown } from "@crunch-ui/icons";
 import { INTERNAL_LINKS, PAGE_LABELS } from "@/utils/routes";
 
 export const NavbarBreadcrumb: React.FC = () => {
-  const { coordinator: authCoordinator, isLoading } = useAuth();
+  const { coordinator: authCoordinator, isLoading } = useCoordinatorAuth();
   const { coordinator } = useGetCoordinator();
   const { crunches, crunchesLoading } = useGetCrunches(
     coordinator?.address ? { coordinator: coordinator.address } : undefined

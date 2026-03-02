@@ -21,7 +21,7 @@
     "@crunch-ui/utils": "^1.2.1",
     "@crunchdao/programs": "^12.0.0",
     "@crunchdao/sdk": "^9.0.0",
-    "@crunchdao/slices": "^0.4.2",
+    "@crunchdao/slices": "^0.4.4",
     "@crunchdao/solana-utils": "^0.2.0",
     "@crunchdao/staking": "^0.2.1",
     "@hookform/resolvers": "^5.2.2",

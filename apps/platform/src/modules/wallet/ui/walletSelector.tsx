@@ -23,8 +23,8 @@ import {
   Lock,
   Certificate,
 } from "@crunch-ui/icons";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { useCoordinatorAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useWallet } from "../application/context/walletContext";
 import { useEffectiveAuthority } from "../application/hooks/useEffectiveAuthority";
@@ -34,7 +34,7 @@ import { MultisigDialog } from "./multisigDialog";
 export function WalletSelector() {
   const { publicKey, disconnect, connected, connecting } = useWallet();
   const { setVisible } = useWalletModal();
-  const { coordinatorStatus, coordinator } = useAuth();
+  const { coordinatorStatus, coordinator } = useCoordinatorAuth();
   const { authority, isMultisigMode } = useEffectiveAuthority();
   const [multisigDialogOpen, setMultisigDialogOpen] = useState(false);
 

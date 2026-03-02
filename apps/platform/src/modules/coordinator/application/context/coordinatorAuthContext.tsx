@@ -7,13 +7,10 @@ import {
   useState,
 } from "react";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import {
-  CoordinatorStatus,
-  CoordinatorState,
-} from "@/modules/crunch/domain/types";
-import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
+import { CoordinatorStatus, CoordinatorState } from "../../domain/types";
+import { useGetCoordinator } from "../hooks/useGetCoordinator";
 
-interface AuthContextType {
+interface CoordinatorAuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   publicKey: string | null;
@@ -23,21 +20,27 @@ interface AuthContextType {
   isReadOnly: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const CoordinatorAuthContext = createContext<
+  CoordinatorAuthContextType | undefined
+>(undefined);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
+export const useCoordinatorAuth = () => {
+  const context = useContext(CoordinatorAuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error(
+      "useCoordinatorAuth must be used within a CoordinatorAuthProvider"
+    );
   }
   return context;
 };
 
-interface AuthProviderProps {
+interface CoordinatorAuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
+export function CoordinatorAuthProvider({
+  children,
+}: CoordinatorAuthProviderProps) {
   const { connected, publicKey, connecting } = useWallet();
   const [isLoading, setIsLoading] = useState(true);
   const { coordinator, coordinatorLoading } = useGetCoordinator();
@@ -56,7 +59,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isReadOnly = coordinatorStatus === CoordinatorStatus.PENDING;
 
   return (
-    <AuthContext.Provider
+    <CoordinatorAuthContext.Provider
       value={{
         isAuthenticated,
         isLoading: isLoading || connecting,
@@ -68,6 +71,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }}
     >
       {children}
-    </AuthContext.Provider>
+    </CoordinatorAuthContext.Provider>
   );
 }
