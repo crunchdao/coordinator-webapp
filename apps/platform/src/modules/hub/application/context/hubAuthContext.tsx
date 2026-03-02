@@ -10,8 +10,8 @@ import {
 } from "react";
 import Cookies from "js-cookie";
 import { getConfig } from "@/config";
-import hubApiClient from "@/utils/api/hubApiClient";
 import { HubUser } from "../../domain/types";
+import { getHubMe } from "../../infrastructure/service";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 const HUB_TOKEN_COOKIE = "hub-access-token";
@@ -60,10 +60,8 @@ export function HubAuthProvider({ children }: HubAuthProviderProps) {
 
     const fetchUser = async () => {
       try {
-        const response = await hubApiClient.get("/v2/users/@me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUser(response.data);
+        const user = await getHubMe();
+        setUser(user);
       } catch {
         Cookies.remove(HUB_TOKEN_COOKIE);
         setToken(null);
