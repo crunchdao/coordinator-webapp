@@ -14,6 +14,8 @@ configApiClient.interceptors.response.use(
     return response;
   },
   function (error) {
+    // Enrich the error message for logging/debugging — but never show a toast.
+    // Callers (mutation hooks) should handle their own user-facing error UI.
     if (error.message) {
       error.message = `Config API Error (${error.response?.status}): ${
         error.config?.method
@@ -23,18 +25,31 @@ configApiClient.interceptors.response.use(
     }
 
     if (typeof window !== "undefined") {
-      toast?.({
-        title: "Oops!",
-        description:
-          error?.response?.data?.message ||
-          "An error occurred. Please try again.",
-        variant: "destructive",
-        duration: 5000,
-      });
+      console.error(error.message);
     }
 
     return Promise.reject(error);
   }
 );
+
+/**
+ * Show a destructive toast for a config API error.
+ * Use this in mutation `onError` handlers for user-initiated actions.
+ */
+export function showConfigApiErrorToast(
+  error: unknown,
+  fallbackTitle = "Something went wrong"
+) {
+  const axiosError = error as any;
+  const description =
+    axiosError?.response?.data?.message || fallbackTitle;
+
+  toast?.({
+    title: fallbackTitle,
+    description,
+    variant: "destructive",
+    duration: 5000,
+  });
+}
 
 export default configApiClient;
