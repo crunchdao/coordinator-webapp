@@ -2,14 +2,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
 import { WalletSelector } from "@/modules/wallet/ui/walletSelector";
-import { useAuth } from "../application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "../application/context/coordinatorAuthContext";
 import { CoordinatorStatus } from "../domain/types";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 export function LoginCard() {
-  const { isAuthenticated, isLoading, coordinatorStatus } = useAuth();
+  const { isAuthenticated, isLoading, coordinatorStatus } = useCoordinatorAuth();
   const router = useRouter();
 
   useEffect(() => {

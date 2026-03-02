@@ -3,11 +3,11 @@ import { INTERNAL_LINKS } from "@/utils/routes";
 import { Spinner } from "@crunch-ui/core";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 
 export default function Home() {
-  const { isAuthenticated, isLoading, coordinatorStatus } = useAuth();
+  const { isAuthenticated, isLoading, coordinatorStatus } = useCoordinatorAuth();
   const router = useRouter();
 
   useEffect(() => {

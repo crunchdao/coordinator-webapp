@@ -21,7 +21,7 @@ import {
   Rocket,
   Certificate,
 } from "@crunch-ui/icons";
-import { useAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
@@ -157,7 +157,7 @@ export const useOnboarding = () => {
 };
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const { coordinatorStatus, isLoading: authLoading } = useAuth();
+  const { coordinatorStatus, isLoading: authLoading } = useCoordinatorAuth();
   const { isMultisigMode } = useWallet();
   const { coordinator, coordinatorLoading } = useGetCoordinator();
   const { crunches, crunchesLoading: crunchesLoadingRaw } = useGetCrunches(

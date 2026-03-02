@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { Spinner } from "@crunch-ui/core";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 const HUB_TOKEN_COOKIE = "hub-access-token";
@@ -35,7 +36,7 @@ export default function HubOAuthPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <p className="text-muted-foreground">Authenticating with Hub...</p>
+      <Spinner />
     </div>
   );
 }

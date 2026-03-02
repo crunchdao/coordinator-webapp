@@ -24,10 +24,12 @@ const CoordinatorAuthContext = createContext<
   CoordinatorAuthContextType | undefined
 >(undefined);
 
-export const useAuth = () => {
+export const useCoordinatorAuth = () => {
   const context = useContext(CoordinatorAuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within a CoordinatorAuthProvider");
+    throw new Error(
+      "useCoordinatorAuth must be used within a CoordinatorAuthProvider"
+    );
   }
   return context;
 };

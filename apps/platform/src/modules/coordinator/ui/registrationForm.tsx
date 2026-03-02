@@ -13,7 +13,7 @@ import {
   FormMessage,
   Input,
 } from "@crunch-ui/core";
-import { useAuth } from "../application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "../application/context/coordinatorAuthContext";
 import { registrationSchema } from "../application/schemas/registration";
 import { CoordinatorStatus, RegistrationFormData } from "../domain/types";
 import { useRegisterCoordinator } from "../application/hooks/useRegisterCoordinator";
@@ -24,7 +24,7 @@ export function RegistrationForm() {
   const { coordinator } = useGetCoordinator();
   const { registerCoordinator, registerCoordinatorLoading } =
     useRegisterCoordinator();
-  const { coordinatorStatus, isCheckingCoordinator } = useAuth();
+  const { coordinatorStatus, isCheckingCoordinator } = useCoordinatorAuth();
 
   const organizationName = coordinator?.data?.name;
   const isPending = coordinatorStatus === CoordinatorStatus.PENDING;

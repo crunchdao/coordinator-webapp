@@ -1,13 +1,13 @@
 "use client";
 import { ReactNode } from "react";
-import { useAuth } from "../application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "../application/context/coordinatorAuthContext";
 
 interface ReadOnlyWrapperProps {
   children: ReactNode;
 }
 
 export function ReadOnlyWrapper({ children }: ReadOnlyWrapperProps) {
-  const { isReadOnly } = useAuth();
+  const { isReadOnly } = useCoordinatorAuth();
 
   if (!isReadOnly) return <>{children}</>;
 

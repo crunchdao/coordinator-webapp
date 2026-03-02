@@ -24,7 +24,7 @@ import {
 import { useCreateCrunch } from "../application/hooks/useCreateCrunch";
 import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "../application/hooks/useGetCrunches";
-import { useAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { useRouter } from "next/navigation";
 import { generateLink } from "@crunch-ui/utils";
@@ -36,7 +36,7 @@ interface CrunchCreationFormProps {
 
 export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
   const router = useRouter();
-  const { coordinatorStatus } = useAuth();
+  const { coordinatorStatus } = useCoordinatorAuth();
   const { coordinator } = useGetCoordinator();
   const { crunches } = useGetCrunches(
     coordinator?.address ? { coordinator: coordinator.address } : undefined

@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "../application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "../application/context/coordinatorAuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";
@@ -10,7 +10,7 @@ interface AuthWrapperProps {
 }
 
 export function AuthWrapper({ children }: AuthWrapperProps) {
-  const { isAuthenticated, isLoading, isCheckingCoordinator } = useAuth();
+  const { isAuthenticated, isLoading, isCheckingCoordinator } = useCoordinatorAuth();
   const router = useRouter();
 
   useEffect(() => {

@@ -1,10 +1,10 @@
 "use client";
 import { InfoCircle } from "@crunch-ui/icons";
-import { useAuth } from "../application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "../application/context/coordinatorAuthContext";
 import { Alert, AlertDescription, AlertTitle } from "@crunch-ui/core";
 
 export function PendingStatusBanner() {
-  const { isReadOnly } = useAuth();
+  const { isReadOnly } = useCoordinatorAuth();
 
   if (!isReadOnly) return null;
 

@@ -10,13 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@crunch-ui/core";
-import { useAuth } from "../application/context/coordinatorAuthContext";
+import { useCoordinatorAuth } from "../application/context/coordinatorAuthContext";
 import { CoordinatorStatus } from "../domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 export function RegistrationCard() {
   const router = useRouter();
-  const { coordinatorStatus, isCheckingCoordinator } = useAuth();
+  const { coordinatorStatus, isCheckingCoordinator } = useCoordinatorAuth();
 
   useEffect(() => {
     if (
