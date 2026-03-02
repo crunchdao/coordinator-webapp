@@ -1,19 +1,29 @@
 "use client";
 
 import axios from "axios";
+import Cookies from "js-cookie";
 import { toast } from "@crunch-ui/core";
 import { getConfig } from "@/config";
+
+const HUB_TOKEN_COOKIE = "hub-access-token";
 
 const hubApiClient = axios.create({
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: false,
 });
 
 hubApiClient.interceptors.request.use((config) => {
   const env = getConfig().env;
   config.baseURL = env === "production" ? "/hub-prod" : "/hub-staging";
+
+  const token = Cookies.get(HUB_TOKEN_COOKIE);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
   return config;
 });
 
