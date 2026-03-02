@@ -45,14 +45,15 @@ export function showApiErrorToast(
 ) {
   const axiosError = error as any;
   const fieldErrors = axiosError?.response?.data?.fieldErrors;
+  const fallbackDescription = "Please try again.";
   let description =
-    axiosError?.response?.data?.message || fallbackTitle;
+    axiosError?.response?.data?.message || fallbackDescription;
 
   if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
     description = fieldErrors
       .map(
         (fieldError: { property: string; message: string }) =>
-          `${fieldError.property}: ${fieldError.message}`
+          `${fieldError.property} ${fieldError.message}`
       )
       .join(", ");
   }
