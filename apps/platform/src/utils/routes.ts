@@ -36,10 +36,6 @@ type RouteConfig = {
 
 export const ROUTE_CONFIG: RouteConfig[] = [
   {
-    path: INTERNAL_LINKS.CRUNCH,
-    label: "General",
-  },
-  {
     path: INTERNAL_LINKS.CRUNCH_OVERVIEW,
     label: "Overview",
   },

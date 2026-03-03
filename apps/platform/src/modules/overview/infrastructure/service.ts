@@ -10,11 +10,16 @@ import { overviewEndpoints } from "./endpoints";
 
 export const getOverviewSlices = async (
   crunchAddress: string,
-  locale?: Locale
+  locale?: Locale,
+  hubBaseUrl?: string
 ): Promise<OverviewSlicesListResponse> => {
-  const response = await hubApiClient.get(overviewEndpoints.slices(crunchAddress), {
-    params: { locale },
-  });
+  const response = await hubApiClient.get(
+    overviewEndpoints.slices(crunchAddress),
+    {
+      params: { locale },
+      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
+    }
+  );
   return response.data;
 };
 
@@ -50,7 +55,10 @@ export const deleteOverviewSlice = async (
   sliceName: string,
   locale?: Locale
 ): Promise<void> => {
-  await hubApiClient.delete(overviewEndpoints.slice(crunchAddress, sliceName), {
-    params: { locale },
-  });
+  await hubApiClient.delete(
+    overviewEndpoints.slice(crunchAddress, sliceName),
+    {
+      params: { locale },
+    }
+  );
 };

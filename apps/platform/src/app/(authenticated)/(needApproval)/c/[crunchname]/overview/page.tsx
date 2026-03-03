@@ -3,7 +3,6 @@ import { OverviewSlicesView } from "@/modules/overview/ui/overviewSlicesView";
 
 export const metadata: Metadata = {
   title: "Overview",
-  description: "Manage your crunch overview content",
 };
 
 export default function OverviewPage() {

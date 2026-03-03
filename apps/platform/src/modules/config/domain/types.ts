@@ -26,13 +26,13 @@ export const CPI_URLS: Partial<Record<WalletAdapterNetwork, string>> = {
 
 export const HUB_URL_OPTIONS = [
   { label: "None", value: "" },
-  { label: "Staging (.io)", value: "https://hub.crunchdao.io" },
-  { label: "Production (.com)", value: "https://hub.crunchdao.com" },
+  { label: "Staging (.io)", value: "/hub-staging" },
+  { label: "Production (.com)", value: "/hub-prod" },
 ] as const;
 
 export const DEFAULT_HUB_URLS: Partial<Record<WalletAdapterNetwork, string>> = {
-  [WalletAdapterNetwork.Devnet]: "https://hub.crunchdao.io",
-  [WalletAdapterNetwork.Mainnet]: "https://hub.crunchdao.com",
+  [WalletAdapterNetwork.Devnet]: "/hub-staging",
+  [WalletAdapterNetwork.Mainnet]: "/hub-prod",
 };
 
 export const DEFAULT_RPC_URLS: Partial<Record<WalletAdapterNetwork, string>> = {

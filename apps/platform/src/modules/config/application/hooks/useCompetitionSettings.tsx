@@ -1,48 +1,32 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "@crunch-ui/core";
-import { showApiErrorToast } from "@coordinator/utils/src/api";
-import {
-  getCompetitionSettings,
-  saveCompetitionSettings,
-} from "../../infrastructure/service";
 import { Competition } from "@/modules/competition/domain/types";
+import { useConfigFile, useSaveConfigFile } from "./useConfigFile";
 
 export function useCompetitionSettings(slug: string) {
-  const query = useQuery({
-    queryKey: ["competitionSettings", slug],
-    queryFn: () => getCompetitionSettings(slug),
-    enabled: !!slug,
-    retry: false,
-  });
+  const { data, isLoading, error } = useConfigFile<Competition>(
+    `crunches/${slug}/settings.json`
+  );
 
   return {
-    settings: query.data,
-    settingsLoading: query.isLoading,
-    settingsError: query.error,
+    settings: data,
+    settingsLoading: isLoading,
+    settingsError: error,
   };
 }
 
 export function useSaveCompetitionSettings(slug: string) {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (data: Competition) => saveCompetitionSettings(slug, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["competitionSettings", slug],
-      });
-      toast({ title: "Settings saved successfully" });
-    },
-    onError: (error) => {
-      showApiErrorToast(error, "Failed to save settings");
-    },
-  });
+  const { save, saveAsync, isSaving } = useSaveConfigFile<Competition>(
+    `crunches/${slug}/settings.json`,
+    {
+      successMessage: "Settings saved successfully",
+      errorMessage: "Failed to save settings",
+    }
+  );
 
   return {
-    saveSettings: mutation.mutate,
-    saveSettingsAsync: mutation.mutateAsync,
-    saveSettingsLoading: mutation.isPending,
+    saveSettings: save,
+    saveSettingsAsync: saveAsync,
+    saveSettingsLoading: isSaving,
   };
 }
