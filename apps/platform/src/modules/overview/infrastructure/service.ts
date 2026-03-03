@@ -10,12 +10,14 @@ import { overviewEndpoints } from "./endpoints";
 
 export const getOverviewSlices = async (
   crunchAddress: string,
-  locale?: Locale
+  locale?: Locale,
+  hubBaseUrl?: string
 ): Promise<OverviewSlicesListResponse> => {
   const response = await hubApiClient.get(
     overviewEndpoints.slices(crunchAddress),
     {
       params: { locale },
+      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
     }
   );
   return response.data;
