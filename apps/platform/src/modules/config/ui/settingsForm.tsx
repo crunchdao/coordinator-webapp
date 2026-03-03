@@ -60,7 +60,21 @@ export function SettingsForm() {
       displayName: "",
       fullName: "",
       shortDescription: "",
+      url: "",
+      start: "",
+      end: "",
       visibility: "HIDDEN",
+      cardImageUrl: "",
+      bannerImageUrl: "",
+      documentationUrl: "",
+      notebookUrl: "",
+      advancedNotebookUrl: "",
+      discussionUrl: "",
+      codeUrl: "",
+      ruleContentUrl: "",
+      prizePoolText: "",
+      prizePoolShortText: "",
+      prizePoolUsd: 0,
     },
   });
 
@@ -153,7 +167,7 @@ export function SettingsForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.log("Form validation errors:", errors))} className="space-y-8">
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Basic Information</h3>
               <div className="grid gap-4 md:grid-cols-2">
