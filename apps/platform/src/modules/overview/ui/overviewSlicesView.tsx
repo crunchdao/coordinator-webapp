@@ -1,81 +1,51 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card, CardContent, Spinner, toast } from "@crunch-ui/core";
+import { useState } from "react";
 import {
-  SliceManager,
-  useSlicesBatch,
-  type CreateSliceData,
-  type UpdateSliceData,
-} from "@crunchdao/slices";
+  Button,
+  Card,
+  CardContent,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Spinner,
+  toast,
+} from "@crunch-ui/core";
+import { SliceManager, useSlicesBatch } from "@crunchdao/slices";
+import type { Slice } from "@crunchdao/slices";
 import { Download } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useCompetitionEnvironments } from "@/modules/config/application/hooks/useCompetitionEnvironments";
+import {
+  useConfigFile,
+  useSaveConfigFile,
+} from "@/modules/config/application/hooks/useConfigFile";
 import { Locale } from "../domain/types";
-import { useGetOverviewSlices } from "../application/hooks/useGetOverviewSlices";
-import { useCreateOverviewSlice } from "../application/hooks/useCreateOverviewSlice";
-import { useUpdateOverviewSlice } from "../application/hooks/useUpdateOverviewSlice";
-import { useDeleteOverviewSlice } from "../application/hooks/useDeleteOverviewSlice";
+import { getOverviewSlices as getHubSlices } from "../infrastructure/service";
 import { OverviewSliceHeader } from "./overviewSliceHeader";
 
 export const OverviewSlicesView: React.FC = () => {
-  const queryClient = useQueryClient();
-  const { crunchData, isLoading: crunchLoading } = useCrunchContext();
-  const crunchAddress = crunchData?.address;
-
+  const { crunchName } = useCrunchContext();
+  const { environments } = useCompetitionEnvironments(crunchName);
   const [locale, setLocale] = useState<Locale>(Locale.ENGLISH);
+  const [isPulling, setIsPulling] = useState(false);
 
-  const { slices: serverSlices, slicesLoading } = useGetOverviewSlices(
-    crunchAddress,
-    locale
-  );
+  const configPath = `crunches/${crunchName}/slices.json`;
 
-  const { createSliceAsync } = useCreateOverviewSlice(
-    crunchAddress || "",
-    locale
-  );
-  const { updateSliceAsync } = useUpdateOverviewSlice(
-    crunchAddress || "",
-    locale
-  );
-  const { deleteSlice } = useDeleteOverviewSlice(crunchAddress || "", locale);
+  const { data: serverSlices, isLoading: slicesLoading } = useConfigFile<
+    Slice[]
+  >(configPath, { defaultValue: [] });
 
-  const onCreate = useCallback(
-    async (data: CreateSliceData) => {
-      await createSliceAsync(data);
-    },
-    [createSliceAsync]
+  const { saveAsync, isSaving: isSavingFile } = useSaveConfigFile<Slice[]>(
+    configPath,
+    { successMessage: "Slices saved successfully" }
   );
-
-  const onUpdate = useCallback(
-    async (data: UpdateSliceData) => {
-      await updateSliceAsync({
-        sliceName: data.sliceName,
-        body: data.body,
-        locale,
-      });
-    },
-    [updateSliceAsync, locale]
-  );
-
-  const onDeleteSlice = useCallback(
-    async (name: string) => {
-      await deleteSlice(name);
-    },
-    [deleteSlice]
-  );
-
-  const onBatchSuccess = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["overviewSlices", crunchAddress],
-    });
-    toast({ title: "Changes saved successfully" });
-  }, [queryClient, crunchAddress]);
 
   const {
     slices,
     isDirty,
-    isSaving,
+    isSaving: isBatchSaving,
     handleCreate,
     handleUpdate,
     handleDelete,
@@ -83,39 +53,54 @@ export const OverviewSlicesView: React.FC = () => {
     resetChanges,
   } = useSlicesBatch({
     serverSlices,
-    onCreate,
-    onUpdate,
-    onDelete: onDeleteSlice,
-    onSuccess: onBatchSuccess,
+    onCreate: async () => {},
+    onUpdate: async () => {},
+    onDelete: async () => {},
+    onSuccess: () => {},
   });
+
+  const saving = isSavingFile || isBatchSaving;
 
   const handleSaveChanges = async () => {
     try {
+      await saveAsync(slices);
       await saveChanges();
+    } catch {
+      // Error already handled by useSaveConfigFile
+    }
+  };
+
+  const handlePullFromHub = async (
+    envName: string,
+    address: string,
+    hubUrl: string
+  ) => {
+    setIsPulling(true);
+    try {
+      console.log(hubUrl);
+      const hubSlices = await getHubSlices(address, locale, hubUrl);
+      await saveAsync(hubSlices);
+      resetChanges();
+      toast({ title: `Slices pulled from "${envName}" successfully` });
     } catch (error) {
       toast({
-        title: "Failed to save changes",
+        title: "Failed to pull slices",
         description:
           error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
       });
+    } finally {
+      setIsPulling(false);
     }
   };
 
-  const handleDownloadJson = () => {
-    const json = JSON.stringify(slices, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `overview-${crunchData?.name || "slices"}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
+  const pullableEnvs = environments
+    ? Object.entries(environments).filter(
+        ([, env]) => env.hubUrl && env.address
+      )
+    : [];
 
-  if (crunchLoading || slicesLoading) {
+  if (slicesLoading) {
     return <Spinner className="mx-auto" />;
   }
 
@@ -130,20 +115,38 @@ export const OverviewSlicesView: React.FC = () => {
           onDelete={handleDelete}
         />
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={handleDownloadJson}>
-            <Download />
-            Export JSON
-          </Button>
+          {pullableEnvs.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={isPulling}>
+                  <Download />
+                  Pull from Hub
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {pullableEnvs.map(([name, env]) => (
+                  <DropdownMenuItem
+                    key={name}
+                    onClick={() =>
+                      handlePullFromHub(name, env.address, env.hubUrl!)
+                    }
+                  >
+                    {name}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           {isDirty && (
             <>
               <Button
                 variant="outline"
                 onClick={resetChanges}
-                disabled={isSaving}
+                disabled={saving}
               >
                 Reset
               </Button>
-              <Button onClick={handleSaveChanges} disabled={isSaving}>
+              <Button onClick={handleSaveChanges} disabled={saving}>
                 Save Changes
               </Button>
             </>

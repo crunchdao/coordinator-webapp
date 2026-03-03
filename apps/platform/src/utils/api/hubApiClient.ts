@@ -15,8 +15,10 @@ const hubApiClient = axios.create({
 });
 
 hubApiClient.interceptors.request.use((config) => {
-  const env = getConfig().env;
-  config.baseURL = env === "production" ? "/hub-prod" : "/hub-staging";
+  if (!config.baseURL) {
+    const env = getConfig().env;
+    config.baseURL = env === "production" ? "/hub-prod" : "/hub-staging";
+  }
 
   const token = Cookies.get(HUB_TOKEN_COOKIE);
   if (token) {
