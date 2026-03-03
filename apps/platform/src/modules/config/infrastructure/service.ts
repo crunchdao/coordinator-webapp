@@ -1,4 +1,3 @@
-import axios from "axios";
 import apiClient from "@coordinator/utils/src/api";
 import {
   CompetitionEnvironments,
@@ -59,12 +58,3 @@ export async function saveCompetitionSettings(
   return writeConfigFile(`crunches/${slug}/settings.json`, data);
 }
 
-export async function pullSettingsFromHub(
-  hubBaseUrl: string,
-  address: string
-): Promise<Competition> {
-  const response = await axios.get(
-    `${hubBaseUrl}/v1/competitions/onchain:${address}`
-  );
-  return response.data;
-}

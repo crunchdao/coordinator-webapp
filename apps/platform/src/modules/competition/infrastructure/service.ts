@@ -4,21 +4,25 @@ import { Competition } from "../domain/types";
 import { competitionEndpoints } from "./endpoints";
 
 export const getCompetition = async (
-  crunchAddress: string
+  crunchAddress: string,
+  hubBaseUrl?: string
 ): Promise<Competition> => {
   const response = await hubApiClient.get(
-    competitionEndpoints.getCompetition(crunchAddress)
+    competitionEndpoints.getCompetition(crunchAddress),
+    { ...(hubBaseUrl && { baseURL: hubBaseUrl }) }
   );
   return response.data;
 };
 
 export const updateCompetition = async (
   competitionIdentifier: string,
-  data: UpdateCompetitionFormData
+  data: UpdateCompetitionFormData,
+  hubBaseUrl?: string
 ): Promise<Competition> => {
   const response = await hubApiClient.patch(
     competitionEndpoints.updateCompetition(competitionIdentifier),
-    data
+    data,
+    { ...(hubBaseUrl && { baseURL: hubBaseUrl }) }
   );
   return response.data;
 };

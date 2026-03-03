@@ -2,10 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { getCompetition } from "../../infrastructure/service";
 
-export const useGetCompetition = (crunchAddress: string | undefined) => {
+export const useGetCompetition = (
+  crunchAddress: string | undefined,
+  hubBaseUrl?: string
+) => {
   const query = useQuery({
-    queryKey: ["competition", crunchAddress],
-    queryFn: () => getCompetition(crunchAddress as string),
+    queryKey: ["competition", crunchAddress, hubBaseUrl],
+    queryFn: () => getCompetition(crunchAddress as string, hubBaseUrl),
     enabled: !!crunchAddress,
     retry: (failureCount, error) => {
       if ((error as AxiosError)?.response?.status === 404) return false;

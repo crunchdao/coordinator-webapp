@@ -5,7 +5,7 @@ export const environmentTargetSchema = z.object({
   address: z.string().min(1, "Address is required"),
   network: z.nativeEnum(WalletAdapterNetwork),
   rpcUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
-  hubUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+  hubUrl: z.string().optional().or(z.literal("")),
 });
 
 export const environmentsSchema = z
