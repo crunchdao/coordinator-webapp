@@ -1,4 +1,4 @@
 export const endpoints = {
-  getLeaderboardColumns: () => "/leaderboard/columns",
-  resetLeaderboardColumns: () => "/leaderboard/columns/reset",
+  getLeaderboardColumns: (slug: string) =>
+    `/config/crunches/${slug}/leaderboard/columns.json`,
 };

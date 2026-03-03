@@ -12,6 +12,8 @@ import {
 import { ChevronLeft, ChevronRight } from "@crunch-ui/icons";
 import { useOnboarding } from "../application/onboardingContext";
 import { OnboardingStepper } from "./onboardingStepper";
+import { EnvironmentSwitcher } from "@/modules/environment/ui/environmentSwitcher";
+import { WalletConnection } from "@/modules/wallet/ui/walletConnection";
 
 export function OnboardingPanel() {
   const {
@@ -35,6 +37,10 @@ export function OnboardingPanel() {
 
   return (
     <section className="w-4xl p-6 mx-auto">
+      <div className="flex justify-end gap-4 mb-4">
+        <EnvironmentSwitcher />
+        <WalletConnection />
+      </div>
       <Card>
         <CardHeader className="text-center">
           <CardTitle>Get Started</CardTitle>

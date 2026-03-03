@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { RestrictedWrapper } from "@/modules/coordinator/ui/restrictedWrapper";
-import { BasicNavbar } from "@/ui/navigation/basicNavbar";
+import { CompetitionWorkspaceNavbar } from "@/modules/config/ui/competitionWorkspaceNavbar";
 import { CrunchProvider } from "@/modules/crunch/application/context/crunchContext";
 import { HubAuthProvider } from "@/modules/hub/application/context/hubAuthContext";
 
@@ -28,7 +28,7 @@ export default function CrunchLayout({
     <CrunchProvider>
       <HubAuthProvider>
         <RestrictedWrapper showDefaultMessage={false}>
-          <BasicNavbar />
+          <CompetitionWorkspaceNavbar />
         </RestrictedWrapper>
         <div className="space-y-3">{children}</div>
       </HubAuthProvider>

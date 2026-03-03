@@ -3,6 +3,7 @@ import {
   Leaderboard,
   LeaderboardColumn,
 } from "@coordinator/leaderboard/src/domain/types";
+import { initialColumns } from "@coordinator/leaderboard/src/domain/initial-config";
 import { endpoints } from "./endpoints";
 
 export const getLeaderboard = async (
@@ -14,36 +15,63 @@ export const getLeaderboard = async (
   return response.data;
 };
 
-export const getLeaderboardColumns = async (): Promise<LeaderboardColumn[]> => {
-  const response = await apiClient.get(endpoints.getLeaderboardColumns());
-  return response.data;
+export const getLeaderboardColumns = async (
+  slug: string
+): Promise<LeaderboardColumn[]> => {
+  try {
+    const response = await apiClient.get(endpoints.getLeaderboardColumns(slug));
+    return response.data;
+  } catch (error) {
+    if ((error as any)?.response?.status === 404) {
+      await apiClient.put(
+        endpoints.getLeaderboardColumns(slug),
+        initialColumns
+      );
+      return initialColumns;
+    }
+    throw error;
+  }
 };
 
 export const addLeaderboardColumn = async (
+  slug: string,
   column: Omit<LeaderboardColumn, "id">
 ): Promise<LeaderboardColumn> => {
-  const response = await apiClient.post(
-    endpoints.getLeaderboardColumns(),
-    column
-  );
-  return response.data;
+  const columns = await getLeaderboardColumns(slug);
+  const newColumn: LeaderboardColumn = {
+    ...column,
+    id: Math.max(...columns.map((c) => c.id), 0) + 1,
+  };
+  const updated = [...columns, newColumn];
+  await apiClient.put(endpoints.getLeaderboardColumns(slug), updated);
+  return newColumn;
 };
 
-export const removeLeaderboardColumn = async (id: number): Promise<void> => {
-  await apiClient.delete(`${endpoints.getLeaderboardColumns()}/${id}`);
+export const removeLeaderboardColumn = async (
+  slug: string,
+  id: number
+): Promise<void> => {
+  const columns = await getLeaderboardColumns(slug);
+  const updated = columns.filter((c) => c.id !== id);
+  await apiClient.put(endpoints.getLeaderboardColumns(slug), updated);
 };
 
 export const updateLeaderboardColumn = async (
+  slug: string,
   id: number,
   column: Omit<LeaderboardColumn, "id">
 ): Promise<LeaderboardColumn> => {
-  const response = await apiClient.put(
-    `${endpoints.getLeaderboardColumns()}/${id}`,
-    column
-  );
-  return response.data;
+  const columns = await getLeaderboardColumns(slug);
+  const index = columns.findIndex((c) => c.id === id);
+  if (index === -1) throw new Error("Column not found");
+  const updatedColumn: LeaderboardColumn = { ...column, id };
+  columns[index] = updatedColumn;
+  await apiClient.put(endpoints.getLeaderboardColumns(slug), columns);
+  return updatedColumn;
 };
 
-export const resetLeaderboardColumns = async (): Promise<void> => {
-  await apiClient.post(`${endpoints.resetLeaderboardColumns()}`);
+export const resetLeaderboardColumns = async (
+  slug: string
+): Promise<void> => {
+  await apiClient.put(endpoints.getLeaderboardColumns(slug), initialColumns);
 };

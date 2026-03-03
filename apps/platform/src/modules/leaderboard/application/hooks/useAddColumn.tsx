@@ -4,14 +4,16 @@ import { addLeaderboardColumn } from "../../infrastructure/services";
 import { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types";
 import { showApiErrorToast } from "@coordinator/utils/src/api";
 
-export const useAddColumn = () => {
+export const useAddColumn = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (column: Omit<LeaderboardColumn, "id">) =>
-      addLeaderboardColumn(column),
+      addLeaderboardColumn(slug, column),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["leaderboardColumns"] });
+      queryClient.invalidateQueries({
+        queryKey: ["leaderboardColumns", slug],
+      });
     },
     onError: (error) => {
       showApiErrorToast(error, "Failed to add column");
