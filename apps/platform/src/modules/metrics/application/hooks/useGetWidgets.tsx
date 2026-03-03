@@ -2,10 +2,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMetricsWidgets } from "../../infrastructure/services";
 
-export function useGetWidgets() {
+export function useGetWidgets(slug: string) {
   const query = useQuery({
-    queryKey: ["widgets"],
-    queryFn: getMetricsWidgets,
+    queryKey: ["widgets", slug],
+    queryFn: () => getMetricsWidgets(slug),
+    enabled: !!slug,
   });
   return {
     widgets: query.data?.sort((a, b) => a.order - b.order),

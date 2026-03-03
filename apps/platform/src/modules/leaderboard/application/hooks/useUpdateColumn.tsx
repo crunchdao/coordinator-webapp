@@ -4,7 +4,7 @@ import { updateLeaderboardColumn } from "../../infrastructure/services";
 import { toast } from "@crunch-ui/core";
 import { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types";
 
-export const useUpdateColumn = () => {
+export const useUpdateColumn = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -14,9 +14,11 @@ export const useUpdateColumn = () => {
     }: {
       id: number;
       column: Omit<LeaderboardColumn, "id">;
-    }) => updateLeaderboardColumn(id, column),
+    }) => updateLeaderboardColumn(slug, id, column),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["leaderboardColumns"] });
+      queryClient.invalidateQueries({
+        queryKey: ["leaderboardColumns", slug],
+      });
       toast({ title: "Column updated successfully" });
     },
     onError: () => {

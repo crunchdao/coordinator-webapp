@@ -3,13 +3,15 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { resetLeaderboardColumns } from "../../infrastructure/services";
 import { toast } from "@crunch-ui/core";
 
-export const useResetColumns = () => {
+export const useResetColumns = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: resetLeaderboardColumns,
+    mutationFn: () => resetLeaderboardColumns(slug),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["leaderboardColumns"] });
+      queryClient.invalidateQueries({
+        queryKey: ["leaderboardColumns", slug],
+      });
       toast({ title: "Columns reset to default successfully" });
     },
     onError: () => {

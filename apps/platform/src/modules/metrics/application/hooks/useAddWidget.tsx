@@ -4,13 +4,13 @@ import { addMetricWidget } from "../../infrastructure/services";
 import { Widget } from "@coordinator/metrics/src/domain/types";
 import { showApiErrorToast } from "@coordinator/utils/src/api";
 
-export const useAddWidget = () => {
+export const useAddWidget = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (widget: Omit<Widget, "id">) => addMetricWidget(widget),
+    mutationFn: (widget: Omit<Widget, "id">) => addMetricWidget(slug, widget),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["widgets"] });
+      queryClient.invalidateQueries({ queryKey: ["widgets", slug] });
     },
     onError: (error) => {
       showApiErrorToast(error, "Failed to add widget");
