@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { cn, generateLink } from "@crunch-ui/utils";
 import { usePathname, useParams } from "next/navigation";
@@ -7,7 +8,7 @@ import { ROUTE_CONFIG } from "@/utils/routes";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { HubLoginButton } from "@/modules/hub/ui/hubLoginButton";
 
-export const BasicNavbar: React.FC = () => {
+export function CompetitionWorkspaceNavbar() {
   const pathname = usePathname();
   const params = useParams();
   const crunchname = params.crunchname as string;
@@ -47,4 +48,4 @@ export const BasicNavbar: React.FC = () => {
       </div>
     </nav>
   );
-};
+}

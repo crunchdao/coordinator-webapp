@@ -7,13 +7,17 @@ import { useAddWidget } from "@/modules/metrics/application/hooks/useAddWidget";
 import { useUpdateWidget } from "@/modules/metrics/application/hooks/useUpdateWidget";
 import { useRemoveWidget } from "@/modules/metrics/application/hooks/useRemoveWidget";
 import { useResetWidgets } from "@/modules/metrics/application/hooks/useResetWidgets";
+import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 
 export function MetricsContent() {
-  const { widgets, widgetsLoading } = useGetWidgets();
-  const { addWidget, addWidgetLoading } = useAddWidget();
-  const { updateWidget, updateWidgetLoading } = useUpdateWidget();
-  const { removeWidget, removeWidgetLoading } = useRemoveWidget();
-  const { resetWidgets, resetWidgetsLoading } = useResetWidgets();
+  const { crunchName } = useCrunchContext();
+  const slug = crunchName;
+
+  const { widgets, widgetsLoading } = useGetWidgets(slug);
+  const { addWidget, addWidgetLoading } = useAddWidget(slug);
+  const { updateWidget, updateWidgetLoading } = useUpdateWidget(slug);
+  const { removeWidget, removeWidgetLoading } = useRemoveWidget(slug);
+  const { resetWidgets, resetWidgetsLoading } = useResetWidgets(slug);
 
   return (
     <section className="p-6 space-y-3">

@@ -4,14 +4,14 @@ import { updateWidget } from "../../infrastructure/services";
 import { toast } from "@crunch-ui/core";
 import { Widget } from "@coordinator/metrics/src/domain/types";
 
-export const useUpdateWidget = () => {
+export const useUpdateWidget = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: ({ id, widget }: { id: number; widget: Omit<Widget, "id"> }) =>
-      updateWidget(id, widget),
+      updateWidget(slug, id, widget),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["widgets"] });
+      queryClient.invalidateQueries({ queryKey: ["widgets", slug] });
       toast({ title: "Widget updated successfully" });
     },
     onError: () => {

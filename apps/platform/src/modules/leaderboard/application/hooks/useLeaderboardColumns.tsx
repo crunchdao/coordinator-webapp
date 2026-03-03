@@ -2,10 +2,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getLeaderboardColumns } from "../../infrastructure/services";
 
-export const useLeaderboardColumns = () => {
+export const useLeaderboardColumns = (slug: string) => {
   const query = useQuery({
-    queryKey: ["leaderboardColumns"],
-    queryFn: getLeaderboardColumns,
+    queryKey: ["leaderboardColumns", slug],
+    queryFn: () => getLeaderboardColumns(slug),
+    enabled: !!slug,
   });
 
   return {

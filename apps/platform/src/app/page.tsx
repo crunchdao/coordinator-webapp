@@ -17,7 +17,7 @@ export default function Home() {
       } else if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
         router.push(INTERNAL_LINKS.ONBOARDING);
       } else {
-        router.push(INTERNAL_LINKS.DASHBOARD);
+        router.push(INTERNAL_LINKS.COMPETITIONS);
       }
     }
   }, [isAuthenticated, isLoading, coordinatorStatus, router]);
