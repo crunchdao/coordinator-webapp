@@ -26,12 +26,13 @@ export const getOverviewSlices = async (
 export const createOverviewSlice = async (
   crunchAddress: string,
   body: CreateOverviewSliceBody,
-  locale?: Locale
+  locale?: Locale,
+  hubBaseUrl?: string
 ): Promise<OverviewSliceItemResponse> => {
   const response = await hubApiClient.post(
     overviewEndpoints.slices(crunchAddress),
     body,
-    { params: { locale } }
+    { params: { locale }, ...(hubBaseUrl && { baseURL: hubBaseUrl }) }
   );
   return response.data;
 };
@@ -40,12 +41,13 @@ export const updateOverviewSlice = async (
   crunchAddress: string,
   sliceName: string,
   body: UpdateOverviewSliceBody,
-  locale?: Locale
+  locale?: Locale,
+  hubBaseUrl?: string
 ): Promise<OverviewSliceItemResponse> => {
   const response = await hubApiClient.patch(
     overviewEndpoints.slice(crunchAddress, sliceName),
     body,
-    { params: { locale } }
+    { params: { locale }, ...(hubBaseUrl && { baseURL: hubBaseUrl }) }
   );
   return response.data;
 };
@@ -53,9 +55,14 @@ export const updateOverviewSlice = async (
 export const deleteOverviewSlice = async (
   crunchAddress: string,
   sliceName: string,
-  locale?: Locale
+  locale?: Locale,
+  hubBaseUrl?: string
 ): Promise<void> => {
-  await hubApiClient.delete(overviewEndpoints.slice(crunchAddress, sliceName), {
-    params: { locale },
-  });
+  await hubApiClient.delete(
+    overviewEndpoints.slice(crunchAddress, sliceName),
+    {
+      params: { locale },
+      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
+    }
+  );
 };
