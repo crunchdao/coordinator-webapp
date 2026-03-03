@@ -22,7 +22,8 @@ export const useSettingsHubSync = () => {
   ) => {
     setIsPushing(true);
     try {
-      await updateCompetition(`onchain:${address}`, data, hubBaseUrl);
+      const { url, ...body } = data;
+      await updateCompetition(`onchain:${address}`, body, hubBaseUrl);
     } finally {
       setIsPushing(false);
     }
