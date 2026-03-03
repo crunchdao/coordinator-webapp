@@ -8,7 +8,8 @@ export const useGetOverviewSlices = (
 ) => {
   const query = useQuery({
     queryKey: ["overviewSlices", crunchAddress, locale],
-    queryFn: () => getOverviewSlices(crunchAddress as string, locale),
+    queryFn: () =>
+      getOverviewSlices(crunchAddress as string, locale),
     enabled: !!crunchAddress,
     select: (data) => [...data].sort((a, b) => a.order - b.order),
   });

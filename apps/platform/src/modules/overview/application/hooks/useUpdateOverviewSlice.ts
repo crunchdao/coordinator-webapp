@@ -13,7 +13,6 @@ export const useUpdateOverviewSlice = (
     }: {
       sliceName: string;
       body: UpdateOverviewSliceBody;
-      locale?: Locale;
     }) => updateOverviewSlice(crunchAddress, sliceName, body, locale),
   });
 

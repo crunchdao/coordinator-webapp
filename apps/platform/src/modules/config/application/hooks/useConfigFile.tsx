@@ -51,11 +51,13 @@ export function useSaveConfigFile<T>(
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (data: T) => writeConfigFile<T>(path, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    mutationFn: async (data: T) => {
+      await writeConfigFile<T>(path, data);
+      await queryClient.invalidateQueries({
         queryKey: ["configFile", path],
       });
+    },
+    onSuccess: () => {
       toast({ title: options?.successMessage ?? "Saved successfully" });
     },
     onError: (error) => {

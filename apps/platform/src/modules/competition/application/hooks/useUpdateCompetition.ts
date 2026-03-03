@@ -5,13 +5,14 @@ import { updateCompetition } from "../../infrastructure/service";
 
 export const useUpdateCompetition = (
   competitionIdentifier: string,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  hubBaseUrl?: string
 ) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (data: UpdateCompetitionFormData) =>
-      updateCompetition(competitionIdentifier, data),
+      updateCompetition(competitionIdentifier, data, hubBaseUrl),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["competition"],

@@ -1,10 +1,14 @@
 import { Metadata } from "next";
-import { SettingsEditorContent } from "./content";
+import { SettingsForm } from "@/modules/config/ui/settingsForm";
 
 export const metadata: Metadata = {
   title: "Settings",
 };
 
 export default function SettingsPage() {
-  return <SettingsEditorContent />;
+  return (
+    <section className="p-6">
+      <SettingsForm />
+    </section>
+  );
 }
