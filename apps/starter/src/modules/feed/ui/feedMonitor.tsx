@@ -47,6 +47,9 @@ export const FeedMonitor: React.FC = () => {
   // Once we know the interval, this hook takes over (first result is
   // already cached by the initial fetch via the same query key).
   const { feeds, feedsLoading, feedsRefetching } = useGetFeeds(feedsPollMs);
+  
+  // Debug logging
+  console.log("FeedMonitor state:", { feeds: feeds.length, feedsLoading, feedsRefetching });
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
@@ -69,8 +72,8 @@ export const FeedMonitor: React.FC = () => {
 
   const { records, recordsLoading, recordsRefetching } = useGetFeedTail(
     {
-      provider: selectedFeed?.provider,
-      asset: selectedFeed?.asset,
+      source: selectedFeed?.source,
+      subject: selectedFeed?.subject,
       kind: selectedFeed?.kind,
       granularity: selectedFeed?.granularity,
       limit: 20,
@@ -96,7 +99,7 @@ export const FeedMonitor: React.FC = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <CardTitle>Feed Indexing</CardTitle>
+              <CardTitle>Feed Indexing - DEBUG VERSION</CardTitle>
               {!paused && pollLabel && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span
@@ -171,7 +174,7 @@ export const FeedMonitor: React.FC = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {feed.provider}:{feed.asset}:{feed.kind}:{feed.granularity}
+                        {feed.source}:{feed.subject}:{feed.kind}:{feed.granularity}
                       </TableCell>
                       <TableCell>{feed.record_count.toLocaleString()}</TableCell>
                       <TableCell>{feed.oldest_ts ? formatDate(feed.oldest_ts) : "-"}</TableCell>
@@ -218,11 +221,12 @@ export const FeedMonitor: React.FC = () => {
             <div className="space-y-2">
               {records.map((record, idx) => (
                 <pre
-                  key={`${record.provider}-${record.asset}-${record.ts_event}-${idx}`}
+                  key={`${record.source}-${record.subject}-${record.ts_event}-${idx}`}
                   className="text-xs p-3 rounded-md bg-muted overflow-x-auto"
                 >
                   {JSON.stringify(
                     {
+                      subject: record.subject,
                       ts_event: record.ts_event,
                       ts_ingested: record.ts_ingested,
                       values: record.values,
@@ -284,12 +288,12 @@ function useCountdown(intervalMs: number | false, isRefetching: boolean): number
 // ── Helpers ──────────────────────────────────────────────────────────
 
 function feedKey(feed: {
-  provider: string;
-  asset: string;
+  source: string;
+  subject: string;
   kind: string;
   granularity: string;
 }) {
-  return [feed.provider, feed.asset, feed.kind, feed.granularity].join(":");
+  return [feed.source, feed.subject, feed.kind, feed.granularity].join(":");
 }
 
 function isFeedUp(watermarkTs: string | null, granularity: string) {
