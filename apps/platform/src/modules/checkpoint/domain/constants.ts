@@ -1,0 +1,1 @@
+export const FRAC64_MULTIPLIER = 1_000_000_000;
