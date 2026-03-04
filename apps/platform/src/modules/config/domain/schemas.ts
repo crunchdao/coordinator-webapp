@@ -14,6 +14,17 @@ export const environmentsSchema = z
     message: "At least one environment is required",
   });
 
+export const environmentEntrySchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  target: environmentTargetSchema,
+});
+
+export const environmentsFormSchema = z.object({
+  environments: z
+    .array(environmentEntrySchema)
+    .min(1, "At least one environment is required"),
+});
+
 export const settingsSchema = z.object({
   name: z.string().min(1, "Name is required"),
   displayName: z.string().min(1, "Display name is required"),
@@ -48,5 +59,6 @@ export const slugSchema = z.object({
 
 export type EnvironmentTargetFormData = z.infer<typeof environmentTargetSchema>;
 export type EnvironmentsFormData = z.infer<typeof environmentsSchema>;
+export type EnvironmentsEditorFormData = z.infer<typeof environmentsFormSchema>;
 export type SettingsFormData = z.infer<typeof settingsSchema>;
 export type SlugFormData = z.infer<typeof slugSchema>;
