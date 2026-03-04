@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -34,7 +34,6 @@ import {
 import { Download, Export } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useSettingsHubSync } from "@/modules/competition/application/hooks/useSettingsHubSync";
-import { Competition } from "@/modules/competition/domain/types";
 import { settingsSchema, SettingsFormData } from "../domain/schemas";
 import { useCompetitionEnvironments } from "../application/hooks/useCompetitionEnvironments";
 import {
@@ -105,7 +104,7 @@ export function SettingsForm() {
   }, [settings, form]);
 
   const onSubmit = (data: SettingsFormData) => {
-    saveSettings(data as Competition);
+    saveSettings(data);
   };
 
   const handlePullFromHub = async (
@@ -133,7 +132,7 @@ export function SettingsForm() {
     hubUrl: string
   ) => {
     try {
-      const values = form.getValues() as Competition;
+      const values = form.getValues();
       await pushToHub(address, hubUrl, values);
       await saveSettingsAsync(values);
       toast({ title: `Settings pushed to "${envName}" successfully` });
@@ -167,7 +166,7 @@ export function SettingsForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, (errors) => console.log("Form validation errors:", errors))} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Basic Information</h3>
               <div className="grid gap-4 md:grid-cols-2">
