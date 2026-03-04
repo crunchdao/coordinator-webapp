@@ -8,6 +8,7 @@ export const INTERNAL_LINKS = {
   CRUNCH_OVERVIEW: "/:crunchname",
   MODELS: "/:crunchname/models",
   FEEDS: "/:crunchname/feeds",
+  BACKFILL: "/:crunchname/backfill",
   CHECKPOINTS: "/:crunchname/checkpoints",
   CHECKPOINT_CREATE: "/:crunchname/create-checkpoint",
   LEADERBOARD: "/:crunchname/leaderboard",
@@ -40,6 +41,10 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.FEEDS,
     label: "Feeds",
+  },
+  {
+    path: INTERNAL_LINKS.BACKFILL,
+    label: "Backfill",
   },
   {
     path: INTERNAL_LINKS.CHECKPOINTS,

@@ -51,11 +51,14 @@ function JobsCard({
 }
 
 function DataFilesCard() {
-  const { files, filesLoading } = useBackfillIndex();
+  const { files, filesLoading, nodeUrl } = useBackfillIndex();
 
   const fileColumns = useMemo(
-    () => createFileColumns((filePath) => `/api/data/backfill/${filePath}`),
-    []
+    () =>
+      createFileColumns(
+        (filePath) => `${nodeUrl}/data/backfill/${filePath}`
+      ),
+    [nodeUrl]
   );
 
   if (filesLoading) {

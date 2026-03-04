@@ -24,7 +24,7 @@ export const getFeedsTail = async (
       asset: filters.asset,
       kind: filters.kind,
       granularity: filters.granularity,
-      limit: filters.limit ?? 10,
+      limit: filters.limit ?? 50,
     },
   });
   return response.data;
