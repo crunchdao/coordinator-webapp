@@ -13,9 +13,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@coordinator/ui/src/data-table";
 import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 import { NodeCheckpoint, NodeRankedEntry } from "../domain/nodeTypes";
+import { FRAC64_MULTIPLIER } from "../domain/constants";
 import { useSubmitNodeCheckpoint } from "../application/hooks/useSubmitNodeCheckpoint";
-
-const FRAC64_MULTIPLIER = 1_000_000_000;
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString();
