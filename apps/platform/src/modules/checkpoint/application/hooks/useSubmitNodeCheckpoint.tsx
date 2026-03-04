@@ -15,12 +15,11 @@ import { generateLink } from "@crunch-ui/utils";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { NodeCheckpoint } from "../../domain/nodeTypes";
+import { FRAC64_MULTIPLIER } from "../../domain/constants";
 import {
   confirmNodeCheckpoint,
   updateNodeCheckpointStatus,
 } from "../../infrastructure/nodeService";
-
-const FRAC64_MULTIPLIER = 1_000_000_000;
 
 /**
  * Convert a node checkpoint's emission data into SDK Prize[] format.

@@ -124,7 +124,9 @@ function ApprovalCountdown({
   return (
     <Alert variant="info">
       <AlertDescription>
-        <span className="font-semibold">{remaining}</span> approval{remaining !== 1 ? "s" : ""} remaining ({approvals} of {threshold} received)
+        <span className="font-semibold">{remaining}</span> approval
+        {remaining !== 1 ? "s" : ""} remaining ({approvals} of {threshold}{" "}
+        received)
       </AlertDescription>
     </Alert>
   );

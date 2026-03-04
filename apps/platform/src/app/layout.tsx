@@ -38,7 +38,7 @@ export default async function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "flex flex-col pointer-events-auto!",
+          "flex flex-col min-h-screen pointer-events-auto!",
           GeistSans.variable,
           departure.variable
         )}

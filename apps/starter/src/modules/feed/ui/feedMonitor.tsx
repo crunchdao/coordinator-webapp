@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -19,8 +20,37 @@ import { cn } from "@crunch-ui/utils";
 import { useGetFeeds } from "../application/hooks/useGetFeeds";
 import { useGetFeedTail } from "../application/hooks/useGetFeedTail";
 
+/** Minimum poll interval — never poll faster than this. */
+const MIN_POLL_MS = 5_000;
+
 export const FeedMonitor: React.FC = () => {
-  const { feeds, feedsLoading } = useGetFeeds();
+  const [paused, setPaused] = useState(false);
+
+  // ── Derive poll intervals from feed granularity ───────────────────
+  // First fetch uses the feeds list to figure out the right cadence.
+  // We do an initial fetch without polling, then enable polling once
+  // we know the granularity.
+  const feedsInitial = useGetFeeds(false);
+
+  const minGranularitySec = useMemo(() => {
+    if (feedsInitial.feeds.length === 0) return null;
+    return Math.min(
+      ...feedsInitial.feeds.map((f) => parseGranularitySeconds(f.granularity))
+    );
+  }, [feedsInitial.feeds]);
+
+  const feedsPollMs = useMemo(() => {
+    if (paused || minGranularitySec === null) return false as const;
+    return Math.max(MIN_POLL_MS, minGranularitySec * 1000);
+  }, [paused, minGranularitySec]);
+
+  // Once we know the interval, this hook takes over (first result is
+  // already cached by the initial fetch via the same query key).
+  const { feeds, feedsLoading, feedsRefetching } = useGetFeeds(feedsPollMs);
+  
+  // Debug logging
+  console.log("FeedMonitor state:", { feeds: feeds.length, feedsLoading, feedsRefetching });
+
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,22 +64,64 @@ export const FeedMonitor: React.FC = () => {
     [feeds, selectedKey]
   );
 
-  const { records, recordsLoading } = useGetFeedTail(
+  const tailPollMs = useMemo(() => {
+    if (paused || !selectedFeed) return false as const;
+    const sec = parseGranularitySeconds(selectedFeed.granularity);
+    return Math.max(MIN_POLL_MS, sec * 1000);
+  }, [paused, selectedFeed]);
+
+  const { records, recordsLoading, recordsRefetching } = useGetFeedTail(
     {
-      provider: selectedFeed?.provider,
-      asset: selectedFeed?.asset,
+      source: selectedFeed?.source,
+      subject: selectedFeed?.subject,
       kind: selectedFeed?.kind,
       granularity: selectedFeed?.granularity,
-      limit: 10,
+      limit: 20,
     },
-    !!selectedFeed
+    !!selectedFeed,
+    tailPollMs
   );
+
+  const isRefetching = feedsRefetching || recordsRefetching;
+  const pollLabel = feedsPollMs
+    ? formatInterval(feedsPollMs)
+    : null;
+  const tailPollLabel = tailPollMs
+    ? formatInterval(tailPollMs)
+    : null;
+
+  const feedsCountdown = useCountdown(feedsPollMs, feedsRefetching);
+  const tailCountdown = useCountdown(tailPollMs, recordsRefetching);
 
   return (
     <div className="grid gap-6">
       <Card displayCorners>
         <CardHeader>
-          <CardTitle>Feed Indexing</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CardTitle>Feed Indexing - DEBUG VERSION</CardTitle>
+              {!paused && pollLabel && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span
+                    className={cn(
+                      "inline-block h-2 w-2 rounded-full",
+                      isRefetching
+                        ? "bg-green-500 animate-pulse"
+                        : "bg-green-500"
+                    )}
+                  />
+                  <span>Live · every {pollLabel}{feedsCountdown !== null ? ` · ${feedsCountdown}s` : ""}</span>
+                </div>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPaused((p) => !p)}
+            >
+              {paused ? "▶ Resume" : "⏸ Pause"}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -102,7 +174,7 @@ export const FeedMonitor: React.FC = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {feed.provider}:{feed.asset}:{feed.kind}:{feed.granularity}
+                        {feed.source}:{feed.subject}:{feed.kind}:{feed.granularity}
                       </TableCell>
                       <TableCell>{feed.record_count.toLocaleString()}</TableCell>
                       <TableCell>{feed.oldest_ts ? formatDate(feed.oldest_ts) : "-"}</TableCell>
@@ -118,7 +190,22 @@ export const FeedMonitor: React.FC = () => {
 
       <Card displayCorners>
         <CardHeader>
-          <CardTitle>Latest Records (tail 10)</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>Latest Records (tail 20)</CardTitle>
+            {!paused && selectedFeed && records.length > 0 && tailPollLabel && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span
+                  className={cn(
+                    "inline-block h-2 w-2 rounded-full",
+                    recordsRefetching
+                      ? "bg-green-500 animate-pulse"
+                      : "bg-green-500"
+                  )}
+                />
+                <span>Polling every {tailPollLabel}{tailCountdown !== null ? ` · ${tailCountdown}s` : ""}</span>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {!selectedFeed ? (
@@ -134,11 +221,12 @@ export const FeedMonitor: React.FC = () => {
             <div className="space-y-2">
               {records.map((record, idx) => (
                 <pre
-                  key={`${record.provider}-${record.asset}-${record.ts_event}-${idx}`}
+                  key={`${record.source}-${record.subject}-${record.ts_event}-${idx}`}
                   className="text-xs p-3 rounded-md bg-muted overflow-x-auto"
                 >
                   {JSON.stringify(
                     {
+                      subject: record.subject,
                       ts_event: record.ts_event,
                       ts_ingested: record.ts_ingested,
                       values: record.values,
@@ -157,13 +245,55 @@ export const FeedMonitor: React.FC = () => {
   );
 };
 
+// ── Countdown hook ──────────────────────────────────────────────────
+
+/**
+ * Returns the number of seconds remaining until the next poll.
+ * Resets whenever `isRefetching` transitions from true → false (i.e. a
+ * fetch just completed). Returns null when paused / no interval.
+ */
+function useCountdown(intervalMs: number | false, isRefetching: boolean): number | null {
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const lastFetchRef = useRef<number>(Date.now());
+
+  // Reset the anchor time whenever a refetch finishes
+  const prevRefetching = useRef(isRefetching);
+  useEffect(() => {
+    if (prevRefetching.current && !isRefetching) {
+      lastFetchRef.current = Date.now();
+    }
+    prevRefetching.current = isRefetching;
+  }, [isRefetching]);
+
+  useEffect(() => {
+    if (!intervalMs) {
+      setRemaining(null);
+      return;
+    }
+
+    const tick = () => {
+      const elapsed = Date.now() - lastFetchRef.current;
+      const left = Math.max(0, Math.ceil((intervalMs - elapsed) / 1000));
+      setRemaining(left);
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+
+  return remaining;
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────
+
 function feedKey(feed: {
-  provider: string;
-  asset: string;
+  source: string;
+  subject: string;
   kind: string;
   granularity: string;
 }) {
-  return [feed.provider, feed.asset, feed.kind, feed.granularity].join(":");
+  return [feed.source, feed.subject, feed.kind, feed.granularity].join(":");
 }
 
 function isFeedUp(watermarkTs: string | null, granularity: string) {
@@ -189,6 +319,14 @@ function parseGranularitySeconds(granularity: string): number {
     return (Number(cleaned.slice(0, -1)) || 1) * 3600;
   }
   return 60;
+}
+
+function formatInterval(ms: number): string {
+  const sec = ms / 1000;
+  if (sec < 60) return `${sec}s`;
+  const min = sec / 60;
+  if (Number.isInteger(min)) return `${min}m`;
+  return `${sec}s`;
 }
 
 function formatDate(value: string) {

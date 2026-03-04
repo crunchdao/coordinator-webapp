@@ -24,7 +24,10 @@ export function OnboardingStepper() {
             : "border-muted-foreground/30 text-muted-foreground/50";
 
         return (
-          <div key={step.step} className={cn("flex items-center", !isLast && "flex-1")}>
+          <div
+            key={step.step}
+            className={cn("flex items-center", !isLast && "flex-1")}
+          >
             <Tooltip>
               <TooltipTrigger asChild>
                 <button

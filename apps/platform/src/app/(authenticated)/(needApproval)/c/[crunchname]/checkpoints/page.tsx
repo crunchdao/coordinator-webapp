@@ -1,0 +1,16 @@
+import { Metadata } from "next";
+import { CheckpointList } from "@/modules/checkpoint/ui/checkpointList";
+import { PendingNodeCheckpoints } from "@/modules/checkpoint/ui/pendingNodeCheckpoints";
+
+export const metadata: Metadata = {
+  title: "Checkpoints",
+};
+
+export default function CheckpointsPage() {
+  return (
+    <section className="p-6 space-y-3">
+      <PendingNodeCheckpoints />
+      <CheckpointList />
+    </section>
+  );
+}

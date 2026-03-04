@@ -12,6 +12,7 @@ export interface PlatformConfig {
   };
   hubBaseUrl: string;
   hubApiBaseUrl: string;
+  hubOAuthClientId: string;
   cpiBaseUrl: string;
 }
 
@@ -25,6 +26,7 @@ const configs: Record<Environment, PlatformConfig> = {
     },
     hubBaseUrl: "https://hub.crunchdao.io",
     hubApiBaseUrl: "https://api.hub.crunchdao.io",
+    hubOAuthClientId: "11",
     cpiBaseUrl: "https://cpi.crunchdao.io",
   },
   production: {
@@ -36,12 +38,13 @@ const configs: Record<Environment, PlatformConfig> = {
     },
     hubBaseUrl: "https://hub.crunchdao.com",
     hubApiBaseUrl: "https://api.hub.crunchdao.com",
+    hubOAuthClientId: "11",
     cpiBaseUrl: "https://cpi.crunchdao.com",
   },
 };
 
 const COOKIE_KEY = "coordinator-environment";
-const DEFAULT_ENV: Environment = "staging";
+export const DEFAULT_ENV: Environment = "staging";
 
 function isValidEnvironment(value: unknown): value is Environment {
   return value === "staging" || value === "production";

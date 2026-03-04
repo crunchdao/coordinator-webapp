@@ -1,10 +1,11 @@
 "use client";
 
-import { Badge, Button } from "@crunch-ui/core";
+import { Alert, AlertDescription, Badge, Button } from "@crunch-ui/core";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { PublicKey } from "@solana/web3.js";
 import { useStartCrunch } from "../application/hooks/useStartCrunch";
 import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
+import { InfoCircle } from "@crunch-ui/icons";
 
 interface StartCrunchFormProps {
   crunchName: string;
@@ -63,9 +64,13 @@ export function StartCrunchForm({
         )}
 
         {currentState !== "started" && (
-          <p className="text-sm text-muted-foreground">
-            Once started, crunchers will be able to register and participate.
-          </p>
+          <Alert variant="info" className="text-sm text-muted-foreground">
+            <InfoCircle />
+            <AlertDescription>
+              Your Crunch is ready to go live. Once started, participants can
+              register and begin start to deploy their models.
+            </AlertDescription>
+          </Alert>
         )}
 
         <Button

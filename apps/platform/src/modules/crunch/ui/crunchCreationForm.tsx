@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Alert,
+  AlertDescription,
   Button,
   Form,
   FormControl,
@@ -14,15 +16,16 @@ import {
   FormMessage,
   Input,
 } from "@crunch-ui/core";
+import { Check } from "@crunch-ui/icons";
 import {
   crunchCreationSchema,
   CreateCrunchFormData,
 } from "../application/schemas/crunchCreation";
 import { useCreateCrunch } from "../application/hooks/useCreateCrunch";
-import { useGetCoordinator } from "../application/hooks/useGetCoordinator";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "../application/hooks/useGetCrunches";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "../domain/types";
+import { useCoordinatorAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { useRouter } from "next/navigation";
 import { generateLink } from "@crunch-ui/utils";
 import { INTERNAL_LINKS } from "@/utils/routes";
@@ -33,7 +36,7 @@ interface CrunchCreationFormProps {
 
 export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
   const router = useRouter();
-  const { coordinatorStatus } = useAuth();
+  const { coordinatorStatus } = useCoordinatorAuth();
   const { coordinator } = useGetCoordinator();
   const { crunches } = useGetCrunches(
     coordinator?.address ? { coordinator: coordinator.address } : undefined
@@ -45,7 +48,9 @@ export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
       onSuccess(crunchName);
     } else {
       router.push(
-        generateLink(INTERNAL_LINKS.CRUNCH_OVERVIEW, { crunchname: crunchName })
+        generateLink(INTERNAL_LINKS.CRUNCH, {
+          crunchname: crunchName,
+        })
       );
     }
   };
@@ -77,6 +82,18 @@ export function CrunchCreationForm({ onSuccess }: CrunchCreationFormProps) {
 
   const isDisabled =
     coordinatorStatus !== CoordinatorStatus.APPROVED || createCrunchLoading;
+
+  if (firstCrunch) {
+    return (
+      <Alert variant="success">
+        <Check className="w-4 h-4" />
+        <AlertDescription>
+          Your Crunch <span className="font-medium">{firstCrunch.name}</span>{" "}
+          has been created. You're ready to fund it and go live!
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <Form {...form}>

@@ -78,7 +78,9 @@ export function FundCrunchForm({
             <div className="text-sm text-muted-foreground space-y-1">
               <p className="flex justify-between">
                 <span>Crunch</span>
-                <span className="font-medium text-foreground">{crunchName}</span>
+                <span className="font-medium text-foreground">
+                  {crunchName}
+                </span>
               </p>
               <p className="flex justify-between">
                 <span>Address</span>
@@ -87,7 +89,9 @@ export function FundCrunchForm({
               {rewardVault && vaultBalance > 0 && (
                 <p className="flex justify-between">
                   <span>Current Vault Balance</span>
-                  <span className="font-medium text-foreground">{vaultBalance.toLocaleString()} USDC</span>
+                  <span className="font-medium text-foreground">
+                    {vaultBalance.toLocaleString()} USDC
+                  </span>
                 </p>
               )}
             </div>
@@ -108,7 +112,9 @@ export function FundCrunchForm({
                     {...field}
                     value={field.value || ""}
                     onChange={(e) =>
-                      field.onChange(e.target.value ? Number(e.target.value) : 0)
+                      field.onChange(
+                        e.target.value ? Number(e.target.value) : 0
+                      )
                     }
                   />
                 </FormControl>

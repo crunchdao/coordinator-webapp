@@ -7,6 +7,8 @@ export const prizeSchema = z.object({
   prize: z.number().nonnegative(),
 });
 
-export const prizesSchema = z.array(prizeSchema).nonempty("Array must not be empty");
+export const prizesSchema = z
+  .array(prizeSchema)
+  .nonempty("Array must not be empty");
 
 export type PrizeFormData = z.infer<typeof prizeSchema>;

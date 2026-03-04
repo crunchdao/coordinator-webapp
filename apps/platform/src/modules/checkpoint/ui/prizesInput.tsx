@@ -146,7 +146,10 @@ export function PrizesInput({
               <SheetTrigger asChild>
                 <Button variant="outline">Import from models</Button>
               </SheetTrigger>
-              <SheetContent side="right" className="sm:max-w-xl w-full overflow-y-auto">
+              <SheetContent
+                side="right"
+                className="sm:max-w-xl w-full overflow-y-auto"
+              >
                 <SheetHeader>
                   <SheetTitle>Select a model</SheetTitle>
                 </SheetHeader>

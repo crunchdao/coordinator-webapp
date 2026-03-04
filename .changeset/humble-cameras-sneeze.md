@@ -3,6 +3,7 @@
 ---
 
 - Add multisig support:
+
   - Global Setting: Configure multisig address in Settings page
   - Automatic Routing: When multisig is set, all transactions become multisig proposals
   - Authority Resolution: useEffectiveAuthority hook returns vault PDA in multisig mode, wallet otherwise

@@ -21,16 +21,16 @@ import {
   Rocket,
   Certificate,
 } from "@crunch-ui/icons";
-import { useAuth } from "@/modules/auth/application/context/authContext";
+import { useCoordinatorAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import { useGetCoordinator } from "@/modules/crunch/application/hooks/useGetCoordinator";
+import { useGetCoordinator } from "@/modules/coordinator/application/hooks/useGetCoordinator";
 import { useGetCrunches } from "@/modules/crunch/application/hooks/useGetCrunches";
 import { useGetStakingInfo } from "@/modules/staking/application/hooks/useGetStakingInfo";
 import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks/useGetCoordinatorPoolConfig";
 import { useGetRewardVaultBalance } from "@/modules/crunch/application/hooks/useGetRewardVaultBalance";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { MultisigForm } from "@/modules/wallet/ui/multisigForm";
-import { RegistrationForm } from "@/modules/crunch/ui/registrationForm";
+import { RegistrationForm } from "@/modules/coordinator/ui/registrationForm";
 import { CrunchCreationForm } from "@/modules/crunch/ui/crunchCreationForm";
 import { OnboardingStakeForm } from "../ui/onboardingStakeForm";
 import { OnboardingFundCrunchForm } from "../ui/onboardingFundCrunchForm";
@@ -43,59 +43,60 @@ import { OnboardingStep, StepConfig } from "../domain/types";
 const STEPS_CONFIG: Record<OnboardingStep, StepConfig> = {
   [OnboardingStep.CONFIGURE_MULTISIG]: {
     title: "Configure Multisig",
-    description: "Optionally configure a multisig wallet for enhanced security",
+    description:
+      "Optionally configure a multisig wallet for enhanced security — we highly recommend using a multisig for stronger protection",
     isOptional: true,
     icon: Lock,
-    content: <MultisigForm />,
+    Component: MultisigForm,
   },
   [OnboardingStep.REGISTER_COORDINATOR]: {
     title: "Register as Coordinator",
     description: "Register your organization on-chain",
     isOptional: false,
     icon: Coordinator,
-    content: <RegistrationForm />,
+    Component: RegistrationForm,
   },
   [OnboardingStep.STAKE]: {
     title: "Stake Tokens",
     description: "Stake CRNCH tokens on yourself",
     isOptional: false,
     icon: Trophy,
-    content: <OnboardingStakeForm />,
+    Component: OnboardingStakeForm,
   },
   [OnboardingStep.CREATE_CRUNCH]: {
     title: "Create Crunch",
     description: "Create your first Crunch challenge",
     isOptional: false,
     icon: Cube,
-    content: <CrunchCreationForm />,
+    Component: CrunchCreationForm,
   },
   [OnboardingStep.FUND_CRUNCH]: {
     title: "Fund Crunch",
     description: "Fund your Crunch with USDC rewards",
     isOptional: false,
     icon: Wallet,
-    content: <OnboardingFundCrunchForm />,
+    Component: OnboardingFundCrunchForm,
   },
   [OnboardingStep.START_CRUNCH]: {
     title: "Start Crunch",
     description: "Launch your Crunch to start accepting submissions",
     isOptional: false,
     icon: Rocket,
-    content: <OnboardingStartCrunchForm />,
+    Component: OnboardingStartCrunchForm,
   },
   [OnboardingStep.CERTIFICATE_ENROLLMENT]: {
     title: "Certificate Enrollment",
     description: "Download your TLS certificate to run a node",
     isOptional: false,
     icon: Certificate,
-    content: <EnrollForm showStatus />,
+    Component: EnrollForm,
   },
   [OnboardingStep.COMPLETED]: {
     title: "Completed",
     description: "Onboarding complete!",
     isOptional: false,
     icon: Check,
-    content: <OnboardingCompletedStep />,
+    Component: OnboardingCompletedStep,
   },
 };
 
@@ -121,7 +122,6 @@ export interface OnboardingStepInfo extends StepConfig {
 export interface OnboardingState {
   currentStep: OnboardingStep;
   currentStepInfo: OnboardingStepInfo | undefined;
-  currentStepContent: React.ReactNode | undefined;
   steps: OnboardingStepInfo[];
   isLoading: boolean;
   isOnboardingComplete: boolean;
@@ -157,7 +157,7 @@ export const useOnboarding = () => {
 };
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const { coordinatorStatus, isLoading: authLoading } = useAuth();
+  const { coordinatorStatus, isLoading: authLoading } = useCoordinatorAuth();
   const { isMultisigMode } = useWallet();
   const { coordinator, coordinatorLoading } = useGetCoordinator();
   const { crunches, crunchesLoading: crunchesLoadingRaw } = useGetCrunches(
@@ -266,22 +266,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   );
 
   const currentStep = STEP_ORDER[stepIndex] ?? STEP_ORDER[0];
-  const isCurrentStepCompleted = completionMap[currentStep];
-  const prevCompletedRef = useRef<boolean | null>(null);
-
-  useEffect(() => {
-    if (!hasInitialized.current) return;
-    const wasCompleted = prevCompletedRef.current;
-    prevCompletedRef.current = isCurrentStepCompleted;
-
-    if (
-      wasCompleted === false &&
-      isCurrentStepCompleted &&
-      stepIndex < maxStepIndex
-    ) {
-      setStepIndex((i) => i + 1);
-    }
-  }, [isCurrentStepCompleted, stepIndex, maxStepIndex]);
 
   const steps: OnboardingStepInfo[] = useMemo(() => {
     return STEP_ORDER.map((step, index) => {
@@ -314,7 +298,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   }, [completionMap, stepIndex, hasEnoughStake, minStakeRequired, isApproved]);
 
   const currentStepInfo = steps.find((s) => s.step === currentStep);
-  const currentStepContent = currentStepInfo?.content;
 
   const canGoNext = stepIndex < maxStepIndex;
   const canGoPrevious = stepIndex > 0;
@@ -339,7 +322,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const value: OnboardingState = {
     currentStep,
     currentStepInfo,
-    currentStepContent,
     steps,
     isLoading,
     isOnboardingComplete: isCrunchStarted,
