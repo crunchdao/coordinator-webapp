@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { MetricsContent } from "./content";
+import { MetricsContent } from "@/modules/metrics/ui/metricsContent";
 
 export const metadata: Metadata = {
   title: "Metrics",

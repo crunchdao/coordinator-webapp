@@ -3,10 +3,10 @@
 import { useRouter } from "next/navigation";
 import { Button, Spinner } from "@crunch-ui/core";
 import { Plus } from "@crunch-ui/icons";
-import { useCompetitionList } from "@/modules/config/application/hooks/useCompetitionList";
-import { CompetitionCard } from "@/modules/config/ui/competitionCard";
+import { useCompetitionList } from "../application/hooks/useCompetitionList";
+import { CompetitionCard } from "./competitionCard";
 
-export function CompetitionsContent() {
+export function CompetitionList() {
   const router = useRouter();
   const { slugs, competitionsLoading } = useCompetitionList();
 
