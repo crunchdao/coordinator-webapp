@@ -18,7 +18,8 @@ import { NodeCheckpoint } from "../../domain/nodeTypes";
 import {
   confirmNodeCheckpoint,
   updateNodeCheckpointStatus,
-} from "../../infrastructure/nodeService";
+} from "@/modules/node/infrastructure/nodeService";
+import { useNodeConnection } from "@/modules/node/application/context/nodeConnectionContext";
 
 const FRAC64_MULTIPLIER = 1_000_000_000;
 
@@ -70,6 +71,7 @@ export function useSubmitNodeCheckpoint() {
   const { executeTransaction, authority, isMultisigMode } =
     useTransactionExecutor();
   const { trackProposal } = useMultisigProposalTracker();
+  const { nodeUrl } = useNodeConnection();
   const router = useRouter();
 
   const mutation = useMutation({
@@ -116,12 +118,12 @@ export function useSubmitNodeCheckpoint() {
         if (result.signature) {
           try {
             await confirmNodeCheckpoint(
-              crunchName,
+              nodeUrl,
               result.nodeCheckpointId,
               result.signature
             );
             await updateNodeCheckpointStatus(
-              crunchName,
+              nodeUrl,
               result.nodeCheckpointId,
               "CLAIMABLE"
             );

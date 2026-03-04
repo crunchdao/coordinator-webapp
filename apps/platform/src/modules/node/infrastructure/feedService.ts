@@ -1,4 +1,4 @@
-import apiClient from "@coordinator/utils/src/api";
+import nodeClient from "./nodeClient";
 
 export interface FeedRecord {
   source: string;
@@ -12,7 +12,7 @@ export interface FeedRecord {
 }
 
 export const getNodeFeedTail = async (
-  crunchName: string,
+  nodeUrl: string,
   params?: {
     source?: string;
     subject?: string;
@@ -21,9 +21,8 @@ export const getNodeFeedTail = async (
     limit?: number;
   }
 ): Promise<FeedRecord[]> => {
-  const response = await apiClient.get(
-    `/crunches/${crunchName}/reports/feeds/tail`,
-    { params: { limit: 50, ...params } }
-  );
+  const response = await nodeClient.get(`${nodeUrl}/reports/feeds/tail`, {
+    params: { limit: 50, ...params },
+  });
   return response.data;
 };
