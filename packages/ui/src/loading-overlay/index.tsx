@@ -9,7 +9,7 @@ interface LoadingOverlayProps {
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ title, subtitle }) => {
   return (
-    <div className="absolute inset-0 backdrop-blur-sm z-10 flex flex-col items-center justify-center gap-2 px-3 text-center">
+    <div className="absolute inset-0 backdrop-blur-sm z-20 flex flex-col items-center justify-center gap-2 px-3 text-center">
       <Spinner />
       {title && (
         <div className="flex items-center flex-col gap-1 label-xs text-foreground">

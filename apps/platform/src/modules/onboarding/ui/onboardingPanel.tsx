@@ -17,16 +17,17 @@ export function OnboardingPanel() {
   const {
     isLoading,
     currentStepInfo,
-    currentStepContent,
     goToNextStep,
     goToPreviousStep,
     canGoNext,
     canGoPrevious,
   } = useOnboarding();
 
+  const StepComponent = currentStepInfo?.Component;
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex flex-1 items-center justify-center h-full">
         <Spinner />
       </div>
     );
@@ -43,7 +44,7 @@ export function OnboardingPanel() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 pt-4">
             <OnboardingStepper />
 
             <div className="flex justify-between gap-3 pt-4 mb-3 border-b pb-3">
@@ -79,7 +80,13 @@ export function OnboardingPanel() {
               </div>
             </div>
 
-            {currentStepContent}
+            {StepComponent && (
+              <StepComponent
+                onSuccess={goToNextStep}
+                showSkip={currentStepInfo?.isOptional}
+                onSkip={goToNextStep}
+              />
+            )}
           </div>
         </CardContent>
       </Card>

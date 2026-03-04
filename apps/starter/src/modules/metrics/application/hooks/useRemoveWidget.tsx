@@ -1,6 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeMetricsWidget } from "../../infrastructure/services";
+import { showApiErrorToast } from "@coordinator/utils/src/api";
 
 export const useRemoveWidget = () => {
   const queryClient = useQueryClient();
@@ -9,6 +10,9 @@ export const useRemoveWidget = () => {
     mutationFn: (id: number) => removeMetricsWidget(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["widgets"] });
+    },
+    onError: (error) => {
+      showApiErrorToast(error, "Failed to remove widget");
     },
   });
 

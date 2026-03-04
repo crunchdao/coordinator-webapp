@@ -14,9 +14,7 @@ export const getCheckpoints = async (
   return response.data;
 };
 
-export const getCheckpoint = async (
-  address: string
-): Promise<Checkpoint> => {
+export const getCheckpoint = async (address: string): Promise<Checkpoint> => {
   const response = await axios.get(endpoints.getCheckpoint(address));
   return response.data;
 };

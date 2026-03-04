@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { AuthWrapper } from "@/modules/auth/ui/authWrapper";
+import { AuthWrapper } from "@/modules/coordinator/ui/authWrapper";
 
 export default function AuthenticatedLayout({
   children,

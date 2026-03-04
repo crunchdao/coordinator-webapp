@@ -2,7 +2,7 @@
 import { ReactNode, useCallback } from "react";
 import { TooltipProvider } from "@crunch-ui/core";
 import { WalletProvider } from "@/modules/wallet/application/context/walletContext";
-import { AuthProvider } from "@/modules/auth/application/context/authContext";
+import { CoordinatorAuthProvider } from "@/modules/coordinator/application/context/coordinatorAuthContext";
 import { StakingProvider } from "@crunchdao/staking";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
@@ -12,7 +12,10 @@ import { MultisigProposalTrackerDialog } from "@/modules/wallet/ui/multisigPropo
 import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { useQueryClient } from "@tanstack/react-query";
 import type { TransactionExecutor } from "@crunchdao/solana-utils";
-import { EnvironmentProvider, useEnvironment } from "@/modules/environment/application/context/environmentContext";
+import {
+  EnvironmentProvider,
+  useEnvironment,
+} from "@/modules/environment/application/context/environmentContext";
 
 const StakingWrapper: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { anchorProvider } = useAnchorProvider();
@@ -73,7 +76,7 @@ const InnerProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <WalletProvider key={environment}>
-      <AuthProvider>
+      <CoordinatorAuthProvider>
         <MultisigProposalTrackerProvider>
           <StakingWrapper>
             <TooltipProvider delayDuration={50}>
@@ -82,7 +85,7 @@ const InnerProviders: React.FC<{ children: ReactNode }> = ({ children }) => {
             </TooltipProvider>
           </StakingWrapper>
         </MultisigProposalTrackerProvider>
-      </AuthProvider>
+      </CoordinatorAuthProvider>
     </WalletProvider>
   );
 };

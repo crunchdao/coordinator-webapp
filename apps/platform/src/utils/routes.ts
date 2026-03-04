@@ -2,21 +2,23 @@ export const INTERNAL_LINKS = {
   ROOT: "/",
   LOGIN: "/login",
   DASHBOARD: "/dashboard",
-  ONBOARDING: "/onboarding",
+  ONBOARDING: "/get-started",
   CREATE_CRUNCH: "/create-crunch",
   CERTIFICATE_ENROLL: "/certificate-enrollment",
-  CRUNCH_OVERVIEW: "/:crunchname",
-  MODELS: "/:crunchname/models",
-  CHECKPOINTS: "/:crunchname/checkpoints",
-  CHECKPOINT_CREATE: "/:crunchname/create-checkpoint",
-  LEADERBOARD: "/:crunchname/leaderboard",
-  METRICS: "/:crunchname/metrics",
-  SETTINGS: "/:crunchname/settings",
-  PITCH: "/:crunchname/pitch",
+  HUB_OAUTH: "/hub-oauth",
+  CRUNCH: "/c/:crunchname",
+  CRUNCH_OVERVIEW: "/c/:crunchname/overview",
+  MODELS: "/c/:crunchname/models",
+  CHECKPOINTS: "/c/:crunchname/checkpoints",
+  CHECKPOINT_CREATE: "/c/:crunchname/create-checkpoint",
+  LEADERBOARD: "/c/:crunchname/leaderboard",
+  METRICS: "/c/:crunchname/metrics",
+  SETTINGS: "/c/:crunchname/settings",
+  PITCH: "/c/:crunchname/pitch",
 } as const;
 
 export const PAGE_LABELS: Record<string, string> = {
-  onboarding: "Get Started",
+  "get-started": "Get Started",
   dashboard: "Dashboard",
   "create-crunch": "Create Crunch",
   "certificate-enrollment": "Certificate",
@@ -28,6 +30,10 @@ type RouteConfig = {
 };
 
 export const ROUTE_CONFIG: RouteConfig[] = [
+  {
+    path: INTERNAL_LINKS.CRUNCH,
+    label: "General",
+  },
   {
     path: INTERNAL_LINKS.CRUNCH_OVERVIEW,
     label: "Overview",

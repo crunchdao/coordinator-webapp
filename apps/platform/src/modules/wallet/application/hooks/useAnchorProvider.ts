@@ -9,13 +9,14 @@ export const useAnchorProvider = () => {
 
   return useAnchorProviderBase({
     connection,
-    wallet: wallet.publicKey && wallet.signTransaction && wallet.signAllTransactions
-      ? {
-          publicKey: wallet.publicKey,
-          signTransaction: wallet.signTransaction,
-          signAllTransactions: wallet.signAllTransactions,
-        }
-      : null,
+    wallet:
+      wallet.publicKey && wallet.signTransaction && wallet.signAllTransactions
+        ? {
+            publicKey: wallet.publicKey,
+            signTransaction: wallet.signTransaction,
+            signAllTransactions: wallet.signAllTransactions,
+          }
+        : null,
     ready: wallet.connected,
   });
 };

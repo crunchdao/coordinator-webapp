@@ -13,7 +13,9 @@ export function RewardVaultBalance({
     useGetRewardVaultBalance(rewardVaultAddress);
 
   if (vaultBalanceLoading) {
-    return <span className="text-muted-foreground animate-pulse">Loading...</span>;
+    return (
+      <span className="text-muted-foreground animate-pulse">Loading...</span>
+    );
   }
 
   return <span>{vaultBalance.toLocaleString()} USDC</span>;

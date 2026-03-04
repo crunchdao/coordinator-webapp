@@ -12,6 +12,7 @@
     "build:starter": "turbo build --filter=@coordinator/starter",
     "build:platform": "turbo build --filter=@coordinator/platform",
     "lint": "turbo lint",
+    "format": "prettier --write .",
     "changeset": "changeset"
   },
   "devDependencies": {

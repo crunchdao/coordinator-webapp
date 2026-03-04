@@ -4,19 +4,23 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type FC,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   type Environment,
   type PlatformConfig,
+  DEFAULT_ENV,
   getEnvironment,
   setEnvironment as persistEnvironment,
   getConfigFor,
 } from "@/config";
+import { INTERNAL_LINKS } from "@/utils/routes";
 
 interface EnvironmentContextValue {
   environment: Environment;
@@ -29,8 +33,18 @@ const EnvironmentContext = createContext<EnvironmentContextValue | null>(null);
 export const EnvironmentProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [environment, setEnvironment] = useState<Environment>(getEnvironment);
+  const [environment, setEnvironment] = useState<Environment>(DEFAULT_ENV);
   const queryClient = useQueryClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    const stored = getEnvironment();
+    if (stored !== DEFAULT_ENV) {
+      setEnvironment(stored);
+      queryClient.clear();
+      router.push(INTERNAL_LINKS.ROOT);
+    }
+  }, [queryClient, router]);
 
   const switchEnvironment = useCallback(
     (env: Environment) => {
@@ -38,8 +52,9 @@ export const EnvironmentProvider: FC<{ children: ReactNode }> = ({
       persistEnvironment(env);
       setEnvironment(env);
       queryClient.clear();
+      router.push(INTERNAL_LINKS.ROOT);
     },
-    [environment, queryClient]
+    [environment, queryClient, router]
   );
 
   const value = useMemo<EnvironmentContextValue>(

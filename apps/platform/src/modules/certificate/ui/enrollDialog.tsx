@@ -88,7 +88,8 @@ export function EnrollDialog({ open, onOpenChange }: EnrollDialogProps) {
                 Certificate enrolled successfully!
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                Your certificate files have been downloaded and registered on-chain.
+                Your certificate files have been downloaded and registered
+                on-chain.
               </p>
             </div>
           )}

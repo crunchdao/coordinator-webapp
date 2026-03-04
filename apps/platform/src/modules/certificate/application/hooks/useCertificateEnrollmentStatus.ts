@@ -1,6 +1,9 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getCoordinatorProgram, getCoordinatorCertificate } from "@crunchdao/sdk";
+import {
+  getCoordinatorProgram,
+  getCoordinatorCertificate,
+} from "@crunchdao/sdk";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 

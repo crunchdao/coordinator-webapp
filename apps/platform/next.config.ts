@@ -16,6 +16,14 @@ const nextConfig: NextConfig = {
   ],
   async rewrites() {
     return [
+      {
+        source: "/hub-staging/:path*",
+        destination: "https://api.hub.crunchdao.io/:path*",
+      },
+      {
+        source: "/hub-prod/:path*",
+        destination: "https://api.hub.crunchdao.com/:path*",
+      },
       // Proxy node report API: /api/crunches/{name}/reports/* → node /reports/*
       {
         source: "/api/crunches/:crunchName/reports/:path*",

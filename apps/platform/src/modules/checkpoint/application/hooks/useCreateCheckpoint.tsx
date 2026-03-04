@@ -54,7 +54,9 @@ export function useCreateCheckpoint() {
     },
     onSuccess: (result) => {
       const handleSuccess = () => {
-        queryClient.invalidateQueries({ queryKey: ["crunch-detail", crunchName] });
+        queryClient.invalidateQueries({
+          queryKey: ["crunch-detail", crunchName],
+        });
         toast({
           title: "Checkpoint created",
           description: `Checkpoint for "${crunchName}" has been created.`,

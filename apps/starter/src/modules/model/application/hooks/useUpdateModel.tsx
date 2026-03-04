@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateModel } from "../../infrastructure/services";
 import { UpdateModelBody, Model } from "../../domain/types";
+import { showApiErrorToast } from "@coordinator/utils/src/api";
 
 export const useUpdateModel = () => {
   const queryClient = useQueryClient();
@@ -31,6 +32,7 @@ export const useUpdateModel = () => {
       if (context?.previousModels) {
         queryClient.setQueryData(["models"], context.previousModels);
       }
+      showApiErrorToast(_err, "Failed to update model");
     },
   });
 

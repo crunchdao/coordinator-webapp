@@ -3,11 +3,11 @@ import { INTERNAL_LINKS } from "@/utils/routes";
 import { Spinner } from "@crunch-ui/core";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useAuth } from "@/modules/auth/application/context/authContext";
-import { CoordinatorStatus } from "@/modules/crunch/domain/types";
+import { useCoordinatorAuth } from "@/modules/coordinator/application/context/coordinatorAuthContext";
+import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 
 export default function Home() {
-  const { isAuthenticated, isLoading, coordinatorStatus } = useAuth();
+  const { isAuthenticated, isLoading, coordinatorStatus } = useCoordinatorAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -22,5 +22,9 @@ export default function Home() {
     }
   }, [isAuthenticated, isLoading, coordinatorStatus, router]);
 
-  return <Spinner />;
+  return (
+    <div className="w-screen h-screen bg-background flex items-center justify-center">
+      <Spinner />
+    </div>
+  );
 }
