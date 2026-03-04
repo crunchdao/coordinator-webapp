@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { LeaderboardContent } from "./content";
+import { LeaderboardContent } from "@/modules/leaderboard/ui/leaderboardContent";
 
 export const metadata: Metadata = {
   title: "Leaderboard",

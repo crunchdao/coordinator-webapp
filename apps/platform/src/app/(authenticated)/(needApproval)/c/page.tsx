@@ -1,10 +1,10 @@
 import { Metadata } from "next";
-import { CompetitionsContent } from "./content";
+import { CompetitionList } from "@/modules/config/ui/competitionList";
 
 export const metadata: Metadata = {
   title: "Crunches",
 };
 
 export default function CompetitionsPage() {
-  return <CompetitionsContent />;
+  return <CompetitionList />;
 }

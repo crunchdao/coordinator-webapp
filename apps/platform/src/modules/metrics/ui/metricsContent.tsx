@@ -2,22 +2,21 @@
 
 import { MetricSettingsTable } from "@coordinator/metrics/src/ui/metricSettingsTable";
 import { MetricsDashboard } from "@coordinator/metrics/src/ui/metricsDashboard";
-import { useGetWidgets } from "@/modules/metrics/application/hooks/useGetWidgets";
-import { useAddWidget } from "@/modules/metrics/application/hooks/useAddWidget";
-import { useUpdateWidget } from "@/modules/metrics/application/hooks/useUpdateWidget";
-import { useRemoveWidget } from "@/modules/metrics/application/hooks/useRemoveWidget";
-import { useResetWidgets } from "@/modules/metrics/application/hooks/useResetWidgets";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useGetWidgets } from "../application/hooks/useGetWidgets";
+import { useAddWidget } from "../application/hooks/useAddWidget";
+import { useUpdateWidget } from "../application/hooks/useUpdateWidget";
+import { useRemoveWidget } from "../application/hooks/useRemoveWidget";
+import { useResetWidgets } from "../application/hooks/useResetWidgets";
 
 export function MetricsContent() {
   const { crunchName } = useCrunchContext();
-  const slug = crunchName;
 
-  const { widgets, widgetsLoading } = useGetWidgets(slug);
-  const { addWidget, addWidgetLoading } = useAddWidget(slug);
-  const { updateWidget, updateWidgetLoading } = useUpdateWidget(slug);
-  const { removeWidget, removeWidgetLoading } = useRemoveWidget(slug);
-  const { resetWidgets, resetWidgetsLoading } = useResetWidgets(slug);
+  const { widgets, widgetsLoading } = useGetWidgets(crunchName);
+  const { addWidget, addWidgetLoading } = useAddWidget(crunchName);
+  const { updateWidget, updateWidgetLoading } = useUpdateWidget(crunchName);
+  const { removeWidget, removeWidgetLoading } = useRemoveWidget(crunchName);
+  const { resetWidgets, resetWidgetsLoading } = useResetWidgets(crunchName);
 
   return (
     <section className="p-6 space-y-3">
