@@ -1,27 +1,17 @@
 import { z } from "zod";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 
-export const environmentTargetSchema = z.object({
+export const environmentSchema = z.object({
+  name: z.string().min(1, "Name is required"),
   address: z.string().min(1, "Address is required"),
   network: z.nativeEnum(WalletAdapterNetwork),
   rpcUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   hubUrl: z.string().optional().or(z.literal("")),
 });
 
-export const environmentsSchema = z
-  .record(z.string().min(1), environmentTargetSchema)
-  .refine((obj) => Object.keys(obj).length > 0, {
-    message: "At least one environment is required",
-  });
-
-export const environmentEntrySchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  target: environmentTargetSchema,
-});
-
 export const environmentsFormSchema = z.object({
   environments: z
-    .array(environmentEntrySchema)
+    .array(environmentSchema)
     .min(1, "At least one environment is required"),
 });
 
@@ -57,8 +47,7 @@ export const slugSchema = z.object({
     ),
 });
 
-export type EnvironmentTargetFormData = z.infer<typeof environmentTargetSchema>;
-export type EnvironmentsFormData = z.infer<typeof environmentsSchema>;
-export type EnvironmentsEditorFormData = z.infer<typeof environmentsFormSchema>;
+export type EnvironmentFormData = z.infer<typeof environmentSchema>;
+export type EnvironmentsFormData = z.infer<typeof environmentsFormSchema>;
 export type SettingsFormData = z.infer<typeof settingsSchema>;
 export type SlugFormData = z.infer<typeof slugSchema>;

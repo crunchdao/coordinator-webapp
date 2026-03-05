@@ -147,9 +147,7 @@ export function SettingsForm() {
   };
 
   const pullableEnvs = environments
-    ? Object.entries(environments).filter(
-        ([, env]) => env.hubUrl && env.address
-      )
+    ? environments.filter((env) => env.hubUrl && env.address)
     : [];
 
   if (settingsLoading) {
@@ -434,14 +432,14 @@ export function SettingsForm() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {pullableEnvs.map(([name, env]) => (
+                      {pullableEnvs.map((env) => (
                         <DropdownMenuItem
-                          key={name}
+                          key={env.name}
                           onClick={() =>
-                            handlePullFromHub(name, env.address, env.hubUrl!)
+                            handlePullFromHub(env.name, env.address, env.hubUrl!)
                           }
                         >
-                          {name}
+                          {env.name}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>
@@ -458,14 +456,14 @@ export function SettingsForm() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      {pullableEnvs.map(([name, env]) => (
+                      {pullableEnvs.map((env) => (
                         <DropdownMenuItem
-                          key={name}
+                          key={env.name}
                           onClick={() =>
-                            handlePushToHub(name, env.address, env.hubUrl!)
+                            handlePushToHub(env.name, env.address, env.hubUrl!)
                           }
                         >
-                          {name}
+                          {env.name}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuContent>

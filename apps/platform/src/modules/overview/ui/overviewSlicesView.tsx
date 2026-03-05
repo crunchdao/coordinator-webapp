@@ -105,9 +105,7 @@ export const OverviewSlicesView: React.FC = () => {
   };
 
   const pullableEnvs = environments
-    ? Object.entries(environments).filter(
-        ([, env]) => env.hubUrl && env.address
-      )
+    ? environments.filter((env) => env.hubUrl && env.address)
     : [];
 
   if (slicesLoading) {
@@ -135,14 +133,14 @@ export const OverviewSlicesView: React.FC = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {pullableEnvs.map(([name, env]) => (
+                  {pullableEnvs.map((env) => (
                     <DropdownMenuItem
-                      key={name}
+                      key={env.name}
                       onClick={() =>
-                        handlePullFromHub(name, env.address, env.hubUrl!)
+                        handlePullFromHub(env.name, env.address, env.hubUrl!)
                       }
                     >
-                      {name}
+                      {env.name}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
@@ -155,14 +153,14 @@ export const OverviewSlicesView: React.FC = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {pullableEnvs.map(([name, env]) => (
+                  {pullableEnvs.map((env) => (
                     <DropdownMenuItem
-                      key={name}
+                      key={env.name}
                       onClick={() =>
-                        handlePushToHub(name, env.address, env.hubUrl!)
+                        handlePushToHub(env.name, env.address, env.hubUrl!)
                       }
                     >
-                      {name}
+                      {env.name}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>

@@ -1,5 +1,5 @@
 import apiClient from "@coordinator/utils/src/api";
-import {
+import type {
   CompetitionEnvironments,
   ConfigDirectoryListing,
 } from "../domain/types";

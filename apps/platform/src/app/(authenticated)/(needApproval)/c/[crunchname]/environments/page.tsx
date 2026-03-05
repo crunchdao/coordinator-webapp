@@ -6,5 +6,9 @@ export const metadata: Metadata = {
 };
 
 export default function EnvironmentsPage() {
-  return <EnvironmentsEditor />;
+  return (
+    <section className="p-6 space-y-3">
+      <EnvironmentsEditor />
+    </section>
+  );
 }

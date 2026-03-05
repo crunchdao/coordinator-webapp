@@ -36,6 +36,10 @@ type RouteConfig = {
 
 export const ROUTE_CONFIG: RouteConfig[] = [
   {
+    path: INTERNAL_LINKS.ENVIRONMENTS,
+    label: "Environments",
+  },
+  {
     path: INTERNAL_LINKS.CRUNCH_OVERVIEW,
     label: "Overview",
   },
@@ -46,10 +50,6 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.CHECKPOINTS,
     label: "Checkpoints",
-  },
-  {
-    path: INTERNAL_LINKS.ENVIRONMENTS,
-    label: "Environments",
   },
   {
     path: INTERNAL_LINKS.SETTINGS,
