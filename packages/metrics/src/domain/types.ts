@@ -29,6 +29,10 @@ export type Widget =
   | GaugeDefinition
   | IframeChartDefinition;
 
+export type LocalMetricsConfig = {
+  widgets: Widget[];
+};
+
 export interface GetMetricDataParams {
   modelIds: string[];
   start: string;
