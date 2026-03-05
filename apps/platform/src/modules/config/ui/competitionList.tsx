@@ -3,12 +3,12 @@
 import { useRouter } from "next/navigation";
 import { Button, Spinner } from "@crunch-ui/core";
 import { Plus } from "@crunch-ui/icons";
-import { useCompetitionList } from "../application/hooks/useCompetitionList";
+import { useLocalCompetitionList } from "../application/hooks/useLocalCompetitionList";
 import { CompetitionCard } from "./competitionCard";
 
 export function CompetitionList() {
   const router = useRouter();
-  const { slugs, competitionsLoading } = useCompetitionList();
+  const { slugs, competitionsLoading } = useLocalCompetitionList();
 
   if (competitionsLoading) {
     return (

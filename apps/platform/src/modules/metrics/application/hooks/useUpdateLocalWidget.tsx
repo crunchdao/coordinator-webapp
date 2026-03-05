@@ -1,15 +1,15 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateWidget } from "../../infrastructure/services";
+import { updateLocalWidget } from "../../infrastructure/services";
 import { toast } from "@crunch-ui/core";
 import { Widget } from "@coordinator/metrics/src/domain/types";
 
-export const useUpdateWidget = (slug: string) => {
+export const useUpdateLocalWidget = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: ({ id, widget }: { id: number; widget: Omit<Widget, "id"> }) =>
-      updateWidget(slug, id, widget),
+      updateLocalWidget(slug, id, widget),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["widgets", slug] });
       toast({ title: "Widget updated successfully" });

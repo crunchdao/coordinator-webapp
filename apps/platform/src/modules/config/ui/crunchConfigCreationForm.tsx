@@ -26,8 +26,8 @@ import {
   crunchConfigCreationSchema,
   CrunchConfigCreationFormData,
 } from "../application/schemas/crunchConfigCreation";
-import { useCreateCompetition } from "../application/hooks/useCreateCompetition";
-import { useCompetitionList } from "../application/hooks/useCompetitionList";
+import { useCreateLocalCompetition } from "../application/hooks/useCreateLocalCompetition";
+import { useLocalCompetitionList } from "../application/hooks/useLocalCompetitionList";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { Competition } from "@/modules/competition/domain/types";
 import {
@@ -38,9 +38,9 @@ import {
 
 export function CrunchConfigCreationForm() {
   const router = useRouter();
-  const { slugs } = useCompetitionList();
+  const { slugs } = useLocalCompetitionList();
   const { createCompetition, createCompetitionLoading } =
-    useCreateCompetition();
+    useCreateLocalCompetition();
 
   const form = useForm<CrunchConfigCreationFormData>({
     resolver: zodResolver(

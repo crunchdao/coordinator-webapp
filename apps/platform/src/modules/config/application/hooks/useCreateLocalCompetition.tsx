@@ -4,8 +4,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { showApiErrorToast } from "@coordinator/utils/src/api";
 import {
-  saveCompetitionEnvironments,
-  saveCompetitionSettings,
+  saveLocalCompetitionEnvironments,
+  saveLocalCompetitionSettings,
 } from "../../infrastructure/service";
 import type { CompetitionEnvironments } from "../../domain/types";
 import type { Competition } from "@/modules/competition/domain/types";
@@ -16,13 +16,13 @@ interface CreateCompetitionPayload {
   settings: Competition;
 }
 
-export function useCreateCompetition() {
+export function useCreateLocalCompetition() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async (payload: CreateCompetitionPayload) => {
-      await saveCompetitionEnvironments(payload.slug, payload.environments);
-      await saveCompetitionSettings(payload.slug, payload.settings);
+      await saveLocalCompetitionEnvironments(payload.slug, payload.environments);
+      await saveLocalCompetitionSettings(payload.slug, payload.settings);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["localCrunches"] });

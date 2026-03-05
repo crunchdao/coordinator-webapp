@@ -10,16 +10,16 @@ import {
   Badge,
 } from "@crunch-ui/core";
 import { INTERNAL_LINKS } from "@/utils/routes";
-import { useCompetitionEnvironments } from "../application/hooks/useCompetitionEnvironments";
-import { useCompetitionSettings } from "../application/hooks/useCompetitionSettings";
+import { useLocalCompetitionEnvironments } from "../application/hooks/useLocalCompetitionEnvironments";
+import { useLocalCompetitionSettings } from "../application/hooks/useLocalCompetitionSettings";
 
 interface CompetitionCardProps {
   slug: string;
 }
 
 export function CompetitionCard({ slug }: CompetitionCardProps) {
-  const { settings } = useCompetitionSettings(slug);
-  const { environments } = useCompetitionEnvironments(slug);
+  const { settings } = useLocalCompetitionSettings(slug);
+  const { environments } = useLocalCompetitionEnvironments(slug);
 
   const displayName = settings?.displayName || slug;
   const shortDescription = settings?.shortDescription;

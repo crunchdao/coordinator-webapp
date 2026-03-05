@@ -16,7 +16,7 @@ import { SliceManager, useSlicesBatch } from "@crunchdao/slices";
 import type { Slice } from "@crunchdao/slices";
 import { Download, Export } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
-import { useCompetitionEnvironments } from "@/modules/config/application/hooks/useCompetitionEnvironments";
+import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
 import {
   useConfigFile,
   useSaveConfigFile,
@@ -27,7 +27,7 @@ import { OverviewSliceHeader } from "./overviewSliceHeader";
 
 export const OverviewSlicesView: React.FC = () => {
   const { crunchName } = useCrunchContext();
-  const { environments } = useCompetitionEnvironments(crunchName);
+  const { environments } = useLocalCompetitionEnvironments(crunchName);
   const [locale, setLocale] = useState<Locale>(Locale.ENGLISH);
   const { pullFromHub, pushToHub, isPulling, isPushing } =
     useOverviewHubSync(locale);

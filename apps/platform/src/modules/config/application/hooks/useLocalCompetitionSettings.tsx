@@ -3,7 +3,7 @@
 import { Competition } from "@/modules/competition/domain/types";
 import { useConfigFile, useSaveConfigFile } from "./useConfigFile";
 
-export function useCompetitionSettings(slug: string) {
+export function useLocalCompetitionSettings(slug: string) {
   const { data, isLoading, error } = useConfigFile<Competition>(
     `crunches/${slug}/settings.json`
   );
@@ -15,7 +15,7 @@ export function useCompetitionSettings(slug: string) {
   };
 }
 
-export function useSaveCompetitionSettings(slug: string) {
+export function useSaveLocalCompetitionSettings(slug: string) {
   const { save, saveAsync, isSaving } = useSaveConfigFile<Competition>(
     `crunches/${slug}/settings.json`,
     {

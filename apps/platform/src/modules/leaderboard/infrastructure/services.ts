@@ -15,16 +15,16 @@ export const getLeaderboard = async (
   return response.data;
 };
 
-export const getLeaderboardColumns = async (
+export const getLocalLeaderboardColumns = async (
   slug: string
 ): Promise<LeaderboardColumn[]> => {
   try {
-    const response = await apiClient.get(endpoints.getLeaderboardColumns(slug));
+    const response = await apiClient.get(endpoints.localLeaderboardColumns(slug));
     return response.data;
   } catch (error) {
     if ((error as any)?.response?.status === 404) {
       await apiClient.put(
-        endpoints.getLeaderboardColumns(slug),
+        endpoints.localLeaderboardColumns(slug),
         initialColumns
       );
       return initialColumns;
@@ -33,45 +33,45 @@ export const getLeaderboardColumns = async (
   }
 };
 
-export const addLeaderboardColumn = async (
+export const addLocalLeaderboardColumn = async (
   slug: string,
   column: Omit<LeaderboardColumn, "id">
 ): Promise<LeaderboardColumn> => {
-  const columns = await getLeaderboardColumns(slug);
+  const columns = await getLocalLeaderboardColumns(slug);
   const newColumn: LeaderboardColumn = {
     ...column,
     id: Math.max(...columns.map((c) => c.id), 0) + 1,
   };
   const updated = [...columns, newColumn];
-  await apiClient.put(endpoints.getLeaderboardColumns(slug), updated);
+  await apiClient.put(endpoints.localLeaderboardColumns(slug), updated);
   return newColumn;
 };
 
-export const removeLeaderboardColumn = async (
+export const removeLocalLeaderboardColumn = async (
   slug: string,
   id: number
 ): Promise<void> => {
-  const columns = await getLeaderboardColumns(slug);
+  const columns = await getLocalLeaderboardColumns(slug);
   const updated = columns.filter((c) => c.id !== id);
-  await apiClient.put(endpoints.getLeaderboardColumns(slug), updated);
+  await apiClient.put(endpoints.localLeaderboardColumns(slug), updated);
 };
 
-export const updateLeaderboardColumn = async (
+export const updateLocalLeaderboardColumn = async (
   slug: string,
   id: number,
   column: Omit<LeaderboardColumn, "id">
 ): Promise<LeaderboardColumn> => {
-  const columns = await getLeaderboardColumns(slug);
+  const columns = await getLocalLeaderboardColumns(slug);
   const index = columns.findIndex((c) => c.id === id);
   if (index === -1) throw new Error("Column not found");
   const updatedColumn: LeaderboardColumn = { ...column, id };
   columns[index] = updatedColumn;
-  await apiClient.put(endpoints.getLeaderboardColumns(slug), columns);
+  await apiClient.put(endpoints.localLeaderboardColumns(slug), columns);
   return updatedColumn;
 };
 
-export const resetLeaderboardColumns = async (
+export const resetLocalLeaderboardColumns = async (
   slug: string
 ): Promise<void> => {
-  await apiClient.put(endpoints.getLeaderboardColumns(slug), initialColumns);
+  await apiClient.put(endpoints.localLeaderboardColumns(slug), initialColumns);
 };

@@ -3,7 +3,7 @@
 import { CompetitionEnvironments } from "../../domain/types";
 import { useConfigFile, useSaveConfigFile } from "./useConfigFile";
 
-export function useCompetitionEnvironments(slug: string) {
+export function useLocalCompetitionEnvironments(slug: string) {
   const { data, isLoading, error } = useConfigFile<CompetitionEnvironments>(
     `crunches/${slug}/environments.json`
   );
@@ -15,7 +15,7 @@ export function useCompetitionEnvironments(slug: string) {
   };
 }
 
-export function useSaveCompetitionEnvironments(slug: string) {
+export function useSaveLocalCompetitionEnvironments(slug: string) {
   const { save, saveAsync, isSaving } =
     useSaveConfigFile<CompetitionEnvironments>(
       `crunches/${slug}/environments.json`,
