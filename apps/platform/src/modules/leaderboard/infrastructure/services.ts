@@ -1,10 +1,15 @@
 import apiClient from "@coordinator/utils/src/api";
+import hubApiClient from "@/utils/api/hubApiClient";
 import {
   Leaderboard,
   LeaderboardColumn,
 } from "@coordinator/leaderboard/src/domain/types";
 import { initialColumns } from "@coordinator/leaderboard/src/domain/initial-config";
 import { endpoints } from "./endpoints";
+import type {
+  LeaderboardDefinition,
+  UpdateLeaderboardDefinitionPayload,
+} from "../domain/types";
 
 export const getLeaderboard = async (
   crunchName: string
@@ -74,4 +79,41 @@ export const resetLocalLeaderboardColumns = async (
   slug: string
 ): Promise<void> => {
   await apiClient.put(endpoints.localLeaderboardColumns(slug), initialColumns);
+};
+
+export const getLeaderboardDefinitions = async (
+  competitionIdentifier: string,
+  hubBaseUrl: string
+): Promise<LeaderboardDefinition[]> => {
+  const response = await hubApiClient.get(
+    endpoints.getLeaderboardDefinitions(competitionIdentifier),
+    { baseURL: hubBaseUrl }
+  );
+  return response.data;
+};
+
+export const getLeaderboardDefinition = async (
+  competitionIdentifier: string,
+  definitionIdentifier: string,
+  hubBaseUrl: string
+): Promise<LeaderboardDefinition> => {
+  const response = await hubApiClient.get(
+    endpoints.getLeaderboardDefinition(competitionIdentifier, definitionIdentifier),
+    { baseURL: hubBaseUrl }
+  );
+  return response.data;
+};
+
+export const updateLeaderboardDefinition = async (
+  competitionIdentifier: string,
+  definitionIdentifier: string,
+  data: UpdateLeaderboardDefinitionPayload,
+  hubBaseUrl: string
+): Promise<LeaderboardDefinition> => {
+  const response = await hubApiClient.patch(
+    endpoints.updateLeaderboardDefinitions(competitionIdentifier, definitionIdentifier),
+    data,
+    { baseURL: hubBaseUrl }
+  );
+  return response.data;
 };

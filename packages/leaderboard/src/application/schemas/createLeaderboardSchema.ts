@@ -3,7 +3,12 @@ import { formatTypeSchema } from "@coordinator/utils/src/number-formatter";
 
 export { formatTypeSchema };
 
-export const columnTypeSchema = z.enum(["MODEL", "VALUE", "CHART", "USERNAME"]);
+export const columnTypeSchema = z.enum([
+  "REWARD_RANK",
+  "PROJECT",
+  "VALUE",
+  "USERNAME",
+]);
 
 const gaugeSeriesConfigSchema = z.object({
   name: z.string().optional(),

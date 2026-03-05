@@ -17,19 +17,17 @@ import { DeleteColumnButton } from "./deleteColumnButton";
 import { AddColumnSheet } from "./addColumnSheet";
 import { EditColumnSheet } from "./editColumnSheet";
 import { ResetColumnsButton } from "./resetColumnsButton";
-import { Settings, Folder, Percentage, Chart, User } from "@crunch-ui/icons";
+import { Settings, Folder, Percentage, User } from "@crunch-ui/icons";
 import { ColumnType, LeaderboardColumn } from "../domain/types";
 import { isFixedColumnType } from "../application/utils";
 import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
 
 const getColumnIcon = (type: ColumnType) => {
   switch (type) {
-    case "MODEL":
+    case "PROJECT":
       return <Folder className="w-4 h-4" />;
     case "VALUE":
       return <Percentage className="w-4 h-4" />;
-    case "CHART":
-      return <Chart className="w-4 h-4" />;
     case "USERNAME":
       return <User className="w-4 h-4" />;
   }
