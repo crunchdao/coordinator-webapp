@@ -1,14 +1,20 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Input,
+  Label,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
   toast,
 } from "@crunch-ui/core";
-import { Download, Export } from "@crunch-ui/icons";
+import { Download, Export, InfoCircle } from "@crunch-ui/icons";
 import { LeaderboardTable } from "@coordinator/leaderboard/src/ui/leaderboardTable";
 import { ColumnSettingsTable } from "@coordinator/leaderboard/src/ui/columnSettingsTable";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,7 +27,7 @@ import { useUpdateLocalColumn } from "../application/hooks/useUpdateLocalColumn"
 import { useRemoveLocalColumn } from "../application/hooks/useRemoveLocalColumn";
 import { useResetLocalColumns } from "../application/hooks/useResetLocalColumns";
 import { useLeaderboardHubSync } from "../application/hooks/useLeaderboardHubSync";
-import { saveLocalLeaderboardColumns } from "../infrastructure/services";
+import { saveLocalLeaderboardConfig } from "../infrastructure/services";
 
 export function LeaderboardContent() {
   const { crunchName } = useCrunchContext();
@@ -29,7 +35,8 @@ export function LeaderboardContent() {
 
   const { environments } = useLocalCompetitionEnvironments(crunchName);
   const { leaderboard, leaderboardLoading } = useGetLeaderboard();
-  const { columns, columnsLoading } = useLocalLeaderboardColumns(crunchName);
+  const { columns, externalUrl, columnsLoading } =
+    useLocalLeaderboardColumns(crunchName);
   const { addColumn, addColumnLoading } = useAddLocalColumn(crunchName);
   const { updateColumn, updateColumnLoading } = useUpdateLocalColumn(crunchName);
   const { removeColumn, removeColumnLoading } = useRemoveLocalColumn(crunchName);
@@ -37,14 +44,44 @@ export function LeaderboardContent() {
   const { pullFromHub, pushToHub, isPulling, isPushing } =
     useLeaderboardHubSync();
 
+  const [localExternalUrl, setLocalExternalUrl] = useState(externalUrl ?? "");
+
+  useEffect(() => {
+    setLocalExternalUrl(externalUrl ?? "");
+  }, [externalUrl]);
+
+  const handleSaveExternalUrl = async () => {
+    const newUrl = localExternalUrl.trim() || null;
+    if (newUrl === externalUrl) return;
+    try {
+      await saveLocalLeaderboardConfig(crunchName, {
+        externalUrl: newUrl,
+        columns,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["leaderboardColumns", crunchName],
+      });
+      toast({ title: "External URL saved" });
+    } catch {
+      toast({
+        title: "Failed to save external URL",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handlePullFromHub = async (
     envName: string,
     address: string,
     hubUrl: string
   ) => {
     try {
-      const hubColumns = await pullFromHub(address, hubUrl);
-      await saveLocalLeaderboardColumns(crunchName, hubColumns);
+      const { columns: hubColumns, externalUrl: hubExternalUrl } =
+        await pullFromHub(address, hubUrl);
+      await saveLocalLeaderboardConfig(crunchName, {
+        externalUrl: hubExternalUrl,
+        columns: hubColumns,
+      });
       queryClient.invalidateQueries({
         queryKey: ["leaderboardColumns", crunchName],
       });
@@ -65,7 +102,7 @@ export function LeaderboardContent() {
     hubUrl: string
   ) => {
     try {
-      await pushToHub(address, hubUrl, columns);
+      await pushToHub(address, hubUrl, columns, externalUrl ?? undefined);
       toast({ title: `Columns pushed to "${envName}" successfully` });
     } catch (error) {
       toast({
@@ -126,6 +163,35 @@ export function LeaderboardContent() {
     </>
   );
 
+  const externalUrlHeader = (
+    <div className="flex items-end gap-3">
+      <div className="flex-1 space-y-1.5">
+        <div className="flex items-center gap-1.5">
+          <Label htmlFor="external-url">External URL</Label>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <InfoCircle className="w-3.5 h-3.5 text-muted-foreground" />
+            </TooltipTrigger>
+            <TooltipContent>
+              URL from which leaderboard data is fetched
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        <Input
+          id="external-url"
+          type="url"
+          placeholder="https://example.com/leaderboard.json"
+          value={localExternalUrl}
+          onChange={(e) => setLocalExternalUrl(e.target.value)}
+          onBlur={handleSaveExternalUrl}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSaveExternalUrl();
+          }}
+        />
+      </div>
+    </div>
+  );
+
   return (
     <section className="p-6 space-y-3">
       <ColumnSettingsTable
@@ -139,6 +205,7 @@ export function LeaderboardContent() {
         updateLoading={updateColumnLoading}
         deleteLoading={removeColumnLoading}
         resetLoading={resetColumnsLoading}
+        header={externalUrlHeader}
         actions={hubActions}
       />
       <LeaderboardTable
