@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
 } from "@crunch-ui/core";
 import { Chart, Link, InfoCircle } from "@crunch-ui/icons";
+import { normalizeYAxisConfig } from "@crunchdao/chart";
 import { Widget, LineChartDefinition, GaugeDefinition } from "../domain/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -74,14 +75,15 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             noDataMessage: config.noDataMessage,
           };
         } else if (config.type === "line") {
+          const normalizedYAxis = normalizeYAxisConfig(config.yAxis);
           return {
             ...base,
             chartType: "line",
             xAxisName: config.xAxis.name,
-            yAxisSeries: config.yAxis.series,
+            yAxisSeries: normalizedYAxis.series,
             displayEvolution: config.displayEvolution,
             displayLegend: config.displayLegend,
-            yAxisFormat: config.yAxis.format,
+            yAxisFormat: normalizedYAxis.format,
             groupByProperty: config.groupByProperty,
             alertField: config.alertConfig?.field,
             alertReasonField: config.alertConfig?.reasonField,

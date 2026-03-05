@@ -20,16 +20,24 @@ export const useMetricsHubSync = () => {
         hubBaseUrl
       );
       return {
-        widgets: definitions.map(
-          (def): Widget => ({
+        widgets: definitions.map((def): Widget => {
+          const base = {
             id: def.id,
             displayName: def.displayName,
             type: def.type,
             endpointUrl: def.endpointUrl,
             order: def.order,
+          };
+
+          if (def.type === "IFRAME" || !def.nativeConfiguration) {
+            return base;
+          }
+
+          return {
+            ...base,
             nativeConfiguration: def.nativeConfiguration,
-          })
-        ),
+          };
+        }),
       };
     } finally {
       setIsPulling(false);
@@ -62,7 +70,7 @@ export const useMetricsHubSync = () => {
           nativeConfiguration:
             "nativeConfiguration" in widget
               ? widget.nativeConfiguration
-              : undefined,
+              : null,
           order: widget.order,
         };
 
