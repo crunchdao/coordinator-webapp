@@ -1,13 +1,13 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { resetLeaderboardColumns } from "../../infrastructure/services";
+import { resetLocalLeaderboardColumns } from "../../infrastructure/services";
 import { toast } from "@crunch-ui/core";
 
-export const useResetColumns = (slug: string) => {
+export const useResetLocalColumns = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: () => resetLeaderboardColumns(slug),
+    mutationFn: () => resetLocalLeaderboardColumns(slug),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["leaderboardColumns", slug],

@@ -4,21 +4,21 @@ import { LeaderboardTable } from "@coordinator/leaderboard/src/ui/leaderboardTab
 import { ColumnSettingsTable } from "@coordinator/leaderboard/src/ui/columnSettingsTable";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useGetLeaderboard } from "../application/hooks/useGetLeaderboard";
-import { useLeaderboardColumns } from "../application/hooks/useLeaderboardColumns";
-import { useAddColumn } from "../application/hooks/useAddColumn";
-import { useUpdateColumn } from "../application/hooks/useUpdateColumn";
-import { useRemoveColumn } from "../application/hooks/useRemoveColumn";
-import { useResetColumns } from "../application/hooks/useResetColumns";
+import { useLocalLeaderboardColumns } from "../application/hooks/useLocalLeaderboardColumns";
+import { useAddLocalColumn } from "../application/hooks/useAddLocalColumn";
+import { useUpdateLocalColumn } from "../application/hooks/useUpdateLocalColumn";
+import { useRemoveLocalColumn } from "../application/hooks/useRemoveLocalColumn";
+import { useResetLocalColumns } from "../application/hooks/useResetLocalColumns";
 
 export function LeaderboardContent() {
   const { crunchName } = useCrunchContext();
 
   const { leaderboard, leaderboardLoading } = useGetLeaderboard();
-  const { columns, columnsLoading } = useLeaderboardColumns(crunchName);
-  const { addColumn, addColumnLoading } = useAddColumn(crunchName);
-  const { updateColumn, updateColumnLoading } = useUpdateColumn(crunchName);
-  const { removeColumn, removeColumnLoading } = useRemoveColumn(crunchName);
-  const { resetColumns, resetColumnsLoading } = useResetColumns(crunchName);
+  const { columns, columnsLoading } = useLocalLeaderboardColumns(crunchName);
+  const { addColumn, addColumnLoading } = useAddLocalColumn(crunchName);
+  const { updateColumn, updateColumnLoading } = useUpdateLocalColumn(crunchName);
+  const { removeColumn, removeColumnLoading } = useRemoveLocalColumn(crunchName);
+  const { resetColumns, resetColumnsLoading } = useResetLocalColumns(crunchName);
 
   return (
     <section className="p-6 space-y-3">

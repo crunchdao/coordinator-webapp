@@ -35,19 +35,19 @@ import { Download, Export } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useSettingsHubSync } from "@/modules/competition/application/hooks/useSettingsHubSync";
 import { settingsSchema, SettingsFormData } from "../domain/schemas";
-import { useCompetitionEnvironments } from "../application/hooks/useCompetitionEnvironments";
+import { useLocalCompetitionEnvironments } from "../application/hooks/useLocalCompetitionEnvironments";
 import {
-  useCompetitionSettings,
-  useSaveCompetitionSettings,
-} from "../application/hooks/useCompetitionSettings";
+  useLocalCompetitionSettings,
+  useSaveLocalCompetitionSettings,
+} from "../application/hooks/useLocalCompetitionSettings";
 
 export function SettingsForm() {
   const { crunchName } = useCrunchContext();
-  const { environments } = useCompetitionEnvironments(crunchName);
+  const { environments } = useLocalCompetitionEnvironments(crunchName);
 
-  const { settings, settingsLoading } = useCompetitionSettings(crunchName);
+  const { settings, settingsLoading } = useLocalCompetitionSettings(crunchName);
   const { saveSettings, saveSettingsAsync, saveSettingsLoading } =
-    useSaveCompetitionSettings(crunchName);
+    useSaveLocalCompetitionSettings(crunchName);
 
   const { pullFromHub, pushToHub, isPulling, isPushing } =
     useSettingsHubSync();

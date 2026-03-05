@@ -1,4 +1,4 @@
 export const endpoints = {
-  getMetricsWidgets: (slug: string) =>
+  localMetricsWidgets: (slug: string) =>
     `/config/crunches/${slug}/metrics/widgets.json`,
 };

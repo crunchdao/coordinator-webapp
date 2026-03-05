@@ -1,15 +1,15 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addLeaderboardColumn } from "../../infrastructure/services";
+import { addLocalLeaderboardColumn } from "../../infrastructure/services";
 import { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types";
 import { showApiErrorToast } from "@coordinator/utils/src/api";
 
-export const useAddColumn = (slug: string) => {
+export const useAddLocalColumn = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (column: Omit<LeaderboardColumn, "id">) =>
-      addLeaderboardColumn(slug, column),
+      addLocalLeaderboardColumn(slug, column),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["leaderboardColumns", slug],

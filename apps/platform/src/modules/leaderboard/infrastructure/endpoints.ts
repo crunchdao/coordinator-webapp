@@ -1,4 +1,4 @@
 export const endpoints = {
-  getLeaderboardColumns: (slug: string) =>
+  localLeaderboardColumns: (slug: string) =>
     `/config/crunches/${slug}/leaderboard/columns.json`,
 };

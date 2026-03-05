@@ -1,11 +1,11 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getLeaderboardColumns } from "../../infrastructure/services";
+import { getLocalLeaderboardColumns } from "../../infrastructure/services";
 
-export const useLeaderboardColumns = (slug: string) => {
+export const useLocalLeaderboardColumns = (slug: string) => {
   const query = useQuery({
     queryKey: ["leaderboardColumns", slug],
-    queryFn: () => getLeaderboardColumns(slug),
+    queryFn: () => getLocalLeaderboardColumns(slug),
     enabled: !!slug,
   });
 
