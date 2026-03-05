@@ -34,14 +34,13 @@ export const useOverviewHubSync = (locale: Locale) => {
       const localByName = new Map(localSlices.map((s) => [s.name, s]));
 
       for (const slice of localSlices) {
-        const {
-          id,
-          updatedAt,
-          createdAt,
-          displayName,
-          ...rest
-        } = slice as Slice & { updatedAt?: string; createdAt?: string };
-        const body = { ...rest, displayName: displayName ?? undefined };
+        const body = {
+          name: slice.name,
+          displayName: slice.displayName ?? undefined,
+          type: slice.type,
+          nativeConfiguration: slice.nativeConfiguration,
+          order: slice.order,
+        };
         if (hubByName.has(slice.name)) {
           await updateOverviewSlice(address, slice.name, body, locale, hubBaseUrl);
         } else {
