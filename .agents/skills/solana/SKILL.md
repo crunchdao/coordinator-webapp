@@ -92,7 +92,7 @@ Use the helper script to decode base64 account data:
 
 ```bash
 # Decode raw account data with field definitions
-python3 .pi/skills/solana/decode_account.py \
+python3 .agents/skills/solana/decode_account.py \
   --data "<BASE64_DATA>" \
   --fields "discriminator:8,pubkey:32,hash:32,timestamp:i64,bump:u8"
 ```
@@ -100,7 +100,7 @@ python3 .pi/skills/solana/decode_account.py \
 Or fetch and decode in one step:
 
 ```bash
-python3 .pi/skills/solana/decode_account.py \
+python3 .agents/skills/solana/decode_account.py \
   --address "<ADDRESS>" \
   --cluster devnet \
   --fields "discriminator:8,coordinator:32,cert_hash:32,cert_hash_secondary:32,primary_updated_at:i64,secondary_updated_at:i64,bump:u8"
