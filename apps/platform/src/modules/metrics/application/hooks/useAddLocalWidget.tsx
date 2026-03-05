@@ -1,14 +1,14 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addMetricWidget } from "../../infrastructure/services";
+import { addLocalMetricWidget } from "../../infrastructure/services";
 import { Widget } from "@coordinator/metrics/src/domain/types";
 import { showApiErrorToast } from "@coordinator/utils/src/api";
 
-export const useAddWidget = (slug: string) => {
+export const useAddLocalWidget = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (widget: Omit<Widget, "id">) => addMetricWidget(slug, widget),
+    mutationFn: (widget: Omit<Widget, "id">) => addLocalMetricWidget(slug, widget),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["widgets", slug] });
     },

@@ -1,12 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { listCompetitions } from "../../infrastructure/service";
+import { listLocalCompetitions } from "../../infrastructure/service";
 
-export function useCompetitionList() {
+export function useLocalCompetitionList() {
   const query = useQuery({
     queryKey: ["localCrunches"],
-    queryFn: listCompetitions,
+    queryFn: listLocalCompetitions,
     retry: false,
   });
 

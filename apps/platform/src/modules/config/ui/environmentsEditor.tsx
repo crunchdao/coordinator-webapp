@@ -32,9 +32,9 @@ import {
 import { Plus, Trash } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import {
-  useCompetitionEnvironments,
-  useSaveCompetitionEnvironments,
-} from "../application/hooks/useCompetitionEnvironments";
+  useLocalCompetitionEnvironments,
+  useSaveLocalCompetitionEnvironments,
+} from "../application/hooks/useLocalCompetitionEnvironments";
 import {
   environmentsFormSchema,
   EnvironmentsFormData,
@@ -57,9 +57,9 @@ export function EnvironmentsEditor() {
   const { crunchName } = useCrunchContext();
 
   const { environments, environmentsLoading } =
-    useCompetitionEnvironments(crunchName);
+    useLocalCompetitionEnvironments(crunchName);
   const { saveEnvironments, saveEnvironmentsLoading } =
-    useSaveCompetitionEnvironments(crunchName);
+    useSaveLocalCompetitionEnvironments(crunchName);
 
   const form = useForm<EnvironmentsFormData>({
     resolver: zodResolver(environmentsFormSchema),

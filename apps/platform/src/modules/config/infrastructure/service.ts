@@ -26,11 +26,11 @@ export async function listConfigDir(
   return response.data;
 }
 
-export async function listCompetitions(): Promise<ConfigDirectoryListing> {
+export async function listLocalCompetitions(): Promise<ConfigDirectoryListing> {
   return listConfigDir("crunches");
 }
 
-export async function getCompetitionEnvironments(
+export async function getLocalCompetitionEnvironments(
   slug: string
 ): Promise<CompetitionEnvironments> {
   return readConfigFile<CompetitionEnvironments>(
@@ -38,20 +38,20 @@ export async function getCompetitionEnvironments(
   );
 }
 
-export async function saveCompetitionEnvironments(
+export async function saveLocalCompetitionEnvironments(
   slug: string,
   data: CompetitionEnvironments
 ): Promise<CompetitionEnvironments> {
   return writeConfigFile(`crunches/${slug}/environments.json`, data);
 }
 
-export async function getCompetitionSettings(
+export async function getLocalCompetitionSettings(
   slug: string
 ): Promise<Competition> {
   return readConfigFile<Competition>(`crunches/${slug}/settings.json`);
 }
 
-export async function saveCompetitionSettings(
+export async function saveLocalCompetitionSettings(
   slug: string,
   data: Competition
 ): Promise<Competition> {

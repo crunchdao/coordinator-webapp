@@ -1,11 +1,11 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getMetricsWidgets } from "../../infrastructure/services";
+import { getLocalMetricsWidgets } from "../../infrastructure/services";
 
-export function useGetWidgets(slug: string) {
+export function useGetLocalWidgets(slug: string) {
   const query = useQuery({
     queryKey: ["widgets", slug],
-    queryFn: () => getMetricsWidgets(slug),
+    queryFn: () => getLocalMetricsWidgets(slug),
     enabled: !!slug,
   });
   return {

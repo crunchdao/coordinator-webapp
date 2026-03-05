@@ -44,16 +44,16 @@ export const ROUTE_CONFIG: RouteConfig[] = [
     label: "Overview",
   },
   {
+    path: INTERNAL_LINKS.SETTINGS,
+    label: "Settings",
+  },
+  {
     path: INTERNAL_LINKS.MODELS,
     label: "Models",
   },
   {
     path: INTERNAL_LINKS.CHECKPOINTS,
     label: "Checkpoints",
-  },
-  {
-    path: INTERNAL_LINKS.SETTINGS,
-    label: "Settings",
   },
   {
     path: INTERNAL_LINKS.LEADERBOARD,
