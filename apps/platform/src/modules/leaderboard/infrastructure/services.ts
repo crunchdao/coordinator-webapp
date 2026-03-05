@@ -1,4 +1,5 @@
 import apiClient from "@coordinator/utils/src/api";
+import { AxiosError } from "axios";
 import hubApiClient from "@/utils/api/hubApiClient";
 import {
   Leaderboard,
@@ -7,6 +8,7 @@ import {
 import { initialColumns } from "@coordinator/leaderboard/src/domain/initial-config";
 import { endpoints } from "./endpoints";
 import type {
+  LocalLeaderboardConfig,
   LeaderboardDefinition,
   UpdateLeaderboardDefinitionPayload,
 } from "../domain/types";
@@ -20,35 +22,54 @@ export const getLeaderboard = async (
   return response.data;
 };
 
-export const getLocalLeaderboardColumns = async (
+export const getLocalLeaderboardConfig = async (
   slug: string
-): Promise<LeaderboardColumn[]> => {
+): Promise<LocalLeaderboardConfig> => {
   try {
-    const response = await apiClient.get(endpoints.localLeaderboardColumns(slug));
+    const response = await apiClient.get(
+      endpoints.localLeaderboardColumns(slug)
+    );
+    // Backward compatibility: if the stored data is an array (old format), wrap it
+    if (Array.isArray(response.data)) {
+      return { externalUrl: null, columns: response.data };
+    }
     return response.data;
   } catch (error) {
-    if ((error as any)?.response?.status === 404) {
+    if ((error as AxiosError)?.response?.status === 404) {
+      const defaultConfig: LocalLeaderboardConfig = {
+        externalUrl: null,
+        columns: initialColumns,
+      };
       await apiClient.put(
         endpoints.localLeaderboardColumns(slug),
-        initialColumns
+        defaultConfig
       );
-      return initialColumns;
+      return defaultConfig;
     }
     throw error;
   }
+};
+
+export const saveLocalLeaderboardConfig = async (
+  slug: string,
+  config: LocalLeaderboardConfig
+): Promise<void> => {
+  await apiClient.put(endpoints.localLeaderboardColumns(slug), config);
 };
 
 export const addLocalLeaderboardColumn = async (
   slug: string,
   column: Omit<LeaderboardColumn, "id">
 ): Promise<LeaderboardColumn> => {
-  const columns = await getLocalLeaderboardColumns(slug);
+  const config = await getLocalLeaderboardConfig(slug);
   const newColumn: LeaderboardColumn = {
     ...column,
-    id: Math.max(...columns.map((c) => c.id), 0) + 1,
+    id: Math.max(...config.columns.map((c) => c.id), 0) + 1,
   };
-  const updated = [...columns, newColumn];
-  await apiClient.put(endpoints.localLeaderboardColumns(slug), updated);
+  await saveLocalLeaderboardConfig(slug, {
+    ...config,
+    columns: [...config.columns, newColumn],
+  });
   return newColumn;
 };
 
@@ -56,9 +77,11 @@ export const removeLocalLeaderboardColumn = async (
   slug: string,
   id: number
 ): Promise<void> => {
-  const columns = await getLocalLeaderboardColumns(slug);
-  const updated = columns.filter((c) => c.id !== id);
-  await apiClient.put(endpoints.localLeaderboardColumns(slug), updated);
+  const config = await getLocalLeaderboardConfig(slug);
+  await saveLocalLeaderboardConfig(slug, {
+    ...config,
+    columns: config.columns.filter((c) => c.id !== id),
+  });
 };
 
 export const updateLocalLeaderboardColumn = async (
@@ -66,26 +89,22 @@ export const updateLocalLeaderboardColumn = async (
   id: number,
   column: Omit<LeaderboardColumn, "id">
 ): Promise<LeaderboardColumn> => {
-  const columns = await getLocalLeaderboardColumns(slug);
-  const index = columns.findIndex((c) => c.id === id);
+  const config = await getLocalLeaderboardConfig(slug);
+  const index = config.columns.findIndex((c) => c.id === id);
   if (index === -1) throw new Error("Column not found");
   const updatedColumn: LeaderboardColumn = { ...column, id };
-  columns[index] = updatedColumn;
-  await apiClient.put(endpoints.localLeaderboardColumns(slug), columns);
+  config.columns[index] = updatedColumn;
+  await saveLocalLeaderboardConfig(slug, config);
   return updatedColumn;
 };
 
 export const resetLocalLeaderboardColumns = async (
   slug: string
 ): Promise<void> => {
-  await apiClient.put(endpoints.localLeaderboardColumns(slug), initialColumns);
-};
-
-export const saveLocalLeaderboardColumns = async (
-  slug: string,
-  columns: LeaderboardColumn[]
-): Promise<void> => {
-  await apiClient.put(endpoints.localLeaderboardColumns(slug), columns);
+  await saveLocalLeaderboardConfig(slug, {
+    externalUrl: null,
+    columns: initialColumns,
+  });
 };
 
 export const getLeaderboardDefinitions = async (
@@ -105,7 +124,10 @@ export const getLeaderboardDefinition = async (
   hubBaseUrl: string
 ): Promise<LeaderboardDefinition> => {
   const response = await hubApiClient.get(
-    endpoints.getLeaderboardDefinition(competitionIdentifier, definitionIdentifier),
+    endpoints.getLeaderboardDefinition(
+      competitionIdentifier,
+      definitionIdentifier
+    ),
     { baseURL: hubBaseUrl }
   );
   return response.data;
@@ -118,7 +140,10 @@ export const updateLeaderboardDefinition = async (
   hubBaseUrl: string
 ): Promise<LeaderboardDefinition> => {
   const response = await hubApiClient.patch(
-    endpoints.updateLeaderboardDefinitions(competitionIdentifier, definitionIdentifier),
+    endpoints.updateLeaderboardDefinitions(
+      competitionIdentifier,
+      definitionIdentifier
+    ),
     data,
     { baseURL: hubBaseUrl }
   );

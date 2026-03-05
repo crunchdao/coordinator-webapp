@@ -16,10 +16,14 @@ export const useLeaderboardHubSync = () => {
         `onchain:${address}`,
         hubBaseUrl
       );
-      if (definitions.length === 0) {
+      if (!definitions?.length) {
         throw new Error("No leaderboard definitions found");
       }
-      return definitions[0].columns;
+      const definition = definitions[0];
+      return {
+        columns: definition.columns,
+        externalUrl: definition.externalUrl,
+      };
     } finally {
       setIsPulling(false);
     }
@@ -28,7 +32,8 @@ export const useLeaderboardHubSync = () => {
   const pushToHub = async (
     address: string,
     hubBaseUrl: string,
-    columns: LeaderboardColumn[]
+    columns: LeaderboardColumn[],
+    externalUrl?: string
   ) => {
     setIsPushing(true);
     try {
@@ -36,7 +41,7 @@ export const useLeaderboardHubSync = () => {
         `onchain:${address}`,
         hubBaseUrl
       );
-      if (definitions.length === 0) {
+      if (!definitions?.length) {
         throw new Error("No leaderboard definitions found");
       }
       const definition = definitions[0];
@@ -44,11 +49,10 @@ export const useLeaderboardHubSync = () => {
         `onchain:${address}`,
         definition.name,
         {
+          externalUrl,
           columns: columns.map(({ id, ...rest }) => ({
             ...rest,
-            nativeConfiguration: rest.nativeConfiguration
-              ? JSON.stringify(rest.nativeConfiguration)
-              : null,
+            nativeConfiguration: rest.nativeConfiguration,
           })),
         },
         hubBaseUrl

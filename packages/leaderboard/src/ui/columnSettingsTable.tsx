@@ -33,6 +33,7 @@ interface ColumnSettingsTableProps {
   updateLoading?: boolean;
   deleteLoading?: boolean;
   resetLoading?: boolean;
+  header?: React.ReactNode;
   actions?: React.ReactNode;
 }
 
@@ -47,6 +48,7 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
   updateLoading = false,
   deleteLoading = false,
   resetLoading = false,
+  header,
   actions,
 }) => {
   const allColumns = columns || [];
@@ -82,6 +84,7 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
         </AccordionTrigger>
         <AccordionContent>
           <div className="px-6 pb-6 pt-2 space-y-6">
+            {header}
             <div>
               <h3 className="title-sm font-medium mb-3">Fixed Columns</h3>
               <Table>
