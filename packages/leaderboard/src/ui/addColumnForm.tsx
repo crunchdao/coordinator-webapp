@@ -28,7 +28,6 @@ import {
   Plus,
   Trash,
   Folder,
-  Chart,
   Percentage,
   InfoCircle,
 } from "@crunch-ui/icons";
@@ -56,13 +55,7 @@ const columnTypes = [
     value: "VALUE",
     label: "Value",
     icon: Percentage,
-    description: "Numeric metrics",
-  },
-  {
-    value: "CHART",
-    label: "Chart",
-    icon: Chart,
-    description: "Data visualizations",
+    description: "Numeric metrics & charts",
   },
 ] as const;
 
@@ -155,7 +148,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
         type: value,
       };
 
-      if (value === "MODEL") {
+      if (value === "PROJECT") {
         resetData.nativeConfiguration = {
           type: "model",
           statusProperty: undefined,
@@ -384,7 +377,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                 />
               )}
 
-              {columnType === "MODEL" && (
+              {columnType === "PROJECT" && (
                 <FormField
                   control={form.control}
                   name="nativeConfiguration.statusProperty"
@@ -416,7 +409,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
               )}
             </div>
 
-            {columnType === "CHART" && (
+            {columnType === "VALUE" && (
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
