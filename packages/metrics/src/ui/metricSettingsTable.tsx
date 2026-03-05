@@ -31,6 +31,7 @@ const getIcon = (type: MetricType) => {
 };
 
 const getColumnTypeBadge = (type: MetricType) => {
+  if (!type) return null;
   return (
     <Badge variant="secondary" className="gap-1.5">
       {getIcon(type)}

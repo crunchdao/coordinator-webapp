@@ -34,6 +34,7 @@ const getColumnIcon = (type: ColumnType) => {
 };
 
 const getColumnTypeBadge = (type: ColumnType) => {
+  if (!type) return null;
   return (
     <Badge variant="secondary" className="gap-1.5">
       {getColumnIcon(type)}
@@ -53,6 +54,7 @@ interface ColumnSettingsTableProps {
   updateLoading?: boolean;
   deleteLoading?: boolean;
   resetLoading?: boolean;
+  actions?: React.ReactNode;
 }
 
 export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
@@ -66,6 +68,7 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
   updateLoading = false,
   deleteLoading = false,
   resetLoading = false,
+  actions,
 }) => {
   const allColumns = columns || [];
   const fixedColumns = allColumns
@@ -256,6 +259,7 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
                 </TableBody>
               </Table>
               <div className="flex justify-end gap-3 items-center pt-4 border-t mt-4">
+                {actions}
                 <ResetColumnsButton onReset={onReset} loading={resetLoading} />
                 <AddColumnSheet
                   onAdd={onAdd}
