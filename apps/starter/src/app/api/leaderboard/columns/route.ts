@@ -49,9 +49,15 @@ async function writeColumns(columns: LeaderboardColumn[]): Promise<void> {
 
 export async function GET() {
   try {
-    const effectiveColumns = await getEffectiveColumns();
+    const fileExists = await fs.access(CONFIG_FILE).then(() => true, () => false);
 
-    // Ensure the override file exists so users can edit from UI immediately.
+    if (fileExists) {
+      const data = await fs.readFile(CONFIG_FILE, "utf-8");
+      return NextResponse.json(JSON.parse(data));
+    }
+
+    // First access: merge backend schema with defaults and persist.
+    const effectiveColumns = await getEffectiveColumns();
     await writeColumns(effectiveColumns);
 
     return NextResponse.json(effectiveColumns);
