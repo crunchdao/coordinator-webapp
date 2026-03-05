@@ -1,13 +1,14 @@
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 
-export interface EnvironmentTarget {
+export interface Environment {
+  name: string;
   address: string;
   network: WalletAdapterNetwork;
   rpcUrl?: string;
   hubUrl?: string;
 }
 
-export type CompetitionEnvironments = Record<string, EnvironmentTarget>;
+export type CompetitionEnvironments = Environment[];
 
 export interface ConfigDirectoryEntry {
   name: string;

@@ -35,10 +35,10 @@ export function CompetitionCard({ slug }: CompetitionCardProps) {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-1.5">
-            {environments && Object.keys(environments).length > 0 ? (
-              Object.entries(environments).map(([name, env]) => (
-                <Badge key={name} variant="secondary" size="sm">
-                  {name} ({env.network})
+            {environments && environments.length > 0 ? (
+              environments.map((env) => (
+                <Badge key={env.name} variant="secondary" size="sm">
+                  {env.name} ({env.network})
                 </Badge>
               ))
             ) : (

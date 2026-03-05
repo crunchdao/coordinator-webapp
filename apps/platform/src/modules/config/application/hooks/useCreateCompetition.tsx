@@ -7,8 +7,8 @@ import {
   saveCompetitionEnvironments,
   saveCompetitionSettings,
 } from "../../infrastructure/service";
-import { CompetitionEnvironments } from "../../domain/types";
-import { Competition } from "@/modules/competition/domain/types";
+import type { CompetitionEnvironments } from "../../domain/types";
+import type { Competition } from "@/modules/competition/domain/types";
 
 interface CreateCompetitionPayload {
   slug: string;
