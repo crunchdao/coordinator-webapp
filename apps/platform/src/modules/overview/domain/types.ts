@@ -1,4 +1,11 @@
-import { Slice, SliceType } from "@crunchdao/slices";
+import {
+  Slice,
+  SliceType,
+  ContentNativeConfiguration,
+  KeyMetricsNativeConfiguration,
+  TimelineNativeConfiguration,
+  TeamNativeConfiguration,
+} from "@crunchdao/slices";
 
 export { Locale } from "@/modules/common/types";
 
@@ -10,11 +17,17 @@ export type OverviewSlice = Slice & {
 export type OverviewSlicesListResponse = OverviewSlice[];
 export type OverviewSliceItemResponse = OverviewSlice;
 
+type SliceNativeConfiguration =
+  | ContentNativeConfiguration
+  | KeyMetricsNativeConfiguration
+  | TimelineNativeConfiguration
+  | TeamNativeConfiguration;
+
 export interface CreateOverviewSliceBody {
   name: string;
-  displayName: string;
+  displayName?: string;
   type: SliceType;
-  nativeConfiguration: Record<string, unknown>;
+  nativeConfiguration: SliceNativeConfiguration;
   order: number;
 }
 
@@ -22,6 +35,6 @@ export interface UpdateOverviewSliceBody {
   name?: string;
   displayName?: string;
   type?: SliceType;
-  nativeConfiguration?: Record<string, unknown>;
+  nativeConfiguration?: SliceNativeConfiguration;
   order?: number;
 }

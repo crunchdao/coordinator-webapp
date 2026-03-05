@@ -31,7 +31,7 @@ export const initialColumns: LeaderboardColumn[] = [
   },
   {
     id: 2,
-    ...FIXED_COLUMNS_DEFAULTS.MODEL,
+    ...FIXED_COLUMNS_DEFAULTS.PROJECT,
     property: "model_id",
   },
   {
