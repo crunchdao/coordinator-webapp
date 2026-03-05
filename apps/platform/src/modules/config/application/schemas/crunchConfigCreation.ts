@@ -1,14 +1,9 @@
 import { z } from "zod";
-import { slugSchema, environmentTargetSchema } from "../../domain/schemas";
-
-const envEntrySchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  target: environmentTargetSchema,
-});
+import { slugSchema, environmentSchema } from "../../domain/schemas";
 
 export const crunchConfigCreationSchema = slugSchema.extend({
   environments: z
-    .array(envEntrySchema)
+    .array(environmentSchema)
     .min(1, "At least one environment is required"),
 });
 

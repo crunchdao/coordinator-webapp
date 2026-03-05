@@ -30,7 +30,11 @@ import { useCreateCompetition } from "../application/hooks/useCreateCompetition"
 import { useCompetitionList } from "../application/hooks/useCompetitionList";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { Competition } from "@/modules/competition/domain/types";
-import { HUB_URL_OPTIONS, DEFAULT_RPC_URLS, DEFAULT_HUB_URLS } from "../domain/types";
+import {
+  HUB_URL_OPTIONS,
+  DEFAULT_RPC_URLS,
+  DEFAULT_HUB_URLS,
+} from "../domain/types";
 
 export function CrunchConfigCreationForm() {
   const router = useRouter();
@@ -53,12 +57,10 @@ export function CrunchConfigCreationForm() {
       environments: [
         {
           name: "staging",
-          target: {
-            address: "",
-            network: WalletAdapterNetwork.Devnet,
-            rpcUrl: DEFAULT_RPC_URLS[WalletAdapterNetwork.Devnet] || "",
-            hubUrl: DEFAULT_HUB_URLS[WalletAdapterNetwork.Devnet] || "",
-          },
+          address: "",
+          network: WalletAdapterNetwork.Devnet,
+          rpcUrl: DEFAULT_RPC_URLS[WalletAdapterNetwork.Devnet] || "",
+          hubUrl: DEFAULT_HUB_URLS[WalletAdapterNetwork.Devnet] || "",
         },
       ],
     },
@@ -70,28 +72,14 @@ export function CrunchConfigCreationForm() {
   });
 
   const onSubmit = (data: CrunchConfigCreationFormData) => {
-    const environments: Record<
-      string,
-      {
-        address: string;
-        network: WalletAdapterNetwork;
-        rpcUrl?: string;
-        hubUrl?: string;
-      }
-    > = {};
-    for (const entry of data.environments) {
-      environments[entry.name] = {
-        address: entry.target.address,
-        network: entry.target.network,
-        rpcUrl: entry.target.rpcUrl || undefined,
-        hubUrl: entry.target.hubUrl || undefined,
-      };
-    }
-
     createCompetition(
       {
         slug: data.slug,
-        environments,
+        environments: data.environments.map((env) => ({
+          ...env,
+          rpcUrl: env.rpcUrl || undefined,
+          hubUrl: env.hubUrl || undefined,
+        })),
         settings: {
           name: data.slug,
           displayName: data.slug,
@@ -132,7 +120,7 @@ export function CrunchConfigCreationForm() {
 
           {fields.map((field, index) => {
             const network = form.watch(
-              `environments.${index}.target.network`
+              `environments.${index}.network`
             );
 
             return (
@@ -166,7 +154,7 @@ export function CrunchConfigCreationForm() {
                 <div className="grid gap-3 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name={`environments.${index}.target.address`}
+                    name={`environments.${index}.address`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Crunch Address</FormLabel>
@@ -179,7 +167,7 @@ export function CrunchConfigCreationForm() {
                   />
                   <FormField
                     control={form.control}
-                    name={`environments.${index}.target.network`}
+                    name={`environments.${index}.network`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Network</FormLabel>
@@ -188,11 +176,11 @@ export function CrunchConfigCreationForm() {
                             field.onChange(value);
                             const net = value as WalletAdapterNetwork;
                             form.setValue(
-                              `environments.${index}.target.rpcUrl`,
+                              `environments.${index}.rpcUrl`,
                               DEFAULT_RPC_URLS[net] || ""
                             );
                             form.setValue(
-                              `environments.${index}.target.hubUrl`,
+                              `environments.${index}.hubUrl`,
                               DEFAULT_HUB_URLS[net] || ""
                             );
                           }}
@@ -221,7 +209,7 @@ export function CrunchConfigCreationForm() {
                 <div className="grid gap-3 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name={`environments.${index}.target.rpcUrl`}
+                    name={`environments.${index}.rpcUrl`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>RPC URL</FormLabel>
@@ -237,7 +225,7 @@ export function CrunchConfigCreationForm() {
                   />
                   <FormField
                     control={form.control}
-                    name={`environments.${index}.target.hubUrl`}
+                    name={`environments.${index}.hubUrl`}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Hub URL</FormLabel>
@@ -276,12 +264,10 @@ export function CrunchConfigCreationForm() {
             onClick={() =>
               append({
                 name: "",
-                target: {
-                  address: "",
-                  network: WalletAdapterNetwork.Devnet,
-                  rpcUrl: DEFAULT_RPC_URLS[WalletAdapterNetwork.Devnet] || "",
-                  hubUrl: DEFAULT_HUB_URLS[WalletAdapterNetwork.Devnet] || "",
-                },
+                address: "",
+                network: WalletAdapterNetwork.Devnet,
+                rpcUrl: DEFAULT_RPC_URLS[WalletAdapterNetwork.Devnet] || "",
+                hubUrl: DEFAULT_HUB_URLS[WalletAdapterNetwork.Devnet] || "",
               })
             }
           >
