@@ -17,31 +17,10 @@ import { DeleteColumnButton } from "./deleteColumnButton";
 import { AddColumnSheet } from "./addColumnSheet";
 import { EditColumnSheet } from "./editColumnSheet";
 import { ResetColumnsButton } from "./resetColumnsButton";
-import { Settings, Folder, Percentage, User } from "@crunch-ui/icons";
-import { ColumnType, LeaderboardColumn } from "../domain/types";
+import { Settings } from "@crunch-ui/icons";
+import { LeaderboardColumn } from "../domain/types";
 import { isFixedColumnType } from "../application/utils";
 import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
-
-const getColumnIcon = (type: ColumnType) => {
-  switch (type) {
-    case "PROJECT":
-      return <Folder className="w-4 h-4" />;
-    case "VALUE":
-      return <Percentage className="w-4 h-4" />;
-    case "USERNAME":
-      return <User className="w-4 h-4" />;
-  }
-};
-
-const getColumnTypeBadge = (type: ColumnType) => {
-  if (!type) return null;
-  return (
-    <Badge variant="secondary" className="gap-1.5">
-      {getColumnIcon(type)}
-      <span className="body-sm capitalize">{type.toLowerCase()}</span>
-    </Badge>
-  );
-};
 
 interface ColumnSettingsTableProps {
   columns: LeaderboardColumn[];
@@ -109,7 +88,6 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
                 <TableHeader>
                   <TableRow>
                     <TableHead>Column Name</TableHead>
-                    <TableHead>Type</TableHead>
                     <TableHead>Property</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -118,7 +96,7 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
                   {loading ? (
                     <TableRow>
                       <TableCell
-                        colSpan={4}
+                        colSpan={3}
                         className="h-20 text-center text-muted-foreground"
                       >
                         <div className="flex flex-col items-center justify-center gap-2">
@@ -142,9 +120,6 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
                             <span className="font-medium text-sm">
                               {defaults?.displayName ?? column.displayName}
                             </span>
-                          </TableCell>
-                          <TableCell>
-                            {getColumnTypeBadge(column.type)}
                           </TableCell>
                           <TableCell>
                             <code className="body-sm bg-muted px-2 py-1 rounded font-mono">
@@ -174,7 +149,6 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
                 <TableHeader>
                   <TableRow>
                     <TableHead>Column Name</TableHead>
-                    <TableHead>Type</TableHead>
                     <TableHead>Property</TableHead>
                     <TableHead>Order</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
@@ -184,7 +158,7 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
                   {loading ? (
                     <TableRow>
                       <TableCell
-                        colSpan={5}
+                        colSpan={4}
                         className="h-20 text-center text-muted-foreground"
                       >
                         <div className="flex flex-col items-center justify-center gap-2">
@@ -195,7 +169,7 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
                     </TableRow>
                   ) : customColumns.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="h-20 text-center">
+                      <TableCell colSpan={4} className="h-20 text-center">
                         <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
                           <Settings className="w-8 h-8 opacity-20" />
                           <p className="text-sm font-medium">
@@ -225,7 +199,6 @@ export const ColumnSettingsTable: React.FC<ColumnSettingsTableProps> = ({
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>{getColumnTypeBadge(column.type)}</TableCell>
                         <TableCell>
                           <code className="body-sm bg-muted px-2 py-1 rounded font-mono">
                             {column.property}

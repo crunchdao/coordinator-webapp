@@ -11,6 +11,7 @@ import {
 import { Download, Export } from "@crunch-ui/icons";
 import { LeaderboardTable } from "@coordinator/leaderboard/src/ui/leaderboardTable";
 import { ColumnSettingsTable } from "@coordinator/leaderboard/src/ui/columnSettingsTable";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
 import { useGetLeaderboard } from "../application/hooks/useGetLeaderboard";
@@ -20,13 +21,11 @@ import { useUpdateLocalColumn } from "../application/hooks/useUpdateLocalColumn"
 import { useRemoveLocalColumn } from "../application/hooks/useRemoveLocalColumn";
 import { useResetLocalColumns } from "../application/hooks/useResetLocalColumns";
 import { useLeaderboardHubSync } from "../application/hooks/useLeaderboardHubSync";
-import {
-  resetLocalLeaderboardColumns,
-  addLocalLeaderboardColumn,
-} from "../infrastructure/services";
+import { saveLocalLeaderboardColumns } from "../infrastructure/services";
 
 export function LeaderboardContent() {
   const { crunchName } = useCrunchContext();
+  const queryClient = useQueryClient();
 
   const { environments } = useLocalCompetitionEnvironments(crunchName);
   const { leaderboard, leaderboardLoading } = useGetLeaderboard();
@@ -45,11 +44,10 @@ export function LeaderboardContent() {
   ) => {
     try {
       const hubColumns = await pullFromHub(address, hubUrl);
-      await resetLocalLeaderboardColumns(crunchName);
-      for (const col of hubColumns) {
-        const { id, ...rest } = col;
-        await addLocalLeaderboardColumn(crunchName, rest);
-      }
+      await saveLocalLeaderboardColumns(crunchName, hubColumns);
+      queryClient.invalidateQueries({
+        queryKey: ["leaderboardColumns", crunchName],
+      });
       toast({ title: `Columns pulled from "${envName}" successfully` });
     } catch (error) {
       toast({

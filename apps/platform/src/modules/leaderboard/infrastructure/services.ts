@@ -81,6 +81,13 @@ export const resetLocalLeaderboardColumns = async (
   await apiClient.put(endpoints.localLeaderboardColumns(slug), initialColumns);
 };
 
+export const saveLocalLeaderboardColumns = async (
+  slug: string,
+  columns: LeaderboardColumn[]
+): Promise<void> => {
+  await apiClient.put(endpoints.localLeaderboardColumns(slug), columns);
+};
+
 export const getLeaderboardDefinitions = async (
   competitionIdentifier: string,
   hubBaseUrl: string

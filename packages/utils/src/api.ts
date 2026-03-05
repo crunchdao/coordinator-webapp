@@ -25,10 +25,6 @@ apiClient.interceptors.response.use(
       }`;
     }
 
-    if (typeof window !== "undefined") {
-      console.error(error.message);
-    }
-
     return Promise.reject(error);
   }
 );
