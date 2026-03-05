@@ -21,7 +21,7 @@ export const useBuildLeaderboardColumns = (
     if (!leaderboardColumns) return [];
 
     return leaderboardColumns.map((column) => {
-      if (column.type === "MODEL") {
+      if (column.type === "PROJECT") {
         return {
           id: `column_${column.id}`,
           accessorKey: "model_name",
@@ -104,13 +104,12 @@ export const useBuildLeaderboardColumns = (
             )
           : column.displayName || "",
         meta: {
-          className: column.type === "CHART" ? "text-left" : "text-right",
+          className: column.nativeConfiguration?.type === "gauge" ? "text-left" : "text-right",
         },
         cell: ({ row }) => {
           const value = row.original[column.property];
 
           if (
-            column.type === "CHART" &&
             column.nativeConfiguration?.type === "gauge"
           ) {
             return (

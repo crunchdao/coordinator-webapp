@@ -1,8 +1,8 @@
 import { LeaderboardColumn } from "./types";
 
 export const FIXED_COLUMNS_DEFAULTS = {
-  MODEL: {
-    type: "MODEL" as const,
+  PROJECT: {
+    type: "PROJECT",
     displayName: "Model",
     order: 0,
     format: null,
