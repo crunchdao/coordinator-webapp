@@ -42,7 +42,7 @@ export const useLeaderboardHubSync = () => {
       const definition = definitions[0];
       await updateLeaderboardDefinition(
         `onchain:${address}`,
-        String(definition.id),
+        definition.name,
         {
           columns: columns.map(({ id, ...rest }) => ({
             ...rest,
