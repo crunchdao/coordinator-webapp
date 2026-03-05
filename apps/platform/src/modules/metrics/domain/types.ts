@@ -1,4 +1,7 @@
-import type { Widget } from "@coordinator/metrics/src/domain/types";
+import type {
+  LineChartConfiguration,
+  GaugeConfiguration,
+} from "@crunchdao/chart";
 
 export type HubChartDefinition = {
   id: number;
@@ -8,7 +11,7 @@ export type HubChartDefinition = {
   endpointUrl: string;
   dataKey: string;
   projectIdProperty: string;
-  nativeConfiguration: Record<string, unknown> | null;
+  nativeConfiguration: LineChartConfiguration | GaugeConfiguration | null;
   order: number;
 };
 
@@ -18,7 +21,7 @@ export type CreateChartDefinitionPayload = {
   type: "CHART" | "IFRAME";
   endpointUrl: string;
   projectIdProperty: string;
-  nativeConfiguration: Record<string, unknown> | null;
+  nativeConfiguration: LineChartConfiguration | GaugeConfiguration | null;
   order: number;
 };
 
