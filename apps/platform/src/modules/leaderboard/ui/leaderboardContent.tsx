@@ -4,6 +4,11 @@ import { useState, useEffect } from "react";
 import {
   Input,
   Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -14,6 +19,7 @@ import { LeaderboardTable } from "@coordinator/leaderboard/src/ui/leaderboardTab
 import { ColumnSettingsTable } from "@coordinator/leaderboard/src/ui/columnSettingsTable";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { useGetLeaderboard } from "../application/hooks/useGetLeaderboard";
 import { useLocalLeaderboardColumns } from "../application/hooks/useLocalLeaderboardColumns";
@@ -28,13 +34,25 @@ export function LeaderboardContent() {
   const { crunchName } = useCrunchContext();
   const queryClient = useQueryClient();
 
-  const { leaderboard, leaderboardLoading } = useGetLeaderboard();
+  const { environments } = useLocalCompetitionEnvironments(crunchName);
+  const [selectedEnvName, setSelectedEnvName] = useState<string | undefined>();
+
+  const selectedEnv =
+    environments?.find((env) => env.name === selectedEnvName) ??
+    environments?.[0];
+  const coordinatorNodeUrl = selectedEnv?.coordinatorNodeUrl;
+
   const { columns, externalUrl, columnsLoading } =
     useLocalLeaderboardColumns(crunchName);
+  const { leaderboard, leaderboardLoading } =
+    useGetLeaderboard(coordinatorNodeUrl);
   const { addColumn, addColumnLoading } = useAddLocalColumn(crunchName);
-  const { updateColumn, updateColumnLoading } = useUpdateLocalColumn(crunchName);
-  const { removeColumn, removeColumnLoading } = useRemoveLocalColumn(crunchName);
-  const { resetColumns, resetColumnsLoading } = useResetLocalColumns(crunchName);
+  const { updateColumn, updateColumnLoading } =
+    useUpdateLocalColumn(crunchName);
+  const { removeColumn, removeColumnLoading } =
+    useRemoveLocalColumn(crunchName);
+  const { resetColumns, resetColumnsLoading } =
+    useResetLocalColumns(crunchName);
   const { pullFromHub, pushToHub, isPulling, isPushing } =
     useLeaderboardHubSync();
 
@@ -108,9 +126,29 @@ export function LeaderboardContent() {
     }
   };
 
-  const externalUrlHeader = (
-    <div className="flex items-end gap-3">
-      <div className="flex-1 space-y-1.5">
+  const settingsHeader = (
+    <div className="space-y-4">
+      {environments && environments.length > 1 && (
+        <div className="space-y-1.5">
+          <Label>Data Source</Label>
+          <Select
+            value={selectedEnv?.name}
+            onValueChange={setSelectedEnvName}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select environment" />
+            </SelectTrigger>
+            <SelectContent>
+              {environments.map((env) => (
+                <SelectItem key={env.name} value={env.name}>
+                  {env.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+      <div className="space-y-1.5">
         <div className="flex items-center gap-1.5">
           <Label htmlFor="external-url">External URL</Label>
           <Tooltip>
@@ -118,7 +156,7 @@ export function LeaderboardContent() {
               <InfoCircle className="w-3.5 h-3.5 text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent>
-              URL from which leaderboard data is fetched
+              URL used by the Hub to fetch leaderboard data
             </TooltipContent>
           </Tooltip>
         </div>
@@ -150,7 +188,7 @@ export function LeaderboardContent() {
         updateLoading={updateColumnLoading}
         deleteLoading={removeColumnLoading}
         resetLoading={resetColumnsLoading}
-        header={externalUrlHeader}
+        header={settingsHeader}
         actions={
           <HubSyncButtons
             isPulling={isPulling}
