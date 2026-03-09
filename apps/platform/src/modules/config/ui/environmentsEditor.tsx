@@ -122,7 +122,11 @@ export function EnvironmentsEditor() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <Accordion type="multiple" value={openItems} onValueChange={setOpenItems}>
+            <Accordion
+              type="multiple"
+              value={openItems}
+              onValueChange={setOpenItems}
+            >
               {fields.map((field, index) => {
                 const network = form.watch(`environments.${index}.network`);
                 const envName =

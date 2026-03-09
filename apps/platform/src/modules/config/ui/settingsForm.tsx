@@ -10,10 +10,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
   Form,
   FormControl,
   FormDescription,
@@ -31,11 +27,10 @@ import {
   Textarea,
   toast,
 } from "@crunch-ui/core";
-import { Download, Export } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { useSettingsHubSync } from "@/modules/competition/application/hooks/useSettingsHubSync";
 import { settingsSchema, SettingsFormData } from "../domain/schemas";
-import { useLocalCompetitionEnvironments } from "../application/hooks/useLocalCompetitionEnvironments";
 import {
   useLocalCompetitionSettings,
   useSaveLocalCompetitionSettings,
@@ -43,7 +38,6 @@ import {
 
 export function SettingsForm() {
   const { crunchName } = useCrunchContext();
-  const { environments } = useLocalCompetitionEnvironments(crunchName);
 
   const { settings, settingsLoading } = useLocalCompetitionSettings(crunchName);
   const { saveSettings, saveSettingsAsync, saveSettingsLoading } =
@@ -145,10 +139,6 @@ export function SettingsForm() {
       });
     }
   };
-
-  const pullableEnvs = environments
-    ? environments.filter((env) => env.hubUrl && env.address)
-    : [];
 
   if (settingsLoading) {
     return <Spinner className="mx-auto" />;
@@ -418,58 +408,12 @@ export function SettingsForm() {
             </div>
 
             <div className="flex justify-end gap-2">
-              {pullableEnvs.length > 0 && (
-                <>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={isPulling}
-                      >
-                        <Download />
-                        Pull from Hub
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {pullableEnvs.map((env) => (
-                        <DropdownMenuItem
-                          key={env.name}
-                          onClick={() =>
-                            handlePullFromHub(env.name, env.address, env.hubUrl!)
-                          }
-                        >
-                          {env.name}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={isPushing}
-                      >
-                        <Export />
-                        Push to Hub
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {pullableEnvs.map((env) => (
-                        <DropdownMenuItem
-                          key={env.name}
-                          onClick={() =>
-                            handlePushToHub(env.name, env.address, env.hubUrl!)
-                          }
-                        >
-                          {env.name}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </>
-              )}
+              <HubSyncButtons
+                isPulling={isPulling}
+                isPushing={isPushing}
+                onPull={handlePullFromHub}
+                onPush={handlePushToHub}
+              />
               <Button type="submit" loading={saveSettingsLoading}>
                 Save Local
               </Button>

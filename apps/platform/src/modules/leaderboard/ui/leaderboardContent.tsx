@@ -2,11 +2,6 @@
 
 import { useState, useEffect } from "react";
 import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
   Input,
   Label,
   Tooltip,
@@ -14,12 +9,12 @@ import {
   TooltipTrigger,
   toast,
 } from "@crunch-ui/core";
-import { Download, Export, InfoCircle } from "@crunch-ui/icons";
+import { InfoCircle } from "@crunch-ui/icons";
 import { LeaderboardTable } from "@coordinator/leaderboard/src/ui/leaderboardTable";
 import { ColumnSettingsTable } from "@coordinator/leaderboard/src/ui/columnSettingsTable";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
-import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
+import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { useGetLeaderboard } from "../application/hooks/useGetLeaderboard";
 import { useLocalLeaderboardColumns } from "../application/hooks/useLocalLeaderboardColumns";
 import { useAddLocalColumn } from "../application/hooks/useAddLocalColumn";
@@ -33,7 +28,6 @@ export function LeaderboardContent() {
   const { crunchName } = useCrunchContext();
   const queryClient = useQueryClient();
 
-  const { environments } = useLocalCompetitionEnvironments(crunchName);
   const { leaderboard, leaderboardLoading } = useGetLeaderboard();
   const { columns, externalUrl, columnsLoading } =
     useLocalLeaderboardColumns(crunchName);
@@ -114,55 +108,6 @@ export function LeaderboardContent() {
     }
   };
 
-  const pullableEnvs = environments
-    ? environments.filter((env) => env.hubUrl && env.address)
-    : [];
-
-  const hubActions = pullableEnvs.length > 0 && (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" disabled={isPulling}>
-            <Download />
-            Pull from Hub
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {pullableEnvs.map((env) => (
-            <DropdownMenuItem
-              key={env.name}
-              onClick={() =>
-                handlePullFromHub(env.name, env.address, env.hubUrl!)
-              }
-            >
-              {env.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" disabled={isPushing}>
-            <Export />
-            Push to Hub
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {pullableEnvs.map((env) => (
-            <DropdownMenuItem
-              key={env.name}
-              onClick={() =>
-                handlePushToHub(env.name, env.address, env.hubUrl!)
-              }
-            >
-              {env.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
-  );
-
   const externalUrlHeader = (
     <div className="flex items-end gap-3">
       <div className="flex-1 space-y-1.5">
@@ -206,7 +151,14 @@ export function LeaderboardContent() {
         deleteLoading={removeColumnLoading}
         resetLoading={resetColumnsLoading}
         header={externalUrlHeader}
-        actions={hubActions}
+        actions={
+          <HubSyncButtons
+            isPulling={isPulling}
+            isPushing={isPushing}
+            onPull={handlePullFromHub}
+            onPush={handlePushToHub}
+          />
+        }
       />
       <LeaderboardTable
         leaderboard={leaderboard}
