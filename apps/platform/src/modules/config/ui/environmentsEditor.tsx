@@ -45,12 +45,15 @@ import {
   DEFAULT_HUB_URLS,
 } from "../domain/types";
 
+const DEFAULT_COORDINATOR_NODE_URL = "http://localhost:8000";
+
 const DEFAULT_ENVIRONMENT = {
   name: "",
   address: "",
   network: WalletAdapterNetwork.Devnet,
   rpcUrl: DEFAULT_RPC_URLS[WalletAdapterNetwork.Devnet] || "",
   hubUrl: DEFAULT_HUB_URLS[WalletAdapterNetwork.Devnet] || "",
+  coordinatorNodeUrl: DEFAULT_COORDINATOR_NODE_URL,
 };
 
 export function EnvironmentsEditor() {
@@ -102,6 +105,7 @@ export function EnvironmentsEditor() {
         ...env,
         rpcUrl: env.rpcUrl || undefined,
         hubUrl: env.hubUrl || undefined,
+        coordinatorNodeUrl: env.coordinatorNodeUrl || undefined,
       }))
     );
   };
@@ -278,6 +282,23 @@ export function EnvironmentsEditor() {
                             )}
                           />
                         </div>
+
+                        <FormField
+                          control={form.control}
+                          name={`environments.${index}.coordinatorNodeUrl`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Coordinator Node URL</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder={DEFAULT_COORDINATOR_NODE_URL}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </AccordionContent>
                   </AccordionItem>

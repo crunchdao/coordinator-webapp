@@ -44,13 +44,10 @@ export function CrunchConfigCreationForm() {
 
   const form = useForm<CrunchConfigCreationFormData>({
     resolver: zodResolver(
-      crunchConfigCreationSchema.refine(
-        (data) => !slugs.includes(data.slug),
-        {
-          message: "This slug is already taken",
-          path: ["slug"],
-        }
-      )
+      crunchConfigCreationSchema.refine((data) => !slugs.includes(data.slug), {
+        message: "This slug is already taken",
+        path: ["slug"],
+      })
     ),
     defaultValues: {
       slug: "",
@@ -119,9 +116,7 @@ export function CrunchConfigCreationForm() {
           <h3 className="text-sm font-medium">Environments</h3>
 
           {fields.map((field, index) => {
-            const network = form.watch(
-              `environments.${index}.network`
-            );
+            const network = form.watch(`environments.${index}.network`);
 
             return (
               <div key={field.id} className="border rounded-lg p-4 space-y-3">
@@ -216,9 +211,6 @@ export function CrunchConfigCreationForm() {
                         <FormControl>
                           <Input placeholder="https://..." {...field} />
                         </FormControl>
-                        <FormDescription>
-                          Default: {DEFAULT_RPC_URLS[network] ? "Helius" : "—"}
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}

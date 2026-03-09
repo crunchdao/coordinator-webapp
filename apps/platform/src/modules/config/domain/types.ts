@@ -6,6 +6,7 @@ export interface Environment {
   network: WalletAdapterNetwork;
   rpcUrl?: string;
   hubUrl?: string;
+  coordinatorNodeUrl?: string;
 }
 
 export type CompetitionEnvironments = Environment[];

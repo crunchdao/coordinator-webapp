@@ -20,8 +20,7 @@ export const usePitchHubSync = (
       throw new Error("No season selected");
     }
 
-    // const competitionIdentifier = `onchain:${address}`;
-    const competitionIdentifier = "hugo-alien-predictor";
+    const competitionIdentifier = `onchain:${address}`;
     setIsPulling(true);
     try {
       const slices = await getPitchSlices(
@@ -45,8 +44,7 @@ export const usePitchHubSync = (
       throw new Error("No season selected");
     }
 
-    // const competitionIdentifier = `onchain:${address}`;x
-    const competitionIdentifier = "hugo-alien-predictor";
+    const competitionIdentifier = `onchain:${address}`;
     setIsPushing(true);
     try {
       const hubSlices = await getPitchSlices(

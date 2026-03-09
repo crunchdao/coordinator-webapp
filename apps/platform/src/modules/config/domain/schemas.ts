@@ -7,6 +7,7 @@ export const environmentSchema = z.object({
   network: z.nativeEnum(WalletAdapterNetwork),
   rpcUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
   hubUrl: z.string().optional().or(z.literal("")),
+  coordinatorNodeUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
 });
 
 export const environmentsFormSchema = z.object({

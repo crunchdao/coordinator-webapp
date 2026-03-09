@@ -1,6 +1,7 @@
 import apiClient from "@coordinator/utils/src/api";
 import { AxiosError } from "axios";
 import hubApiClient from "@/utils/api/hubApiClient";
+import coordinatorNodeApiClient from "@/utils/api/coordinatorNodeApiClient";
 import {
   Leaderboard,
   LeaderboardColumn,
@@ -14,11 +15,11 @@ import type {
 } from "../domain/types";
 
 export const getLeaderboard = async (
-  crunchName: string
+  coordinatorNodeUrl?: string
 ): Promise<Leaderboard> => {
-  const response = await apiClient.get(
-    `/crunches/${crunchName}/reports/leaderboard`
-  );
+  const response = await coordinatorNodeApiClient.get("/leaderboard", {
+    params: coordinatorNodeUrl ? { baseUrl: coordinatorNodeUrl } : undefined,
+  });
   return response.data;
 };
 
