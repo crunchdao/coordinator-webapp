@@ -33,13 +33,13 @@ export default function HubOAuthPage() {
 
         const redirectTo = isValidRedirectPath(state)
           ? state
-          : INTERNAL_LINKS.DASHBOARD;
+          : INTERNAL_LINKS.ONCHAIN_EXPLORER;
         router.replace(redirectTo);
         return;
       }
     }
 
-    router.replace(INTERNAL_LINKS.DASHBOARD);
+    router.replace(INTERNAL_LINKS.ONCHAIN_EXPLORER);
   }, [router]);
 
   return (

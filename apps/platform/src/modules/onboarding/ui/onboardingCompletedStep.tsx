@@ -17,7 +17,7 @@ export function OnboardingCompletedStep() {
           submissions.
         </p>
       </div>
-      <Link href={INTERNAL_LINKS.DASHBOARD}>
+      <Link href={INTERNAL_LINKS.ONCHAIN_EXPLORER}>
         <Button>Go to Dashboard</Button>
       </Link>
     </div>

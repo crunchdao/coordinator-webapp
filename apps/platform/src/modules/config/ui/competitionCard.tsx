@@ -1,15 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { generateLink } from "@crunch-ui/utils";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Badge,
-} from "@crunch-ui/core";
 import { INTERNAL_LINKS } from "@/utils/routes";
+import { CrunchCard } from "@/modules/crunch/ui/crunchCard";
 import { useLocalCompetitionEnvironments } from "../application/hooks/useLocalCompetitionEnvironments";
 import { useLocalCompetitionSettings } from "../application/hooks/useLocalCompetitionSettings";
 
@@ -21,34 +14,16 @@ export function CompetitionCard({ slug }: CompetitionCardProps) {
   const { settings } = useLocalCompetitionSettings(slug);
   const { environments } = useLocalCompetitionEnvironments(slug);
 
-  const displayName = settings?.displayName || slug;
-  const shortDescription = settings?.shortDescription;
+  const firstEnv = environments?.[0];
 
   return (
-    <Link href={generateLink(INTERNAL_LINKS.CRUNCH, { crunchname: slug })}>
-      <Card className="hover:border-primary/50 transition-colors cursor-pointer h-full">
-        <CardHeader>
-          <CardTitle className="text-base">{displayName}</CardTitle>
-          {shortDescription && (
-            <p className="text-sm text-muted-foreground">{shortDescription}</p>
-          )}
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-1.5">
-            {environments && environments.length > 0 ? (
-              environments.map((env) => (
-                <Badge key={env.name} variant="secondary" size="sm">
-                  {env.name} ({env.network})
-                </Badge>
-              ))
-            ) : (
-              <span className="text-xs text-muted-foreground">
-                No environments configured
-              </span>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+    <CrunchCard
+      name={slug}
+      displayName={settings?.displayName}
+      imageUrl={settings?.cardImageUrl}
+      address={firstEnv?.address}
+      hubUrl={firstEnv?.hubUrl}
+      href={generateLink(INTERNAL_LINKS.CRUNCH, { crunchname: slug })}
+    />
   );
 }

@@ -1,7 +1,6 @@
 export const INTERNAL_LINKS = {
   ROOT: "/",
   LOGIN: "/login",
-  DASHBOARD: "/dashboard",
   ONBOARDING: "/get-started",
   CREATE_CRUNCH: "/create-crunch",
   CERTIFICATE_ENROLL: "/certificate-enrollment",
@@ -22,7 +21,6 @@ export const INTERNAL_LINKS = {
 
 export const PAGE_LABELS: Record<string, string> = {
   "get-started": "Get Started",
-  dashboard: "Dashboard",
   "create-crunch": "Create Crunch",
   "certificate-enrollment": "Certificate",
   c: "Crunches",

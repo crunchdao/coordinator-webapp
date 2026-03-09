@@ -1,57 +1,56 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Badge, Button, Card } from "@crunch-ui/core";
 import { ExternalLink } from "@crunch-ui/icons";
-import { generateLink } from "@crunch-ui/utils";
-import { INTERNAL_LINKS } from "@/utils/routes";
-import { useGetCompetition } from "@/modules/competition/application/hooks/useGetCompetition";
 
 const DEFAULT_CARD_IMAGE = "/images/competition-card-generic.webp";
 
-interface CrunchCardProps {
-  name: string;
-  state: string;
-  address?: string;
+export interface CrunchCardBadge {
+  label: string;
+  variant: "primary" | "secondary" | "destructive" | "success" | "warning" | "outline" | "inverted";
 }
 
-export function CrunchCard({ name, state, address }: CrunchCardProps) {
-  const router = useRouter();
-  const { competition, competitionLoading, competitionExists } =
-    useGetCompetition(`onchain:${address}`);
+interface CrunchCardProps {
+  name: string;
+  displayName?: string;
+  imageUrl?: string;
+  badge?: CrunchCardBadge;
+  address?: string;
+  hubUrl?: string;
+  href?: string;
+}
 
-  const cardImageUrl = competition?.cardImageUrl || DEFAULT_CARD_IMAGE;
-
-  const handleCardClick = () => {
-    router.push(
-      generateLink(INTERNAL_LINKS.CRUNCH, {
-        crunchname: name,
-      })
-    );
-  };
-
-  return (
-    <Card
-      className="overflow-hidden bg-background transition-colors hover:bg-accent/50 cursor-pointer"
-      onClick={handleCardClick}
-    >
+export function CrunchCard({
+  name,
+  displayName,
+  imageUrl,
+  badge,
+  address,
+  hubUrl,
+  href,
+}: CrunchCardProps) {
+  const cardContent = (
+    <>
       <div className="relative h-64">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={cardImageUrl}
-          alt={name}
+          src={imageUrl || DEFAULT_CARD_IMAGE}
+          alt={displayName || name}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <Badge
-          variant={state === "started" ? "success" : "secondary"}
-          size="sm"
-          className="absolute top-2 right-2"
-        >
-          {state}
-        </Badge>
+        {badge && (
+          <Badge
+            variant={badge.variant}
+            size="sm"
+            className="absolute top-2 right-2"
+          >
+            {badge.label}
+          </Badge>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
         <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between">
-          <h3 className="text-lg font-bold">{name}</h3>
+          <h3 className="text-lg font-bold">{displayName || name}</h3>
         </div>
       </div>
       <div className="p-4 pt-0 flex justify-between items-center">
@@ -60,9 +59,9 @@ export function CrunchCard({ name, state, address }: CrunchCardProps) {
             {address.slice(0, 6)}...{address.slice(-6)}
           </p>
         )}
-        {competition && (
+        {hubUrl && (
           <a
-            href={`${competition.url}/competitions/${competition.name}`}
+            href={hubUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
@@ -74,6 +73,22 @@ export function CrunchCard({ name, state, address }: CrunchCardProps) {
           </a>
         )}
       </div>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href}>
+        <Card className="overflow-hidden bg-background transition-colors hover:bg-accent/50 cursor-pointer">
+          {cardContent}
+        </Card>
+      </Link>
+    );
+  }
+
+  return (
+    <Card className="overflow-hidden bg-background">
+      {cardContent}
     </Card>
   );
 }
