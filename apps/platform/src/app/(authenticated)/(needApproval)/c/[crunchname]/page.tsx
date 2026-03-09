@@ -3,6 +3,7 @@
 import { CrunchTabs } from "@/modules/crunch/ui/crunchTabs";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useGetCompetition } from "@/modules/competition/application/hooks/useGetCompetition";
+import { NodeStatusOverview } from "@/modules/node/ui/nodeStatusOverview";
 
 const DEFAULT_BANNER_IMAGE = "/images/banner.webp";
 
@@ -26,7 +27,8 @@ export default function CrunchPage() {
         />
         <div className="absolute h-1/2 w-full bg-gradient-to-t from-background to-transparent bottom-0" />
       </section>
-      <section className="p-6 pt-0">
+      <section className="p-6 pt-0 space-y-6">
+        <NodeStatusOverview />
         <CrunchTabs />
       </section>
     </>

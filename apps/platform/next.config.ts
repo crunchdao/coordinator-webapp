@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
         source: "/api/crunches/:crunchName/reports/:path*",
         destination: `${NODE_API_URL}/reports/:path*`,
       },
+      // Proxy node health endpoint: /api/crunches/{name}/healthz → node /healthz
+      {
+        source: "/api/crunches/:crunchName/healthz",
+        destination: `${NODE_API_URL}/healthz`,
+      },
     ];
   },
 };
