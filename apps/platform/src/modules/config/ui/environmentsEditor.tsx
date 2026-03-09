@@ -135,24 +135,22 @@ export function EnvironmentsEditor() {
 
                 return (
                   <AccordionItem key={field.id} value={field.id}>
-                    <AccordionTrigger className="hover:no-underline">
-                      <div className="flex items-center justify-between w-full pr-2">
+                    <div className="relative">
+                      <AccordionTrigger className="hover:no-underline w-full">
                         <span>{envName}</span>
-                        {fields.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              remove(index);
-                            }}
-                          >
-                            <Trash className="size-4" />
-                          </Button>
-                        )}
-                      </div>
-                    </AccordionTrigger>
+                      </AccordionTrigger>
+                      {fields.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          className="absolute right-8 top-1/2 -translate-y-1/2"
+                          onClick={() => remove(index)}
+                        >
+                          <Trash className="size-4" />
+                        </Button>
+                      )}
+                    </div>
                     <AccordionContent>
                       <div className="space-y-3 pt-2">
                         <FormField
