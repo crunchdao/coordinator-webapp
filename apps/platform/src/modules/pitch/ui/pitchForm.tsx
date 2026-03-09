@@ -1,39 +1,39 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Card,
   CardContent,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   Spinner,
   toast,
 } from "@crunch-ui/core";
-import {
-  SliceManager,
-  useSlicesBatch,
-  type CreateSliceData,
-  type UpdateSliceData,
-} from "@crunchdao/slices";
-import { Download } from "@crunch-ui/icons";
+import { SliceManager, useSlicesBatch } from "@crunchdao/slices";
+import type { Slice } from "@crunchdao/slices";
+import { Download, Export } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useGetSeasons } from "@/modules/season/application/hooks/useGetSeasons";
+import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
+import {
+  useConfigFile,
+  useSaveConfigFile,
+} from "@/modules/config/application/hooks/useConfigFile";
 import { Locale } from "../domain/types";
-import { useGetPitchSlices } from "../application/hooks/useGetPitchSlices";
-import { useCreatePitchSlice } from "../application/hooks/useCreatePitchSlice";
-import { useUpdatePitchSlice } from "../application/hooks/useUpdatePitchSlice";
-import { useDeletePitchSlice } from "../application/hooks/useDeletePitchSlice";
+import { usePitchHubSync } from "../application/hooks/usePitchHubSync";
 import { PitchSliceHeader } from "./pitchSliceHeader";
 
 export function PitchForm() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
 
-  const { crunchData, isLoading: crunchLoading } = useCrunchContext();
-  const crunchAddress = crunchData?.address;
+  const { crunchName, isLoading: crunchLoading } = useCrunchContext();
+  const { environments } = useLocalCompetitionEnvironments(crunchName);
 
   const { seasons: seasonsResponse, seasonsLoading } = useGetSeasons();
   const seasons = useMemo(
@@ -70,83 +70,56 @@ export function PitchForm() {
 
   const [locale, setLocale] = useState<Locale>(Locale.ENGLISH);
 
-  const { slices: serverSlices, slicesLoading } = useGetPitchSlices(
+  const configPath = `crunches/${crunchName}/pitch-slices.json`;
+
+  const { data: savedSlices, isLoading: slicesLoading } = useConfigFile<
+    Slice[]
+  >(configPath, { defaultValue: [] });
+
+  const { saveAsync, isSaving: isSavingFile } = useSaveConfigFile<Slice[]>(
+    configPath,
+    { successMessage: "Pitch slices saved successfully" }
+  );
+
+  const { pullFromHub, pushToHub, isPulling, isPushing } = usePitchHubSync(
     selectedSeasonNumber,
-    crunchAddress,
     locale
   );
-
-  const { createSliceAsync } = useCreatePitchSlice(
-    selectedSeasonNumber || 0,
-    crunchAddress || "",
-    locale
-  );
-  const { updateSliceAsync } = useUpdatePitchSlice(
-    selectedSeasonNumber || 0,
-    crunchAddress || "",
-    locale
-  );
-  const { deleteSlice } = useDeletePitchSlice(
-    selectedSeasonNumber || 0,
-    crunchAddress || "",
-    locale
-  );
-
-  const onCreate = useCallback(
-    async (data: CreateSliceData) => {
-      await createSliceAsync(data);
-    },
-    [createSliceAsync]
-  );
-
-  const onUpdate = useCallback(
-    async (data: UpdateSliceData) => {
-      await updateSliceAsync({
-        sliceName: data.sliceName,
-        body: data.body,
-        locale,
-      });
-    },
-    [updateSliceAsync, locale]
-  );
-
-  const onDeleteSlice = useCallback(
-    async (name: string) => {
-      await deleteSlice(name);
-    },
-    [deleteSlice]
-  );
-
-  const onBatchSuccess = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["pitchSlices", selectedSeasonNumber, crunchAddress],
-    });
-    toast({ title: "Changes saved successfully" });
-  }, [queryClient, selectedSeasonNumber, crunchAddress]);
 
   const {
     slices,
-    isDirty,
-    isSaving,
+    isSaving: isBatchSaving,
     handleCreate,
     handleUpdate,
     handleDelete,
     saveChanges,
-    resetChanges,
   } = useSlicesBatch({
-    serverSlices,
-    onCreate,
-    onUpdate,
-    onDelete: onDeleteSlice,
-    onSuccess: onBatchSuccess,
+    serverSlices: savedSlices,
+    onCreate: async () => {},
+    onUpdate: async () => {},
+    onDelete: async () => {},
+    onSuccess: () => {},
   });
 
+  const saving = isSavingFile || isBatchSaving;
+
   const handleSaveChanges = async () => {
+    await saveAsync(slices);
+    await saveChanges();
+  };
+
+  const handlePullFromHub = async (
+    envName: string,
+    address: string,
+    hubUrl: string
+  ) => {
     try {
-      await saveChanges();
+      const hubSlices = await pullFromHub(address, hubUrl);
+      await saveAsync(hubSlices);
+      toast({ title: `Pitch slices pulled from "${envName}" successfully` });
     } catch (error) {
       toast({
-        title: "Failed to save changes",
+        title: "Failed to pull pitch slices",
         description:
           error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
@@ -154,18 +127,29 @@ export function PitchForm() {
     }
   };
 
-  const handleDownloadJson = () => {
-    const json = JSON.stringify(slices, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pitch-${crunchData?.name || "slices"}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handlePushToHub = async (
+    envName: string,
+    address: string,
+    hubUrl: string
+  ) => {
+    try {
+      await pushToHub(address, hubUrl, slices);
+      await saveAsync(slices);
+      await saveChanges();
+      toast({ title: `Pitch slices pushed to "${envName}" successfully` });
+    } catch (error) {
+      toast({
+        title: "Failed to push pitch slices",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    }
   };
+
+  const pullableEnvs = environments
+    ? environments.filter((env) => env.hubUrl && env.address)
+    : [];
 
   if (crunchLoading || seasonsLoading) {
     return <Spinner className="mx-auto" />;
@@ -196,24 +180,57 @@ export function PitchForm() {
               onDelete={handleDelete}
             />
             <div className="mt-6 flex justify-end gap-2">
-              <Button variant="outline" onClick={handleDownloadJson}>
-                <Download />
-                Export JSON
-              </Button>
-              {isDirty && (
+              {pullableEnvs.length > 0 && (
                 <>
-                  <Button
-                    variant="outline"
-                    onClick={resetChanges}
-                    disabled={isSaving}
-                  >
-                    Reset
-                  </Button>
-                  <Button onClick={handleSaveChanges} disabled={isSaving}>
-                    Save Changes
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" disabled={isPulling}>
+                        <Download />
+                        Pull from Hub
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {pullableEnvs.map((env) => (
+                        <DropdownMenuItem
+                          key={env.name}
+                          onClick={() =>
+                            handlePullFromHub(
+                              env.name,
+                              env.address,
+                              env.hubUrl!
+                            )
+                          }
+                        >
+                          {env.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" disabled={isPushing}>
+                        <Export />
+                        Push to Hub
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {pullableEnvs.map((env) => (
+                        <DropdownMenuItem
+                          key={env.name}
+                          onClick={() =>
+                            handlePushToHub(env.name, env.address, env.hubUrl!)
+                          }
+                        >
+                          {env.name}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               )}
+              <Button onClick={handleSaveChanges} loading={saving}>
+                Save Local
+              </Button>
             </div>
           </>
         )}
