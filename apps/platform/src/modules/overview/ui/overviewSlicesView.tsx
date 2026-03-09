@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Button,
-  Card,
-  CardContent,
-  Spinner,
-  toast,
-} from "@crunch-ui/core";
+import { Button, Card, CardContent, Spinner, toast } from "@crunch-ui/core";
 import { SliceManager, useSlicesBatch } from "@crunchdao/slices";
 import type { Slice } from "@crunchdao/slices";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
@@ -16,7 +10,7 @@ import {
   useSaveConfigFile,
 } from "@/modules/config/application/hooks/useConfigFile";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
-import { Locale } from "../domain/types";
+import { Locale } from "@/modules/common/types";
 import { useOverviewHubSync } from "../application/hooks/useOverviewHubSync";
 import { OverviewSliceHeader } from "./overviewSliceHeader";
 

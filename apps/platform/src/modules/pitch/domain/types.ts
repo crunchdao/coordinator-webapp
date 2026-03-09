@@ -24,7 +24,6 @@ type SliceNativeConfiguration =
   | TimelineNativeConfiguration
   | TeamNativeConfiguration;
 
-export { Locale } from "@/modules/common/types";
 export { type Season, SeasonStatus } from "@/modules/season/domain/types";
 
 export type PitchSlice = Slice & {

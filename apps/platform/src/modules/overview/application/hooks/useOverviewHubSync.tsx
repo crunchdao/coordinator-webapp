@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Slice } from "@crunchdao/slices";
-import { Locale } from "../../domain/types";
+import { Locale } from "@/modules/common/types";
 import {
   getOverviewSlices,
   createOverviewSlice,

@@ -18,7 +18,7 @@ import {
   useSaveConfigFile,
 } from "@/modules/config/application/hooks/useConfigFile";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
-import { Locale } from "../domain/types";
+import { Locale } from "@/modules/common/types";
 import { usePitchHubSync } from "../application/hooks/usePitchHubSync";
 import { PitchSliceHeader } from "./pitchSliceHeader";
 
