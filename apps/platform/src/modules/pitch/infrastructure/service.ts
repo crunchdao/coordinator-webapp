@@ -1,12 +1,12 @@
 import hubApiClient from "@/utils/api/hubApiClient";
 import { PaginatedResponse } from "@/modules/common/domain/pagination";
+import { Locale } from "@/modules/common/types";
 import {
   Pitch,
   PitchSlicesListResponse,
   PitchSlice,
   CreatePitchSliceBody,
   UpdatePitchSliceBody,
-  Locale,
 } from "../domain/types";
 import { pitchEndpoints } from "./endpoints";
 

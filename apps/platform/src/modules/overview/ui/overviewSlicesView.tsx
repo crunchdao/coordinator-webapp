@@ -40,10 +40,6 @@ export const OverviewSlicesView: React.FC = () => {
     saveChanges,
   } = useSlicesBatch({
     serverSlices: savedSlices,
-    onCreate: async () => {},
-    onUpdate: async () => {},
-    onDelete: async () => {},
-    onSuccess: () => {},
   });
 
   const saving = isSavingFile || isBatchSaving;
