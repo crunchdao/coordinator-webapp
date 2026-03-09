@@ -14,15 +14,16 @@ export function CompetitionCard({ slug }: CompetitionCardProps) {
   const { settings } = useLocalCompetitionSettings(slug);
   const { environments } = useLocalCompetitionEnvironments(slug);
 
-  const firstEnv = environments?.[0];
-
   return (
     <CrunchCard
       name={slug}
       displayName={settings?.displayName}
       imageUrl={settings?.cardImageUrl}
-      address={firstEnv?.address}
-      hubUrl={firstEnv?.hubUrl}
+      environments={environments?.map((env) => ({
+        name: env.name,
+        address: env.address,
+        network: env.network,
+      }))}
       href={generateLink(INTERNAL_LINKS.CRUNCH, { crunchname: slug })}
     />
   );
