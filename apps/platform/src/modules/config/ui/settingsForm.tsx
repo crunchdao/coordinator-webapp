@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -27,6 +27,7 @@ import {
   Textarea,
   toast,
 } from "@crunch-ui/core";
+import { Edit as EditIcon } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { useSettingsHubSync } from "@/modules/competition/application/hooks/useSettingsHubSync";
@@ -35,6 +36,11 @@ import {
   useLocalCompetitionSettings,
   useSaveLocalCompetitionSettings,
 } from "../application/hooks/useLocalCompetitionSettings";
+
+const DEFAULT_BANNER_IMAGE =
+  "https://raw.githubusercontent.com/crunchdao/competitions/refs/heads/master/documentation/assets/generic/banner.webp";
+const DEFAULT_CARD_IMAGE =
+  "https://raw.githubusercontent.com/crunchdao/competitions/refs/heads/master/documentation/assets/generic/card.webp";
 
 export function SettingsForm() {
   const { crunchName } = useCrunchContext();
@@ -45,6 +51,9 @@ export function SettingsForm() {
 
   const { pullFromHub, pushToHub, isPulling, isPushing } =
     useSettingsHubSync();
+
+  const [editingBanner, setEditingBanner] = useState(false);
+  const [editingCard, setEditingCard] = useState(false);
 
   const form = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
@@ -98,7 +107,11 @@ export function SettingsForm() {
   }, [settings, form]);
 
   const onSubmit = (data: SettingsFormData) => {
-    saveSettings(data);
+    saveSettings({
+      ...data,
+      bannerImageUrl: data.bannerImageUrl || DEFAULT_BANNER_IMAGE,
+      cardImageUrl: data.cardImageUrl || DEFAULT_CARD_IMAGE,
+    });
   };
 
   const handlePullFromHub = async (
@@ -281,34 +294,89 @@ export function SettingsForm() {
 
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Images</h3>
-              <div className="grid gap-4 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="cardImageUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Card Image URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="bannerImageUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Banner Image URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+
+              <FormField
+                control={form.control}
+                name="bannerImageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Banner Image</FormLabel>
+                    <section className="relative rounded-lg overflow-hidden border min-h-[200px]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={field.value || DEFAULT_BANNER_IMAGE}
+                        alt="Banner"
+                        className="w-full object-cover object-center max-h-[200px]"
+                      />
+                      <div className="absolute h-1/2 w-full bg-gradient-to-t from-background to-transparent bottom-0" />
+                      {editingBanner ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/80 p-4">
+                          <FormControl>
+                            <Input
+                              placeholder="https://..."
+                              {...field}
+                              autoFocus
+                              onBlur={() => setEditingBanner(false)}
+                            />
+                          </FormControl>
+                        </div>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon-sm"
+                          className="absolute top-2 right-2"
+                          onClick={() => setEditingBanner(true)}
+                        >
+                          <EditIcon />
+                        </Button>
+                      )}
+                    </section>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="cardImageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Card Image</FormLabel>
+                    <div className="relative w-[376px] h-[445px] rounded-lg overflow-hidden border">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={field.value || DEFAULT_CARD_IMAGE}
+                        alt="Card"
+                        className="w-full h-full object-cover"
+                      />
+                      {editingCard ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/80 p-2">
+                          <FormControl>
+                            <Input
+                              placeholder="https://..."
+                              {...field}
+                              autoFocus
+                              onBlur={() => setEditingCard(false)}
+                            />
+                          </FormControl>
+                        </div>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon-sm"
+                          className="absolute top-2 right-2"
+                          onClick={() => setEditingCard(true)}
+                        >
+                          <EditIcon />
+                        </Button>
+                      )}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="space-y-4">
