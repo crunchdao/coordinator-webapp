@@ -1,19 +1,11 @@
 "use client";
 
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  toast,
-} from "@crunch-ui/core";
-import { Download, Export } from "@crunch-ui/icons";
+import { toast } from "@crunch-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { MetricSettingsTable } from "@coordinator/metrics/src/ui/metricSettingsTable";
 import { MetricsDashboard } from "@coordinator/metrics/src/ui/metricsDashboard";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
-import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
+import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { useGetLocalWidgets } from "../application/hooks/useGetLocalWidgets";
 import { useAddLocalWidget } from "../application/hooks/useAddLocalWidget";
 import { useUpdateLocalWidget } from "../application/hooks/useUpdateLocalWidget";
@@ -26,7 +18,6 @@ export function MetricsContent() {
   const { crunchName } = useCrunchContext();
   const queryClient = useQueryClient();
 
-  const { environments } = useLocalCompetitionEnvironments(crunchName);
   const { widgets, widgetsLoading } = useGetLocalWidgets(crunchName);
   const { addWidget, addWidgetLoading } = useAddLocalWidget(crunchName);
   const { updateWidget, updateWidgetLoading } =
@@ -80,55 +71,6 @@ export function MetricsContent() {
     }
   };
 
-  const pullableEnvs = environments
-    ? environments.filter((env) => env.hubUrl && env.address)
-    : [];
-
-  const hubActions = pullableEnvs.length > 0 && (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" disabled={isPulling}>
-            <Download />
-            Pull from Hub
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {pullableEnvs.map((env) => (
-            <DropdownMenuItem
-              key={env.name}
-              onClick={() =>
-                handlePullFromHub(env.name, env.address, env.hubUrl!)
-              }
-            >
-              {env.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" disabled={isPushing}>
-            <Export />
-            Push to Hub
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {pullableEnvs.map((env) => (
-            <DropdownMenuItem
-              key={env.name}
-              onClick={() =>
-                handlePushToHub(env.name, env.address, env.hubUrl!)
-              }
-            >
-              {env.name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
-  );
-
   return (
     <section className="p-6 space-y-3">
       <MetricSettingsTable
@@ -142,7 +84,14 @@ export function MetricsContent() {
         updateLoading={updateWidgetLoading}
         deleteLoading={removeWidgetLoading}
         resetLoading={resetWidgetsLoading}
-        actions={hubActions}
+        actions={
+          <HubSyncButtons
+            isPulling={isPulling}
+            isPushing={isPushing}
+            onPull={handlePullFromHub}
+            onPush={handlePushToHub}
+          />
+        }
       />
       <MetricsDashboard widgets={widgets} widgetsLoading={widgetsLoading} />
     </section>

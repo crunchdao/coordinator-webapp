@@ -5,29 +5,23 @@ import {
   Button,
   Card,
   CardContent,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
   Spinner,
   toast,
 } from "@crunch-ui/core";
 import { SliceManager, useSlicesBatch } from "@crunchdao/slices";
 import type { Slice } from "@crunchdao/slices";
-import { Download, Export } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
-import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
 import {
   useConfigFile,
   useSaveConfigFile,
 } from "@/modules/config/application/hooks/useConfigFile";
+import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { Locale } from "../domain/types";
 import { useOverviewHubSync } from "../application/hooks/useOverviewHubSync";
 import { OverviewSliceHeader } from "./overviewSliceHeader";
 
 export const OverviewSlicesView: React.FC = () => {
   const { crunchName } = useCrunchContext();
-  const { environments } = useLocalCompetitionEnvironments(crunchName);
   const [locale, setLocale] = useState<Locale>(Locale.ENGLISH);
   const { pullFromHub, pushToHub, isPulling, isPushing } =
     useOverviewHubSync(locale);
@@ -104,10 +98,6 @@ export const OverviewSlicesView: React.FC = () => {
     }
   };
 
-  const pullableEnvs = environments
-    ? environments.filter((env) => env.hubUrl && env.address)
-    : [];
-
   if (slicesLoading) {
     return <Spinner className="mx-auto" />;
   }
@@ -123,50 +113,12 @@ export const OverviewSlicesView: React.FC = () => {
           onDelete={handleDelete}
         />
         <div className="mt-6 flex justify-end gap-2">
-          {pullableEnvs.length > 0 && (
-            <>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" disabled={isPulling}>
-                    <Download />
-                    Pull from Hub
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {pullableEnvs.map((env) => (
-                    <DropdownMenuItem
-                      key={env.name}
-                      onClick={() =>
-                        handlePullFromHub(env.name, env.address, env.hubUrl!)
-                      }
-                    >
-                      {env.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" disabled={isPushing}>
-                    <Export />
-                    Push to Hub
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {pullableEnvs.map((env) => (
-                    <DropdownMenuItem
-                      key={env.name}
-                      onClick={() =>
-                        handlePushToHub(env.name, env.address, env.hubUrl!)
-                      }
-                    >
-                      {env.name}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          )}
+          <HubSyncButtons
+            isPulling={isPulling}
+            isPushing={isPushing}
+            onPull={handlePullFromHub}
+            onPush={handlePushToHub}
+          />
           <Button onClick={handleSaveChanges} loading={saving}>
             Save Local
           </Button>
