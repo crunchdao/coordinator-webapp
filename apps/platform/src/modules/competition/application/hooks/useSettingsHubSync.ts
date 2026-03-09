@@ -7,9 +7,10 @@ export const useSettingsHubSync = () => {
   const [isPushing, setIsPushing] = useState(false);
 
   const pullFromHub = async (address: string, hubBaseUrl: string) => {
+    const competitionIdentifier = `onchain:${address}`;
     setIsPulling(true);
     try {
-      return await getCompetition(address, hubBaseUrl);
+      return await getCompetition(competitionIdentifier, hubBaseUrl);
     } finally {
       setIsPulling(false);
     }

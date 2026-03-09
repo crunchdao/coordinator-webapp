@@ -4,11 +4,11 @@ import { Competition } from "../domain/types";
 import { competitionEndpoints } from "./endpoints";
 
 export const getCompetition = async (
-  crunchAddress: string,
+  competitionIdentifier: string,
   hubBaseUrl?: string
 ): Promise<Competition> => {
   const response = await hubApiClient.get(
-    competitionEndpoints.getCompetition(crunchAddress),
+    competitionEndpoints.getCompetition(competitionIdentifier),
     { ...(hubBaseUrl && { baseURL: hubBaseUrl }) }
   );
   return response.data;
