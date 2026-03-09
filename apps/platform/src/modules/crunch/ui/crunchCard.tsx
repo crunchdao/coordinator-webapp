@@ -18,7 +18,7 @@ interface CrunchCardProps {
 export function CrunchCard({ name, state, address }: CrunchCardProps) {
   const router = useRouter();
   const { competition, competitionLoading, competitionExists } =
-    useGetCompetition(address);
+    useGetCompetition(`onchain:${address}`);
 
   const cardImageUrl = competition?.cardImageUrl || DEFAULT_CARD_IMAGE;
 

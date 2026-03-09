@@ -18,7 +18,7 @@ export function CompetitionSettingsTab({
   crunchAddress,
 }: CompetitionSettingsTabProps) {
   const { competition, competitionLoading, competitionExists } =
-    useGetCompetition(crunchAddress);
+    useGetCompetition(`onchain:${crunchAddress}`);
 
   if (competitionLoading) {
     return (
