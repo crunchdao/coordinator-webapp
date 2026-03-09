@@ -26,7 +26,7 @@ export const OverviewSlicesView: React.FC = () => {
   const { pullFromHub, pushToHub, isPulling, isPushing } =
     useOverviewHubSync(locale);
 
-  const configPath = `crunches/${crunchName}/slices.json`;
+  const configPath = `crunches/${crunchName}/overview-slices.json`;
 
   const { data: savedSlices, isLoading: slicesLoading } = useConfigFile<
     Slice[]

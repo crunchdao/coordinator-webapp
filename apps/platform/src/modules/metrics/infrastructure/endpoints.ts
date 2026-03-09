@@ -1,6 +1,6 @@
 export const endpoints = {
   localMetricsWidgets: (slug: string) =>
-    `/config/crunches/${slug}/metrics/widgets.json`,
+    `/config/crunches/${slug}/metrics-widgets.json`,
 };
 
 export const hubEndpoints = {
