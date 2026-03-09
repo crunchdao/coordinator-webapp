@@ -7,8 +7,6 @@ import {
   TeamNativeConfiguration,
 } from "@crunchdao/slices";
 
-export { Locale } from "@/modules/common/types";
-
 export type OverviewSlice = Slice & {
   updatedAt: string;
   createdAt: string;
