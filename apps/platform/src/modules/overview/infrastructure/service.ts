@@ -1,10 +1,10 @@
 import hubApiClient from "@/utils/api/hubApiClient";
+import { Locale } from "@/modules/common/types";
 import {
   OverviewSliceItemResponse,
   OverviewSlicesListResponse,
   CreateOverviewSliceBody,
   UpdateOverviewSliceBody,
-  Locale,
 } from "../domain/types";
 import { overviewEndpoints } from "./endpoints";
 
