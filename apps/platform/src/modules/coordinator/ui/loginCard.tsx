@@ -17,7 +17,7 @@ export function LoginCard() {
       if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
         router.push(INTERNAL_LINKS.ONBOARDING);
       } else {
-        router.push(INTERNAL_LINKS.DASHBOARD);
+        router.push(INTERNAL_LINKS.ONCHAIN_EXPLORER);
       }
     }
   }, [isAuthenticated, isLoading, coordinatorStatus, router]);

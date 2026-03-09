@@ -1,7 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button, Spinner } from "@crunch-ui/core";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Spinner,
+} from "@crunch-ui/core";
 import { Plus } from "@crunch-ui/icons";
 import { useLocalCompetitionList } from "../application/hooks/useLocalCompetitionList";
 import { CompetitionCard } from "./competitionCard";
@@ -12,39 +19,47 @@ export function CompetitionList() {
 
   if (competitionsLoading) {
     return (
-      <div className="flex flex-1 items-center justify-center h-64">
-        <Spinner />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Configured Crunches</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64">
+            <Spinner />
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Your Configured Crunches</h1>
-        <Button onClick={() => router.push("/c/new")}>
-          <Plus className="size-4 mr-2" />
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Your Configured Crunches</CardTitle>
+        <Button size="sm" onClick={() => router.push("/c/new")}>
+          <Plus className="size-4" />
           New Crunch
         </Button>
-      </div>
-
-      {slugs.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-muted-foreground mb-4">
-            No competitions configured yet.
-          </p>
-          <Button onClick={() => router.push("/c/new")}>
-            <Plus className="size-4 mr-2" />
-            Create your first competition
-          </Button>
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {slugs.map((slug) => (
-            <CompetitionCard key={slug} slug={slug} />
-          ))}
-        </div>
-      )}
-    </div>
+      </CardHeader>
+      <CardContent>
+        {slugs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-muted-foreground mb-4">
+              No competitions configured yet.
+            </p>
+            <Button onClick={() => router.push("/c/new")}>
+              <Plus className="size-4" />
+              Create your first competition
+            </Button>
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {slugs.map((slug) => (
+              <CompetitionCard key={slug} slug={slug} />
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

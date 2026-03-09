@@ -23,7 +23,7 @@ export function RegistrationCard() {
       !isCheckingCoordinator &&
       coordinatorStatus === CoordinatorStatus.APPROVED
     ) {
-      router.push(INTERNAL_LINKS.DASHBOARD);
+      router.push(INTERNAL_LINKS.ONCHAIN_EXPLORER);
     }
   }, [coordinatorStatus, isCheckingCoordinator, router]);
 
