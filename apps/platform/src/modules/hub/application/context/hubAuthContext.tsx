@@ -46,8 +46,9 @@ export function HubAuthProvider({ children }: HubAuthProviderProps) {
     const storedToken = Cookies.get(HUB_TOKEN_COOKIE);
     if (storedToken) {
       setToken(storedToken);
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -68,6 +69,8 @@ export function HubAuthProvider({ children }: HubAuthProviderProps) {
           setToken(null);
           setUser(null);
         }
+      } finally {
+        if (active) setIsLoading(false);
       }
     };
 

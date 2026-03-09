@@ -1,8 +1,9 @@
 export const HUB_TOKEN_COOKIE = "hub-access-token";
 
 export interface HubUser {
-  id: string;
-  username: string;
-  email?: string;
-  avatarUrl?: string;
+  id: number;
+  login: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }

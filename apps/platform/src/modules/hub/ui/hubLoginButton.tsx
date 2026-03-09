@@ -5,13 +5,16 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Avatar,
   AvatarFallback,
-  AvatarImage,
 } from "@crunch-ui/core";
-import { SmallCross } from "@crunch-ui/icons";
+import { ExternalLink, SmallCross } from "@crunch-ui/icons";
 import { useHubAuth } from "../application/context/hubAuthContext";
+
+const HUB_ACCOUNT_URL = "https://hub.crunchdao.com/account/settings";
 
 export function HubLoginButton() {
   const { isAuthenticated, isLoading, user, login, logout } = useHubAuth();
@@ -27,24 +30,30 @@ export function HubLoginButton() {
       </Button>
     );
   }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="flex items-center gap-2 cursor-pointer">
           <Avatar className="h-8 w-8">
-            {user?.avatarUrl && <AvatarImage src={user.avatarUrl} />}
             <AvatarFallback>
-              {user?.username?.charAt(0).toUpperCase() || "H"}
+              {user?.login?.charAt(0).toUpperCase() || "nd"}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm hidden md:inline">{user?.username}</span>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuLabel>{user?.login}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={() => window.open(HUB_ACCOUNT_URL, "_blank")}
+        >
+          <ExternalLink className="h-4 w-4 mr-2" />
+          My Account
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem className="text-destructive" onSelect={logout}>
           <SmallCross className="h-4 w-4 mr-2" />
-          <span>Disconnect from Hub</span>
+          Disconnect from Hub
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
