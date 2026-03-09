@@ -259,8 +259,9 @@ export function SettingsForm() {
                   <FormItem>
                     <FormLabel>Visibility</FormLabel>
                     <Select
+                      key={field.value}
                       onValueChange={field.onChange}
-                      value={field.value}
+                      defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
