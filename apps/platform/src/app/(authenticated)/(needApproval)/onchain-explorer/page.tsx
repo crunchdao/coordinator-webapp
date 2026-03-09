@@ -1,6 +1,5 @@
 import { Metadata } from "next";
 import { CoordinatorCrunches } from "@/modules/crunch/ui/coordinatorCrunches";
-import { Card, CardContent, CardHeader, CardTitle } from "@crunch-ui/core";
 import {
   DepositedCard,
   RewardCard,
@@ -33,16 +32,7 @@ export default function OnchainExplorerPage() {
         <RewardCard />
       </div>
       <StakingLifecycle />
-      <div className="flex flex-wrap max-lg:flex-col gap-3">
-        <Card className="flex-1">
-          <CardHeader>
-            <CardTitle>Your Crunches</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CoordinatorCrunches />
-          </CardContent>
-        </Card>
-      </div>
+      <CoordinatorCrunches />
     </div>
   );
 }
