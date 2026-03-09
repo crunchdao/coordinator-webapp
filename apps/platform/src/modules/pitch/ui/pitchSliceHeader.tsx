@@ -44,7 +44,7 @@ export const PitchSliceHeader: React.FC<PitchSliceHeaderProps> = ({
             <SelectContent>
               {seasons.map((season) => (
                 <SelectItem key={season.number} value={String(season.number)}>
-                  {season.displayName}
+                  #{season.number} - {season.displayName}
                 </SelectItem>
               ))}
             </SelectContent>
