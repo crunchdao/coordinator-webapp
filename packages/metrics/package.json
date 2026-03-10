@@ -8,7 +8,7 @@
     "@coordinator/leaderboard": "workspace:*",
     "@coordinator/ui": "workspace:*",
     "@coordinator/utils": "workspace:*",
-    "@crunchdao/chart": "^0.1.2"
+    "@crunchdao/chart": "^0.1.5"
   },
   "peerDependencies": {
     "react": ">=19",
