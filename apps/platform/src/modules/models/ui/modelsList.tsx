@@ -16,7 +16,7 @@ import {
 } from "@crunch-ui/core";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
-import { useGetCrunchByAddress } from "../application/hooks/useGetCrunchByAddress";
+import { useGetCrunchForNetwork } from "@/modules/crunch/application/hooks/useGetCrunchForNetwork";
 import { useGetModelStates } from "../application/hooks/useGetModelStates";
 import { ModelStatesTable } from "./modelStatesTable";
 
@@ -32,7 +32,7 @@ export function ModelsList() {
     environments?.[0] ??
     null;
 
-  const { crunch, crunchLoading } = useGetCrunchByAddress(
+  const { crunch, crunchLoading } = useGetCrunchForNetwork(
     selectedEnv?.address,
     selectedEnv?.network
   );
