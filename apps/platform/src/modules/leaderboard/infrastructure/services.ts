@@ -1,7 +1,6 @@
+import axios, { AxiosError } from "axios";
 import apiClient from "@coordinator/utils/src/api";
-import { AxiosError } from "axios";
 import hubApiClient from "@/utils/api/hubApiClient";
-import coordinatorNodeApiClient from "@/utils/api/coordinatorNodeApiClient";
 import {
   Leaderboard,
   LeaderboardColumn,
@@ -15,10 +14,10 @@ import type {
 } from "../domain/types";
 
 export const getLeaderboard = async (
-  coordinatorNodeUrl?: string
+  externalUrl: string
 ): Promise<Leaderboard> => {
-  const response = await coordinatorNodeApiClient.get("/leaderboard", {
-    params: coordinatorNodeUrl ? { baseUrl: coordinatorNodeUrl } : undefined,
+  const response = await axios.get("/api/proxy", {
+    params: { url: externalUrl },
   });
   return response.data;
 };

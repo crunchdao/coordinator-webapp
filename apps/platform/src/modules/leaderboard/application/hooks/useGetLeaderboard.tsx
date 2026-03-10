@@ -2,11 +2,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { getLeaderboard } from "../../infrastructure/services";
 
-export function useGetLeaderboard(coordinatorNodeUrl?: string) {
+export function useGetLeaderboard(externalUrl?: string | null) {
   const query = useQuery({
-    queryKey: ["leaderboard", coordinatorNodeUrl],
-    queryFn: () => getLeaderboard(coordinatorNodeUrl),
-    enabled: !!coordinatorNodeUrl,
+    queryKey: ["leaderboard", externalUrl],
+    queryFn: () => getLeaderboard(externalUrl!),
+    enabled: !!externalUrl,
     retry: false,
     refetchOnWindowFocus: false,
   });
