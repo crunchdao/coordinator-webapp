@@ -112,10 +112,19 @@ export const useBuildLeaderboardColumns = (
           if (
             column.nativeConfiguration?.type === "gauge"
           ) {
+            const seriesData = Object.fromEntries(
+              (column.nativeConfiguration.seriesConfig ?? [])
+                .filter((s) => s.name)
+                .map((s) => [
+                  s.name!,
+                  Number(row.original[s.name!]) || 0,
+                ])
+            );
+
             return (
               <Gauge
                 config={column.nativeConfiguration}
-                data={value as Record<string, number>}
+                data={seriesData}
               />
             );
           }
