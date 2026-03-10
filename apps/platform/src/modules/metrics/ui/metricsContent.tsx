@@ -3,8 +3,8 @@
 import { toast } from "@crunch-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { MetricSettingsTable } from "@coordinator/metrics/src/ui/metricSettingsTable";
-import { MetricsDashboard } from "@coordinator/metrics/src/ui/metricsDashboard";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { useGetLocalWidgets } from "../application/hooks/useGetLocalWidgets";
 import { useAddLocalWidget } from "../application/hooks/useAddLocalWidget";
@@ -13,10 +13,13 @@ import { useRemoveLocalWidget } from "../application/hooks/useRemoveLocalWidget"
 import { useResetLocalWidgets } from "../application/hooks/useResetLocalWidgets";
 import { useMetricsHubSync } from "../application/hooks/useMetricsHubSync";
 import { saveLocalMetricsConfig } from "../infrastructure/services";
+import { MetricsDashboardContent } from "./metricsDashboardContent";
 
 export function MetricsContent() {
   const { crunchName } = useCrunchContext();
   const queryClient = useQueryClient();
+
+  const { environments } = useLocalCompetitionEnvironments(crunchName);
 
   const { widgets, widgetsLoading } = useGetLocalWidgets(crunchName);
   const { addWidget, addWidgetLoading } = useAddLocalWidget(crunchName);
@@ -93,7 +96,11 @@ export function MetricsContent() {
           />
         }
       />
-      <MetricsDashboard widgets={widgets} widgetsLoading={widgetsLoading} />
+      <MetricsDashboardContent
+        environments={environments || []}
+        widgets={widgets || []}
+        widgetsLoading={widgetsLoading}
+      />
     </section>
   );
 }
