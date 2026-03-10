@@ -1,5 +1,4 @@
-import { config } from "@/config";
-
 export const endpoints = {
-  getModelStates: () => `${config.cpiBaseUrl}/models/states`,
+  getCrunch: (address: string) => `/crunches/${address}`,
+  getModelStates: "/models/states",
 };

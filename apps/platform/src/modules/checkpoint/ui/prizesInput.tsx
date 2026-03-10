@@ -18,6 +18,7 @@ import {
 import { DataTable } from "@coordinator/ui/src/data-table";
 import { PreparedPrize, Prize } from "@crunchdao/sdk";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
+import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { prizesSchema } from "../application/schemas/prizesSchema";
 import { usePreparePrizes } from "../application/hooks/usePreparePrizes";
 import { ZodError } from "zod";
@@ -64,6 +65,7 @@ export function PrizesInput({
   createCheckpointButton,
   createCheckpointLoading,
 }: PrizesInputProps) {
+  const { crunchName } = useCrunchContext();
   const { preparePrizes, preparePrizesLoading } = usePreparePrizes();
   const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(
     null
@@ -154,7 +156,10 @@ export function PrizesInput({
                   <SheetTitle>Select a model</SheetTitle>
                 </SheetHeader>
                 <div className="mt-4">
-                  <CrunchModelsTable onAddModel={handleAddModel} />
+                  <CrunchModelsTable
+                    crunchName={crunchName}
+                    onAddModel={handleAddModel}
+                  />
                 </div>
               </SheetContent>
             </Sheet>
