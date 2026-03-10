@@ -36,6 +36,12 @@ export interface ModelState {
   coordinatorCertificate: CoordinatorCertificate | null;
 }
 
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+
 export interface GetModelStatesParams {
   crunchNames?: string[];
+}
+
+export interface GetModelStatesOptions extends GetModelStatesParams {
+  network?: WalletAdapterNetwork;
 }
