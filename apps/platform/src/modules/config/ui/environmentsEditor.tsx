@@ -125,9 +125,10 @@ export function EnvironmentsEditor() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <Accordion
               type="multiple"
+              className="space-y-3"
               value={openItems}
               onValueChange={setOpenItems}
             >
@@ -138,7 +139,11 @@ export function EnvironmentsEditor() {
                   `Environment ${index + 1}`;
 
                 return (
-                  <AccordionItem key={field.id} value={field.id}>
+                  <AccordionItem
+                    className="border"
+                    key={field.id}
+                    value={field.id}
+                  >
                     <div className="relative">
                       <AccordionTrigger className="hover:no-underline w-full">
                         <span>{envName}</span>
