@@ -17,7 +17,7 @@ function transformWidgets(
       return {
         id: widget.id,
         name: widget.displayName,
-        type: "IFRAME" as const,
+        type: widget.type,
         definitions: [
           {
             id: widget.id,
@@ -33,8 +33,11 @@ function transformWidgets(
     return {
       id: widget.id,
       name: widget.displayName,
-      type: "CHART" as const,
-      projectIdProperty: "model_id",
+      type: widget.type,
+      projectIdProperty:
+        "projectIdProperty" in widget
+          ? (widget.projectIdProperty as string)
+          : "model_id",
       definitions: [
         {
           id: widget.id,
@@ -56,7 +59,7 @@ export function useMetricData(
   widgets: Widget[],
   params: GetMetricDataParams
 ) {
-  const queries = useQueries({
+  const { dataByWidgetId, isLoading } = useQueries({
     queries: widgets
       .filter((w) => w.type === "CHART")
       .map((widget) => ({
@@ -75,19 +78,19 @@ export function useMetricData(
         },
         enabled: !!widget.endpointUrl && !!params.modelIds.length,
       })),
+    combine: (results) => {
+      const map: Record<number, unknown[]> = {};
+      results.forEach((r) => {
+        if (r.data) {
+          map[r.data.widgetId] = r.data.data;
+        }
+      });
+      return {
+        dataByWidgetId: map,
+        isLoading: results.some((r) => r.isLoading),
+      };
+    },
   });
-
-  const isLoading = queries.some((q) => q.isLoading);
-
-  const dataByWidgetId = useMemo(() => {
-    const map: Record<number, unknown[]> = {};
-    queries.forEach((q) => {
-      if (q.data) {
-        map[q.data.widgetId] = q.data.data;
-      }
-    });
-    return map;
-  }, [queries]);
 
   const transformedWidgets = useMemo(
     () => transformWidgets(widgets, dataByWidgetId),
