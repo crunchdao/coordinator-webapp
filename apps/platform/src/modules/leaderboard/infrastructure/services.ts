@@ -1,6 +1,7 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import apiClient from "@coordinator/utils/src/api";
 import hubApiClient from "@/utils/api/hubApiClient";
+import { proxyGet } from "@/utils/api/proxyApiClient";
 import {
   Leaderboard,
   LeaderboardColumn,
@@ -16,10 +17,7 @@ import type {
 export const getLeaderboard = async (
   externalUrl: string
 ): Promise<Leaderboard> => {
-  const response = await axios.get("/api/proxy", {
-    params: { url: externalUrl },
-  });
-  return response.data;
+  return proxyGet<Leaderboard>(externalUrl);
 };
 
 export const getLocalLeaderboardConfig = async (
