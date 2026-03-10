@@ -18,6 +18,7 @@ import type { Widget } from "@coordinator/metrics/src/domain/types";
 import type { Environment } from "@/modules/config/domain/types";
 import { useGetModels } from "../application/hooks/useGetModels";
 import { useMetricData } from "../application/hooks/useMetricData";
+import { ModelSelector } from "./modelSelector";
 
 interface MetricsDashboardContentProps {
   environments: Environment[];
@@ -60,7 +61,7 @@ export function MetricsDashboardContent({
   const metricParams = useMemo(() => {
     const end = new Date();
     const start = new Date();
-    start.setDate(start.getDate() - 30);
+    start.setDate(start.getDate() - 2);
 
     return {
       modelIds: modelId ? [modelId] : [],
@@ -73,7 +74,6 @@ export function MetricsDashboardContent({
     widgets,
     metricParams
   );
-  console.log(widgetsWithData);
   return (
     <Card displayCorners>
       <CardHeader>
@@ -95,21 +95,11 @@ export function MetricsDashboardContent({
               </Select>
             )}
             {models.length > 0 && (
-              <Select value={modelId} onValueChange={setSelectedModelId}>
-                <SelectTrigger className="w-64">
-                  <SelectValue placeholder="Model" />
-                </SelectTrigger>
-                <SelectContent>
-                  {models.map((model) => (
-                    <SelectItem
-                      key={String(model.model_id)}
-                      value={String(model.model_id)}
-                    >
-                      {model.cruncher_name}/{model.model_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <ModelSelector
+                models={models}
+                value={modelId}
+                onChange={setSelectedModelId}
+              />
             )}
           </div>
         </div>
