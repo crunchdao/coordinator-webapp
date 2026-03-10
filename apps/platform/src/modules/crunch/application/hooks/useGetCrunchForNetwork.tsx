@@ -2,15 +2,15 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { getCrunchByAddress } from "../../infrastructure/service";
+import { getCrunchForNetwork } from "../../infrastructure/service";
 
-export function useGetCrunchByAddress(
+export function useGetCrunchForNetwork(
   address?: string | null,
   network?: WalletAdapterNetwork | null
 ) {
   const query = useQuery({
-    queryKey: ["crunch-by-address", address, network],
-    queryFn: () => getCrunchByAddress(address!, network!),
+    queryKey: ["crunch-for-network", address, network],
+    queryFn: () => getCrunchForNetwork(address!, network!),
     enabled: !!address && !!network,
   });
 
