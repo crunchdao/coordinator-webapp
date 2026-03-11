@@ -7,7 +7,8 @@ import { Widget, LineChartDefinition, GaugeDefinition, GetMetricDataParams } fro
 
 export const useMetricData = (
   widgets: Widget[],
-  params: GetMetricDataParams
+  params: GetMetricDataParams,
+  refetchInterval: number | false = false
 ) => {
   const queries = useQueries({
     queries: widgets
@@ -25,10 +26,12 @@ export const useMetricData = (
           return { widgetId: widget.id, data: response.data };
         },
         enabled: !!widget.endpointUrl && !!params.modelIds.length,
+        refetchInterval,
       })),
   });
 
   const isLoading = queries.some((q) => q.isLoading);
+  const isRefetching = queries.some((q) => q.isRefetching);
 
   const dataByWidgetId = useMemo(() => {
     const map: Record<number, unknown[]> = {};
@@ -78,5 +81,6 @@ export const useMetricData = (
   return {
     widgets: transformedWidgets,
     isLoading,
+    isRefetching,
   };
 };
