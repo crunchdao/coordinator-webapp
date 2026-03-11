@@ -27,3 +27,9 @@ export type CreateChartDefinitionPayload = {
 };
 
 export type UpdateChartDefinitionPayload = Partial<CreateChartDefinitionPayload>;
+
+export interface MetricsModelItem {
+  model_id: string | number;
+  model_name: string;
+  cruncher_name: string;
+}

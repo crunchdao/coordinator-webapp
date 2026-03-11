@@ -9,7 +9,7 @@ import {
 } from "@crunch-ui/core";
 import { MetricWidget } from "@crunchdao/chart";
 import MultiSelectDropdown from "@coordinator/ui/src/multi-select-dropdown";
-import { GetMetricDataParams, Widget } from "../domain/types";
+import type { GetMetricDataParams, Widget } from "@coordinator/metrics/src/domain/types";
 import { useMetricData } from "../application/hooks/useMetricData";
 
 export interface MetricsModelItem {
