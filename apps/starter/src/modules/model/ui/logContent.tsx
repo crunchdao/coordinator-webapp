@@ -1,6 +1,6 @@
 "use client";
 import { Spinner, Alert, AlertDescription } from "@crunch-ui/core";
-import LogList from "@coordinator/ui/src/logs-list";
+import LogList from "@/components/logs-list";
 
 interface Log {
   id: number | string;

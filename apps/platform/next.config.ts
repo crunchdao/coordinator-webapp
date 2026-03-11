@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
   transpilePackages: [
-    "@coordinator/ui",
     "@coordinator/leaderboard",
     "@coordinator/metrics",
   ],

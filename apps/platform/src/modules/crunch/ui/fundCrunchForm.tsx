@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  LoadingOverlay,
 } from "@crunch-ui/core";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { PercentageSelector } from "@crunchdao/staking";
@@ -22,7 +23,6 @@ import {
   fundCrunchSchema,
   FundCrunchFormData,
 } from "../application/schemas/fundCrunch";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 
 interface FundCrunchFormProps {
   crunchName: string;

@@ -10,6 +10,7 @@ import {
   Input,
   Skeleton,
   toast,
+  LoadingOverlay,
 } from "@crunch-ui/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -33,7 +34,6 @@ import {
   SelfStakeFormData,
   selfStakeSchema,
 } from "../application/schemas/selfStake";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 
 interface SelfUnstakeFormProps {
   poolAddress: string;

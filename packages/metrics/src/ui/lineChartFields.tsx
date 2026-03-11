@@ -16,7 +16,7 @@ import {
 import { Plus, SmallCross, InfoCircle } from "@crunch-ui/icons";
 import { WidgetFormData } from "../application/schemas/widgetFormSchema";
 import { FilterConfigEditor } from "./filterConfigEditor";
-import { FormatSelect } from "@coordinator/ui/src/format-select";
+import { FormatSelect } from "@coordinator/leaderboard/src/ui/formatSelect";
 
 interface LineChartFieldsProps {
   form: UseFormReturn<WidgetFormData>;

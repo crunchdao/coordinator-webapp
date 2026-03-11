@@ -39,7 +39,7 @@ import {
 import { ColumnType, LeaderboardColumn } from "../domain/types";
 import { isFixedColumnType } from "../application/utils";
 import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
-import { FormatSelect } from "@coordinator/ui/src/format-select";
+import { FormatSelect } from "./formatSelect";
 
 type ColumnFormData = z.infer<typeof createLeaderboardColumnSchema>;
 type FixedColumnFormData = z.infer<typeof editFixedColumnSchema>;

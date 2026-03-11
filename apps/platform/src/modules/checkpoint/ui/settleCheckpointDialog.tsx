@@ -8,10 +8,10 @@ import {
   AlertDialogTitle,
   Badge,
   Button,
+  DataTable,
+  LoadingOverlay,
 } from "@crunch-ui/core";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@coordinator/ui/src/data-table";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 import { NodeCheckpoint, NodeRankedEntry } from "../domain/nodeTypes";
 import { FRAC64_MULTIPLIER } from "../domain/constants";
 import { useSubmitNodeCheckpoint } from "../application/hooks/useSubmitNodeCheckpoint";
