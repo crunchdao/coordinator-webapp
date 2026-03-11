@@ -154,14 +154,9 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
       .map((item) => String(item.model_id || ""))
       .filter(Boolean);
 
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
-
     return {
       modelIds,
-      start: start.toISOString(),
-      end: end.toISOString(),
+      windowDays: 30,
     };
   }, [selectedModels]);
 

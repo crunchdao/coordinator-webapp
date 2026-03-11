@@ -31,6 +31,5 @@ export type Widget =
 
 export interface GetMetricDataParams {
   modelIds: string[];
-  start: string;
-  end: string;
+  windowDays: number;
 }

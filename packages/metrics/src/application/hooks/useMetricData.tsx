@@ -16,11 +16,15 @@ export const useMetricData = (
       .map((widget) => ({
         queryKey: ["metricData", widget.id, widget.endpointUrl, params],
         queryFn: async () => {
+          const end = new Date();
+          const start = new Date();
+          start.setDate(start.getDate() - params.windowDays);
+
           const response = await apiClient.get(widget.endpointUrl, {
             params: {
               projectIds: params.modelIds.join(","),
-              start: params.start,
-              end: params.end,
+              start: start.toISOString(),
+              end: end.toISOString(),
             },
           });
           return { widgetId: widget.id, data: response.data };
