@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { formatTypeSchema } from "@coordinator/utils/src/number-formatter";
+import { formatTypeSchema } from "../../utils/number-formatter";
 
 export { formatTypeSchema };
 

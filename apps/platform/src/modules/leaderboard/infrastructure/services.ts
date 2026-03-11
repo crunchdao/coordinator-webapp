@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import apiClient from "@coordinator/utils/src/api";
+import apiClient from "@/utils/api/apiClient";
 import hubApiClient from "@/utils/api/hubApiClient";
 import { proxyGet } from "@/utils/api/proxyApiClient";
 import {

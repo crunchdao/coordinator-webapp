@@ -1,4 +1,4 @@
-import apiClient from "@coordinator/utils/src/api";
+import apiClient from "@/utils/api/apiClient";
 import { NodeCheckpoint } from "../domain/nodeTypes";
 
 /**

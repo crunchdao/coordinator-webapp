@@ -11,7 +11,7 @@ import {
 } from "@crunch-ui/core";
 import { InfoCircle } from "@crunch-ui/icons";
 import { Gauge } from "@crunchdao/chart";
-import { formatNumber } from "@coordinator/utils/src/number-formatter";
+import { formatNumber } from "../../utils/number-formatter";
 import { LeaderboardColumn, LeaderboardPosition } from "../../domain/types";
 
 export const useBuildLeaderboardColumns = (

@@ -36,7 +36,6 @@ Next.js 16 monorepo with two apps and shared packages for managing CrunchDAO coo
 | `@coordinator/leaderboard` | LeaderboardTable, ColumnSettingsTable, column types/schemas |
 | `@coordinator/metrics` | MetricsDashboard, MetricSettingsTable, widget types, `useMetricData` |
 | `@coordinator/ui` | DataTable, LogsList, FormatSelect, MultiSelectDropdown |
-| `@coordinator/utils` | `apiClient` (baseURL `/api`), `configApiClient` (no baseURL), number formatter |
 
 Import shared components as: `import { DataTable } from "@coordinator/ui/src/data-table"`
 Import shared types as: `import { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types"`
@@ -99,10 +98,6 @@ modules/
 // So apiClient (baseURL: "/api") calls like:
 apiClient.get("/reports/checkpoints")  // → http://localhost:8000/reports/checkpoints
 ```
-
-**Two API clients:**
-- `apiClient` (`@coordinator/utils/src/api`) — baseURL `/api`, for proxied node calls
-- `configApiClient` (`@coordinator/utils/src/config-api`) — no baseURL, for local Next.js API routes (`/api/settings`, `/api/leaderboard/columns`)
 
 **Local config routes** (Next.js API routes that read/write JSON files in `config/`):
 - `/api/settings` — global settings (endpoints, container names)
