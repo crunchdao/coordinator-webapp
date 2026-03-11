@@ -12,6 +12,24 @@ import MultiSelectDropdown from "@coordinator/ui/src/multi-select-dropdown";
 import { GetMetricDataParams, Widget } from "../domain/types";
 import { useMetricData } from "../application/hooks/useMetricData";
 
+function readModelsFromHash(): string[] | null {
+  if (typeof window === "undefined") return null;
+  const hash = window.location.hash.slice(1);
+  const params = new URLSearchParams(hash);
+  const raw = params.get("models");
+  if (!raw) return null;
+  const ids = raw.split(",").filter(Boolean);
+  return ids.length > 0 ? ids : null;
+}
+
+function writeModelsToHash(ids: string[]) {
+  if (typeof window === "undefined") return;
+  const hash = window.location.hash.slice(1);
+  const params = new URLSearchParams(hash);
+  params.set("models", ids.join(","));
+  window.history.replaceState(null, "", `#${params.toString()}`);
+}
+
 export interface MetricsModelItem {
   model_id: string | number;
   model_name: string;
@@ -56,10 +74,20 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   );
 
   useEffect(() => {
-    if (models && models.length > 0 && selectedModelIds === null) {
-      const firstModelId = String(models[0].model_id || "");
-      setSelectedModelIds([firstModelId]);
+    if (!models || models.length === 0 || selectedModelIds !== null) return;
+
+    const fromHash = readModelsFromHash();
+    if (fromHash) {
+      const validIds = fromHash.filter((id) =>
+        models.some((m) => String(m.model_id) === id)
+      );
+      if (validIds.length > 0) {
+        setSelectedModelIds(validIds);
+        return;
+      }
     }
+
+    setSelectedModelIds(models.map((m) => String(m.model_id || "")));
   }, [models, selectedModelIds]);
 
   const selectedModels = useMemo(() => {
@@ -77,6 +105,7 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   const handleSelectionChange = (models: MetricsModelItem[]) => {
     const ids = models.map((item) => String(item.model_id || ""));
     setSelectedModelIds(ids);
+    writeModelsToHash(ids);
   };
 
   const metricParams = useMemo<GetMetricDataParams>(() => {
