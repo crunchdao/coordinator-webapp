@@ -1,6 +1,7 @@
 import type {
   LineChartConfiguration,
   GaugeConfiguration,
+  MatrixConfiguration,
 } from "@crunchdao/chart";
 
 export type HubChartDefinition = {
@@ -11,7 +12,7 @@ export type HubChartDefinition = {
   endpointUrl: string;
   dataKey: string;
   projectIdProperty: string;
-  nativeConfiguration: LineChartConfiguration | GaugeConfiguration | null;
+  nativeConfiguration: LineChartConfiguration | GaugeConfiguration | MatrixConfiguration | null;
   order: number;
 };
 
@@ -21,7 +22,7 @@ export type CreateChartDefinitionPayload = {
   type: "CHART" | "IFRAME";
   endpointUrl: string;
   projectIdProperty: string;
-  nativeConfiguration: LineChartConfiguration | GaugeConfiguration | null;
+  nativeConfiguration: LineChartConfiguration | GaugeConfiguration | MatrixConfiguration | null;
   order: number;
 };
 
