@@ -1,15 +1,18 @@
 "use client";
 import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
-import apiClient from "../../infrastructure/apiClient";
+import apiClient from "@/utils/api/apiClient";
 import type { Widget as SharedWidget, ChartWidget } from "@crunchdao/chart";
-import { Widget, LineChartDefinition, GaugeDefinition, GetMetricDataParams } from "../../domain/types";
+import type {
+  Widget,
+  GetMetricDataParams,
+} from "@coordinator/metrics/src/domain/types";
 
-export const useMetricData = (
+export function useMetricData(
   widgets: Widget[],
   params: GetMetricDataParams
-) => {
-  const queries = useQueries({
+) {
+  const { dataByWidgetId, isLoading } = useQueries({
     queries: widgets
       .filter((w) => w.type === "CHART")
       .map((widget) => ({
@@ -26,19 +29,19 @@ export const useMetricData = (
         },
         enabled: !!widget.endpointUrl && !!params.modelIds.length,
       })),
-  });
-
-  const isLoading = queries.some((q) => q.isLoading);
-
-  const dataByWidgetId = useMemo(() => {
-    const map: Record<number, unknown[]> = {};
-    queries.forEach((q) => {
-      if (q.data) {
-        map[q.data.widgetId] = q.data.data;
+    combine: (results) => {
+      const map: Record<number, unknown[]> = {};
+      for (const r of results) {
+        if (r.data) {
+          map[r.data.widgetId] = r.data.data;
+        }
       }
-    });
-    return map;
-  }, [queries]);
+      return {
+        dataByWidgetId: map,
+        isLoading: results.some((r) => r.isLoading),
+      };
+    },
+  });
 
   const transformedWidgets = useMemo<SharedWidget[]>(() => {
     return widgets.map((widget) => {
@@ -46,7 +49,7 @@ export const useMetricData = (
         return {
           id: widget.id,
           name: widget.displayName,
-          type: "IFRAME" as const,
+          type: widget.type,
           definitions: [{
             id: widget.id,
             displayName: widget.displayName,
@@ -57,18 +60,23 @@ export const useMetricData = (
         };
       }
 
-      const chartWidget = widget as LineChartDefinition | GaugeDefinition;
       return {
         id: widget.id,
         name: widget.displayName,
-        type: "CHART" as const,
-        projectIdProperty: "model_id",
+        type: widget.type,
+        projectIdProperty:
+          "projectIdProperty" in widget
+            ? (widget.projectIdProperty as string)
+            : "model_id",
         definitions: [{
           id: widget.id,
           displayName: widget.displayName,
           tooltip: widget.tooltip,
           order: widget.order,
-          nativeConfiguration: chartWidget.nativeConfiguration,
+          nativeConfiguration:
+            "nativeConfiguration" in widget
+              ? widget.nativeConfiguration
+              : undefined,
         }],
         data: dataByWidgetId[widget.id] || [],
       } as ChartWidget;
@@ -79,4 +87,4 @@ export const useMetricData = (
     widgets: transformedWidgets,
     isLoading,
   };
-};
+}

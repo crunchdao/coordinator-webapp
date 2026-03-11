@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Combobox } from "@crunch-ui/core";
-import type { MetricsModelItem } from "@coordinator/metrics/src/ui/metricsDashboard";
+import type { MetricsModelItem } from "../domain/types";
 
 interface ModelSelectorProps {
   models: MetricsModelItem[];
