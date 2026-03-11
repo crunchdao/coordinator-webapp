@@ -8,7 +8,7 @@ import {
   Spinner,
 } from "@crunch-ui/core";
 import { MetricWidget } from "@crunchdao/chart";
-import MultiSelectDropdown from "@coordinator/ui/src/multi-select-dropdown";
+import MultiSelectDropdown from "@/components/multiSelectDropdown";
 import type { GetMetricDataParams, Widget } from "@coordinator/metrics/src/domain/types";
 import { useMetricData } from "../application/hooks/useMetricData";
 

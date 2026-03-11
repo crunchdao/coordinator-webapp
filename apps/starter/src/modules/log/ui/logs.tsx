@@ -8,7 +8,7 @@ import {
   TabsTrigger,
 } from "@crunch-ui/core";
 import { useGlobalSettings } from "@/modules/settings/application/hooks/useGlobalSettings";
-import LogList from "@coordinator/ui/src/logs-list";
+import LogList from "@/components/logs-list";
 import { createLogStream } from "../infrastructure/services";
 import { LogEntry } from "../domain/types";
 

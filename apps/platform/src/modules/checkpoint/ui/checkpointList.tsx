@@ -15,8 +15,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  DataTable,
 } from "@crunch-ui/core";
-import { DataTable } from "@coordinator/ui/src/data-table";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useGetCheckpoints } from "../application/hooks/useGetCheckpoints";

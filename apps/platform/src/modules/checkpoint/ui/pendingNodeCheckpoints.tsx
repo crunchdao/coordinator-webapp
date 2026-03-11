@@ -10,8 +10,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  DataTable,
 } from "@crunch-ui/core";
-import { DataTable } from "@coordinator/ui/src/data-table";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useGetPendingNodeCheckpoints } from "../application/hooks/useGetPendingNodeCheckpoints";
 import { NodeCheckpoint } from "../domain/nodeTypes";

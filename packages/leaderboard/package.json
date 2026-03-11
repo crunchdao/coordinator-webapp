@@ -5,13 +5,12 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "dependencies": {
-    "@coordinator/ui": "workspace:*",
     "@crunchdao/chart": "^0.1.5"
   },
   "peerDependencies": {
     "react": ">=19",
-    "@crunch-ui/core": "^1.3.2",
-    "@crunch-ui/icons": "^1.1.1",
+    "@crunch-ui/core": "^1.6.0",
+    "@crunch-ui/icons": "^1.3.0",
     "@tanstack/react-query": "^5.90.17",
     "@tanstack/react-table": "^8.21.3",
     "lodash.uniqby": "^4.7.0",

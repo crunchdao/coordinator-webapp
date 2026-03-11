@@ -3,8 +3,7 @@
 import { useRef } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { Button, Input } from "@crunch-ui/core";
-import { DataTable } from "@coordinator/ui/src/data-table";
+import { Button, Input, DataTable } from "@crunch-ui/core";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { useGetModelStates } from "@/modules/models/application/hooks/useGetModelStates";
 import { ModelState } from "@/modules/models/domain/types";

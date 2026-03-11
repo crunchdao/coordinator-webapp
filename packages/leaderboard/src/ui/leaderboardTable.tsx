@@ -6,9 +6,9 @@ import {
   CardHeader,
   CardTitle,
   Input,
+  DataTable,
 } from "@crunch-ui/core";
 import { Search } from "@crunch-ui/icons";
-import { DataTable } from "@coordinator/ui/src/data-table";
 import { LeaderboardPosition, LeaderboardColumn } from "../domain/types";
 import { useBuildLeaderboardColumns } from "../application/hooks/useBuildLeaderboardColumns";
 
