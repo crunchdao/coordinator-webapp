@@ -1,4 +1,4 @@
-import apiClient from "@coordinator/utils/src/api";
+import apiClient from "@/utils/api/apiClient";
 import { endpoints } from "./endpoints";
 import { Model, AddModelBody, UpdateModelBody } from "../domain/types";
 

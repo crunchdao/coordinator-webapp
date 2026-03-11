@@ -29,9 +29,6 @@ importers:
       '@coordinator/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@coordinator/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
       '@coral-xyz/anchor':
         specifier: ^0.32.1
         version: 0.32.1(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -183,9 +180,6 @@ importers:
       '@coordinator/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@coordinator/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
       '@crunch-ui/core':
         specifier: ^1.3.2
         version: 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
@@ -280,9 +274,6 @@ importers:
       '@coordinator/ui':
         specifier: workspace:*
         version: link:../ui
-      '@coordinator/utils':
-        specifier: workspace:*
-        version: link:../utils
       '@crunch-ui/core':
         specifier: ^1.3.2
         version: 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
@@ -316,9 +307,6 @@ importers:
       '@coordinator/ui':
         specifier: workspace:*
         version: link:../ui
-      '@coordinator/utils':
-        specifier: workspace:*
-        version: link:../utils
       '@crunch-ui/core':
         specifier: ^1.3.2
         version: 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
@@ -342,9 +330,6 @@ importers:
 
   packages/ui:
     dependencies:
-      '@coordinator/utils':
-        specifier: workspace:*
-        version: link:../utils
       '@crunch-ui/core':
         specifier: ^1.3.2
         version: 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
@@ -366,24 +351,6 @@ importers:
       react-turnstile:
         specifier: ^1.1.4
         version: 1.1.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-
-  packages/utils:
-    dependencies:
-      '@crunch-ui/core':
-        specifier: ^1.3.2
-        version: 1.4.0(@types/react-dom@19.2.3(@types/react@19.2.8))(@types/react@19.2.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(tailwindcss@4.1.18)
-      axios:
-        specifier: ^1.13.2
-        version: 1.13.4
-      next:
-        specifier: '>=16'
-        version: 16.1.2(@babel/core@7.28.6)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react:
-        specifier: '>=19'
-        version: 19.2.4
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
 
 packages:
 

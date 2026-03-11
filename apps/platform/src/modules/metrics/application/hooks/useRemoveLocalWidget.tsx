@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeLocalMetricsWidget } from "../../infrastructure/services";
-import { showApiErrorToast } from "@coordinator/utils/src/api";
+import { showApiErrorToast } from "@/utils/api/apiClient";
 
 export const useRemoveLocalWidget = (slug: string) => {
   const queryClient = useQueryClient();

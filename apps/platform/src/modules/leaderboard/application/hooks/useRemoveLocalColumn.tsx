@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeLocalLeaderboardColumn } from "../../infrastructure/services";
-import { showApiErrorToast } from "@coordinator/utils/src/api";
+import { showApiErrorToast } from "@/utils/api/apiClient";
 
 export const useRemoveLocalColumn = (slug: string) => {
   const queryClient = useQueryClient();

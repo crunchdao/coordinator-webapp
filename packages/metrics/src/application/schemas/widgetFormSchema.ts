@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { formatTypeSchema } from "@coordinator/utils/src/number-formatter";
+const formatTypeSchema = z.union([
+  z.literal("percentage"),
+  z.literal("integer"),
+  z.literal("compact"),
+  z.literal("number"),
+  z.string().regex(/^decimal-\d+$/),
+]);
 
 const filterConfigSchema = z.object({
   property: z.string().min(1, "Property is required"),

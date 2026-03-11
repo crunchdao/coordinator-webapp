@@ -2,7 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addMetricWidget } from "../../infrastructure/services";
 import { Widget } from "@coordinator/metrics/src/domain/types";
-import { showApiErrorToast } from "@coordinator/utils/src/api";
+import { showApiErrorToast } from "@/utils/api/apiClient";
 
 export const useAddWidget = () => {
   const queryClient = useQueryClient();

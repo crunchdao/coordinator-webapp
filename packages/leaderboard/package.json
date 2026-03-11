@@ -6,7 +6,6 @@
   "types": "./src/index.ts",
   "dependencies": {
     "@coordinator/ui": "workspace:*",
-    "@coordinator/utils": "workspace:*",
     "@crunchdao/chart": "^0.1.5"
   },
   "peerDependencies": {

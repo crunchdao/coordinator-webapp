@@ -1,4 +1,4 @@
-import apiClient from "@coordinator/utils/src/api";
+import apiClient from "@/utils/api/apiClient";
 import { AxiosError } from "axios";
 import hubApiClient from "@/utils/api/hubApiClient";
 import { endpoints, hubEndpoints } from "./endpoints";

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { createOrganizerApplication } from "../../infrastructure/service";
 import { OrganizerApplicationPayload } from "../../domain/types";
-import { showApiErrorToast } from "@coordinator/utils/src/api";
+import { showApiErrorToast } from "@/utils/api/apiClient";
 
 interface CreateApplicationParams {
   payload: OrganizerApplicationPayload;

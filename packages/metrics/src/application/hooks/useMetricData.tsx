@@ -1,7 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
-import apiClient from "@coordinator/utils/src/api";
+import apiClient from "../../infrastructure/apiClient";
 import type { Widget as SharedWidget, ChartWidget } from "@crunchdao/chart";
 import {
   Widget,
