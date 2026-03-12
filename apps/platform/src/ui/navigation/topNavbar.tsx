@@ -17,6 +17,7 @@ export const TopNavbar: React.FC = () => {
           />
         </Link>
         <TopNavLink href={INTERNAL_LINKS.COMPETITIONS} label="Crunches" />
+        <TopNavLink href={INTERNAL_LINKS.ORGANIZERS} label="Organizations" />
         <TopNavLink
           href={INTERNAL_LINKS.ONCHAIN_EXPLORER}
           label="Onchain Explorer"
