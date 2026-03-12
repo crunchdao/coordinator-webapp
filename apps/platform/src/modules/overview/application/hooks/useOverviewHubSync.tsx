@@ -16,7 +16,11 @@ export const useOverviewHubSync = (locale: Locale) => {
     const competitionIdentifier = `onchain:${address}`;
     setIsPulling(true);
     try {
-      const slices = await getOverviewSlices(competitionIdentifier, locale, hubBaseUrl);
+      const slices = await getOverviewSlices(
+        competitionIdentifier,
+        locale,
+        hubBaseUrl
+      );
       return slices.map((s, i) => ({ ...s, id: Date.now() + i }));
     } finally {
       setIsPulling(false);
@@ -31,7 +35,11 @@ export const useOverviewHubSync = (locale: Locale) => {
     const competitionIdentifier = `onchain:${address}`;
     setIsPushing(true);
     try {
-      const hubSlices = await getOverviewSlices(competitionIdentifier, locale, hubBaseUrl);
+      const hubSlices = await getOverviewSlices(
+        competitionIdentifier,
+        locale,
+        hubBaseUrl
+      );
       const hubByName = new Map(hubSlices.map((s) => [s.name, s]));
       const localByName = new Map(localSlices.map((s) => [s.name, s]));
 
@@ -44,15 +52,31 @@ export const useOverviewHubSync = (locale: Locale) => {
           order: slice.order,
         };
         if (hubByName.has(slice.name)) {
-          await updateOverviewSlice(competitionIdentifier, slice.name, body, locale, hubBaseUrl);
+          await updateOverviewSlice(
+            competitionIdentifier,
+            slice.name,
+            body,
+            locale,
+            hubBaseUrl
+          );
         } else {
-          await createOverviewSlice(competitionIdentifier, body, locale, hubBaseUrl);
+          await createOverviewSlice(
+            competitionIdentifier,
+            body,
+            locale,
+            hubBaseUrl
+          );
         }
       }
 
       for (const hubSlice of hubSlices) {
         if (!localByName.has(hubSlice.name)) {
-          await deleteOverviewSlice(competitionIdentifier, hubSlice.name, locale, hubBaseUrl);
+          await deleteOverviewSlice(
+            competitionIdentifier,
+            hubSlice.name,
+            locale,
+            hubBaseUrl
+          );
         }
       }
     } finally {

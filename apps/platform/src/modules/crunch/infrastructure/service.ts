@@ -1,8 +1,6 @@
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import apiClient from "@/utils/api/apiClient";
-import cpiApiClient, {
-  getCpiClientForNetwork,
-} from "@/utils/api/cpiApiClient";
+import cpiApiClient, { getCpiClientForNetwork } from "@/utils/api/cpiApiClient";
 import { crunchEndpoints } from "./endpoints";
 import {
   Crunch,

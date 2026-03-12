@@ -1,6 +1,5 @@
 export const pitchEndpoints = {
-  pitches: (seasonNumber: number) =>
-    `/v1/seasons/${seasonNumber}/pitches`,
+  pitches: (seasonNumber: number) => `/v1/seasons/${seasonNumber}/pitches`,
   pitch: (seasonNumber: number, pitchName: string) =>
     `/v1/seasons/${seasonNumber}/pitches/${pitchName}`,
   slices: (seasonNumber: number, competitionIdentifier: string) =>

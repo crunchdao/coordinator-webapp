@@ -5,6 +5,7 @@ This document describes the data structures and configuration options for charts
 ## Widget Types
 
 The system supports two main widget types:
+
 - **CHART**: Interactive charts (Line Charts, Gauges)
 - **IFRAME**: Embedded external content
 
@@ -34,7 +35,7 @@ Line charts visualize time-series data with one or more Y-axis series.
   type: "CHART",
   nativeConfiguration: {
     type: "line",
-    xAxis: { 
+    xAxis: {
       name: string              // Property name for X axis (e.g., "performed_at")
     },
     yAxis: {
@@ -121,9 +122,7 @@ Line charts visualize time-series data with one or more Y-axis series.
       "name": "performed_at"
     },
     "yAxis": {
-      "series": [
-        { "name": "score_value" }
-      ],
+      "series": [{ "name": "score_value" }],
       "format": "decimal-2"
     },
     "alertConfig": {
@@ -189,6 +188,7 @@ Use `groupByProperty` to create separate series based on a data property. For ex
 ### Alert Detection
 
 Configure alerts to highlight data points that meet certain conditions:
+
 - Points where the alert field is `true` are marked with red indicators
 - Hover over alert points to see the reason
 - Useful for highlighting failures or anomalies
@@ -196,6 +196,7 @@ Configure alerts to highlight data points that meet certain conditions:
 ### Interactive Filters
 
 Add dropdown filters to allow users to slice data:
+
 - Filters automatically extract unique values from the dataset
 - Multiple filters can be combined
 - Set `autoSelectFirst: true` to automatically select the first available value, preventing too many series from being displayed.

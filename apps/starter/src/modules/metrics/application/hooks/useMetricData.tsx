@@ -8,10 +8,7 @@ import type {
   GetMetricDataParams,
 } from "@coordinator/metrics/src/domain/types";
 
-export function useMetricData(
-  widgets: Widget[],
-  params: GetMetricDataParams
-) {
+export function useMetricData(widgets: Widget[], params: GetMetricDataParams) {
   const { dataByWidgetId, isLoading } = useQueries({
     queries: widgets
       .filter((w) => w.type === "CHART")
@@ -50,13 +47,15 @@ export function useMetricData(
           id: widget.id,
           name: widget.displayName,
           type: widget.type,
-          definitions: [{
-            id: widget.id,
-            displayName: widget.displayName,
-            tooltip: widget.tooltip,
-            order: widget.order,
-            nativeConfiguration: { url: widget.endpointUrl },
-          }],
+          definitions: [
+            {
+              id: widget.id,
+              displayName: widget.displayName,
+              tooltip: widget.tooltip,
+              order: widget.order,
+              nativeConfiguration: { url: widget.endpointUrl },
+            },
+          ],
         };
       }
 
@@ -68,16 +67,18 @@ export function useMetricData(
           "projectIdProperty" in widget
             ? (widget.projectIdProperty as string)
             : "model_id",
-        definitions: [{
-          id: widget.id,
-          displayName: widget.displayName,
-          tooltip: widget.tooltip,
-          order: widget.order,
-          nativeConfiguration:
-            "nativeConfiguration" in widget
-              ? widget.nativeConfiguration
-              : undefined,
-        }],
+        definitions: [
+          {
+            id: widget.id,
+            displayName: widget.displayName,
+            tooltip: widget.tooltip,
+            order: widget.order,
+            nativeConfiguration:
+              "nativeConfiguration" in widget
+                ? widget.nativeConfiguration
+                : undefined,
+          },
+        ],
         data: dataByWidgetId[widget.id] || [],
       } as ChartWidget;
     });

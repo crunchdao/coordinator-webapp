@@ -56,7 +56,9 @@ function createCpiClient(baseURL?: string): AxiosInstance {
 /** Default CPI client — uses the global environment CPI URL. */
 const cpiApiClient = createCpiClient();
 
-const cpiClientsByNetwork: Partial<Record<WalletAdapterNetwork, AxiosInstance>> = {};
+const cpiClientsByNetwork: Partial<
+  Record<WalletAdapterNetwork, AxiosInstance>
+> = {};
 
 /**
  * Get a CPI client for a specific Solana network.

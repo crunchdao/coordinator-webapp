@@ -7,7 +7,8 @@ import { useCoordinatorAuth } from "@/modules/coordinator/application/context/co
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 
 export default function Home() {
-  const { isAuthenticated, isLoading, coordinatorStatus } = useCoordinatorAuth();
+  const { isAuthenticated, isLoading, coordinatorStatus } =
+    useCoordinatorAuth();
   const router = useRouter();
 
   useEffect(() => {

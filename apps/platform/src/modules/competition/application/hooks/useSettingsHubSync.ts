@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Competition } from "../../domain/types";
-import { getCompetition, updateCompetition } from "../../infrastructure/service";
+import {
+  getCompetition,
+  updateCompetition,
+} from "../../infrastructure/service";
 
 export const useSettingsHubSync = () => {
   const [isPulling, setIsPulling] = useState(false);

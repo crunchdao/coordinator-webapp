@@ -55,10 +55,7 @@ function transformWidgets(
   });
 }
 
-export function useMetricData(
-  widgets: Widget[],
-  params: GetMetricDataParams
-) {
+export function useMetricData(widgets: Widget[], params: GetMetricDataParams) {
   const { dataByWidgetId, isLoading } = useQueries({
     queries: widgets
       .filter((w) => w.type === "CHART")

@@ -9,7 +9,8 @@ import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 export function LoginCard() {
-  const { isAuthenticated, isLoading, coordinatorStatus } = useCoordinatorAuth();
+  const { isAuthenticated, isLoading, coordinatorStatus } =
+    useCoordinatorAuth();
   const router = useRouter();
 
   useEffect(() => {

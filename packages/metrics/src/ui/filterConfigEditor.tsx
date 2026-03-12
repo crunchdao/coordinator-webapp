@@ -58,7 +58,8 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({
               <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
             </TooltipTrigger>
             <TooltipContent>
-              Define interactive dropdown filters that allow users to dynamically filter the displayed data
+              Define interactive dropdown filters that allow users to
+              dynamically filter the displayed data
             </TooltipContent>
           </Tooltip>
         </h4>
@@ -102,7 +103,8 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({
                               <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                             </TooltipTrigger>
                             <TooltipContent>
-                              The data field name that will be used for filtering (e.g., "asset", "param")
+                              The data field name that will be used for
+                              filtering (e.g., "asset", "param")
                             </TooltipContent>
                           </Tooltip>
                         </FormLabel>
@@ -126,7 +128,8 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({
                               <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                             </TooltipTrigger>
                             <TooltipContent>
-                              Display name for the filter shown in the UI (e.g., "Asset", "Parameter")
+                              Display name for the filter shown in the UI (e.g.,
+                              "Asset", "Parameter")
                             </TooltipContent>
                           </Tooltip>
                         </FormLabel>
@@ -157,7 +160,8 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({
                             <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            Automatically select the first available filter option when the widget loads
+                            Automatically select the first available filter
+                            option when the widget loads
                           </TooltipContent>
                         </Tooltip>
                       </FormLabel>
@@ -177,7 +181,9 @@ export const FilterConfigEditor: React.FC<FilterConfigEditorProps> = ({
                             <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            Specific value to select by default. If not found in data, falls back to first value. Takes priority over &quot;Auto-select first value&quot;
+                            Specific value to select by default. If not found in
+                            data, falls back to first value. Takes priority over
+                            &quot;Auto-select first value&quot;
                           </TooltipContent>
                         </Tooltip>
                       </FormLabel>

@@ -4,7 +4,11 @@
  * before they are submitted on-chain.
  */
 
-export type NodeCheckpointStatus = "PENDING" | "SUBMITTED" | "CLAIMABLE" | "PAID";
+export type NodeCheckpointStatus =
+  | "PENDING"
+  | "SUBMITTED"
+  | "CLAIMABLE"
+  | "PAID";
 
 export interface NodeCruncherReward {
   cruncher_index: number;

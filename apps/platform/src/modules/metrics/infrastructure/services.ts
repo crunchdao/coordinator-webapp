@@ -83,9 +83,7 @@ export const removeLocalMetricsWidget = async (
   });
 };
 
-export const resetLocalMetricsWidgets = async (
-  slug: string
-): Promise<void> => {
+export const resetLocalMetricsWidgets = async (slug: string): Promise<void> => {
   await saveLocalMetricsConfig(slug, {
     widgets: initialConfig,
   });

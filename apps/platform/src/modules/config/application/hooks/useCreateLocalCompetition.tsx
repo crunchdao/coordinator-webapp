@@ -21,7 +21,10 @@ export function useCreateLocalCompetition() {
 
   const mutation = useMutation({
     mutationFn: async (payload: CreateCompetitionPayload) => {
-      await saveLocalCompetitionEnvironments(payload.slug, payload.environments);
+      await saveLocalCompetitionEnvironments(
+        payload.slug,
+        payload.environments
+      );
       await saveLocalCompetitionSettings(payload.slug, payload.settings);
     },
     onSuccess: () => {

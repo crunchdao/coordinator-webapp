@@ -48,7 +48,10 @@ const prizeColumns: ColumnDef<CheckpointPrize>[] = [
     header: "Prize",
     cell: ({ row }) => {
       const usdc = row.original.prize / 10 ** 6;
-      return `${usdc.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDC`;
+      return `${usdc.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })} USDC`;
     },
   },
   {
@@ -150,9 +153,7 @@ export function CheckpointList() {
   );
 
   const { nodeCheckpoints, nodeCheckpointsLoading } = useGetNodeCheckpoints(
-    dataSource === "crunch-node"
-      ? selectedEnv?.coordinatorNodeUrl
-      : undefined
+    dataSource === "crunch-node" ? selectedEnv?.coordinatorNodeUrl : undefined
   );
 
   const sortedCheckpoints = useMemo(
@@ -191,7 +192,9 @@ export function CheckpointList() {
       cell: ({ row }) => {
         const total = row.original.prizes.reduce((sum, p) => sum + p.prize, 0);
         const usdc = total / 10 ** 6;
-        return `${usdc.toLocaleString(undefined, { minimumFractionDigits: 2 })} USDC`;
+        return `${usdc.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+        })} USDC`;
       },
     },
     {

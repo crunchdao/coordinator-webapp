@@ -58,16 +58,16 @@ export function parseAnsiToSegments(text: string): ParsedSegment[] {
       }
     }
 
-    const codes = match[1].split(';');
+    const codes = match[1].split(";");
     for (const code of codes) {
-      if (code === '0') {
+      if (code === "0") {
         currentStyle = {};
-      } else if (code === '1') {
-        currentStyle.fontWeight = 'bold';
-      } else if (code === '3') {
-        currentStyle.fontStyle = 'italic';
-      } else if (code === '4') {
-        currentStyle.textDecoration = 'underline';
+      } else if (code === "1") {
+        currentStyle.fontWeight = "bold";
+      } else if (code === "3") {
+        currentStyle.fontStyle = "italic";
+      } else if (code === "4") {
+        currentStyle.textDecoration = "underline";
       } else if (ANSI_COLORS[code]) {
         currentStyle.color = ANSI_COLORS[code];
       } else if (ANSI_BG_COLORS[code]) {

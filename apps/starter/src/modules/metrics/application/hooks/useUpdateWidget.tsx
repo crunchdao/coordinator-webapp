@@ -8,13 +8,8 @@ export const useUpdateWidget = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: ({
-      id,
-      widget,
-    }: {
-      id: number;
-      widget: Omit<Widget, "id">;
-    }) => updateWidget(id, widget),
+    mutationFn: ({ id, widget }: { id: number; widget: Omit<Widget, "id"> }) =>
+      updateWidget(id, widget),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["widgets"] });
       toast({ title: "Widget updated successfully" });

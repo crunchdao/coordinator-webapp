@@ -12,7 +12,11 @@ export type HubChartDefinition = {
   endpointUrl: string;
   dataKey: string;
   projectIdProperty: string;
-  nativeConfiguration: LineChartConfiguration | GaugeConfiguration | MatrixConfiguration | null;
+  nativeConfiguration:
+    | LineChartConfiguration
+    | GaugeConfiguration
+    | MatrixConfiguration
+    | null;
   order: number;
 };
 
@@ -22,11 +26,16 @@ export type CreateChartDefinitionPayload = {
   type: "CHART" | "IFRAME";
   endpointUrl: string;
   projectIdProperty: string;
-  nativeConfiguration: LineChartConfiguration | GaugeConfiguration | MatrixConfiguration | null;
+  nativeConfiguration:
+    | LineChartConfiguration
+    | GaugeConfiguration
+    | MatrixConfiguration
+    | null;
   order: number;
 };
 
-export type UpdateChartDefinitionPayload = Partial<CreateChartDefinitionPayload>;
+export type UpdateChartDefinitionPayload =
+  Partial<CreateChartDefinitionPayload>;
 
 export interface MetricsModelItem {
   model_id: string | number;

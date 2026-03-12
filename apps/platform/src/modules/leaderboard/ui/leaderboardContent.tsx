@@ -31,8 +31,7 @@ export function LeaderboardContent() {
 
   const { columns, externalUrl, columnsLoading } =
     useLocalLeaderboardColumns(crunchName);
-  const { leaderboard, leaderboardLoading } =
-    useGetLeaderboard(externalUrl);
+  const { leaderboard, leaderboardLoading } = useGetLeaderboard(externalUrl);
   const { addColumn, addColumnLoading } = useAddLocalColumn(crunchName);
   const { updateColumn, updateColumnLoading } =
     useUpdateLocalColumn(crunchName);

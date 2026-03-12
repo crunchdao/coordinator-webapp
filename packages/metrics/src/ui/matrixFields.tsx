@@ -77,10 +77,7 @@ export const MatrixFields: React.FC<MatrixFieldsProps> = ({ form }) => {
         </div>
 
         {fields.map((section, sectionIndex) => (
-          <div
-            key={section.id}
-            className="space-y-3 border rounded-md p-4"
-          >
+          <div key={section.id} className="space-y-3 border rounded-md p-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">
                 Section {sectionIndex + 1}
@@ -150,10 +147,7 @@ export const MatrixFields: React.FC<MatrixFieldsProps> = ({ form }) => {
               />
             </div>
 
-            <MatrixDisplayValues
-              form={form}
-              sectionIndex={sectionIndex}
-            />
+            <MatrixDisplayValues form={form} sectionIndex={sectionIndex} />
           </div>
         ))}
       </div>

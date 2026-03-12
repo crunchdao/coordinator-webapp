@@ -2,13 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import {
-  Button,
-  Card,
-  CardContent,
-  Spinner,
-  toast,
-} from "@crunch-ui/core";
+import { Button, Card, CardContent, Spinner, toast } from "@crunch-ui/core";
 import { SliceManager, useSlicesBatch } from "@crunchdao/slices";
 import type { Slice } from "@crunchdao/slices";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";

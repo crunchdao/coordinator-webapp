@@ -21,7 +21,12 @@ import {
 } from "@crunch-ui/core";
 import { Chart, Link, InfoCircle } from "@crunch-ui/icons";
 import { normalizeYAxisConfig } from "@crunchdao/chart";
-import { Widget, LineChartDefinition, GaugeDefinition, MatrixDefinition } from "../domain/types";
+import {
+  Widget,
+  LineChartDefinition,
+  GaugeDefinition,
+  MatrixDefinition,
+} from "../domain/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -295,7 +300,8 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
                       <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      A user-friendly name that will be displayed as the widget's title
+                      A user-friendly name that will be displayed as the
+                      widget's title
                     </TooltipContent>
                   </Tooltip>
                 </FormLabel>
@@ -319,7 +325,8 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
                       <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      The API endpoint that returns data in JSON format. For charts, it should return an array of objects
+                      The API endpoint that returns data in JSON format. For
+                      charts, it should return an array of objects
                     </TooltipContent>
                   </Tooltip>
                 </FormLabel>
@@ -346,7 +353,8 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
                       <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      Additional help text shown when users hover over the widget title
+                      Additional help text shown when users hover over the
+                      widget title
                     </TooltipContent>
                   </Tooltip>
                 </FormLabel>
@@ -373,7 +381,8 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
                       <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      Position of the widget in the dashboard (lower numbers appear first)
+                      Position of the widget in the dashboard (lower numbers
+                      appear first)
                     </TooltipContent>
                   </Tooltip>
                 </FormLabel>

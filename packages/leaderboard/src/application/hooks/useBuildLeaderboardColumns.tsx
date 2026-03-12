@@ -104,28 +104,23 @@ export const useBuildLeaderboardColumns = (
             )
           : column.displayName || "",
         meta: {
-          className: column.nativeConfiguration?.type === "gauge" ? "text-left" : "text-right",
+          className:
+            column.nativeConfiguration?.type === "gauge"
+              ? "text-left"
+              : "text-right",
         },
         cell: ({ row }) => {
           const value = row.original[column.property];
 
-          if (
-            column.nativeConfiguration?.type === "gauge"
-          ) {
+          if (column.nativeConfiguration?.type === "gauge") {
             const seriesData = Object.fromEntries(
               (column.nativeConfiguration.seriesConfig ?? [])
                 .filter((s) => s.name)
-                .map((s) => [
-                  s.name!,
-                  Number(row.original[s.name!]) || 0,
-                ])
+                .map((s) => [s.name!, Number(row.original[s.name!]) || 0])
             );
 
             return (
-              <Gauge
-                config={column.nativeConfiguration}
-                data={seriesData}
-              />
+              <Gauge config={column.nativeConfiguration} data={seriesData} />
             );
           }
 

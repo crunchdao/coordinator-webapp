@@ -49,8 +49,7 @@ export function SettingsForm() {
   const { saveSettings, saveSettingsAsync, saveSettingsLoading } =
     useSaveLocalCompetitionSettings(crunchName);
 
-  const { pullFromHub, pushToHub, isPulling, isPushing } =
-    useSettingsHubSync();
+  const { pullFromHub, pushToHub, isPulling, isPushing } = useSettingsHubSync();
 
   const [editingBanner, setEditingBanner] = useState(false);
   const [editingCard, setEditingCard] = useState(false);
