@@ -16,12 +16,19 @@ import {
   SelectTrigger,
   SelectValue,
   DataTable,
+  Spinner,
 } from "@crunch-ui/core";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
+import { useGetCrunchForNetwork } from "@/modules/crunch/application/hooks/useGetCrunchForNetwork";
 import { useGetCheckpoints } from "../application/hooks/useGetCheckpoints";
+import { useGetNodeCheckpoints } from "../application/hooks/useGetNodeCheckpoints";
 import { Checkpoint, CheckpointPrize, CheckpointStatus } from "../domain/types";
 import { CheckpointStatusBadge } from "./checkpointStatusBadge";
+import { NodeCheckpointsTable } from "./nodeCheckpointsTable";
+
+type DataSource = "on-chain" | "crunch-node";
 
 const STATUS_OPTIONS: { value: CheckpointStatus | "all"; label: string }[] = [
   { value: "all", label: "All statuses" },
@@ -116,22 +123,55 @@ function CheckpointDetail({
 }
 
 export function CheckpointList() {
-  const { crunchName } = useCrunchContext();
+  const { crunchName: slug } = useCrunchContext();
+  const { environments, environmentsLoading } =
+    useLocalCompetitionEnvironments(slug);
+
+  const [selectedEnvName, setSelectedEnvName] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<DataSource>("on-chain");
   const [statusFilter, setStatusFilter] = useState<CheckpointStatus | "all">(
     "all"
   );
   const [selectedCheckpoint, setSelectedCheckpoint] =
     useState<Checkpoint | null>(null);
 
-  const { checkpoints, checkpointsLoading } = useGetCheckpoints({
-    crunchNames: [crunchName],
-    status: statusFilter === "all" ? undefined : statusFilter,
-  });
+  const envName = selectedEnvName ?? environments?.[0]?.name;
+  const selectedEnv = environments?.find((e) => e.name === envName) ?? null;
+
+  const { crunch, crunchLoading } = useGetCrunchForNetwork(
+    selectedEnv?.address,
+    selectedEnv?.network
+  );
+
+  const { checkpoints, checkpointsLoading } = useGetCheckpoints(
+    dataSource === "on-chain" && crunch?.name
+      ? {
+          crunchNames: [crunch.name],
+          status: statusFilter === "all" ? undefined : statusFilter,
+        }
+      : undefined
+  );
+
+  const { nodeCheckpoints, nodeCheckpointsLoading } = useGetNodeCheckpoints(
+    dataSource === "crunch-node"
+      ? selectedEnv?.coordinatorNodeUrl
+      : undefined
+  );
 
   const sortedCheckpoints = useMemo(
     () => [...checkpoints].sort((a, b) => b.index - a.index),
     [checkpoints]
   );
+
+  const isLoading =
+    dataSource === "on-chain"
+      ? crunchLoading || checkpointsLoading
+      : nodeCheckpointsLoading;
+
+  const itemCount =
+    dataSource === "on-chain"
+      ? sortedCheckpoints.length
+      : nodeCheckpoints.length;
 
   const columns: ColumnDef<Checkpoint>[] = [
     {
@@ -190,44 +230,96 @@ export function CheckpointList() {
     },
   ];
 
+  if (environmentsLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center h-64">
+        <Spinner />
+      </div>
+    );
+  }
+
+  const hasEnvironments = environments && environments.length > 0;
+
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>On-Chain Checkpoints</CardTitle>
+              <CardTitle>Checkpoints</CardTitle>
               <CardDescription>
-                {sortedCheckpoints.length} checkpoint(s) settled on-chain
+                {isLoading
+                  ? "Loading checkpoints..."
+                  : `${itemCount} checkpoint(s) found`}
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
               <Select
-                value={statusFilter}
-                onValueChange={(v) =>
-                  setStatusFilter(v as CheckpointStatus | "all")
-                }
+                value={dataSource}
+                onValueChange={(v) => setDataSource(v as DataSource)}
               >
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="on-chain">Crunch Protocol</SelectItem>
+                  <SelectItem value="crunch-node">Crunch Node</SelectItem>
                 </SelectContent>
               </Select>
+              {dataSource === "on-chain" && (
+                <Select
+                  value={statusFilter}
+                  onValueChange={(v) =>
+                    setStatusFilter(v as CheckpointStatus | "all")
+                  }
+                >
+                  <SelectTrigger className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {hasEnvironments && (
+                <Select value={envName} onValueChange={setSelectedEnvName}>
+                  <SelectTrigger className="w-48">
+                    <SelectValue placeholder="Select environment" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {environments.map((env) => (
+                      <SelectItem key={env.name} value={env.name}>
+                        {env.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable
-            columns={columns}
-            data={sortedCheckpoints}
-            loading={checkpointsLoading}
-          />
+          {!hasEnvironments ? (
+            <p className="text-muted-foreground text-sm">
+              No environments configured. Go to the Environments page to add
+              one.
+            </p>
+          ) : dataSource === "on-chain" ? (
+            <DataTable
+              columns={columns}
+              data={sortedCheckpoints}
+              loading={crunchLoading || checkpointsLoading}
+            />
+          ) : (
+            <NodeCheckpointsTable
+              data={nodeCheckpoints}
+              loading={nodeCheckpointsLoading}
+            />
+          )}
         </CardContent>
       </Card>
 

@@ -29,15 +29,12 @@ export function ModelsList() {
   const { environments, environmentsLoading } =
     useLocalCompetitionEnvironments(slug);
 
-  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const [selectedEnvName, setSelectedEnvName] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<DataSource>("on-chain");
 
-  const selectedEnv =
-    environments?.find((env) => env.address === selectedAddress) ??
-    environments?.[0] ??
-    null;
+  const envName = selectedEnvName ?? environments?.[0]?.name;
+  const selectedEnv = environments?.find((e) => e.name === envName) ?? null;
 
-  // CPI data
   const { crunch, crunchLoading } = useGetCrunchForNetwork(
     selectedEnv?.address,
     selectedEnv?.network
@@ -56,7 +53,10 @@ export function ModelsList() {
     dataSource === "crunch-node" ? selectedEnv?.coordinatorNodeUrl : undefined
   );
 
-  const isLoading = crunchLoading || modelStatesLoading || modelsLoading;
+  const isLoading =
+    dataSource === "on-chain"
+      ? crunchLoading || modelStatesLoading
+      : modelsLoading;
 
   const itemCount =
     dataSource === "on-chain" ? modelStates.length : models.length;
@@ -95,17 +95,14 @@ export function ModelsList() {
               </SelectContent>
             </Select>
             {hasEnvironments && (
-              <Select
-                value={selectedEnv?.address}
-                onValueChange={setSelectedAddress}
-              >
+              <Select value={envName} onValueChange={setSelectedEnvName}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Select environment" />
                 </SelectTrigger>
                 <SelectContent>
                   {environments.map((env) => (
-                    <SelectItem key={env.address} value={env.address}>
-                      {env.name || env.address}
+                    <SelectItem key={env.name} value={env.name}>
+                      {env.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
