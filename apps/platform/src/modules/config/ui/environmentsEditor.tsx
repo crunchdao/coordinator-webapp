@@ -3,25 +3,12 @@
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
   Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Button,
   Spinner,
   Card,
@@ -39,22 +26,7 @@ import {
   environmentsFormSchema,
   EnvironmentsFormData,
 } from "../domain/schemas";
-import {
-  HUB_URL_OPTIONS,
-  DEFAULT_RPC_URLS,
-  DEFAULT_HUB_URLS,
-} from "../domain/types";
-
-const DEFAULT_COORDINATOR_NODE_URL = "http://localhost:8000";
-
-const DEFAULT_ENVIRONMENT = {
-  name: "",
-  address: "",
-  network: WalletAdapterNetwork.Devnet,
-  rpcUrl: DEFAULT_RPC_URLS[WalletAdapterNetwork.Devnet] || "",
-  hubUrl: DEFAULT_HUB_URLS[WalletAdapterNetwork.Devnet] || "",
-  coordinatorNodeUrl: DEFAULT_COORDINATOR_NODE_URL,
-};
+import { EnvironmentFields, DEFAULT_ENVIRONMENT } from "./environmentFields";
 
 export function EnvironmentsEditor() {
   const { crunchName } = useCrunchContext();
@@ -133,7 +105,6 @@ export function EnvironmentsEditor() {
               onValueChange={setOpenItems}
             >
               {fields.map((field, index) => {
-                const network = form.watch(`environments.${index}.network`);
                 const envName =
                   form.watch(`environments.${index}.name`) ||
                   `Environment ${index + 1}`;
@@ -161,148 +132,11 @@ export function EnvironmentsEditor() {
                       )}
                     </div>
                     <AccordionContent>
-                      <div className="space-y-3 pt-2">
-                        <FormField
-                          control={form.control}
-                          name={`environments.${index}.name`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Environment Name</FormLabel>
-                              <FormControl>
-                                <Input placeholder="staging" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className="grid gap-3 md:grid-cols-2">
-                          <FormField
-                            control={form.control}
-                            name={`environments.${index}.address`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Crunch Address</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    placeholder="On-chain address"
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name={`environments.${index}.network`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Network</FormLabel>
-                                <Select
-                                  onValueChange={(value) => {
-                                    field.onChange(value);
-                                    const net = value as WalletAdapterNetwork;
-                                    form.setValue(
-                                      `environments.${index}.rpcUrl`,
-                                      DEFAULT_RPC_URLS[net] || ""
-                                    );
-                                    form.setValue(
-                                      `environments.${index}.hubUrl`,
-                                      DEFAULT_HUB_URLS[net] || ""
-                                    );
-                                  }}
-                                  value={field.value}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select network" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem
-                                      value={WalletAdapterNetwork.Devnet}
-                                    >
-                                      Devnet
-                                    </SelectItem>
-                                    <SelectItem
-                                      value={WalletAdapterNetwork.Mainnet}
-                                    >
-                                      Mainnet
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="grid gap-3 md:grid-cols-2">
-                          <FormField
-                            control={form.control}
-                            name={`environments.${index}.rpcUrl`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>RPC URL</FormLabel>
-                                <FormControl>
-                                  <Input placeholder="https://..." {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                  Default:{" "}
-                                  {DEFAULT_RPC_URLS[network] ? "Helius" : "—"}
-                                </FormDescription>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name={`environments.${index}.hubUrl`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Hub URL</FormLabel>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  value={field.value || ""}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="None" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {HUB_URL_OPTIONS.map((option) => (
-                                      <SelectItem
-                                        key={option.value || "none"}
-                                        value={option.value || "none"}
-                                      >
-                                        {option.label}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <FormField
-                          control={form.control}
-                          name={`environments.${index}.coordinatorNodeUrl`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Coordinator Node URL</FormLabel>
-                              <FormControl>
-                                <Input
-                                  placeholder={DEFAULT_COORDINATOR_NODE_URL}
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
+                      <div className="pt-2">
+                        <EnvironmentFields
+                          form={form}
+                          index={index}
+                          prefix="environments"
                         />
                       </div>
                     </AccordionContent>
