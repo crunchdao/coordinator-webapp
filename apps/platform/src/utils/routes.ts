@@ -16,6 +16,7 @@ export const INTERNAL_LINKS = {
   SETTINGS: "/c/:crunchname/settings",
   ENVIRONMENTS: "/c/:crunchname/environments",
   PITCH: "/c/:crunchname/pitch",
+  ORGANIZERS: "/organizers",
   ONCHAIN_EXPLORER: "/onchain-explorer",
 } as const;
 
@@ -24,6 +25,7 @@ export const PAGE_LABELS: Record<string, string> = {
   "create-crunch": "Create Crunch",
   "certificate-enrollment": "Certificate",
   c: "Crunches",
+  organizers: "Organizers",
   "onchain-explorer": "Onchain Explorer",
 };
 
