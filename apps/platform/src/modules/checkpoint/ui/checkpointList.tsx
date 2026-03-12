@@ -26,16 +26,32 @@ import { useGetCrunchForNetwork } from "@/modules/crunch/application/hooks/useGe
 import { useGetCheckpoints } from "../application/hooks/useGetCheckpoints";
 import { useGetNodeCheckpoints } from "../application/hooks/useGetNodeCheckpoints";
 import { Checkpoint, CheckpointPrize, CheckpointStatus } from "../domain/types";
+import { NodeCheckpoint, NodeCheckpointStatus } from "../domain/nodeTypes";
 import { CheckpointStatusBadge } from "./checkpointStatusBadge";
 import { NodeCheckpointsTable } from "./nodeCheckpointsTable";
+import { SettleCheckpointDialog } from "./settleCheckpointDialog";
 
 type DataSource = "on-chain" | "crunch-node";
 
-const STATUS_OPTIONS: { value: CheckpointStatus | "all"; label: string }[] = [
+const ON_CHAIN_STATUS_OPTIONS: {
+  value: CheckpointStatus | "all";
+  label: string;
+}[] = [
   { value: "all", label: "All statuses" },
   { value: "LoadingPrizes", label: "Processing" },
   { value: "LoadedPrizes", label: "Loaded" },
   { value: "FullyClaimed", label: "Finished" },
+];
+
+const NODE_STATUS_OPTIONS: {
+  value: NodeCheckpointStatus | "all";
+  label: string;
+}[] = [
+  { value: "all", label: "All statuses" },
+  { value: "PENDING", label: "Pending" },
+  { value: "SUBMITTED", label: "Submitted" },
+  { value: "CLAIMABLE", label: "Claimable" },
+  { value: "PAID", label: "Paid" },
 ];
 
 const prizeColumns: ColumnDef<CheckpointPrize>[] = [
@@ -124,37 +140,50 @@ function CheckpointDetail({
 }
 
 export function CheckpointList() {
-  const { crunchName: slug } = useCrunchContext();
+  const { crunchName: slug, crunchData } = useCrunchContext();
   const { environments, environmentsLoading } =
     useLocalCompetitionEnvironments(slug);
 
   const [selectedEnvName, setSelectedEnvName] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<DataSource>("on-chain");
-  const [statusFilter, setStatusFilter] = useState<CheckpointStatus | "all">(
-    "all"
-  );
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedCheckpoint, setSelectedCheckpoint] =
     useState<Checkpoint | null>(null);
+  const [settleCheckpoint, setSettleCheckpoint] =
+    useState<NodeCheckpoint | null>(null);
 
   const envName = selectedEnvName ?? environments?.[0]?.name;
   const selectedEnv = environments?.find((e) => e.name === envName) ?? null;
+
+  const payoutAmount = Number(crunchData?.payoutAmount ?? "0");
 
   const { crunch, crunchLoading } = useGetCrunchForNetwork(
     selectedEnv?.address,
     selectedEnv?.network
   );
 
+  const onChainStatus =
+    dataSource === "on-chain" && statusFilter !== "all"
+      ? (statusFilter as CheckpointStatus)
+      : undefined;
+
+  const nodeStatus =
+    dataSource === "crunch-node" && statusFilter !== "all"
+      ? (statusFilter as NodeCheckpointStatus)
+      : undefined;
+
   const { checkpoints, checkpointsLoading } = useGetCheckpoints(
     dataSource === "on-chain" && crunch?.name
       ? {
           crunchNames: [crunch.name],
-          status: statusFilter === "all" ? undefined : statusFilter,
+          status: onChainStatus,
         }
       : undefined
   );
 
   const { nodeCheckpoints, nodeCheckpointsLoading } = useGetNodeCheckpoints(
-    dataSource === "crunch-node" ? selectedEnv?.coordinatorNodeUrl : undefined
+    dataSource === "crunch-node" ? selectedEnv?.coordinatorNodeUrl : undefined,
+    nodeStatus
   );
 
   const sortedCheckpoints = useMemo(
@@ -238,6 +267,13 @@ export function CheckpointList() {
   }
 
   const hasEnvironments = environments && environments.length > 0;
+  const statusOptions =
+    dataSource === "on-chain" ? ON_CHAIN_STATUS_OPTIONS : NODE_STATUS_OPTIONS;
+
+  const handleDataSourceChange = (v: string) => {
+    setDataSource(v as DataSource);
+    setStatusFilter("all");
+  };
 
   return (
     <div className="space-y-4">
@@ -253,10 +289,14 @@ export function CheckpointList() {
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
-              <Select
-                value={dataSource}
-                onValueChange={(v) => setDataSource(v as DataSource)}
-              >
+              {hasEnvironments && (
+                <EnvironmentSelector
+                  environments={environments}
+                  value={envName}
+                  onChange={setSelectedEnvName}
+                />
+              )}
+              <Select value={dataSource} onValueChange={handleDataSourceChange}>
                 <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
@@ -265,32 +305,18 @@ export function CheckpointList() {
                   <SelectItem value="crunch-node">Crunch Node</SelectItem>
                 </SelectContent>
               </Select>
-              {dataSource === "on-chain" && (
-                <Select
-                  value={statusFilter}
-                  onValueChange={(v) =>
-                    setStatusFilter(v as CheckpointStatus | "all")
-                  }
-                >
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUS_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {hasEnvironments && (
-                <EnvironmentSelector
-                  environments={environments}
-                  value={envName}
-                  onChange={setSelectedEnvName}
-                />
-              )}
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardHeader>
@@ -310,6 +336,7 @@ export function CheckpointList() {
             <NodeCheckpointsTable
               data={nodeCheckpoints}
               loading={nodeCheckpointsLoading}
+              onSettle={setSettleCheckpoint}
             />
           )}
         </CardContent>
@@ -319,6 +346,18 @@ export function CheckpointList() {
         <CheckpointDetail
           checkpoint={selectedCheckpoint}
           onClose={() => setSelectedCheckpoint(null)}
+        />
+      )}
+
+      {settleCheckpoint && selectedEnv?.coordinatorNodeUrl && (
+        <SettleCheckpointDialog
+          open={!!settleCheckpoint}
+          onOpenChange={(open) => {
+            if (!open) setSettleCheckpoint(null);
+          }}
+          checkpoint={settleCheckpoint}
+          payoutAmount={payoutAmount}
+          coordinatorNodeUrl={selectedEnv.coordinatorNodeUrl}
         />
       )}
     </div>

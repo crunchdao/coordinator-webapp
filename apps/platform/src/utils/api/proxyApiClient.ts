@@ -40,4 +40,14 @@ export async function proxyGet<T>(url: string): Promise<T> {
   return response.data;
 }
 
+export async function proxyPost<T>(url: string, data?: unknown): Promise<T> {
+  const response = await proxyApiClient.post("", data, { params: { url } });
+  return response.data;
+}
+
+export async function proxyPatch<T>(url: string, data?: unknown): Promise<T> {
+  const response = await proxyApiClient.patch("", data, { params: { url } });
+  return response.data;
+}
+
 export default proxyApiClient;
