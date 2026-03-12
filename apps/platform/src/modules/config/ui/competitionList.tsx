@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Button,
   Card,
@@ -11,20 +11,22 @@ import {
 } from "@crunch-ui/core";
 import { Plus } from "@crunch-ui/icons";
 import { useLocalCompetitionList } from "../application/hooks/useLocalCompetitionList";
+import { INTERNAL_LINKS } from "@/utils/routes";
 import { CompetitionCard } from "./competitionCard";
 
 export function CompetitionList() {
-  const router = useRouter();
   const { slugs, competitionsLoading } = useLocalCompetitionList();
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Your Configured Crunches</CardTitle>
+        <CardTitle>Your Locals Crunches</CardTitle>
         {!competitionsLoading && (
-          <Button size="sm" onClick={() => router.push("/c/new")}>
-            <Plus className="size-4" />
-            New Crunch
+          <Button size="sm" asChild>
+            <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
+              <Plus className="size-4" />
+              New Crunch
+            </Link>
           </Button>
         )}
       </CardHeader>
@@ -38,13 +40,15 @@ export function CompetitionList() {
             <p className="text-muted-foreground mb-4">
               No competitions configured yet.
             </p>
-            <Button onClick={() => router.push("/c/new")}>
-              <Plus className="size-4" />
-              Create your first competition
+            <Button asChild>
+              <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
+                <Plus className="size-4" />
+                Create your first competition
+              </Link>
             </Button>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
             {slugs.map((slug) => (
               <CompetitionCard key={slug} slug={slug} />
             ))}

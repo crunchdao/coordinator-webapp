@@ -89,8 +89,8 @@ export function CrunchCard({
 
   if (href) {
     return (
-      <Link href={href}>
-        <Card className="overflow-hidden bg-background transition-colors hover:bg-accent/50 cursor-pointer">
+      <Link href={href} className="h-full">
+        <Card className="h-full overflow-hidden bg-background transition-colors hover:bg-accent/50 cursor-pointer">
           {cardContent}
         </Card>
       </Link>

@@ -65,7 +65,7 @@ export function CoordinatorCrunches() {
             </Link>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
             {crunches.map((crunch) => {
               const slug = addressToSlug[crunch.address];
               return (
