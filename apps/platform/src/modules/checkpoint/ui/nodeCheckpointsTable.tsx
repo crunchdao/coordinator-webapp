@@ -3,10 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge, DataTable } from "@crunch-ui/core";
 import { NodeCheckpoint, NodeCheckpointStatus } from "../domain/nodeTypes";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString();
-}
+import { formatDate } from "@/utils/formatDate";
 
 const statusVariant: Record<NodeCheckpointStatus, string> = {
   PENDING: "outline",
