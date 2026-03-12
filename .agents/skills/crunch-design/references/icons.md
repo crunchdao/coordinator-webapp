@@ -4,7 +4,7 @@ All icons are React components accepting `SVGProps<SVGSVGElement>`. Import from 
 
 ```tsx
 import { SvgRocket } from "@crunch-ui/icons";
-<SvgRocket className="size-4" />;
+<SvgRocket />;
 ```
 
 | Icon 1                                                             | Icon 2 | Icon 3 | Icon 4 |

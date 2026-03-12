@@ -127,7 +127,7 @@ export function EnvironmentsEditor() {
                           className="absolute right-8 top-1/2 -translate-y-1/2"
                           onClick={() => remove(index)}
                         >
-                          <Trash className="size-4" />
+                          <Trash />
                         </Button>
                       )}
                     </div>

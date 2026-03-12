@@ -169,7 +169,7 @@ Two font families: **Geist** (body text) and **Departure** (titles, labels — u
 
 ```tsx
 import { SvgRocket, SvgSettings, SvgTrash, SvgCheck } from "@crunch-ui/icons";
-<SvgRocket className="size-4" />;
+<SvgRocket />;
 ```
 
 Full icon list: [references/icons.md](references/icons.md)

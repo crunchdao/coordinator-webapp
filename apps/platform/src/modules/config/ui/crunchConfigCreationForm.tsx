@@ -113,7 +113,7 @@ export function CrunchConfigCreationForm() {
                     size="icon-sm"
                     onClick={() => remove(index)}
                   >
-                    <Trash className="size-4" />
+                    <Trash />
                   </Button>
                 )}
               </div>

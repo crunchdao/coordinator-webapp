@@ -22,12 +22,12 @@ export function CompetitionList() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Your Locals Crunches</CardTitle>
         {!competitionsLoading && (
-          <Button size="sm" asChild>
-            <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
-              <Plus className="size-4" />
+          <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
+            <Button size="sm">
+              <Plus />
               New Crunch
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         )}
       </CardHeader>
       <CardContent>
@@ -40,12 +40,12 @@ export function CompetitionList() {
             <p className="text-muted-foreground mb-4">
               No competitions configured yet.
             </p>
-            <Button asChild>
-              <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
-                <Plus className="size-4" />
+            <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
+              <Button>
+                <Plus />
                 Create your first competition
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
         ) : (
           <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(20rem,1fr))]">
