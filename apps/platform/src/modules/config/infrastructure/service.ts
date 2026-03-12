@@ -57,4 +57,3 @@ export async function saveLocalCompetitionSettings(
 ): Promise<Competition> {
   return writeConfigFile(`crunches/${slug}/settings.json`, data);
 }
-

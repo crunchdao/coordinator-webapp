@@ -8,10 +8,7 @@ const COORDINATOR_NODE_API_URL =
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
-  transpilePackages: [
-    "@coordinator/leaderboard",
-    "@coordinator/metrics",
-  ],
+  transpilePackages: ["@coordinator/leaderboard", "@coordinator/metrics"],
   async rewrites() {
     return [
       {

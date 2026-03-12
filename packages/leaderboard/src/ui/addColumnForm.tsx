@@ -24,13 +24,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  Plus,
-  Trash,
-  Folder,
-  Percentage,
-  InfoCircle,
-} from "@crunch-ui/icons";
+import { Plus, Trash, Folder, Percentage, InfoCircle } from "@crunch-ui/icons";
 import { z } from "zod";
 import {
   createLeaderboardColumnSchema,
@@ -415,7 +409,9 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                   <div className="flex items-center space-x-2 col-span-2">
                     <Checkbox
                       id="enable-gauge"
-                      checked={form.watch("nativeConfiguration.type") === "gauge"}
+                      checked={
+                        form.watch("nativeConfiguration.type") === "gauge"
+                      }
                       onCheckedChange={(checked) => {
                         if (checked) {
                           form.setValue(

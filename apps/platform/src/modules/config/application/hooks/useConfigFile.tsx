@@ -61,10 +61,7 @@ export function useSaveConfigFile<T>(
       toast({ title: options?.successMessage ?? "Saved successfully" });
     },
     onError: (error) => {
-      showApiErrorToast(
-        error,
-        options?.errorMessage ?? "Failed to save"
-      );
+      showApiErrorToast(error, options?.errorMessage ?? "Failed to save");
     },
   });
 

@@ -21,7 +21,12 @@ import {
 } from "@crunch-ui/core";
 import { Chart, Link, InfoCircle } from "@crunch-ui/icons";
 import { normalizeYAxisConfig } from "@crunchdao/chart";
-import { Widget, LineChartDefinition, GaugeDefinition, MatrixDefinition } from "../domain/types";
+import {
+  Widget,
+  LineChartDefinition,
+  GaugeDefinition,
+  MatrixDefinition,
+} from "../domain/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

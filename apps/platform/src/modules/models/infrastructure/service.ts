@@ -1,6 +1,4 @@
-import cpiApiClient, {
-  getCpiClientForNetwork,
-} from "@/utils/api/cpiApiClient";
+import cpiApiClient, { getCpiClientForNetwork } from "@/utils/api/cpiApiClient";
 import { ModelState, GetModelStatesOptions } from "../domain/types";
 import { endpoints } from "./endpoints";
 

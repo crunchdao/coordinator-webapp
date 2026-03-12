@@ -68,9 +68,7 @@ export const useMetricsHubSync = () => {
           endpointUrl: widget.endpointUrl,
           projectIdProperty: "",
           nativeConfiguration:
-            "nativeConfiguration" in widget
-              ? widget.nativeConfiguration
-              : null,
+            "nativeConfiguration" in widget ? widget.nativeConfiguration : null,
           order: widget.order,
         };
 

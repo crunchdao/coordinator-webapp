@@ -8,7 +8,8 @@ export const useAddLocalWidget = (slug: string) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (widget: Omit<Widget, "id">) => addLocalMetricWidget(slug, widget),
+    mutationFn: (widget: Omit<Widget, "id">) =>
+      addLocalMetricWidget(slug, widget),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["widgets", slug] });
     },

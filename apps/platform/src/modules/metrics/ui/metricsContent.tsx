@@ -29,8 +29,7 @@ export function MetricsContent() {
     useRemoveLocalWidget(crunchName);
   const { resetWidgets, resetWidgetsLoading } =
     useResetLocalWidgets(crunchName);
-  const { pullFromHub, pushToHub, isPulling, isPushing } =
-    useMetricsHubSync();
+  const { pullFromHub, pushToHub, isPulling, isPushing } = useMetricsHubSync();
 
   const handlePullFromHub = async (
     envName: string,

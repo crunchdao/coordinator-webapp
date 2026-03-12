@@ -21,8 +21,7 @@ export function useLocalAddressMap() {
     })),
   });
 
-  const isLoading =
-    competitionsLoading || envQueries.some((q) => q.isLoading);
+  const isLoading = competitionsLoading || envQueries.some((q) => q.isLoading);
 
   const addressToSlug = useMemo(() => {
     const result: Record<string, string> = {};

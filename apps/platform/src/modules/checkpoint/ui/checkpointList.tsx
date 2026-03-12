@@ -153,9 +153,7 @@ export function CheckpointList() {
   );
 
   const { nodeCheckpoints, nodeCheckpointsLoading } = useGetNodeCheckpoints(
-    dataSource === "crunch-node"
-      ? selectedEnv?.coordinatorNodeUrl
-      : undefined
+    dataSource === "crunch-node" ? selectedEnv?.coordinatorNodeUrl : undefined
   );
 
   const sortedCheckpoints = useMemo(

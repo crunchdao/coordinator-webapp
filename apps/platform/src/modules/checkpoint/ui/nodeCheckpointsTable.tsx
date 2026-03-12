@@ -34,8 +34,7 @@ const columns: ColumnDef<NodeCheckpoint>[] = [
     id: "models",
     header: "Models",
     cell: ({ row }) =>
-      row.original.meta.model_count ??
-      (row.original.meta.ranking?.length ?? 0),
+      row.original.meta.model_count ?? row.original.meta.ranking?.length ?? 0,
   },
   {
     id: "snapshots",
