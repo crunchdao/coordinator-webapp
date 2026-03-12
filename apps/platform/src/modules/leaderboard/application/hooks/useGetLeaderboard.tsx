@@ -1,12 +1,14 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { getLeaderboard } from "../../infrastructure/services";
+import { proxyGet } from "@/utils/api/proxyApiClient";
+import type { Leaderboard } from "@coordinator/leaderboard/src/domain/types";
 
-export function useGetLeaderboard(externalUrl?: string | null) {
+export function useGetLeaderboard(coordinatorNodeUrl?: string) {
   const query = useQuery({
-    queryKey: ["leaderboard", externalUrl],
-    queryFn: () => getLeaderboard(externalUrl!),
-    enabled: !!externalUrl,
+    queryKey: ["leaderboard", coordinatorNodeUrl],
+    queryFn: () =>
+      proxyGet<Leaderboard>(`${coordinatorNodeUrl}/reports/leaderboard`),
+    enabled: !!coordinatorNodeUrl,
     retry: false,
     refetchOnWindowFocus: false,
   });

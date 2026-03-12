@@ -6,16 +6,12 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Spinner,
 } from "@crunch-ui/core";
 import { MetricWidget } from "@crunchdao/chart";
 import type { Widget } from "@coordinator/metrics/src/domain/types";
 import type { Environment } from "@/modules/config/domain/types";
+import { EnvironmentSelector } from "@/modules/config/ui/environmentSelector";
 import { useGetModels } from "../application/hooks/useGetModels";
 import { useMetricData } from "../application/hooks/useMetricData";
 import { ModelSelector } from "./modelSelector";
@@ -81,18 +77,11 @@ export function MetricsDashboardContent({
           <CardTitle>Metrics Dashboard</CardTitle>
           <div className="flex items-center gap-2">
             {environments.length > 0 && (
-              <Select value={envName} onValueChange={handleEnvChange}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Environment" />
-                </SelectTrigger>
-                <SelectContent>
-                  {environments.map((env) => (
-                    <SelectItem key={env.name} value={env.name}>
-                      {env.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <EnvironmentSelector
+                environments={environments}
+                value={envName}
+                onChange={handleEnvChange}
+              />
             )}
             {models.length > 0 && (
               <ModelSelector

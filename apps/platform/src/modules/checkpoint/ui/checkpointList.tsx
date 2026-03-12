@@ -21,6 +21,7 @@ import {
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
+import { EnvironmentSelector } from "@/modules/config/ui/environmentSelector";
 import { useGetCrunchForNetwork } from "@/modules/crunch/application/hooks/useGetCrunchForNetwork";
 import { useGetCheckpoints } from "../application/hooks/useGetCheckpoints";
 import { useGetNodeCheckpoints } from "../application/hooks/useGetNodeCheckpoints";
@@ -284,18 +285,11 @@ export function CheckpointList() {
                 </Select>
               )}
               {hasEnvironments && (
-                <Select value={envName} onValueChange={setSelectedEnvName}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue placeholder="Select environment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {environments.map((env) => (
-                      <SelectItem key={env.name} value={env.name}>
-                        {env.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <EnvironmentSelector
+                  environments={environments}
+                  value={envName}
+                  onChange={setSelectedEnvName}
+                />
               )}
             </div>
           </div>
