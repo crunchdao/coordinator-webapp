@@ -15,10 +15,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { NodeCheckpoint, NodeRankedEntry } from "../domain/nodeTypes";
 import { FRAC64_MULTIPLIER } from "../domain/constants";
 import { useSubmitNodeCheckpoint } from "../application/hooks/useSubmitNodeCheckpoint";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString();
-}
+import { formatDate } from "@/utils/formatDate";
 
 interface PrizeRow {
   rank: number;

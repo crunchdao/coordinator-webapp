@@ -16,10 +16,7 @@ import { useCrunchContext } from "@/modules/crunch/application/context/crunchCon
 import { useGetPendingNodeCheckpoints } from "../application/hooks/useGetPendingNodeCheckpoints";
 import { NodeCheckpoint } from "../domain/nodeTypes";
 import { SettleCheckpointDialog } from "./settleCheckpointDialog";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString();
-}
+import { formatDate } from "@/utils/formatDate";
 
 export function PendingNodeCheckpoints() {
   const { crunchData } = useCrunchContext();
