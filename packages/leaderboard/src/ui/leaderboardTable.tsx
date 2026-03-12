@@ -16,12 +16,14 @@ export interface LeaderboardTableProps {
   leaderboard: LeaderboardPosition[];
   columns: LeaderboardColumn[];
   loading?: boolean;
+  actions?: React.ReactNode;
 }
 
 export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
   leaderboard,
   columns,
   loading = false,
+  actions,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const tableColumns = useBuildLeaderboardColumns(columns);
@@ -45,18 +47,17 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle>Leaderboard</CardTitle>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search projects..."
-                className="max-w-md"
-                clearable
-                rightSlot={<Search className="text-muted-foreground" />}
-              />
-            </div>
+          <div className="flex items-center gap-2">
+            {actions}
+            <Input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search projects..."
+              className="max-w-md"
+              clearable
+              rightSlot={<Search className="text-muted-foreground" />}
+            />
           </div>
         </div>
       </CardHeader>

@@ -5,6 +5,7 @@ import {
   Button,
   Input,
   Label,
+  Spinner,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -15,6 +16,8 @@ import { LeaderboardTable } from "@coordinator/leaderboard/src/ui/leaderboardTab
 import { ColumnSettingsTable } from "@coordinator/leaderboard/src/ui/columnSettingsTable";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
+import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
+import { EnvironmentSelector } from "@/modules/config/ui/environmentSelector";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { useGetLeaderboard } from "../application/hooks/useGetLeaderboard";
 import { useLocalLeaderboardColumns } from "../application/hooks/useLocalLeaderboardColumns";
@@ -29,9 +32,19 @@ export function LeaderboardContent() {
   const { crunchName } = useCrunchContext();
   const queryClient = useQueryClient();
 
+  const { environments, environmentsLoading } =
+    useLocalCompetitionEnvironments(crunchName);
+
+  const [selectedEnvName, setSelectedEnvName] = useState<string | null>(null);
+
+  const envName = selectedEnvName ?? environments?.[0]?.name;
+  const selectedEnv = environments?.find((e) => e.name === envName) ?? null;
+
   const { columns, externalUrl, columnsLoading } =
     useLocalLeaderboardColumns(crunchName);
-  const { leaderboard, leaderboardLoading } = useGetLeaderboard(externalUrl);
+  const { leaderboard, leaderboardLoading } = useGetLeaderboard(
+    selectedEnv?.coordinatorNodeUrl
+  );
   const { addColumn, addColumnLoading } = useAddLocalColumn(crunchName);
   const { updateColumn, updateColumnLoading } =
     useUpdateLocalColumn(crunchName);
@@ -112,6 +125,16 @@ export function LeaderboardContent() {
     }
   };
 
+  if (environmentsLoading) {
+    return (
+      <div className="flex flex-1 items-center justify-center h-64">
+        <Spinner />
+      </div>
+    );
+  }
+
+  const hasEnvironments = environments && environments.length > 0;
+
   const settingsHeader = (
     <div className="space-y-4">
       <div className="space-y-1.5">
@@ -176,6 +199,15 @@ export function LeaderboardContent() {
         leaderboard={leaderboard}
         columns={columns}
         loading={leaderboardLoading || columnsLoading}
+        actions={
+          hasEnvironments ? (
+            <EnvironmentSelector
+              environments={environments}
+              value={envName}
+              onChange={setSelectedEnvName}
+            />
+          ) : null
+        }
       />
     </section>
   );

@@ -16,6 +16,7 @@ import {
 } from "@crunch-ui/core";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useLocalCompetitionEnvironments } from "@/modules/config/application/hooks/useLocalCompetitionEnvironments";
+import { EnvironmentSelector } from "@/modules/config/ui/environmentSelector";
 import { useGetCrunchForNetwork } from "@/modules/crunch/application/hooks/useGetCrunchForNetwork";
 import { useGetModelStates } from "../application/hooks/useGetModelStates";
 import { useGetModels } from "@/modules/metrics/application/hooks/useGetModels";
@@ -95,18 +96,11 @@ export function ModelsList() {
               </SelectContent>
             </Select>
             {hasEnvironments && (
-              <Select value={envName} onValueChange={setSelectedEnvName}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Select environment" />
-                </SelectTrigger>
-                <SelectContent>
-                  {environments.map((env) => (
-                    <SelectItem key={env.name} value={env.name}>
-                      {env.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <EnvironmentSelector
+                environments={environments}
+                value={envName}
+                onChange={setSelectedEnvName}
+              />
             )}
           </div>
         </div>

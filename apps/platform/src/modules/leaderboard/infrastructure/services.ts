@@ -1,11 +1,7 @@
 import { AxiosError } from "axios";
 import apiClient from "@/utils/api/apiClient";
 import hubApiClient from "@/utils/api/hubApiClient";
-import { proxyGet } from "@/utils/api/proxyApiClient";
-import {
-  Leaderboard,
-  LeaderboardColumn,
-} from "@coordinator/leaderboard/src/domain/types";
+import { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types";
 import { initialColumns } from "@coordinator/leaderboard/src/domain/initial-config";
 import { endpoints } from "./endpoints";
 import type {
@@ -13,12 +9,6 @@ import type {
   LeaderboardDefinition,
   UpdateLeaderboardDefinitionPayload,
 } from "../domain/types";
-
-export const getLeaderboard = async (
-  externalUrl: string
-): Promise<Leaderboard> => {
-  return proxyGet<Leaderboard>(externalUrl);
-};
 
 export const getLocalLeaderboardConfig = async (
   slug: string
