@@ -3,7 +3,6 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { generateLink } from "@crunch-ui/utils";
 import {
   Form,
@@ -14,11 +13,6 @@ import {
   FormLabel,
   FormMessage,
   Input,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Button,
 } from "@crunch-ui/core";
 import { Plus, Trash } from "@crunch-ui/icons";
@@ -30,11 +24,7 @@ import { useCreateLocalCompetition } from "../application/hooks/useCreateLocalCo
 import { useLocalCompetitionList } from "../application/hooks/useLocalCompetitionList";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { Competition } from "@/modules/competition/domain/types";
-import {
-  HUB_URL_OPTIONS,
-  DEFAULT_RPC_URLS,
-  DEFAULT_HUB_URLS,
-} from "../domain/types";
+import { EnvironmentFields, DEFAULT_ENVIRONMENT } from "./environmentFields";
 
 export function CrunchConfigCreationForm() {
   const router = useRouter();
@@ -53,11 +43,8 @@ export function CrunchConfigCreationForm() {
       slug: "",
       environments: [
         {
+          ...DEFAULT_ENVIRONMENT,
           name: "staging",
-          address: "",
-          network: WalletAdapterNetwork.Devnet,
-          rpcUrl: DEFAULT_RPC_URLS[WalletAdapterNetwork.Devnet] || "",
-          hubUrl: DEFAULT_HUB_URLS[WalletAdapterNetwork.Devnet] || "",
         },
       ],
     },
@@ -76,6 +63,7 @@ export function CrunchConfigCreationForm() {
           ...env,
           rpcUrl: env.rpcUrl || undefined,
           hubUrl: env.hubUrl || undefined,
+          coordinatorNodeUrl: env.coordinatorNodeUrl || undefined,
         })),
         settings: {
           name: data.slug,
@@ -115,153 +103,32 @@ export function CrunchConfigCreationForm() {
         <div className="space-y-4">
           <h3 className="text-sm font-medium">Environments</h3>
 
-          {fields.map((field, index) => {
-            const network = form.watch(`environments.${index}.network`);
-
-            return (
-              <div key={field.id} className="border rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <FormField
-                    control={form.control}
-                    name={`environments.${index}.name`}
-                    render={({ field }) => (
-                      <FormItem className="flex-1 mr-4">
-                        <FormLabel>Environment Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="staging" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash className="size-4" />
-                    </Button>
-                  )}
-                </div>
-
-                <div className="grid gap-3 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name={`environments.${index}.address`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Crunch Address</FormLabel>
-                        <FormControl>
-                          <Input placeholder="On-chain address" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`environments.${index}.network`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Network</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            const net = value as WalletAdapterNetwork;
-                            form.setValue(
-                              `environments.${index}.rpcUrl`,
-                              DEFAULT_RPC_URLS[net] || ""
-                            );
-                            form.setValue(
-                              `environments.${index}.hubUrl`,
-                              DEFAULT_HUB_URLS[net] || ""
-                            );
-                          }}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select network" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={WalletAdapterNetwork.Devnet}>
-                              Devnet
-                            </SelectItem>
-                            <SelectItem value={WalletAdapterNetwork.Mainnet}>
-                              Mainnet
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid gap-3 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name={`environments.${index}.rpcUrl`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>RPC URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`environments.${index}.hubUrl`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Hub URL</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value || ""}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="None" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {HUB_URL_OPTIONS.map((option) => (
-                              <SelectItem
-                                key={option.value || "none"}
-                                value={option.value || "none"}
-                              >
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+          {fields.map((field, index) => (
+            <div key={field.id} className="border rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-end">
+                {fields.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => remove(index)}
+                  >
+                    <Trash className="size-4" />
+                  </Button>
+                )}
               </div>
-            );
-          })}
+              <EnvironmentFields
+                form={form}
+                index={index}
+                prefix="environments"
+              />
+            </div>
+          ))}
 
           <Button
             type="button"
             variant="outline"
-            onClick={() =>
-              append({
-                name: "",
-                address: "",
-                network: WalletAdapterNetwork.Devnet,
-                rpcUrl: DEFAULT_RPC_URLS[WalletAdapterNetwork.Devnet] || "",
-                hubUrl: DEFAULT_HUB_URLS[WalletAdapterNetwork.Devnet] || "",
-              })
-            }
+            onClick={() => append(DEFAULT_ENVIRONMENT)}
           >
             <Plus className="size-4 mr-2" />
             Add Environment
