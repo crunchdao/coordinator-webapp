@@ -1,34 +1,16 @@
-import apiClient from "@/utils/api/apiClient";
-import { NodeCheckpoint } from "../domain/nodeTypes";
-
-/**
- * Fetch checkpoints from the coordinator node's report API.
- */
-export const getNodeCheckpoints = async (
-  crunchName: string,
-  status?: string
-): Promise<NodeCheckpoint[]> => {
-  const params: Record<string, string> = {};
-  if (status) params.status = status;
-
-  const response = await apiClient.get(
-    `/crunches/${crunchName}/reports/checkpoints`,
-    { params }
-  );
-  return response.data;
-};
+import { proxyPost, proxyPatch } from "@/utils/api/proxyApiClient";
 
 /**
  * Confirm a checkpoint was submitted on-chain (sends tx_hash back to node).
  * Transitions: PENDING → SUBMITTED
  */
 export const confirmNodeCheckpoint = async (
-  crunchName: string,
+  coordinatorNodeUrl: string,
   checkpointId: string,
   txHash: string
 ): Promise<void> => {
-  await apiClient.post(
-    `/crunches/${crunchName}/reports/checkpoints/${checkpointId}/confirm`,
+  await proxyPost(
+    `${coordinatorNodeUrl}/reports/checkpoints/${checkpointId}/confirm`,
     { tx_hash: txHash }
   );
 };
@@ -38,12 +20,12 @@ export const confirmNodeCheckpoint = async (
  * Transitions: SUBMITTED → CLAIMABLE, CLAIMABLE → PAID
  */
 export const updateNodeCheckpointStatus = async (
-  crunchName: string,
+  coordinatorNodeUrl: string,
   checkpointId: string,
   newStatus: string
 ): Promise<void> => {
-  await apiClient.patch(
-    `/crunches/${crunchName}/reports/checkpoints/${checkpointId}/status`,
+  await proxyPatch(
+    `${coordinatorNodeUrl}/reports/checkpoints/${checkpointId}/status`,
     { status: newStatus }
   );
 };

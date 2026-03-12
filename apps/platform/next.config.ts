@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
         source: "/hub-prod/:path*",
         destination: "https://api.hub.crunchdao.com/:path*",
       },
+      // TODO: Remove it entirely in profit of proxy + env var
       {
         source: "/api/crunches/:crunchName/reports/:path*",
         destination: `${COORDINATOR_NODE_API_URL}/reports/:path*`,

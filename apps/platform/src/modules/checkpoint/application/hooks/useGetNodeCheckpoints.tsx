@@ -2,14 +2,20 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { proxyGet } from "@/utils/api/proxyApiClient";
-import { NodeCheckpoint } from "../../domain/nodeTypes";
+import { NodeCheckpoint, NodeCheckpointStatus } from "../../domain/nodeTypes";
 
-export function useGetNodeCheckpoints(coordinatorNodeUrl?: string) {
+export function useGetNodeCheckpoints(
+  coordinatorNodeUrl?: string,
+  status?: NodeCheckpointStatus
+) {
+  const url = coordinatorNodeUrl
+    ? `${coordinatorNodeUrl}/reports/checkpoints${status ? `?status=${status}` : ""}`
+    : undefined;
+
   const query = useQuery({
-    queryKey: ["node-checkpoints", coordinatorNodeUrl],
-    queryFn: () =>
-      proxyGet<NodeCheckpoint[]>(`${coordinatorNodeUrl}/reports/checkpoints`),
-    enabled: !!coordinatorNodeUrl,
+    queryKey: ["node-checkpoints", coordinatorNodeUrl, status],
+    queryFn: () => proxyGet<NodeCheckpoint[]>(url!),
+    enabled: !!url,
     retry: false,
     refetchOnWindowFocus: false,
   });

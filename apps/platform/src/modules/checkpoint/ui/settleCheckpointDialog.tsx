@@ -37,7 +37,7 @@ function buildPrizeRows(
   checkpoint: NodeCheckpoint,
   payoutAmount: number
 ): PrizeRow[] {
-  const emission = checkpoint.entries[0];
+  const emission = checkpoint.entries?.[0];
   if (!emission) return [];
 
   const ranking = checkpoint.meta.ranking ?? [];
@@ -66,6 +66,7 @@ interface SettleCheckpointDialogProps {
   onOpenChange: (open: boolean) => void;
   checkpoint: NodeCheckpoint;
   payoutAmount: number;
+  coordinatorNodeUrl: string;
 }
 
 export function SettleCheckpointDialog({
@@ -73,13 +74,18 @@ export function SettleCheckpointDialog({
   onOpenChange,
   checkpoint,
   payoutAmount,
+  coordinatorNodeUrl,
 }: SettleCheckpointDialogProps) {
   const { submitNodeCheckpoint, submitLoading } = useSubmitNodeCheckpoint();
   const prizeRows = buildPrizeRows(checkpoint, payoutAmount);
   const payoutUsdc = payoutAmount / 10 ** 6;
 
   const handleSettle = async () => {
-    await submitNodeCheckpoint({ checkpoint, payoutAmount });
+    await submitNodeCheckpoint({
+      checkpoint,
+      payoutAmount,
+      coordinatorNodeUrl,
+    });
     onOpenChange(false);
   };
 
@@ -124,8 +130,9 @@ export function SettleCheckpointDialog({
             <Badge variant="outline">{checkpoint.status}</Badge>
           </div>
 
-          <DataTable columns={prizeColumns} data={prizeRows} />
-
+          <div>
+            <DataTable columns={prizeColumns} data={prizeRows} />
+          </div>
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
