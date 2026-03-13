@@ -4,8 +4,6 @@ import Link from "next/link";
 import { Card } from "@crunch-ui/core";
 import type { Organizer } from "../domain/types";
 
-const DEFAULT_BANNER = "/images/competition-card-generic.webp";
-
 interface OrganizerCardProps {
   organizer: Organizer;
 }
