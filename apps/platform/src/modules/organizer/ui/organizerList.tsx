@@ -8,6 +8,7 @@ import {
   Spinner,
 } from "@crunch-ui/core";
 import { HubConnectionRequired } from "@/modules/hub/ui/hubConnectionRequired";
+import { EnvironmentSwitcher } from "@/modules/environment/ui/environmentSwitcher";
 import { useGetOrganizers } from "../application/hooks/useGetOrganizers";
 import { OrganizerCard } from "./organizerCard";
 
@@ -25,7 +26,10 @@ function OrganizerListContent() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Your Organizations</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Your Organizations</CardTitle>
+          <EnvironmentSwitcher />
+        </div>
       </CardHeader>
       <CardContent>
         {organizersLoading ? (
