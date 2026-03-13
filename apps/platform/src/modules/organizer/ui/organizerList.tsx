@@ -7,10 +7,19 @@ import {
   CardTitle,
   Spinner,
 } from "@crunch-ui/core";
+import { HubConnectionRequired } from "@/modules/hub/ui/hubConnectionRequired";
 import { useGetOrganizers } from "../application/hooks/useGetOrganizers";
 import { OrganizerCard } from "./organizerCard";
 
 export function OrganizerList() {
+  return (
+    <HubConnectionRequired>
+      <OrganizerListContent />
+    </HubConnectionRequired>
+  );
+}
+
+function OrganizerListContent() {
   const { organizers, organizersLoading } = useGetOrganizers();
 
   return (
