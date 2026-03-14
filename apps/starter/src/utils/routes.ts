@@ -3,6 +3,7 @@ export const INTERNAL_LINKS = {
   LOGIN: "/login",
   DASHBOARD: "/dashboard",
   LEADERBOARD: "/leaderboard",
+  EVENTS: "/events",
   METRICS: "/metrics",
   SETTINGS: "/settings",
   MODELS: "/models",
@@ -21,6 +22,10 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.LEADERBOARD,
     label: "Leaderboard",
+  },
+  {
+    path: INTERNAL_LINKS.EVENTS,
+    label: "Events",
   },
   {
     path: INTERNAL_LINKS.METRICS,
