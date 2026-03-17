@@ -11,7 +11,9 @@ export function useGetLeaderboard() {
   const leaderboardQuery = useQuery({
     queryKey: ["leaderboard", settings?.endpoints?.leaderboard],
     queryFn: async () => {
-      const endpoint = settings?.endpoints?.leaderboard || initialSettings.endpoints.leaderboard;
+      const endpoint =
+        settings?.endpoints?.leaderboard ||
+        initialSettings.endpoints.leaderboard;
       return getLeaderboard(endpoint);
     },
     enabled: !!settings,
@@ -22,7 +24,8 @@ export function useGetLeaderboard() {
   const modelsQuery = useQuery({
     queryKey: ["modelList", settings?.endpoints?.models],
     queryFn: async () => {
-      const endpoint = settings?.endpoints?.models || initialSettings.endpoints.models;
+      const endpoint =
+        settings?.endpoints?.models || initialSettings.endpoints.models;
       return getModelList(endpoint);
     },
     enabled: !!settings,
@@ -57,6 +60,9 @@ export function useGetLeaderboard() {
 
   return {
     leaderboard,
-    leaderboardLoading: leaderboardQuery.isLoading || leaderboardQuery.isFetching || modelsQuery.isLoading,
+    leaderboardLoading:
+      leaderboardQuery.isLoading ||
+      leaderboardQuery.isFetching ||
+      modelsQuery.isLoading,
   };
 }

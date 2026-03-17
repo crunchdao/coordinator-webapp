@@ -21,10 +21,7 @@ export const NavigationItems: React.FC = () => {
   return (
     <nav className="flex items-center gap-3">
       {ROUTE_CONFIG.map((route) => {
-        if (
-          route.visibilityKey &&
-          !visibility[route.visibilityKey]
-        ) {
+        if (route.visibilityKey && !visibility[route.visibilityKey]) {
           return null;
         }
 

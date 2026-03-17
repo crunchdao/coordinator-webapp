@@ -25,8 +25,14 @@ export const MdPreview: React.FC<{ value: string; className?: string }> = ({
 };
 
 export default function MdEditor({ value, onChange }: MdEditorProps) {
-  const { ref, previewMode, surround, insertHeading, togglePreviewMode, handleChange } =
-    useMdEditor({ value, onChange });
+  const {
+    ref,
+    previewMode,
+    surround,
+    insertHeading,
+    togglePreviewMode,
+    handleChange,
+  } = useMdEditor({ value, onChange });
 
   return (
     <div className="flex flex-col gap-2">

@@ -36,6 +36,7 @@ nativeConfiguration: {
 ### VALUE Configuration
 
 No special configuration needed. Supports these formats:
+
 - `"percentage"` - Decimal to percentage (0.95 → 95.00%)
 - `"integer"` - Rounded with thousand separators
 - `"compact"` - Compact notation (1234 → 1.2K)

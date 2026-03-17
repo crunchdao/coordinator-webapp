@@ -10,7 +10,9 @@ interface OnboardingStartCrunchFormProps {
   onSuccess?: () => void;
 }
 
-export function OnboardingStartCrunchForm({ onSuccess }: OnboardingStartCrunchFormProps) {
+export function OnboardingStartCrunchForm({
+  onSuccess,
+}: OnboardingStartCrunchFormProps) {
   const { coordinator, coordinatorLoading } = useGetCoordinator();
   const { crunches, crunchesLoading } = useGetCrunches(
     coordinator?.address ? { coordinator: coordinator.address } : undefined

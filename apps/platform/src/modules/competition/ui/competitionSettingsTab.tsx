@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, Skeleton } from "@crunch-ui/core";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Skeleton,
+} from "@crunch-ui/core";
 import { useGetCompetition } from "../application/hooks/useGetCompetition";
 import { CompetitionEditForm } from "./competitionEditForm";
 

@@ -55,7 +55,8 @@ function buildPrizeRows(
 
     return {
       rank: entry?.rank ?? reward.cruncher_index + 1,
-      model: entry?.model_name ?? entry?.model_id ?? `#${reward.cruncher_index}`,
+      model:
+        entry?.model_name ?? entry?.model_id ?? `#${reward.cruncher_index}`,
       cruncher: entry?.cruncher_name ?? "-",
       share: (pct * 100).toFixed(2) + "%",
       amount: amount.toFixed(2) + " USDC",

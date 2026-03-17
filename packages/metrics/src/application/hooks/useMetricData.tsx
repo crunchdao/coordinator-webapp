@@ -3,7 +3,12 @@ import { useMemo } from "react";
 import { useQueries } from "@tanstack/react-query";
 import apiClient from "@coordinator/utils/src/api";
 import type { Widget as SharedWidget, ChartWidget } from "@crunchdao/chart";
-import { Widget, LineChartDefinition, GaugeDefinition, GetMetricDataParams } from "../../domain/types";
+import {
+  Widget,
+  LineChartDefinition,
+  GaugeDefinition,
+  GetMetricDataParams,
+} from "../../domain/types";
 
 export const useMetricData = (
   widgets: Widget[],
@@ -47,13 +52,15 @@ export const useMetricData = (
           id: widget.id,
           name: widget.displayName,
           type: "IFRAME" as const,
-          definitions: [{
-            id: widget.id,
-            displayName: widget.displayName,
-            tooltip: widget.tooltip,
-            order: widget.order,
-            nativeConfiguration: { url: widget.endpointUrl },
-          }],
+          definitions: [
+            {
+              id: widget.id,
+              displayName: widget.displayName,
+              tooltip: widget.tooltip,
+              order: widget.order,
+              nativeConfiguration: { url: widget.endpointUrl },
+            },
+          ],
         };
       }
 
@@ -63,13 +70,15 @@ export const useMetricData = (
         name: widget.displayName,
         type: "CHART" as const,
         projectIdProperty: "model_id",
-        definitions: [{
-          id: widget.id,
-          displayName: widget.displayName,
-          tooltip: widget.tooltip,
-          order: widget.order,
-          nativeConfiguration: chartWidget.nativeConfiguration,
-        }],
+        definitions: [
+          {
+            id: widget.id,
+            displayName: widget.displayName,
+            tooltip: widget.tooltip,
+            order: widget.order,
+            nativeConfiguration: chartWidget.nativeConfiguration,
+          },
+        ],
         data: dataByWidgetId[widget.id] || [],
       } as ChartWidget;
     });

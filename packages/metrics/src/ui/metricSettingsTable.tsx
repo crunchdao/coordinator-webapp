@@ -64,7 +64,6 @@ export const MetricSettingsTable: React.FC<MetricSettingsTableProps> = ({
   deleteLoading = false,
   resetLoading = false,
 }) => {
-
   return (
     <Accordion type="single" collapsible>
       <AccordionItem

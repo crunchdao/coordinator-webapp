@@ -41,8 +41,7 @@ export function showConfigApiErrorToast(
   fallbackTitle = "Something went wrong"
 ) {
   const axiosError = error as any;
-  const description =
-    axiosError?.response?.data?.message || fallbackTitle;
+  const description = axiosError?.response?.data?.message || fallbackTitle;
 
   toast?.({
     title: fallbackTitle,

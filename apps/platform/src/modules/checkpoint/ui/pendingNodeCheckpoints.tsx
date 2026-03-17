@@ -23,8 +23,11 @@ function formatDate(iso: string) {
 
 export function PendingNodeCheckpoints() {
   const { crunchData } = useCrunchContext();
-  const { pendingCheckpoints, pendingCheckpointsLoading, pendingCheckpointsError } =
-    useGetPendingNodeCheckpoints();
+  const {
+    pendingCheckpoints,
+    pendingCheckpointsLoading,
+    pendingCheckpointsError,
+  } = useGetPendingNodeCheckpoints();
 
   const [settleCheckpoint, setSettleCheckpoint] =
     useState<NodeCheckpoint | null>(null);
@@ -72,8 +75,7 @@ export function PendingNodeCheckpoints() {
       id: "models",
       header: "Models",
       cell: ({ row }) =>
-        row.original.meta.model_count ??
-        (row.original.meta.ranking?.length ?? 0),
+        row.original.meta.model_count ?? row.original.meta.ranking?.length ?? 0,
     },
     {
       id: "snapshots",

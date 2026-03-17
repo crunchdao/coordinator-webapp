@@ -61,7 +61,11 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        <DataTable data={filteredData} loading={loading} columns={tableColumns} />
+        <DataTable
+          data={filteredData}
+          loading={loading}
+          columns={tableColumns}
+        />
       </CardContent>
     </Card>
   );

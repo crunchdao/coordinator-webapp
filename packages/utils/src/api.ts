@@ -46,8 +46,7 @@ export function showApiErrorToast(
   const axiosError = error as any;
   const fieldErrors = axiosError?.response?.data?.fieldErrors;
   const fallbackDescription = "Please try again.";
-  let description =
-    axiosError?.response?.data?.message || fallbackDescription;
+  let description = axiosError?.response?.data?.message || fallbackDescription;
 
   if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
     description = fieldErrors

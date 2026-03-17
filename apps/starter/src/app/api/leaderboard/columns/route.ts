@@ -49,7 +49,10 @@ async function writeColumns(columns: LeaderboardColumn[]): Promise<void> {
 
 export async function GET() {
   try {
-    const fileExists = await fs.access(CONFIG_FILE).then(() => true, () => false);
+    const fileExists = await fs.access(CONFIG_FILE).then(
+      () => true,
+      () => false
+    );
 
     if (fileExists) {
       const data = await fs.readFile(CONFIG_FILE, "utf-8");

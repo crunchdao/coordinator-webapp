@@ -3,7 +3,10 @@ import { promises as fs } from "fs";
 import path from "path";
 import { Widget } from "@coordinator/metrics/src/domain/types";
 import { initialConfig } from "@coordinator/metrics/src/domain/initial-config";
-import { fetchReportSchema, mergeMetricsWidgets } from "@/app/api/_lib/reportSchema";
+import {
+  fetchReportSchema,
+  mergeMetricsWidgets,
+} from "@/app/api/_lib/reportSchema";
 
 const CONFIG_FILE = path.join(process.cwd(), "config", "metrics-widgets.json");
 

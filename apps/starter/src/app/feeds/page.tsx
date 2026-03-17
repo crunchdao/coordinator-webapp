@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { FeedMonitor } from "@/modules/feed/ui/feedMonitor";
 
 // Force dynamic rendering
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Feeds",

@@ -12,9 +12,12 @@ export const getOverviewSlices = async (
   crunchAddress: string,
   locale?: Locale
 ): Promise<OverviewSlicesListResponse> => {
-  const response = await hubApiClient.get(overviewEndpoints.slices(crunchAddress), {
-    params: { locale },
-  });
+  const response = await hubApiClient.get(
+    overviewEndpoints.slices(crunchAddress),
+    {
+      params: { locale },
+    }
+  );
   return response.data;
 };
 

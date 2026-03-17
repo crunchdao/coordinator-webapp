@@ -12,7 +12,10 @@ interface LogsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const LogsDialog: React.FC<LogsDialogProps> = ({ open, onOpenChange }) => {
+export const LogsDialog: React.FC<LogsDialogProps> = ({
+  open,
+  onOpenChange,
+}) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="!max-w-[calc(100vw-32px)] !w-[90vw] max-h-[calc(100vh-32px)] flex flex-col">

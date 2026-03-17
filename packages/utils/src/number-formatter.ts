@@ -14,7 +14,12 @@ export function formatNumber(
   value: unknown,
   format: FormatType | null | undefined | string
 ): string | number {
-  if (format === null || format === undefined || value === null || value === undefined) {
+  if (
+    format === null ||
+    format === undefined ||
+    value === null ||
+    value === undefined
+  ) {
     return value as string | number;
   }
 

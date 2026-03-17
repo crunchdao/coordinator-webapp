@@ -15,7 +15,8 @@ export const useUpdatePitchSlice = (
       sliceName: string;
       body: UpdatePitchSliceBody;
       locale?: Locale;
-    }) => updatePitchSlice(seasonNumber, crunchAddress, sliceName, body, locale),
+    }) =>
+      updatePitchSlice(seasonNumber, crunchAddress, sliceName, body, locale),
   });
 
   return {

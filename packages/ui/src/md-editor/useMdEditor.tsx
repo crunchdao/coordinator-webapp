@@ -54,22 +54,26 @@ export function useMdEditor({ value, onChange }: UseMdEditorProps) {
       const before = value.slice(0, selectionStart);
       const selected = value.slice(selectionStart, selectionEnd);
       const after = value.slice(selectionEnd);
-      
+
       const prefix = "#".repeat(level) + " ";
-      
+
       const lastNewline = before.lastIndexOf("\n");
-      const isStartOfLine = lastNewline === -1 ? selectionStart === 0 : selectionStart === lastNewline + 1;
-      
+      const isStartOfLine =
+        lastNewline === -1
+          ? selectionStart === 0
+          : selectionStart === lastNewline + 1;
+
       let newValue;
       if (isStartOfLine) {
         newValue = `${before}${prefix}${selected}${after}`;
       } else {
         newValue = `${before}\n${prefix}${selected}${after}`;
       }
-      
+
       onChange(newValue);
       setTimeout(() => {
-        const pos = selectionStart + (isStartOfLine ? prefix.length : prefix.length + 1);
+        const pos =
+          selectionStart + (isStartOfLine ? prefix.length : prefix.length + 1);
         textarea.focus();
         textarea.setSelectionRange(pos, pos + selected.length);
       });
