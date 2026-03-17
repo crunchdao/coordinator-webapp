@@ -7,6 +7,7 @@ interface Log {
   createdAt: string;
   content: string;
   error?: boolean;
+  emitter?: string;
 }
 
 interface LogContentProps {
@@ -48,8 +49,23 @@ export const LogContent: React.FC<LogContentProps> = ({
     );
   }
 
+  const logVariants: Record<string, string> = {
+    pip: "secondary",
+    docker: "outline",
+    service: "default",
+    download: "secondary",
+    "user-code": "primary",
+  };
+
   if (logs.length > 0) {
-    return <LogList logs={logs} autoscroll={true} />;
+    return (
+      <LogList
+        logs={logs}
+        autoscroll={true}
+        showTimestamp={true}
+        logVariants={logVariants}
+      />
+    );
   }
 
   return (
