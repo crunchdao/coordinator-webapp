@@ -39,7 +39,11 @@ export function MetricsContent() {
     hubEnv: Environment
   ) => {
     try {
-      const { widgets: hubWidgets } = await pullFromHub(address, hubUrl, hubEnv);
+      const { widgets: hubWidgets } = await pullFromHub(
+        address,
+        hubUrl,
+        hubEnv
+      );
       await saveLocalMetricsConfig(crunchName, {
         widgets: hubWidgets,
       });

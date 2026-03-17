@@ -116,7 +116,13 @@ export function LeaderboardContent() {
     hubEnv: Environment
   ) => {
     try {
-      await pushToHub(address, hubUrl, hubEnv, columns, externalUrl ?? undefined);
+      await pushToHub(
+        address,
+        hubUrl,
+        hubEnv,
+        columns,
+        externalUrl ?? undefined
+      );
       toast({ title: `Columns pushed to "${envName}" successfully` });
     } catch (error) {
       toast({

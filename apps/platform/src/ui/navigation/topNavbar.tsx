@@ -20,10 +20,7 @@ const NAV_LINKS = [
   { href: INTERNAL_LINKS.ONCHAIN_EXPLORER, label: "Onchain Explorer" },
 ];
 
-function extractSegment(
-  pathname: string,
-  prefix: string
-): string | null {
+function extractSegment(pathname: string, prefix: string): string | null {
   if (!pathname.startsWith(prefix)) return null;
   const rest = pathname.substring(prefix.length);
   const segment = rest.split("/")[0];

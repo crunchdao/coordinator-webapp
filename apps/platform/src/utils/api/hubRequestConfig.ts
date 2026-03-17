@@ -11,6 +11,8 @@ export function hubRequestConfig(
   return {
     ...extra,
     baseURL: hubBaseUrl,
-    ...(token && { headers: { ...extra?.headers, Authorization: `Bearer ${token}` } }),
+    ...(token && {
+      headers: { ...extra?.headers, Authorization: `Bearer ${token}` },
+    }),
   };
 }

@@ -13,7 +13,11 @@ export const useMetricsHubSync = () => {
   const [isPulling, setIsPulling] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
-  const pullFromHub = async (address: string, hubBaseUrl: string, hubEnv: Environment) => {
+  const pullFromHub = async (
+    address: string,
+    hubBaseUrl: string,
+    hubEnv: Environment
+  ) => {
     setIsPulling(true);
     try {
       const definitions = await getChartDefinitions(
@@ -55,7 +59,11 @@ export const useMetricsHubSync = () => {
     setIsPushing(true);
     try {
       const competitionId = `onchain:${address}`;
-      const existing = await getChartDefinitions(competitionId, hubBaseUrl, hubEnv);
+      const existing = await getChartDefinitions(
+        competitionId,
+        hubBaseUrl,
+        hubEnv
+      );
       const hubByName = new Map(existing.map((d) => [d.name, d]));
 
       for (const widget of widgets) {
@@ -86,7 +94,12 @@ export const useMetricsHubSync = () => {
           );
           hubByName.delete(name);
         } else {
-          await createChartDefinition(competitionId, payload, hubBaseUrl, hubEnv);
+          await createChartDefinition(
+            competitionId,
+            payload,
+            hubBaseUrl,
+            hubEnv
+          );
         }
       }
 

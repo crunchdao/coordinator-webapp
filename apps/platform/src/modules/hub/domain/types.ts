@@ -8,7 +8,8 @@ export function getHubToken(env: Environment): string | undefined {
 export function setHubToken(env: Environment, token: string): void {
   Cookies.set(`hub-access-token-${env}`, token, {
     sameSite: "strict",
-    secure: typeof window !== "undefined" && window.location.protocol === "https:",
+    secure:
+      typeof window !== "undefined" && window.location.protocol === "https:",
     path: "/",
     expires: 1,
   });

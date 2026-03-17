@@ -16,7 +16,11 @@ export const usePitchHubSync = (
   const [isPulling, setIsPulling] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
-  const pullFromHub = async (address: string, hubBaseUrl: string, hubEnv: Environment) => {
+  const pullFromHub = async (
+    address: string,
+    hubBaseUrl: string,
+    hubEnv: Environment
+  ) => {
     if (!seasonNumber) {
       throw new Error("No season selected");
     }

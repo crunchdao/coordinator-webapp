@@ -10,7 +10,11 @@ export const useSettingsHubSync = () => {
   const [isPulling, setIsPulling] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
-  const pullFromHub = async (address: string, hubBaseUrl: string, hubEnv: Environment) => {
+  const pullFromHub = async (
+    address: string,
+    hubBaseUrl: string,
+    hubEnv: Environment
+  ) => {
     const competitionIdentifier = `onchain:${address}`;
     setIsPulling(true);
     try {

@@ -4,8 +4,7 @@ import { getOrganizerMembers } from "../../infrastructure/service";
 export function useGetOrganizerMembers(organizerName: string | undefined) {
   const query = useQuery({
     queryKey: ["organizer-members", organizerName],
-    queryFn: () =>
-      getOrganizerMembers(organizerName!, { page: 0, size: 100 }),
+    queryFn: () => getOrganizerMembers(organizerName!, { page: 0, size: 100 }),
     enabled: !!organizerName,
   });
 

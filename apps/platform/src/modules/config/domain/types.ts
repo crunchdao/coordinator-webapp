@@ -30,11 +30,21 @@ export const CPI_URLS: Partial<Record<WalletAdapterNetwork, string>> = {
 
 export const HUB_URL_OPTIONS = [
   { label: "None", value: "", hubEnv: undefined },
-  { label: "Staging (.io)", value: "/hub-staging", hubEnv: "staging" as PlatformEnvironment },
-  { label: "Production (.com)", value: "/hub-prod", hubEnv: "production" as PlatformEnvironment },
+  {
+    label: "Staging (.io)",
+    value: "/hub-staging",
+    hubEnv: "staging" as PlatformEnvironment,
+  },
+  {
+    label: "Production (.com)",
+    value: "/hub-prod",
+    hubEnv: "production" as PlatformEnvironment,
+  },
 ] as const;
 
-export function hubEnvFromUrl(hubUrl?: string): PlatformEnvironment | undefined {
+export function hubEnvFromUrl(
+  hubUrl?: string
+): PlatformEnvironment | undefined {
   return HUB_URL_OPTIONS.find((o) => o.value === hubUrl)?.hubEnv;
 }
 

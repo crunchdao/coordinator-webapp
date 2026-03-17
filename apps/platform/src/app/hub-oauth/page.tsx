@@ -28,12 +28,12 @@ export default function HubOAuthPage() {
     const state = params.get("state") ?? "";
 
     const separatorIndex = state.indexOf("|");
-    const env = separatorIndex > 0
-      ? (state.substring(0, separatorIndex) as Environment)
-      : getEnvironment();
-    const returnUrl = separatorIndex > 0
-      ? state.substring(separatorIndex + 1)
-      : state;
+    const env =
+      separatorIndex > 0
+        ? (state.substring(0, separatorIndex) as Environment)
+        : getEnvironment();
+    const returnUrl =
+      separatorIndex > 0 ? state.substring(separatorIndex + 1) : state;
 
     if (accessToken) {
       setHubToken(env, accessToken);

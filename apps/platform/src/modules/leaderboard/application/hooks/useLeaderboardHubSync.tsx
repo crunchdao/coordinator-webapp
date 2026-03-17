@@ -10,7 +10,11 @@ export const useLeaderboardHubSync = () => {
   const [isPulling, setIsPulling] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
-  const pullFromHub = async (address: string, hubBaseUrl: string, hubEnv: Environment) => {
+  const pullFromHub = async (
+    address: string,
+    hubBaseUrl: string,
+    hubEnv: Environment
+  ) => {
     setIsPulling(true);
     try {
       const definitions = await getLeaderboardDefinitions(

@@ -9,7 +9,9 @@ export function useGetNodeCheckpoints(
   status?: NodeCheckpointStatus
 ) {
   const url = coordinatorNodeUrl
-    ? `${coordinatorNodeUrl}/reports/checkpoints${status ? `?status=${status}` : ""}`
+    ? `${coordinatorNodeUrl}/reports/checkpoints${
+        status ? `?status=${status}` : ""
+      }`
     : undefined;
 
   const query = useQuery({
