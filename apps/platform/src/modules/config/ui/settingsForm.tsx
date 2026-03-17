@@ -30,6 +30,7 @@ import {
 import { Edit as EditIcon } from "@crunch-ui/icons";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
+import type { Environment } from "@/config";
 import { useSettingsHubSync } from "@/modules/competition/application/hooks/useSettingsHubSync";
 import { settingsSchema, SettingsFormData } from "../domain/schemas";
 import {
@@ -116,10 +117,11 @@ export function SettingsForm() {
   const handlePullFromHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
-      const hubSettings = await pullFromHub(address, hubUrl);
+      const hubSettings = await pullFromHub(address, hubUrl, hubEnv);
       await saveSettingsAsync(hubSettings);
       toast({ title: `Settings pulled from "${envName}" successfully` });
     } catch (error) {
@@ -135,11 +137,12 @@ export function SettingsForm() {
   const handlePushToHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
       const values = form.getValues();
-      await pushToHub(address, hubUrl, values);
+      await pushToHub(address, hubUrl, hubEnv, values);
       await saveSettingsAsync(values);
       toast({ title: `Settings pushed to "${envName}" successfully` });
     } catch (error) {

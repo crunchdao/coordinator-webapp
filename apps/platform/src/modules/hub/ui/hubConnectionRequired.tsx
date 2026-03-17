@@ -12,7 +12,10 @@ interface HubConnectionRequiredProps {
 export function HubConnectionRequired({
   children,
 }: HubConnectionRequiredProps) {
-  const { isAuthenticated, isLoading } = useHubAuth();
+  const { staging, production } = useHubAuth();
+
+  const isLoading = staging.isLoading || production.isLoading;
+  const isAuthenticated = staging.isAuthenticated || production.isAuthenticated;
 
   if (isLoading) {
     return (

@@ -1,4 +1,5 @@
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import type { Environment as PlatformEnvironment } from "@/config";
 
 export interface Environment {
   name: string;
@@ -6,6 +7,7 @@ export interface Environment {
   network: WalletAdapterNetwork;
   rpcUrl?: string;
   hubUrl?: string;
+  hubEnv?: PlatformEnvironment;
   coordinatorNodeUrl?: string;
 }
 
@@ -27,10 +29,14 @@ export const CPI_URLS: Partial<Record<WalletAdapterNetwork, string>> = {
 };
 
 export const HUB_URL_OPTIONS = [
-  { label: "None", value: "" },
-  { label: "Staging (.io)", value: "/hub-staging" },
-  { label: "Production (.com)", value: "/hub-prod" },
+  { label: "None", value: "", hubEnv: undefined },
+  { label: "Staging (.io)", value: "/hub-staging", hubEnv: "staging" as PlatformEnvironment },
+  { label: "Production (.com)", value: "/hub-prod", hubEnv: "production" as PlatformEnvironment },
 ] as const;
+
+export function hubEnvFromUrl(hubUrl?: string): PlatformEnvironment | undefined {
+  return HUB_URL_OPTIONS.find((o) => o.value === hubUrl)?.hubEnv;
+}
 
 export const DEFAULT_HUB_URLS: Partial<Record<WalletAdapterNetwork, string>> = {
   [WalletAdapterNetwork.Devnet]: "/hub-staging",

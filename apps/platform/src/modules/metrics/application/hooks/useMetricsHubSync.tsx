@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { Environment } from "@/config";
 import type { Widget } from "@coordinator/metrics/src/domain/types";
 import {
   getChartDefinitions,
@@ -12,12 +13,13 @@ export const useMetricsHubSync = () => {
   const [isPulling, setIsPulling] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
-  const pullFromHub = async (address: string, hubBaseUrl: string) => {
+  const pullFromHub = async (address: string, hubBaseUrl: string, hubEnv: Environment) => {
     setIsPulling(true);
     try {
       const definitions = await getChartDefinitions(
         `onchain:${address}`,
-        hubBaseUrl
+        hubBaseUrl,
+        hubEnv
       );
       return {
         widgets: definitions.map((def): Widget => {
@@ -47,12 +49,13 @@ export const useMetricsHubSync = () => {
   const pushToHub = async (
     address: string,
     hubBaseUrl: string,
+    hubEnv: Environment,
     widgets: Widget[]
   ) => {
     setIsPushing(true);
     try {
       const competitionId = `onchain:${address}`;
-      const existing = await getChartDefinitions(competitionId, hubBaseUrl);
+      const existing = await getChartDefinitions(competitionId, hubBaseUrl, hubEnv);
       const hubByName = new Map(existing.map((d) => [d.name, d]));
 
       for (const widget of widgets) {
@@ -78,17 +81,18 @@ export const useMetricsHubSync = () => {
             competitionId,
             name,
             updatePayload,
-            hubBaseUrl
+            hubBaseUrl,
+            hubEnv
           );
           hubByName.delete(name);
         } else {
-          await createChartDefinition(competitionId, payload, hubBaseUrl);
+          await createChartDefinition(competitionId, payload, hubBaseUrl, hubEnv);
         }
       }
 
       // Delete hub definitions that no longer exist locally
       for (const [name] of hubByName) {
-        await deleteChartDefinition(competitionId, name, hubBaseUrl);
+        await deleteChartDefinition(competitionId, name, hubBaseUrl, hubEnv);
       }
     } finally {
       setIsPushing(false);

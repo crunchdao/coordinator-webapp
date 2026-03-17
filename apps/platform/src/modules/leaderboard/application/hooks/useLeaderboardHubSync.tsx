@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { Environment } from "@/config";
 import type { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types";
 import {
   getLeaderboardDefinitions,
@@ -9,12 +10,13 @@ export const useLeaderboardHubSync = () => {
   const [isPulling, setIsPulling] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
-  const pullFromHub = async (address: string, hubBaseUrl: string) => {
+  const pullFromHub = async (address: string, hubBaseUrl: string, hubEnv: Environment) => {
     setIsPulling(true);
     try {
       const definitions = await getLeaderboardDefinitions(
         `onchain:${address}`,
-        hubBaseUrl
+        hubBaseUrl,
+        hubEnv
       );
       if (!definitions?.length) {
         throw new Error("No leaderboard definitions found");
@@ -32,6 +34,7 @@ export const useLeaderboardHubSync = () => {
   const pushToHub = async (
     address: string,
     hubBaseUrl: string,
+    hubEnv: Environment,
     columns: LeaderboardColumn[],
     externalUrl?: string
   ) => {
@@ -39,7 +42,8 @@ export const useLeaderboardHubSync = () => {
     try {
       const definitions = await getLeaderboardDefinitions(
         `onchain:${address}`,
-        hubBaseUrl
+        hubBaseUrl,
+        hubEnv
       );
       if (!definitions?.length) {
         throw new Error("No leaderboard definitions found");
@@ -55,7 +59,8 @@ export const useLeaderboardHubSync = () => {
             nativeConfiguration: rest.nativeConfiguration,
           })),
         },
-        hubBaseUrl
+        hubBaseUrl,
+        hubEnv
       );
     } finally {
       setIsPushing(false);

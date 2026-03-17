@@ -1,6 +1,8 @@
 import { AxiosError } from "axios";
 import apiClient from "@/utils/api/apiClient";
 import hubApiClient from "@/utils/api/hubApiClient";
+import { hubRequestConfig } from "@/utils/api/hubRequestConfig";
+import type { Environment } from "@/config";
 import { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types";
 import { initialColumns } from "@coordinator/leaderboard/src/domain/initial-config";
 import { endpoints } from "./endpoints";
@@ -97,11 +99,12 @@ export const resetLocalLeaderboardColumns = async (
 
 export const getLeaderboardDefinitions = async (
   competitionIdentifier: string,
-  hubBaseUrl: string
+  hubBaseUrl: string,
+  hubEnv: Environment
 ): Promise<LeaderboardDefinition[]> => {
   const response = await hubApiClient.get(
     endpoints.getLeaderboardDefinitions(competitionIdentifier),
-    { baseURL: hubBaseUrl }
+    hubRequestConfig(hubBaseUrl, hubEnv)
   );
   return response.data;
 };
@@ -109,14 +112,15 @@ export const getLeaderboardDefinitions = async (
 export const getLeaderboardDefinition = async (
   competitionIdentifier: string,
   definitionIdentifier: string,
-  hubBaseUrl: string
+  hubBaseUrl: string,
+  hubEnv: Environment
 ): Promise<LeaderboardDefinition> => {
   const response = await hubApiClient.get(
     endpoints.getLeaderboardDefinition(
       competitionIdentifier,
       definitionIdentifier
     ),
-    { baseURL: hubBaseUrl }
+    hubRequestConfig(hubBaseUrl, hubEnv)
   );
   return response.data;
 };
@@ -125,7 +129,8 @@ export const updateLeaderboardDefinition = async (
   competitionIdentifier: string,
   definitionIdentifier: string,
   data: UpdateLeaderboardDefinitionPayload,
-  hubBaseUrl: string
+  hubBaseUrl: string,
+  hubEnv: Environment
 ): Promise<LeaderboardDefinition> => {
   const response = await hubApiClient.patch(
     endpoints.updateLeaderboardDefinitions(
@@ -133,7 +138,7 @@ export const updateLeaderboardDefinition = async (
       definitionIdentifier
     ),
     data,
-    { baseURL: hubBaseUrl }
+    hubRequestConfig(hubBaseUrl, hubEnv)
   );
   return response.data;
 };

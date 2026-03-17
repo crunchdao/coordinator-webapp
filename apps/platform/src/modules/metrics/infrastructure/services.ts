@@ -1,6 +1,8 @@
 import apiClient from "@/utils/api/apiClient";
 import { AxiosError } from "axios";
 import hubApiClient from "@/utils/api/hubApiClient";
+import { hubRequestConfig } from "@/utils/api/hubRequestConfig";
+import type { Environment } from "@/config";
 import { endpoints, hubEndpoints } from "./endpoints";
 import {
   Widget,
@@ -93,11 +95,12 @@ export const resetLocalMetricsWidgets = async (slug: string): Promise<void> => {
 
 export const getChartDefinitions = async (
   competitionIdentifier: string,
-  hubBaseUrl: string
+  hubBaseUrl: string,
+  hubEnv: Environment
 ): Promise<HubChartDefinition[]> => {
   const response = await hubApiClient.get(
     hubEndpoints.chartDefinitions(competitionIdentifier),
-    { baseURL: hubBaseUrl }
+    hubRequestConfig(hubBaseUrl, hubEnv)
   );
   return response.data;
 };
@@ -105,11 +108,12 @@ export const getChartDefinitions = async (
 export const getChartDefinition = async (
   competitionIdentifier: string,
   chartDefinitionName: string,
-  hubBaseUrl: string
+  hubBaseUrl: string,
+  hubEnv: Environment
 ): Promise<HubChartDefinition> => {
   const response = await hubApiClient.get(
     hubEndpoints.chartDefinition(competitionIdentifier, chartDefinitionName),
-    { baseURL: hubBaseUrl }
+    hubRequestConfig(hubBaseUrl, hubEnv)
   );
   return response.data;
 };
@@ -117,12 +121,13 @@ export const getChartDefinition = async (
 export const createChartDefinition = async (
   competitionIdentifier: string,
   data: CreateChartDefinitionPayload,
-  hubBaseUrl: string
+  hubBaseUrl: string,
+  hubEnv: Environment
 ): Promise<HubChartDefinition> => {
   const response = await hubApiClient.post(
     hubEndpoints.chartDefinitions(competitionIdentifier),
     data,
-    { baseURL: hubBaseUrl }
+    hubRequestConfig(hubBaseUrl, hubEnv)
   );
   return response.data;
 };
@@ -131,12 +136,13 @@ export const updateChartDefinition = async (
   competitionIdentifier: string,
   chartDefinitionName: string,
   data: UpdateChartDefinitionPayload,
-  hubBaseUrl: string
+  hubBaseUrl: string,
+  hubEnv: Environment
 ): Promise<HubChartDefinition> => {
   const response = await hubApiClient.patch(
     hubEndpoints.chartDefinition(competitionIdentifier, chartDefinitionName),
     data,
-    { baseURL: hubBaseUrl }
+    hubRequestConfig(hubBaseUrl, hubEnv)
   );
   return response.data;
 };
@@ -144,10 +150,11 @@ export const updateChartDefinition = async (
 export const deleteChartDefinition = async (
   competitionIdentifier: string,
   chartDefinitionName: string,
-  hubBaseUrl: string
+  hubBaseUrl: string,
+  hubEnv: Environment
 ): Promise<void> => {
   await hubApiClient.delete(
     hubEndpoints.chartDefinition(competitionIdentifier, chartDefinitionName),
-    { baseURL: hubBaseUrl }
+    hubRequestConfig(hubBaseUrl, hubEnv)
   );
 };

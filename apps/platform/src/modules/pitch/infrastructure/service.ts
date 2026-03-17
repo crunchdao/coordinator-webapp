@@ -1,4 +1,6 @@
 import hubApiClient from "@/utils/api/hubApiClient";
+import { hubRequestConfig } from "@/utils/api/hubRequestConfig";
+import type { Environment } from "@/config";
 import { PaginatedResponse } from "@/modules/common/domain/pagination";
 import { Locale } from "@/modules/common/types";
 import {
@@ -12,13 +14,14 @@ import { pitchEndpoints } from "./endpoints";
 
 export const getPitches = async (
   seasonNumber: number,
-  hubBaseUrl?: string
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<PaginatedResponse<Pitch>> => {
+  const config =
+    hubBaseUrl && hubEnv ? hubRequestConfig(hubBaseUrl, hubEnv) : {};
   const response = await hubApiClient.get(
     pitchEndpoints.pitches(seasonNumber),
-    {
-      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
-    }
+    config
   );
   return response.data;
 };
@@ -26,13 +29,14 @@ export const getPitches = async (
 export const getPitch = async (
   seasonNumber: number,
   pitchName: string,
-  hubBaseUrl?: string
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<Pitch> => {
+  const config =
+    hubBaseUrl && hubEnv ? hubRequestConfig(hubBaseUrl, hubEnv) : {};
   const response = await hubApiClient.get(
     pitchEndpoints.pitch(seasonNumber, pitchName),
-    {
-      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
-    }
+    config
   );
   return response.data;
 };
@@ -41,14 +45,16 @@ export const getPitchSlices = async (
   seasonNumber: number,
   competitionIdentifier: string,
   locale?: Locale,
-  hubBaseUrl?: string
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<PitchSlicesListResponse> => {
+  const config =
+    hubBaseUrl && hubEnv
+      ? hubRequestConfig(hubBaseUrl, hubEnv, { params: { locale } })
+      : { params: { locale } };
   const response = await hubApiClient.get(
     pitchEndpoints.slices(seasonNumber, competitionIdentifier),
-    {
-      params: { locale },
-      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
-    }
+    config
   );
   return response.data;
 };
@@ -58,15 +64,17 @@ export const createPitchSlice = async (
   competitionIdentifier: string,
   body: CreatePitchSliceBody,
   locale?: Locale,
-  hubBaseUrl?: string
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<PitchSlice> => {
+  const config =
+    hubBaseUrl && hubEnv
+      ? hubRequestConfig(hubBaseUrl, hubEnv, { params: { locale } })
+      : { params: { locale } };
   const response = await hubApiClient.post(
     pitchEndpoints.slices(seasonNumber, competitionIdentifier),
     body,
-    {
-      params: { locale },
-      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
-    }
+    config
   );
   return response.data;
 };
@@ -77,15 +85,17 @@ export const updatePitchSlice = async (
   sliceName: string,
   body: UpdatePitchSliceBody,
   locale?: Locale,
-  hubBaseUrl?: string
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<PitchSlice> => {
+  const config =
+    hubBaseUrl && hubEnv
+      ? hubRequestConfig(hubBaseUrl, hubEnv, { params: { locale } })
+      : { params: { locale } };
   const response = await hubApiClient.patch(
     pitchEndpoints.slice(seasonNumber, competitionIdentifier, sliceName),
     body,
-    {
-      params: { locale },
-      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
-    }
+    config
   );
   return response.data;
 };
@@ -95,13 +105,15 @@ export const deletePitchSlice = async (
   competitionIdentifier: string,
   sliceName: string,
   locale?: Locale,
-  hubBaseUrl?: string
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<void> => {
+  const config =
+    hubBaseUrl && hubEnv
+      ? hubRequestConfig(hubBaseUrl, hubEnv, { params: { locale } })
+      : { params: { locale } };
   await hubApiClient.delete(
     pitchEndpoints.slice(seasonNumber, competitionIdentifier, sliceName),
-    {
-      params: { locale },
-      ...(hubBaseUrl && { baseURL: hubBaseUrl }),
-    }
+    config
   );
 };

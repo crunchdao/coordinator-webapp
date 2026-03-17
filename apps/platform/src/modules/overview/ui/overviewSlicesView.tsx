@@ -11,6 +11,7 @@ import {
 } from "@/modules/config/application/hooks/useConfigFile";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { Locale } from "@/modules/common/types";
+import type { Environment } from "@/config";
 import { useOverviewHubSync } from "../application/hooks/useOverviewHubSync";
 import { OverviewSliceHeader } from "./overviewSliceHeader";
 
@@ -52,10 +53,11 @@ export const OverviewSlicesView: React.FC = () => {
   const handlePullFromHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
-      const hubSlices = await pullFromHub(address, hubUrl);
+      const hubSlices = await pullFromHub(address, hubUrl, hubEnv);
       await saveAsync(hubSlices);
       toast({ title: `Slices pulled from "${envName}" successfully` });
     } catch (error) {
@@ -71,10 +73,11 @@ export const OverviewSlicesView: React.FC = () => {
   const handlePushToHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
-      await pushToHub(address, hubUrl, slices);
+      await pushToHub(address, hubUrl, hubEnv, slices);
       await saveAsync(slices);
       await saveChanges();
       toast({ title: `Slices pushed to "${envName}" successfully` });

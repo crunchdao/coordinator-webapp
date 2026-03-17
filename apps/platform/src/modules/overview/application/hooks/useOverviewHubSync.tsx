@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { Environment } from "@/config";
 import type { Slice } from "@crunchdao/slices";
 import { Locale } from "@/modules/common/types";
 import {
@@ -12,14 +13,15 @@ export const useOverviewHubSync = (locale: Locale) => {
   const [isPulling, setIsPulling] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
-  const pullFromHub = async (address: string, hubBaseUrl: string) => {
+  const pullFromHub = async (address: string, hubBaseUrl: string, hubEnv: Environment) => {
     const competitionIdentifier = `onchain:${address}`;
     setIsPulling(true);
     try {
       const slices = await getOverviewSlices(
         competitionIdentifier,
         locale,
-        hubBaseUrl
+        hubBaseUrl,
+        hubEnv
       );
       return slices.map((s, i) => ({ ...s, id: Date.now() + i }));
     } finally {
@@ -30,6 +32,7 @@ export const useOverviewHubSync = (locale: Locale) => {
   const pushToHub = async (
     address: string,
     hubBaseUrl: string,
+    hubEnv: Environment,
     localSlices: Slice[]
   ) => {
     const competitionIdentifier = `onchain:${address}`;
@@ -38,7 +41,8 @@ export const useOverviewHubSync = (locale: Locale) => {
       const hubSlices = await getOverviewSlices(
         competitionIdentifier,
         locale,
-        hubBaseUrl
+        hubBaseUrl,
+        hubEnv
       );
       const hubByName = new Map(hubSlices.map((s) => [s.name, s]));
       const localByName = new Map(localSlices.map((s) => [s.name, s]));
@@ -57,14 +61,16 @@ export const useOverviewHubSync = (locale: Locale) => {
             slice.name,
             body,
             locale,
-            hubBaseUrl
+            hubBaseUrl,
+            hubEnv
           );
         } else {
           await createOverviewSlice(
             competitionIdentifier,
             body,
             locale,
-            hubBaseUrl
+            hubBaseUrl,
+            hubEnv
           );
         }
       }
@@ -75,7 +81,8 @@ export const useOverviewHubSync = (locale: Locale) => {
             competitionIdentifier,
             hubSlice.name,
             locale,
-            hubBaseUrl
+            hubBaseUrl,
+            hubEnv
           );
         }
       }

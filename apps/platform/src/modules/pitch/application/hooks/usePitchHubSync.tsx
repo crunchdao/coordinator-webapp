@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { Environment } from "@/config";
 import type { Slice } from "@crunchdao/slices";
 import { Locale } from "@/modules/common/types";
 import {
@@ -15,7 +16,7 @@ export const usePitchHubSync = (
   const [isPulling, setIsPulling] = useState(false);
   const [isPushing, setIsPushing] = useState(false);
 
-  const pullFromHub = async (address: string, hubBaseUrl: string) => {
+  const pullFromHub = async (address: string, hubBaseUrl: string, hubEnv: Environment) => {
     if (!seasonNumber) {
       throw new Error("No season selected");
     }
@@ -27,7 +28,8 @@ export const usePitchHubSync = (
         seasonNumber,
         competitionIdentifier,
         locale,
-        hubBaseUrl
+        hubBaseUrl,
+        hubEnv
       );
       return slices.map((s, i) => ({ ...s, id: Date.now() + i }));
     } finally {
@@ -38,6 +40,7 @@ export const usePitchHubSync = (
   const pushToHub = async (
     address: string,
     hubBaseUrl: string,
+    hubEnv: Environment,
     localSlices: Slice[]
   ) => {
     if (!seasonNumber) {
@@ -51,7 +54,8 @@ export const usePitchHubSync = (
         seasonNumber,
         competitionIdentifier,
         locale,
-        hubBaseUrl
+        hubBaseUrl,
+        hubEnv
       );
       const hubByName = new Map(hubSlices.map((s) => [s.name, s]));
       const localByName = new Map(localSlices.map((s) => [s.name, s]));
@@ -71,7 +75,8 @@ export const usePitchHubSync = (
             slice.name,
             body,
             locale,
-            hubBaseUrl
+            hubBaseUrl,
+            hubEnv
           );
         } else {
           await createPitchSlice(
@@ -79,7 +84,8 @@ export const usePitchHubSync = (
             competitionIdentifier,
             body,
             locale,
-            hubBaseUrl
+            hubBaseUrl,
+            hubEnv
           );
         }
       }
@@ -91,7 +97,8 @@ export const usePitchHubSync = (
             competitionIdentifier,
             hubSlice.name,
             locale,
-            hubBaseUrl
+            hubBaseUrl,
+            hubEnv
           );
         }
       }

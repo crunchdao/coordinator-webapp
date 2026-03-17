@@ -11,6 +11,7 @@ import { useAddLocalWidget } from "../application/hooks/useAddLocalWidget";
 import { useUpdateLocalWidget } from "../application/hooks/useUpdateLocalWidget";
 import { useRemoveLocalWidget } from "../application/hooks/useRemoveLocalWidget";
 import { useResetLocalWidgets } from "../application/hooks/useResetLocalWidgets";
+import type { Environment } from "@/config";
 import { useMetricsHubSync } from "../application/hooks/useMetricsHubSync";
 import { saveLocalMetricsConfig } from "../infrastructure/services";
 import { MetricsDashboardContent } from "./metricsDashboardContent";
@@ -34,10 +35,11 @@ export function MetricsContent() {
   const handlePullFromHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
-      const { widgets: hubWidgets } = await pullFromHub(address, hubUrl);
+      const { widgets: hubWidgets } = await pullFromHub(address, hubUrl, hubEnv);
       await saveLocalMetricsConfig(crunchName, {
         widgets: hubWidgets,
       });
@@ -58,10 +60,11 @@ export function MetricsContent() {
   const handlePushToHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
-      await pushToHub(address, hubUrl, widgets ?? []);
+      await pushToHub(address, hubUrl, hubEnv, widgets ?? []);
       toast({ title: `Widgets pushed to "${envName}" successfully` });
     } catch (error) {
       toast({

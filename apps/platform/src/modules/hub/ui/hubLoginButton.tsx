@@ -10,26 +10,43 @@ import {
   DropdownMenuTrigger,
   Avatar,
   AvatarFallback,
+  Badge,
 } from "@crunch-ui/core";
-import { ExternalLink, SmallCross } from "@crunch-ui/icons";
+import { Check, SmallCross } from "@crunch-ui/icons";
 import { useHubAuth } from "../application/context/hubAuthContext";
 
-const HUB_ACCOUNT_URL = "https://hub.crunchdao.com/account/settings";
-
 export function HubLoginButton() {
-  const { isAuthenticated, isLoading, user, login, logout } = useHubAuth();
+  const { staging, production, login, logout } = useHubAuth();
+
+  const isLoading = staging.isLoading || production.isLoading;
+  const isAnyConnected = staging.isAuthenticated || production.isAuthenticated;
 
   if (isLoading) {
     return null;
   }
 
-  if (!isAuthenticated) {
+  if (!isAnyConnected) {
     return (
-      <Button variant="outline" size="sm" onClick={login}>
-        Connect to Hub
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm">
+            Connect to Hub
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onSelect={() => login("staging")}>
+            Staging
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => login("production")}>
+            Production
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
+
+  const user = production.user ?? staging.user;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -45,15 +62,23 @@ export function HubLoginButton() {
         <DropdownMenuLabel>{user?.login}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onSelect={() => window.open(HUB_ACCOUNT_URL, "_blank")}
+          disabled={staging.isAuthenticated}
+          onSelect={() => login("staging")}
         >
-          <ExternalLink className="h-4 w-4 mr-2" />
-          My Account
+          Staging
+          {staging.isAuthenticated && <Check className="h-4 w-4 ml-auto" />}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={production.isAuthenticated}
+          onSelect={() => login("production")}
+        >
+          Production
+          {production.isAuthenticated && <Check className="h-4 w-4 ml-auto" />}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-destructive" onSelect={logout}>
           <SmallCross className="h-4 w-4 mr-2" />
-          Disconnect from Hub
+          Disconnect
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

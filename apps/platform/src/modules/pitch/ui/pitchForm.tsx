@@ -13,6 +13,7 @@ import {
 } from "@/modules/config/application/hooks/useConfigFile";
 import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
 import { Locale } from "@/modules/common/types";
+import type { Environment } from "@/config";
 import { usePitchHubSync } from "../application/hooks/usePitchHubSync";
 import { PitchSliceHeader } from "./pitchSliceHeader";
 
@@ -95,10 +96,11 @@ export function PitchForm() {
   const handlePullFromHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
-      const hubSlices = await pullFromHub(address, hubUrl);
+      const hubSlices = await pullFromHub(address, hubUrl, hubEnv);
       await saveAsync(hubSlices);
       toast({ title: `Pitch slices pulled from "${envName}" successfully` });
     } catch (error) {
@@ -114,10 +116,11 @@ export function PitchForm() {
   const handlePushToHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
-      await pushToHub(address, hubUrl, slices);
+      await pushToHub(address, hubUrl, hubEnv, slices);
       await saveAsync(slices);
       await saveChanges();
       toast({ title: `Pitch slices pushed to "${envName}" successfully` });

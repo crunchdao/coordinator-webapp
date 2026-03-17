@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { Environment } from "@/config";
 import {
   Button,
   Input,
@@ -84,11 +85,12 @@ export function LeaderboardContent() {
   const handlePullFromHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
       const { columns: hubColumns, externalUrl: hubExternalUrl } =
-        await pullFromHub(address, hubUrl);
+        await pullFromHub(address, hubUrl, hubEnv);
       await saveLocalLeaderboardConfig(crunchName, {
         externalUrl: hubExternalUrl,
         columns: hubColumns,
@@ -110,10 +112,11 @@ export function LeaderboardContent() {
   const handlePushToHub = async (
     envName: string,
     address: string,
-    hubUrl: string
+    hubUrl: string,
+    hubEnv: Environment
   ) => {
     try {
-      await pushToHub(address, hubUrl, columns, externalUrl ?? undefined);
+      await pushToHub(address, hubUrl, hubEnv, columns, externalUrl ?? undefined);
       toast({ title: `Columns pushed to "${envName}" successfully` });
     } catch (error) {
       toast({
