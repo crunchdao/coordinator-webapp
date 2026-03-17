@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Spinner } from "@crunch-ui/core";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { setHubToken } from "@/modules/hub/domain/types";
-import { getEnvironment, type Environment } from "@/config";
+import { getEnvironment, isValidEnvironment } from "@/config";
 
 const isValidRedirectPath = (path: string | null): path is string => {
   if (!path) return false;
@@ -28,10 +28,8 @@ export default function HubOAuthPage() {
     const state = params.get("state") ?? "";
 
     const separatorIndex = state.indexOf("|");
-    const env =
-      separatorIndex > 0
-        ? (state.substring(0, separatorIndex) as Environment)
-        : getEnvironment();
+    const rawEnv = separatorIndex > 0 ? state.substring(0, separatorIndex) : null;
+    const env = isValidEnvironment(rawEnv) ? rawEnv : getEnvironment();
     const returnUrl =
       separatorIndex > 0 ? state.substring(separatorIndex + 1) : state;
 

@@ -46,7 +46,7 @@ const configs: Record<Environment, PlatformConfig> = {
 const COOKIE_KEY = "coordinator-environment";
 export const DEFAULT_ENV: Environment = "staging";
 
-function isValidEnvironment(value: unknown): value is Environment {
+export function isValidEnvironment(value: unknown): value is Environment {
   return value === "staging" || value === "production";
 }
 
@@ -78,11 +78,3 @@ export function getConfig(): PlatformConfig {
 export function getConfigFor(env: Environment): PlatformConfig {
   return configs[env];
 }
-
-// Backwards-compatible default export — reads from cookie at access time.
-// Use getConfig() in new code for clarity.
-export const config: PlatformConfig = new Proxy({} as PlatformConfig, {
-  get(_target, prop) {
-    return getConfig()[prop as keyof PlatformConfig];
-  },
-});
