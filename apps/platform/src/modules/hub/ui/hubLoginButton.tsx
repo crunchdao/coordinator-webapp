@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
   Avatar,
   AvatarFallback,
-  Badge,
 } from "@crunch-ui/core";
 import { Check, SmallCross } from "@crunch-ui/icons";
 import { useHubAuth } from "../application/context/hubAuthContext";

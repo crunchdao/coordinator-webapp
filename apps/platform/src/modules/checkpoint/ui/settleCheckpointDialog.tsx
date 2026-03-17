@@ -12,7 +12,7 @@ import {
   LoadingOverlay,
 } from "@crunch-ui/core";
 import { ColumnDef } from "@tanstack/react-table";
-import { NodeCheckpoint, NodeRankedEntry } from "../domain/nodeTypes";
+import { NodeCheckpoint } from "../domain/nodeTypes";
 import { FRAC64_MULTIPLIER } from "../domain/constants";
 import { useSubmitNodeCheckpoint } from "../application/hooks/useSubmitNodeCheckpoint";
 import { formatDate } from "@/utils/formatDate";

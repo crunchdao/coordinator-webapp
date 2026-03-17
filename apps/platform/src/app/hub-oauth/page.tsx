@@ -28,7 +28,8 @@ export default function HubOAuthPage() {
     const state = params.get("state") ?? "";
 
     const separatorIndex = state.indexOf("|");
-    const rawEnv = separatorIndex > 0 ? state.substring(0, separatorIndex) : null;
+    const rawEnv =
+      separatorIndex > 0 ? state.substring(0, separatorIndex) : null;
     const env = isValidEnvironment(rawEnv) ? rawEnv : getEnvironment();
     const returnUrl =
       separatorIndex > 0 ? state.substring(separatorIndex + 1) : state;
