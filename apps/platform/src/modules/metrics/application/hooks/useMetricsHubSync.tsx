@@ -7,7 +7,6 @@ import {
   updateChartDefinition,
   deleteChartDefinition,
 } from "../../infrastructure/services";
-import type { HubChartDefinition } from "../../domain/types";
 
 export const useMetricsHubSync = () => {
   const [isPulling, setIsPulling] = useState(false);

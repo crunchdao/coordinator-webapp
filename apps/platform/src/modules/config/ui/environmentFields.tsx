@@ -44,8 +44,6 @@ export function EnvironmentFields({
   index,
   prefix,
 }: EnvironmentFieldsProps) {
-  const network = form.watch(`${prefix}.${index}.network`);
-
   return (
     <div className="space-y-3">
       <FormField

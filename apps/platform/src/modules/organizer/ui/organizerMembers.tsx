@@ -4,10 +4,7 @@ import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   Button,
-  Card,
-  CardContent,
   CardDescription,
-  CardHeader,
   CardTitle,
   DataTable,
   Select,

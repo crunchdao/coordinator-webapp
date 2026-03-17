@@ -58,7 +58,7 @@ export const useLeaderboardHubSync = () => {
         definition.name,
         {
           externalUrl,
-          columns: columns.map(({ id, ...rest }) => ({
+          columns: columns.map(({ id: _id, ...rest }) => ({
             ...rest,
             nativeConfiguration: rest.nativeConfiguration,
           })),
