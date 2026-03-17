@@ -26,7 +26,7 @@ function OrganizerListContent() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap">
           <CardTitle>Your Organizations</CardTitle>
           <EnvironmentSwitcher />
         </div>
