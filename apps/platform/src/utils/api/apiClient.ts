@@ -1,5 +1,5 @@
 "use client";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "@crunch-ui/core";
 
 const apiClient = axios.create({
@@ -39,7 +39,7 @@ export function showApiErrorToast(
   error: unknown,
   fallbackTitle = "Something went wrong"
 ) {
-  const axiosError = error as any;
+  const axiosError = error as AxiosError<{ message?: string; fieldErrors?: { property: string; message: string }[] }>;
   const fieldErrors = axiosError?.response?.data?.fieldErrors;
   const fallbackDescription = "Please try again.";
   let description = axiosError?.response?.data?.message || fallbackDescription;
