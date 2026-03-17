@@ -137,7 +137,12 @@ export function EnvironmentFields({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Hub URL</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value || ""}>
+              <Select
+                onValueChange={(value) =>
+                  field.onChange(value === "none" ? "" : value)
+                }
+                value={field.value || ""}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="None" />
