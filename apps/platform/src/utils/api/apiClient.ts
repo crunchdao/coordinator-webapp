@@ -39,7 +39,10 @@ export function showApiErrorToast(
   error: unknown,
   fallbackTitle = "Something went wrong"
 ) {
-  const axiosError = error as AxiosError<{ message?: string; fieldErrors?: { property: string; message: string }[] }>;
+  const axiosError = error as AxiosError<{
+    message?: string;
+    fieldErrors?: { property: string; message: string }[];
+  }>;
   const fieldErrors = axiosError?.response?.data?.fieldErrors;
   const fallbackDescription = "Please try again.";
   let description = axiosError?.response?.data?.message || fallbackDescription;

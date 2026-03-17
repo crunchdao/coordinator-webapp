@@ -59,7 +59,7 @@ export function EnvironmentsEditor() {
         prev.includes(lastId) ? prev : [...prev, lastId]
       );
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to length changes, not array identity
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to length changes, not array identity
   }, [fields.length]);
 
   useEffect(() => {
