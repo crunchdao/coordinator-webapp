@@ -1,0 +1,106 @@
+[
+  {
+    "id": 1773328156920,
+    "name": "description",
+    "displayName": "description",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "<p><a target=\"_blank\" href=\"https://www.synthdata.co/\">Synth</a> is a decentralized prediction subnet on Bittensor that forecasts crypto and financial asset prices through probabilistic modeling. Instead of predicting a single price, participants build models that output probability distributions, capturing not just where an asset might go, but the range of possibilities and their likelihoods. This approach helps model real market behavior like volatility clustering and tail risks that traditional forecasts often miss.</p>\n\n<p>In this Crunch, you need to build probabilistic forecasting models for Bitcoin, Ethereum, Solana, Tether Gold, and tokenized stocks (Apple, Nvidia, Tesla, Alphabet, S&P 500). Your models will predict over 1-hour and 24-hour price distributions scored on statistical accuracy. The best-performing models will be aggregated into an ensemble forecast that captures collective intelligence from our community.</p>\n",
+      "language": "HTML"
+    },
+    "order": 0,
+    "updatedAt": "2026-02-06T19:49:00.786836",
+    "createdAt": "2026-01-29T09:54:16.576385"
+  },
+  {
+    "id": 1773328156921,
+    "name": "how-to-participate",
+    "displayName": "How to participate",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>Enter Synth and submit full return density forecasts for selected assets.</p>\n\n<p><b>Trackers (models) </b>must generate returns density predictions, not single predictions and maximize accuracy overall forecasts. See open-source Crunch framework<b>:</b> <a target=\"_blank\" href=\"https://github.com/crunchdao/crunch-synth\">Crunch-Synth</a></p>\n\n<p><b>Covered Assets:</b></p>\n\n<ul>\n  <li>\n    <p>Bitcoin (BTC)</p>\n  </li>\n\n  <li>\n    <p>Ethereum (ETH)</p>\n  </li>\n\n  <li>\n    <p>Solana (SOL)</p>\n  </li>\n\n  <li>\n    <p>Tether Gold (XAUT)</p>\n  </li>\n\n  <li>\n    <p>SP500 tokenized ETF (SPYX)</p>\n  </li>\n\n  <li>\n    <p>NVIDIA tokenized stock (NVDAX)</p>\n  </li>\n\n  <li>\n    <p>Tesla tokenized stock (TSLAX)</p>\n  </li>\n\n  <li>\n    <p>Apple tokenized stock (AAPLX)</p>\n  </li>\n\n  <li>\n    <p>Alphabet tokenized stock (GOOGLX)</p>\n  </li>\n</ul>\n",
+      "language": "HTML"
+    },
+    "order": 10,
+    "updatedAt": "2026-01-29T09:54:16.579123",
+    "createdAt": "2026-01-29T09:54:16.579119"
+  },
+  {
+    "id": 1773328156922,
+    "name": "phases",
+    "displayName": "Phases",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<ul>\n  <li>\n    <p>[Phase 1] - 1-month warmup period before Live Trading</p>\n  </li>\n\n  <li>\n    <p>[Phase 2] - 3 months live with a fixed $30,000 USDC prize pool</p>\n  </li>\n\n  <li>\n    <p>[Phase 3] - Rewards pools will be generated from mining Synth subnet and may be higher.</p>\n  </li>\n</ul>\n",
+      "language": "HTML"
+    },
+    "order": 20,
+    "updatedAt": "2026-01-29T09:54:16.580103",
+    "createdAt": "2026-01-29T09:54:16.580101"
+  },
+  {
+    "id": 1773328156923,
+    "name": "prediction-targets",
+    "displayName": "Prediction Targets",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>Trackers must predict the <b>probability distribution of returns</b>, defined as:</p>\n\n<img alt=\"r_{t,k} = P_t - P_{t-k}\" class=\"math\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/685e712540748700b9a471532916044b2d93a06d\" />\n\n<p>For each defined step <img alt=\"k\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/f2f1fd2ecb113aaada4c7e52f8edb7ab9c65765a\" /> (e.g., 5 minutes, 1 hour, …), your tracker must return a full <b>probability density function (PDF)</b> over the future price change <img alt=\"r_{t,k}\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/4bb262b41dc5297463dcd4cacb5e1aa4bb6bf54a\" />.</p>\n",
+      "language": "HTML"
+    },
+    "order": 30,
+    "updatedAt": "2026-01-29T09:54:16.580952",
+    "createdAt": "2026-01-29T09:54:16.58095"
+  },
+  {
+    "id": 1773328156924,
+    "name": "visualize-the-challenge",
+    "displayName": "Visualize the challenge",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>The Synth coordinator is evaluated on <b>incremental return predictions</b>, not raw prices.<br />Incremental returns capture the <i>relative</i> change in price and produce a stationary series that is easier to model and compare across assets.</p>\n\n<p>Below is an example of a <b>density forecast over incremental returns for the next 24h at 5-minute intervals</b>:</p>\n\n<div>\n  <figure>    <img src=\"https://3895192033-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FrZv71uKEauXe2J8CJm1h%2Fuploads%2FnuN5AApOG0aVraNkYQG4%2Fimage.png?alt=media&token=851f03af-035a-41f4-8da4-6fbaf80a130a\" />    <figcaption>\n    <p></p>\n    </figcaption>  </figure>\n</div>\n\n<p>Below is a minimal example showing what your tracker might return:</p>\n\n<code class=\"block\">\n  <pre># Expected output</pre>\n\n  <pre>&gt;&gt;&gt; model.predict(asset=&quot;SOL&quot;, horizon=86400, step=300)</pre>\n\n  <pre>[</pre>\n\n  <pre>    {</pre>\n\n  <pre>        &quot;step&quot;: (k + 1) * step,</pre>\n\n  <pre>        &quot;prediction&quot;: {</pre>\n\n  <pre>            &quot;type&quot;: &quot;builtin&quot;,</pre>\n\n  <pre>            &quot;name&quot;: &quot;norm&quot;,</pre>\n\n  <pre>            &quot;params&quot;: {</pre>\n\n  <pre>                &quot;loc&quot;: -0.01,       # mean return</pre>\n\n  <pre>                &quot;scale&quot;: 0.4     # standard deviation of return</pre>\n\n  <pre>            }</pre>\n\n  <pre>        }</pre>\n\n  <pre>    }</pre>\n\n  <pre>    for k in range(0, horizon // step)</pre>\n\n  <pre>]</pre>\n</code>\n\n<p>Here is the <b>return forecast mapped into price space</b>:</p>\n\n<div>\n  <figure>    <img src=\"https://3895192033-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FrZv71uKEauXe2J8CJm1h%2Fuploads%2F7QI7AU2BNdCOUXtK2x9c%2Fimage.png?alt=media&token=a7805716-147a-47b4-9129-67d527b50588\" />    <figcaption>\n    <p></p>\n    </figcaption>  </figure>\n</div>\n\n<h2 id=\"game-rules\">Game Rules</h2>\n\n<h3 id=\"start\">Start</h3>\n\n<ul>\n  <li>\n    <p>The game begins with a <b>model calibration /</b> <b>warm-up phase of 4 weeks,</b> where predictions are scored but <b>not rewarded.</b></p>\n  </li>\n\n  <li>\n    <p>Leaderboard is based on <b>7-day rolling average</b> of CRPS scores.</p>\n  </li>\n\n  <li>\n    <p>A player must wait <b>7 days</b> to get a meaningful ranking.</p>\n  </li>\n\n  <li>\n    <p>Players may <b>enter or exit the game at any time</b>.</p>\n  </li>\n\n  <li>\n    <p>Each player may run <b>two active models</b>, which can be updated at any time.</p>\n  </li>\n</ul>\n\n<h3 id=\"prediction-phase\">Prediction Phase</h3>\n\n<p>In each prediction round, players must submit <b>a set of</b> <b>density forecasts</b>.</p>\n\n<p>A <b>prediction round</b> is defined by <b>one asset</b>, <b>one forecast horizon</b> and <b>one or more step resolutions</b>.</p>\n\n<ul>\n  <li>\n    <p>A <b>24-hour horizon</b> forecast </p>\n\n    <ul>\n      <li>\n        <p>Triggered <b>every 1 hour </b>for each asset</p>\n      </li>\n\n      <li>\n        <p>Step resolutions: <b>{5-minute, 1-hour, 6-hour, 24-hour}</b></p>\n      </li>\n\n      <li>\n        <p>Supported assets:</p>\n\n        <code class=\"block\">\n          <pre>[&quot;BTC&quot;, &quot;SOL&quot;, &quot;ETH&quot;, &quot;XAUT&quot;, &quot;SPYX&quot;, &quot;NVDAX&quot;, &quot;TSLAX&quot;, &quot;AAPLX&quot;, &quot;GOOGLX&quot;]</pre>\n        </code>\n      </li>\n    </ul>\n  </li>\n\n  <li>\n    <p>A <b>1-hour horizon</b> forecast </p>\n\n    <ul>\n      <li>\n        <p>Triggered <b>every 12 minutes </b>for each asset</p>\n      </li>\n\n      <li>\n        <p>Step resolutions: <b>{1-minute, 5-minute, 15-minute, 30-minute, 1-hour}</b></p>\n      </li>\n\n      <li>\n        <p>Supported assets:</p>\n\n        <code class=\"block\">\n          <pre>[&quot;BTC&quot;, &quot;SOL&quot;, &quot;ETH&quot;, &quot;XAUT&quot;]</pre>\n        </code>\n      </li>\n    </ul>\n  </li>\n</ul>\n\n<p>All required forecasts for a prediction round must be generated <b>within 40 seconds</b>.</p>\n\n<div class=\"hint info\">\n  <p>Don't submit models that needs more than 40 seconds to infer!</p>\n</div>\n\n<h3 id=\"scoring\">Scoring</h3>\n\n<ul>\n  <li>\n    <p>Once the full horizon has passed, each prediction is scored using a <a target=\"_blank\" href=\"https://en.wikipedia.org/wiki/Scoring_rule#:~:text=%5B8%5D-,Continuous%20ranked%20probability%20score,-%5Bedit%5D\"><b>CRPS</b></a><b> scoring function</b>.</p>\n  </li>\n\n  <li>\n    <p>A lower <b>CRPS score</b> reflects more accurate predictions.</p>\n  </li>\n\n  <li>\n    <p>Missing or invalid predictions receive the <b>worst CRPS score of the round</b>.</p>\n  </li>\n</ul>\n\n<p>Leaderboard ranking is based on a <b>7-day rolling average</b> of CRPS scores across <b>all assets and horizons</b>, evaluated <b>relative to other participants</b>,<b> </b>for each prediction round:</p>\n\n<ul>\n  <li>\n    <p>The <b>best CRPS score is assigned a normalized score of 1</b></p>\n  </li>\n\n  <li>\n    <p>The <b>worst 5% of CRPS scores are assigned</b> <b>a score of 0</b></p>\n  </li>\n\n  <li>\n    <p>Intermediate scores are scaled accordingly</p>\n  </li>\n</ul>\n\n<h2 id=\"game-state\">Leaderboard & Game State</h2>\n\n<p>The leaderboard displays several <b>relative performance indicators</b>, computed across <b>all assets and horizons</b>:</p>\n\n<ul>\n  <li>\n    <p><b>Primary Metric</b></p>\n\n    <ul>\n      <li>\n        <p><b>Anchor CRPS (7 days):</b> Rolling relative CRPS average over the past 7 days.</p>\n      </li>\n    </ul>\n  </li>\n\n  <li>\n    <p><b>Secondary Metrics</b></p>\n\n    <ul>\n      <li>\n        <p><b>Steady CRPS (3 days):</b> Rolling relative CRPS average over the past 3 days.</p>\n      </li>\n\n      <li>\n        <p><b>Recent CRPS (24 hours):</b> Rolling relative CRPS average over the past 24 hours.</p>\n      </li>\n    </ul>\n  </li>\n</ul>\n\n<h3 id=\"payouts\">Payouts</h3>\n\n<ul>\n  <li>\n    <p>$30K over the first 4 months followed by real mining rewards from Synth Miners (currently up to 50K / months)</p>\n  </li>\n\n  <li>\n    <p>Rewards are distributed at target resolution + 24h (every 7 + 1 days)</p>\n  </li>\n\n  <li>\n    <p>Fixed reward pool is allocated for each payout period.</p>\n  </li>\n\n  <li>\n    <p>the top 10 participants receive 100% of the pot.</p>\n  </li>\n\n  <li>\n    <p>Only models <b>outperforming the benchmark model (synth:benchmarktracker) </b>are rewarded.</p>\n  </li>\n\n  <li>\n    <p>Models with a score <b>below or equal to the benchmark at payout time</b> are included in calculations but receive no payout, leaving any fraction of the pool tied to lower-performing models undistributed.</p>\n  </li>\n\n  <li>\n    <p>The benchmark model is a reference model provided by the game in order to reward community outperformance over internal Benchmark and may evolve over time.</p>\n  </li>\n</ul>\n\n<div>\n  <figure>    <img src=\"https://3895192033-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FrZv71uKEauXe2J8CJm1h%2Fuploads%2F30sSDz5H1y0HxJ6AZ6b2%2FScreenshot%202026-01-19%20at%205.35.02%E2%80%AFPM.png?alt=media&token=dc188033-3e21-43e8-94fb-dae4c44b5b4d\" />    <figcaption>\n    <p>Example of reward distribution when 7 people beat the Benchmark.</p>\n    </figcaption>  </figure>\n</div>\n\n<div>\n  <figure>    <img src=\"https://3895192033-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FrZv71uKEauXe2J8CJm1h%2Fuploads%2FmA09ZtYhodx2bEURp5Ur%2FScreenshot%202026-01-19%20at%205.35.13%E2%80%AFPM.png?alt=media&token=476a00fc-dc2f-4251-9fb6-33dba195df4c\" />    <figcaption>\n    <p>In this example, only 7 participants outperform the benchmark and receive approximately 70% of the weekly rewards. The remaining 30% is retained in the rewards pool.</p>\n    </figcaption>  </figure>\n</div>\n",
+      "language": "HTML"
+    },
+    "order": 40,
+    "updatedAt": "2026-01-29T09:54:16.581806",
+    "createdAt": "2026-01-29T09:54:16.581804"
+  },
+  {
+    "id": 1773328156925,
+    "name": "probabilistic-forecasting",
+    "displayName": "Probabilistic Forecasting",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>Probabilistic forecasting provides <b>a distribution of possible future values</b> rather than a single point estimate, allowing for uncertainty quantification. Instead of predicting only the most likely outcome, it estimates a range of potential outcomes along with their probabilities by outputting a <b>probability distribution</b>.</p>\n\n<p>A probabilistic forecast models the conditional probability distribution of a future value <img alt=\"(Y_t)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/8b4b83577d4beb5ca4af950b5887a56a9aac1778\" /> given past observations <img alt=\"(\\mathcal{H}_{t-1})\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/52ff2c7ff95659a7dcdbeb6c2a2add36bef3499b\" />. This can be expressed as:</p>\n\n<img alt=\"P(Y_t \\mid \\mathcal{H}_{t-1})\" class=\"math\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/dc566cd65bb99e4b0a23a9bd5df4121bcb2d6a1a\" />\n\n<p>where <img alt=\"(\\mathcal{H}_{t-1})\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/52ff2c7ff95659a7dcdbeb6c2a2add36bef3499b\" /> represents the historical data up to time <img alt=\"(t-1)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/dd926d71e36f473c96ae3db3a00f59338b720866\" />. Instead of a single prediction <img alt=\"(\\hat{Y}_t)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/534375be13cee4b4819e2f48dda4dd9020001407\" />, the model estimates a full probability distribution <img alt=\"(f(Y_t \\mid \\mathcal{H}{t-1}))\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/7649a1b799dd968182a65395ce145fe0e326ec2c\" />, which can take different parametric forms, such as a Gaussian:</p>\n\n<img alt=\"Y_t \\mid \\mathcal{H}_{t-1} \\sim \\mathcal{N}(\\mu_t, \\sigma_t^2)\" class=\"math\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/edc7d15d1b5b3ffcbfcad45a5a0f36b41595c249\" />\n\n<p>where <img alt=\"(\\mu_t)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/ead582583ce06634ce0ea0b81debbb3d1e55a4a6\" /> is the predicted mean and <img alt=\"(\\sigma_t^2)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/2a2ab61d54c665110d7f439b83a47de8bc6519d2\" /> represents the uncertainty in the forecast.</p>\n\n<p>Probabilistic forecasting can be handled through various approaches, including <b>variance forecasters</b>, <b>quantile forecasters</b>, <b>interval forecasters</b> or <b>distribution forecasters</b>, each capturing uncertainty differently.</p>\n\n<p>For example, you can try to forecast the target location by a gaussian density function (or a mixture), thus the model output follows the form:</p>\n\n<code class=\"block\">\n  <pre>{</pre>\n\n  <pre>    &quot;density&quot;: {</pre>\n\n  <pre>        &quot;type&quot;: &quot;builtin&quot;,</pre>\n\n  <pre>        &quot;name&quot;: &quot;norm&quot;,</pre>\n\n  <pre>        &quot;params&quot;: {</pre>\n\n  <pre>            &quot;loc&quot;: y_mean,</pre>\n\n  <pre>            &quot;scale&quot;: y_var</pre>\n\n  <pre>        }</pre>\n\n  <pre>    },</pre>\n\n  <pre>    &quot;weight&quot;: weight</pre>\n\n  <pre>}</pre>\n</code>\n\n<p>A <b>mixture density</b>, such as the gaussian mixture <img alt=\"\\sum_{i=1}^{K} w_i \\mathcal{N}(Y_t | \\mu_i, \\sigma_i^2)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/f1bec7cf4a5e60346990bb5b14ca142ed07e04dc\" /> allows for capturing multi-modal distributions and approximate more complex distributions.</p>\n\n<div>\n  <figure>    <img src=\"https://3895192033-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FrZv71uKEauXe2J8CJm1h%2Fuploads%2FGjhqvyCkZ3c6Id5xaN1v%2Fimage.png?alt=media&token=bf4999ef-e71a-4a90-9f1b-a8a621bb4f48\" />    <figcaption>\n    <p></p>\n    </figcaption>  </figure>\n</div>\n\n<p>The meaning of probabilistic forecast is made more precise by means of the Python <a target=\"_blank\" href=\"https://github.com/microprediction/density\">density</a> package which provides a dict specification of continuous univariate density function mixtures using the pydantic Python package. The function <a target=\"_blank\" href=\"https://github.com/microprediction/density/blob/main/density/validatedensitydict.py\">validatedensitydict</a> will tell you whether or not your specification is valid.</p>\n",
+      "language": "HTML"
+    },
+    "order": 50,
+    "updatedAt": "2026-01-29T09:54:16.583287",
+    "createdAt": "2026-01-29T09:54:16.583285"
+  },
+  {
+    "id": 1773328156926,
+    "name": "create-your-tracker",
+    "displayName": "Create your Tracker",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>A <b>tracker</b> is a model that processes real-time asset data to <b>predict future price changes</b>. It uses past prices to generate a <b>probabilistic forecast</b> of incremental returns. <b>You can use the data provided by the challenge or any other datasets to improve your predictions.</b></p>\n\n<p>It operates incrementally: prices are pushed to the tracker as they arrive and predictions are requested at specific times by the framework.</p>\n\n<p><b>To create your tracker, you need to define a class that implements the </b><b><code class=\"inline\">TrackerBase</b></code><b> interface, which already handles:</b></p>\n\n<ul>\n  <li>\n    <p>price storage and alignment via <code class=\"inline\">PriceStore</code></p>\n  </li>\n\n  <li>\n    <p>multi-resolution forecasting through <code class=\"inline\">predict_all()</code></p>\n  </li>\n</ul>\n\n<p>As a participant, you only need to implement <b>one method</b>: <code class=\"inline\">predict()</code>.</p>\n\n<p><b>Required method: </b><b><code class=\"inline\">predict(self, asset: str, horizon: int, step: int)</b></code></p>\n\n<p>It must return a sequence of <b>predictive density distributions</b> for the <b>incremental price change</b> of an asset:</p>\n\n<ul>\n  <li>\n    <p>Forecast horizon: horizon seconds into the future</p>\n  </li>\n\n  <li>\n    <p>Temporal resolution: one density every step seconds</p>\n  </li>\n\n  <li>\n    <p>Output length: horizon // step</p>\n  </li>\n</ul>\n\n<p>Each density prediction must comply with the <a target=\"_blank\" href=\"https://github.com/microprediction/densitypdf/blob/main/densitypdf/__init__.py\">density_pdf</a> specification.</p>\n\n<div class=\"hint info\">\n  <p>You can refer to the <a target=\"_blank\" href=\"https://github.com/crunchdao/crunch-synth/tree/master/crunch_synth/examples\">Tracker examples</a> for guidance.</p>\n</div>\n",
+      "language": "HTML"
+    },
+    "order": 60,
+    "updatedAt": "2026-01-29T09:54:16.584314",
+    "createdAt": "2026-01-29T09:54:16.584312"
+  },
+  {
+    "id": 1773328156927,
+    "name": "additional-resources",
+    "displayName": "Additional Resources",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<ul>\n  <li>\n    <p><a target=\"_blank\" href=\"https://github.com/crunchdao/crunch-synth/blob/master/LITERATURE.md\">Literature</a></p>\n  </li>\n\n  <li>\n    <p>Useful Python <a target=\"_blank\" href=\"https://github.com/crunchdao/crunch-synth/blob/master/PACKAGES.md\">packages</a></p>\n  </li>\n</ul>\n",
+      "language": "HTML"
+    },
+    "order": 70,
+    "updatedAt": "2026-01-29T09:54:16.585198",
+    "createdAt": "2026-01-29T09:54:16.585197"
+  }
+]

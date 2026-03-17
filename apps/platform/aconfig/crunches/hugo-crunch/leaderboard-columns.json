@@ -1,0 +1,58 @@
+{
+  "externalUrl": null,
+  "columns": [
+    {
+      "id": 1,
+      "type": "USERNAME",
+      "property": "username",
+      "displayName": "Username",
+      "order": -10,
+      "format": null,
+      "tooltip": null,
+      "nativeConfiguration": null
+    },
+    {
+      "id": 2,
+      "type": "PROJECT",
+      "property": "model_id",
+      "displayName": "Model",
+      "order": 0,
+      "format": null,
+      "tooltip": null,
+      "nativeConfiguration": {
+        "type": "model",
+        "statusProperty": "status"
+      }
+    },
+    {
+      "id": 3,
+      "type": "VALUE",
+      "property": "score_recent",
+      "format": "decimal-2",
+      "displayName": "Recent Score",
+      "tooltip": "The score of the player over the last 24 hours.",
+      "nativeConfiguration": null,
+      "order": 20
+    },
+    {
+      "id": 4,
+      "type": "VALUE",
+      "property": "score_steady",
+      "format": "decimal-2",
+      "displayName": "Steady Score",
+      "tooltip": "The score of the player over the last 72 hours.",
+      "nativeConfiguration": null,
+      "order": 30
+    },
+    {
+      "id": 5,
+      "type": "VALUE",
+      "property": "score_anchor",
+      "format": "decimal-2",
+      "displayName": "Anchor Score",
+      "tooltip": "The score of the player over the last 7 days.",
+      "nativeConfiguration": null,
+      "order": 40
+    }
+  ]
+}

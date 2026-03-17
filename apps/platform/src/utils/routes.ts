@@ -3,6 +3,7 @@ export const INTERNAL_LINKS = {
   LOGIN: "/login",
   ONBOARDING: "/get-started",
   CREATE_CRUNCH: "/create-crunch",
+  CREATE_LOCAL_CRUNCH: "/c/new",
   CERTIFICATE_ENROLL: "/certificate-enrollment",
   HUB_OAUTH: "/hub-oauth",
   COMPETITIONS: "/c",

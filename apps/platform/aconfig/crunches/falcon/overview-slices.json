@@ -1,0 +1,106 @@
+[
+  {
+    "id": 1773063555277,
+    "name": "description",
+    "displayName": "description",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>Enter a real-time forecasting game where players use probabilistic models to forecast the dove’s future location, based on the movement of the dove and the chasing falcons.</p>\n\n<p>Submit forward density predictions to maximize accuracy and earn rewards!</p>\n\n<p>It’s a blend of strategy, live data, and statistical forecasting.</p>\n",
+      "language": "HTML"
+    },
+    "order": 0,
+    "updatedAt": "2026-01-27T11:50:46.458374",
+    "createdAt": "2026-01-27T11:50:46.458368"
+  },
+  {
+    "id": 1773063555278,
+    "name": "data",
+    "displayName": "Data",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>Your model must process a sequence of records that will be received in real time.</p>\n\n<p>Each record provides:</p>\n\n<ul>\n  <li>\n    <p><code class=\"inline\">time</code>: The current time;</p>\n  </li>\n\n  <li>\n    <p><code class=\"inline\">falcon_location</code>: A location of one falcon;</p>\n  </li>\n\n  <li>\n    <p><code class=\"inline\">dove_location</code>: The current dove location;</p>\n  </li>\n\n  <li>\n    <p><code class=\"inline\">falcon_id</code>: The falcon identity;</p>\n  </li>\n\n  <li>\n    <p><code class=\"inline\">falcon_wingspan</code>: A figurative measure of dexterity, precision and aggression whose utility or lack thereof is up to you to decide;</p>\n  </li>\n</ul>\n\n<div>\n  <figure>    <img src=\"https://3895192033-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FrZv71uKEauXe2J8CJm1h%2Fuploads%2FSz6kmzDsludMNCSaEmCC%2Fimage.png?alt=media&token=4a86fdf9-fccc-457b-a028-008666c8eae2\" />    <figcaption>\n    <p></p>\n    </figcaption>  </figure>\n</div>\n\n<p>The falcon locations are shown as colored dots on the figure above. Some falcons may provide useful information as to (track) the future location of the dove, or the uncertainty of the same, whereas others may not. Their utility, or otherwise, is for you to determine.</p>\n\n<p>The game runs on live data, the feed will be available from Sunday 22:00 UTC to Friday 22:00 UTC.</p>\n\n<h2 id=\"expected-interruptions-of-the-data-feeds\">Expected Interruptions of the Data Feeds</h2>\n\n<p>Each day, around 21:00 UTC, there is a window lasting 5–30 minutes during which data may be delayed, unavailable or the market might behave different than during other times in the day. This is caused by the underlying data streams going into a rollover/maintenance period. Your model should be prepared to handle this change in the underlying data gracefully to not loose wealth! </p>\n\n<h2 id=\"unexpected-interruptions-of-the-data-feeds\">Unexpected interruptions of the Data Feeds</h2>\n\n<p>As the game relies on real-time data occasional outages may occur. During these periods, models will not receive new inputs. Once the feed resumes, there will be a burn-in period where fresh data is collected before model performance is evaluated again. This ensures fairness and allows models to recalibrate to current market conditions.</p>\n",
+      "language": "HTML"
+    },
+    "order": 10,
+    "updatedAt": "2026-01-27T11:50:46.460084",
+    "createdAt": "2026-01-27T11:50:46.46008"
+  },
+  {
+    "id": 1773063555279,
+    "name": "game-rules",
+    "displayName": "Game Rules",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<h2 id=\"start\">Start</h2>\n\n<ul>\n  <li>\n    <p>Each player begins with a starting <b>wealth of 1000</b>.</p>\n  </li>\n\n  <li>\n    <p>The game opens with a <b>warm-up phase</b> where predictions are scored, but wealth is reset at the beginning of each day so players can calibrate their models.</p>\n  </li>\n\n  <li>\n    <p>This phase <b>will last until November 17</b>, giving players additional time to refine and test their approaches.</p>\n  </li>\n\n  <li>\n    <p>Players can enter and exit the game at any time.</p>\n  </li>\n\n  <li>\n    <p>Players have a single active model they can update at any time.</p>\n  </li>\n</ul>\n\n<h2 id=\"prediction-phase\">Prediction Phase</h2>\n\n<ul>\n  <li>\n    <p>For each prediction round, players automatically invest a <b>fraction of their active wealth</b> into the pot.\r</p>\n  </li>\n\n  <li>\n    <p>This amount is subtracted from their active wealth.\r</p>\n  </li>\n\n  <li>\n    <p>The total pot is <b>inflated</b> slightly by a game-defined <b>inflation rate</b>.</p>\n  </li>\n\n  <li>\n    <p>The model must <b>generate predictions in under 50 Milliseconds</b>.\r</p>\n  </li>\n</ul>\n\n<h2 id=\"scoring-and-distribution\">Scoring & Distribution</h2>\n\n<ul>\n  <li>\n    <p>Once the <b>true dove location</b> is revealed, each prediction is scored using a <b>likelihood function</b>.\r</p>\n  </li>\n\n  <li>\n    <p>The pot is then distributed <b>proportionally</b> based on these likelihood scores.\r</p>\n  </li>\n\n  <li>\n    <p>More accurate predictions earn a <b>larger share</b> of the pot.\r</p>\n  </li>\n\n  <li>\n    <p>Player wealth will never go below 0.</p>\n  </li>\n\n  <li>\n    <p>Players can skip predictions. Doing so means they cannot lose or gain wealth, as they are not participating in prize distribution. </p>\n  </li>\n</ul>\n\n<h2 id=\"payouts\">Payouts</h2>\n\n<ul>\n  <li>\n    <p>When a player’s wealth exceeds a defined <b>wealth threshold of 2000</b>, they receive a <b>prize payout</b> equal to <b>10% of their wealth</b>.\r</p>\n  </li>\n\n  <li>\n    <p>This payout is treated like a <b>withdrawal</b>: it’s subtracted from their active wealth and moved to <b>Realized Wealth</b>.\r</p>\n  </li>\n\n  <li>\n    <p>Realized Wealth is <b>distributed weekly</b>. A fixed pool of rewards is allocated, and each participant receives a share proportional to their earned wealth relative to the total earned by all players that week:</p>\n\n    <img alt=\"\\text{Payout}_i = \\frac{W_i}{\\sum_{j} W_j} \\times R\" class=\"math\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/b8cfa8d6d26882eee8e11f3e0b09aa7d9a735fa1\" />\n  </li>\n</ul>\n\n<h2 id=\"game-duration\">Game Duration</h2>\n\n<ul>\n  <li>\n    <p>After the warm-up phase ends on November 17, the official game begins with real rewards.</p>\n  </li>\n\n  <li>\n    <p>The initial season <b>will run for 3 months of live play</b>, followed by the announcement of the winner and the start of a new season.</p>\n  </li>\n\n  <li>\n    <p>Rules and mechanics may evolve with player feedback, especially after the first season.</p>\n  </li>\n</ul>\n\n<h2 id=\"winning\">Winning</h2>\n\n<ul>\n  <li>\n    <p>The player with the most Total Wealth (The sum of Active Wealth and Realized Wealth) wins the game.</p>\n  </li>\n</ul>\n",
+      "language": "HTML"
+    },
+    "order": 20,
+    "updatedAt": "2026-01-27T11:50:46.461411",
+    "createdAt": "2026-01-27T11:50:46.461408"
+  },
+  {
+    "id": 1773063555280,
+    "name": "game-state",
+    "displayName": "Game State",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>Explanation of the game state parameters displayed on the leaderboard for each player:</p>\n\n<ul>\n  <li>\n    <p><b>Total Wealth</b>: The sum of a player’s <i>Realized</i> and <i>Active Wealth</i>.\r</p>\n  </li>\n\n  <li>\n    <p><b>Active Wealth</b>: The in-game capital currently at stake and used to generate returns.\r</p>\n  </li>\n\n  <li>\n    <p><b>Realized Wealth</b>: The portion of wealth that has been or will be paid out; no longer at risk or being used to generate returns.\r</p>\n  </li>\n\n  <li>\n    <p><b>Likelihood EWA</b>: The exponentially weighted average of ex-post log-likelihood scores over time.\r</p>\n  </li>\n\n  <li>\n    <p><b>Recent Likelihood</b>: The most recent ex-post log-likelihood of the player’s active model.\r</p>\n  </li>\n\n  <li>\n    <p><b>Longevity</b>: The total number of observations since the player joined the game.</p>\n  </li>\n\n  <li>\n    <p><b>Predicting</b>: Indicates whether the player’s model submitted predictions in the current round, can be Live / Idle.</p>\n  </li>\n</ul>\n",
+      "language": "HTML"
+    },
+    "order": 30,
+    "updatedAt": "2026-01-27T11:50:46.463063",
+    "createdAt": "2026-01-27T11:50:46.46306"
+  },
+  {
+    "id": 1773063555281,
+    "name": "probabilistic-forecast",
+    "displayName": "Probabilistic forecast",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>Probabilistic forecasting provides <b>a distribution of possible future values</b> rather than a single point estimate, allowing for uncertainty quantification. Instead of predicting only the most likely outcome, it estimates a range of potential outcomes along with their probabilities by outputting a <b>probability distribution</b>.</p>\n\n<p>A probabilistic forecast models the conditional probability distribution of a future value <img alt=\"(Y_t)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/8b4b83577d4beb5ca4af950b5887a56a9aac1778\" /> given past observations <img alt=\"(\\mathcal{H}_{t-1})\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/52ff2c7ff95659a7dcdbeb6c2a2add36bef3499b\" />. This can be expressed as:</p>\n\n<img alt=\"P(Y_t \\mid \\mathcal{H}_{t-1})\" class=\"math\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/dc566cd65bb99e4b0a23a9bd5df4121bcb2d6a1a\" />\n\n<p>where <img alt=\"(\\mathcal{H}_{t-1})\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/52ff2c7ff95659a7dcdbeb6c2a2add36bef3499b\" /> represents the historical data up to time <img alt=\"(t-1)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/dd926d71e36f473c96ae3db3a00f59338b720866\" />. Instead of a single prediction <img alt=\"(\\hat{Y}_t)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/534375be13cee4b4819e2f48dda4dd9020001407\" />, the model estimates a full probability distribution <img alt=\"(f(Y_t \\mid \\mathcal{H}{t-1}))\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/7649a1b799dd968182a65395ce145fe0e326ec2c\" />, which can take different parametric forms, such as a Gaussian:</p>\n\n<img alt=\"Y_t \\mid \\mathcal{H}_{t-1} \\sim \\mathcal{N}(\\mu_t, \\sigma_t^2)\" class=\"math\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/edc7d15d1b5b3ffcbfcad45a5a0f36b41595c249\" />\n\n<p>where <img alt=\"(\\mu_t)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/ead582583ce06634ce0ea0b81debbb3d1e55a4a6\" /> is the predicted mean and <img alt=\"(\\sigma_t^2)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/2a2ab61d54c665110d7f439b83a47de8bc6519d2\" /> represents the uncertainty in the forecast.</p>\n\n<p>Probabilistic forecasting can be handled through various approaches, including <b>variance forecasters</b>, <b>quantile forecasters</b>, <b>interval forecasters</b> or <b>distribution forecasters</b>, each capturing uncertainty differently.</p>\n\n<p>For example, you can try to forecast the target location by a gaussian density function (or a mixture), thus the model output follows the form:</p>\n\n<code class=\"block\">\n  <pre>{</pre>\n\n  <pre>    &quot;density&quot;: {</pre>\n\n  <pre>        &quot;name&quot;: &quot;normal&quot;,</pre>\n\n  <pre>        &quot;params&quot;: {</pre>\n\n  <pre>            &quot;loc&quot;: y_mean,</pre>\n\n  <pre>            &quot;scale&quot;: y_var</pre>\n\n  <pre>        }</pre>\n\n  <pre>    },</pre>\n\n  <pre>    &quot;weight&quot;: weight</pre>\n\n  <pre>}</pre>\n</code>\n\n<p>A <b>mixture density</b>, such as the gaussian mixture <img alt=\"\\sum_{i=1}^{K} w_i \\mathcal{N}(Y_t | \\mu_i, \\sigma_i^2)\" class=\"math size-line\" src=\"https://wikimedia.org/api/rest_v1/media/math/render/svg/f1bec7cf4a5e60346990bb5b14ca142ed07e04dc\" /> allows for capturing multi-modal distributions and approximate more complex distributions.</p>\n\n<div>\n  <figure>    <img src=\"https://3895192033-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FrZv71uKEauXe2J8CJm1h%2Fuploads%2FGjhqvyCkZ3c6Id5xaN1v%2Fimage.png?alt=media&token=bf4999ef-e71a-4a90-9f1b-a8a621bb4f48\" />    <figcaption>\n    <p></p>\n    </figcaption>  </figure>\n</div>\n\n<h2 id=\"mathematical-definition\">Mathematical Definition</h2>\n\n<p>The informal meaning of probabilistic forecast is a mixture of parametric univariate density functions where each is taken from a standard family (such as exponential, or gaussian).</p>\n\n<div>\n  <figure>    <img src=\"https://3895192033-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FrZv71uKEauXe2J8CJm1h%2Fuploads%2FNlTftMxpJJ0Ei1KOToxd%2Fimage.png?alt=media&token=81df2927-7c9a-4766-bd31-ebb5eb7ef3f2\" />    <figcaption>\n    <p>A mixture of gaussian densities conspire to match a fat-tailed distribution.</p>\n    </figcaption>  </figure>\n</div>\n\n<h2 id=\"engineering-definition\">Engineering Definition</h2>\n\n<p>The meaning of probabilistic forecast is made more precise by means of the Python <a target=\"_blank\" href=\"https://github.com/microprediction/density\">density</a> package which provides a dict specification of continuous univariate density function mixtures using the pydantic Python package. The function <a target=\"_blank\" href=\"https://github.com/microprediction/density/blob/main/density/validatedensitydict.py\">validatedensitydict</a> will tell you whether or not your specification is valid.</p>\n",
+      "language": "HTML"
+    },
+    "order": 40,
+    "updatedAt": "2026-01-27T11:50:46.464209",
+    "createdAt": "2026-01-27T11:50:46.464206"
+  },
+  {
+    "id": 1773063555282,
+    "name": "create-your-tracker",
+    "displayName": "Create your Tracker",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>A tracker is a framework that processes real-time data to track the dove’s movement and predict its future location. It considers inputs like the dove’s position and falcon locations to generate a probabilistic forecast.</p>\n\n<p>To create your tracker, you need to define a class that implements the <code class=\"inline\">TrackerBase</code> interface. Specifically, your class must implement the following methods:</p>\n\n<ul>\n  <li>\n    <p><code class=\"inline\">tick(self, payload: dict, performance_metrics: dict) -&gt; None</code><br />This method is called at every time step to process new payloads. Use this method to update your internal state or logic as needed.</p>\n  </li>\n\n  <li>\n    <p><code class=\"inline\">predict(self) -&gt; dict</code><br />This method should return your prediction of the dove's location at a future time step. Ensure that the return format complies with the <a target=\"_blank\" href=\"https://github.com/microprediction/densitypdf/blob/main/densitypdf/__init__.py\">density_pdf</a> specification.</p>\n  </li>\n</ul>\n\n<div class=\"hint info\">\n  <p>You can refer to the <a target=\"_blank\" href=\"https://github.com/microprediction/birdgame/tree/main/birdgame/examples\">Tracker examples</a> for guidance.</p>\n</div>\n",
+      "language": "HTML"
+    },
+    "order": 50,
+    "updatedAt": "2026-01-27T11:50:46.465588",
+    "createdAt": "2026-01-27T11:50:46.465585"
+  },
+  {
+    "id": 1773063555283,
+    "name": "challenge-your-tracker-against-the-benchmark",
+    "displayName": "Challenge your Tracker against the benchmark",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<p>To compare your Tracker's performance against the benchmark Tracker, use the <code class=\"inline\">test_run</code> method provided in the <code class=\"inline\">TrackerBase</code> class. This method evaluates your Tracker's efficiency over a series of time steps using <a target=\"_blank\" href=\"https://github.com/microprediction/densitypdf/blob/main/densitypdf/__init__.py\">density_pdf</a> scoring. A higher score reflects more accurate predictions.</p>\n",
+      "language": "HTML"
+    },
+    "order": 60,
+    "updatedAt": "2026-01-27T11:50:46.468399",
+    "createdAt": "2026-01-27T11:50:46.468396"
+  },
+  {
+    "id": 1773063555284,
+    "name": "additional-resources",
+    "displayName": "Additional Resources",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "\n<ul>\n  <li>\n    <p><a target=\"_blank\" href=\"https://github.com/microprediction/birdgame/blob/main/LITERATURE.md\">Literature</a></p>\n  </li>\n\n  <li>\n    <p>Useful Python <a target=\"_blank\" href=\"https://github.com/microprediction/birdgame/blob/main/PACKAGES.md\">packages</a></p>\n  </li>\n</ul>\n",
+      "language": "HTML"
+    },
+    "order": 70,
+    "updatedAt": "2026-01-27T11:50:46.469417",
+    "createdAt": "2026-01-27T11:50:46.469414"
+  }
+]

@@ -22,7 +22,7 @@ export function CompetitionList() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Your Locals Crunches</CardTitle>
         {!competitionsLoading && (
-          <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
+          <Link href={INTERNAL_LINKS.CREATE_LOCAL_CRUNCH}>
             <Button size="sm">
               <Plus />
               New Crunch
@@ -40,7 +40,7 @@ export function CompetitionList() {
             <p className="text-muted-foreground mb-4">
               No competitions configured yet.
             </p>
-            <Link href={INTERNAL_LINKS.CREATE_CRUNCH}>
+            <Link href={INTERNAL_LINKS.CREATE_LOCAL_CRUNCH}>
               <Button>
                 <Plus />
                 Create your first competition

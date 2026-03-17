@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1773053884597,
+    "name": "content",
+    "displayName": "Content",
+    "type": "CONTENT",
+    "nativeConfiguration": {
+      "source": "# trst",
+      "language": "MARKDOWN"
+    },
+    "order": 10,
+    "updatedAt": "2026-03-09T10:41:29.221478",
+    "createdAt": "2026-03-09T10:41:29.221453"
+  }
+]
