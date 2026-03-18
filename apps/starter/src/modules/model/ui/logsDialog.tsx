@@ -48,14 +48,31 @@ export const LogsDialog: React.FC<LogsDialogProps> = ({ model }) => {
 
     const lines = logs.split("\n").filter((line) => line.trim());
 
-    return lines.map((line, index) => ({
-      id: index,
-      createdAt: new Date().toISOString(),
-      content: line,
-      error:
-        line.toLowerCase().includes("error") ||
-        line.toLowerCase().includes("failed"),
-    }));
+    return lines.map((line, index) => {
+      try {
+        const parsed = JSON.parse(line);
+        if (parsed.message !== undefined) {
+          return {
+            id: index,
+            createdAt: parsed.timestamp || new Date().toISOString(),
+            content: parsed.message,
+            error: parsed.error === true,
+            emitter: parsed.emitter,
+          };
+        }
+      } catch {
+        // not JSON, fall through to plain text
+      }
+
+      return {
+        id: index,
+        createdAt: new Date().toISOString(),
+        content: line,
+        error:
+          line.toLowerCase().includes("error") ||
+          line.toLowerCase().includes("failed"),
+      };
+    });
   };
 
   const parsedBuilderLogs = useMemo(
