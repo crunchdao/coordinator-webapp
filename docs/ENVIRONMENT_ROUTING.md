@@ -5,9 +5,10 @@ This guide explains how routes are protected and displayed based on the current 
 ## Overview
 
 The application supports three environments:
+
 - **local**: Local environment (npm run dev, build, or start)
 - **staging**: Staging environment linked to the staging branch, used to preview the Crunches and is using devnet
-- **production**: Production deployment from master branch, used on production and using mainnet 
+- **production**: Production deployment from master branch, used on production and using mainnet
 
 ## Route Configuration
 
@@ -19,7 +20,7 @@ Routes are configured in `src/utils/routes.ts` with optional environment restric
 type RouteConfig = {
   path: string;
   label: string;
-  allowedEnvs?: Environment[];  // Optional: if not specified, allowed in all environments
+  allowedEnvs?: Environment[]; // Optional: if not specified, allowed in all environments
 };
 ```
 
@@ -30,7 +31,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: "/settings",
     label: "Settings",
-    allowedEnvs: ["local"],  // Only accessible in local environment
+    allowedEnvs: ["local"], // Only accessible in local environment
   },
 ];
 ```
@@ -40,6 +41,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
 ### 1. **Middleware Protection** (Server-side)
 
 The middleware in `src/proxy.ts` protects routes at the server level:
+
 - Checks if the current route is allowed for the current environment
 - Redirects to home page if access is denied
 - Runs on all routes except API routes and static files
@@ -47,6 +49,7 @@ The middleware in `src/proxy.ts` protects routes at the server level:
 ### 2. **Navigation Visibility** (Client-side)
 
 The navbar only displays links for allowed routes:
+
 - Provides clean user experience without showing inaccessible links
 
 ## Adding New Protected Routes
@@ -68,7 +71,7 @@ export const ROUTE_CONFIG: RouteConfig[] = [
   {
     path: INTERNAL_LINKS.NEW_FEATURE,
     label: "New Feature",
-    allowedEnvs: ["local", "staging"],  // Not available in production
+    allowedEnvs: ["local", "staging"], // Not available in production
   },
 ];
 ```

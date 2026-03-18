@@ -71,7 +71,6 @@ export function CrunchOverview() {
                 Start Crunch
               </Button>
             )}
-
           </div>
         </CardContent>
       </Card>

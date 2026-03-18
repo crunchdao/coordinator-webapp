@@ -1,6 +1,6 @@
 export const competitionEndpoints = {
-  getCompetition: (crunchAddress: string) =>
-    `/v1/competitions/onchain:${crunchAddress}`,
+  getCompetition: (competitionIdentifier: string) =>
+    `/v1/competitions/${competitionIdentifier}`,
   updateCompetition: (competitionIdentifier: string) =>
     `/v1/competitions/${competitionIdentifier}`,
 };

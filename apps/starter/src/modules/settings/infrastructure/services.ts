@@ -1,4 +1,4 @@
-import configApiClient from "@coordinator/utils/src/config-api";
+import configApiClient from "@/utils/api/configApiClient";
 import { GlobalSettings } from "../domain/types";
 import { settingsEndpoints } from "./endpoints";
 

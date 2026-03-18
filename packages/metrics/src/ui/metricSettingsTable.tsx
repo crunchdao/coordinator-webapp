@@ -31,6 +31,7 @@ const getIcon = (type: MetricType) => {
 };
 
 const getColumnTypeBadge = (type: MetricType) => {
+  if (!type) return null;
   return (
     <Badge variant="secondary" className="gap-1.5">
       {getIcon(type)}
@@ -50,6 +51,8 @@ interface MetricSettingsTableProps {
   updateLoading?: boolean;
   deleteLoading?: boolean;
   resetLoading?: boolean;
+  header?: React.ReactNode;
+  actions?: React.ReactNode;
 }
 
 export const MetricSettingsTable: React.FC<MetricSettingsTableProps> = ({
@@ -63,8 +66,9 @@ export const MetricSettingsTable: React.FC<MetricSettingsTableProps> = ({
   updateLoading = false,
   deleteLoading = false,
   resetLoading = false,
+  header,
+  actions,
 }) => {
-
   return (
     <Accordion type="single" collapsible>
       <AccordionItem
@@ -83,7 +87,8 @@ export const MetricSettingsTable: React.FC<MetricSettingsTableProps> = ({
           </div>
         </AccordionTrigger>
         <AccordionContent>
-          <div className="px-6 pb-6 pt-2">
+          <div className="px-6 pb-6 pt-2 space-y-6">
+            {header}
             <Table>
               <TableHeader>
                 <TableRow>
@@ -186,6 +191,7 @@ export const MetricSettingsTable: React.FC<MetricSettingsTableProps> = ({
               </TableBody>
             </Table>
             <div className="flex justify-end gap-3 items-center pt-4 border-t mt-4">
+              {actions}
               <ResetWidgetsButton onReset={onReset} loading={resetLoading} />
               <AddWidgetSheet
                 widgets={widgets}

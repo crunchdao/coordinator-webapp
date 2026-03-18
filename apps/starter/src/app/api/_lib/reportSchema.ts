@@ -77,13 +77,17 @@ export function mergeLeaderboardColumns(
     return result;
   });
 
-  const backendProperties = new Set(backendColumns.map((column) => column.property));
+  const backendProperties = new Set(
+    backendColumns.map((column) => column.property)
+  );
   const unknownOverrides = overrideColumns.filter(
     (column) => !backendProperties.has(column.property)
   );
 
   if (unknownOverrides.length > 0) {
-    const properties = unknownOverrides.map((column) => column.property).join(", ");
+    const properties = unknownOverrides
+      .map((column) => column.property)
+      .join(", ");
     console.warn(
       `[report-schema] leaderboard override contains fields not present in backend schema: ${properties}`
     );
@@ -99,14 +103,17 @@ export function mergeMetricsWidgets(
   backendWidgets: Widget[],
   overrideWidgets: Widget[]
 ): Widget[] {
-  const overridesById = new Map(overrideWidgets.map((widget) => [widget.id, widget]));
+  const overridesById = new Map(
+    overrideWidgets.map((widget) => [widget.id, widget])
+  );
   const overridesByEndpoint = new Map(
     overrideWidgets.map((widget) => [widget.endpointUrl, widget])
   );
 
   const merged = backendWidgets.map((widget, index) => {
     const override =
-      overridesById.get(widget.id) || overridesByEndpoint.get(widget.endpointUrl);
+      overridesById.get(widget.id) ||
+      overridesByEndpoint.get(widget.endpointUrl);
 
     if (!override) {
       return { ...widget, order: widget.order ?? (index + 1) * 10 };

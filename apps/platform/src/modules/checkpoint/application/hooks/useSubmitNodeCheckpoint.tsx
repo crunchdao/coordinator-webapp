@@ -29,7 +29,7 @@ function nodeCheckpointToPrizes(
   checkpoint: NodeCheckpoint,
   payoutAmount: number
 ): Prize[] {
-  const emission = checkpoint.entries[0];
+  const emission = checkpoint.entries?.[0];
   if (!emission) return [];
 
   const ranking = checkpoint.meta.ranking ?? [];
@@ -56,6 +56,7 @@ function nodeCheckpointToPrizes(
 interface SubmitParams {
   checkpoint: NodeCheckpoint;
   payoutAmount: number;
+  coordinatorNodeUrl: string;
 }
 
 /**
@@ -72,7 +73,11 @@ export function useSubmitNodeCheckpoint() {
   const router = useRouter();
 
   const mutation = useMutation({
-    mutationFn: async ({ checkpoint, payoutAmount }: SubmitParams) => {
+    mutationFn: async ({
+      checkpoint,
+      payoutAmount,
+      coordinatorNodeUrl,
+    }: SubmitParams) => {
       if (!anchorProvider || !authority) {
         throw new Error("Wallet not connected");
       }
@@ -107,6 +112,7 @@ export function useSubmitNodeCheckpoint() {
       return {
         ...result,
         nodeCheckpointId: checkpoint.id,
+        coordinatorNodeUrl,
       };
     },
     onSuccess: (result) => {
@@ -115,12 +121,12 @@ export function useSubmitNodeCheckpoint() {
         if (result.signature) {
           try {
             await confirmNodeCheckpoint(
-              crunchName,
+              result.coordinatorNodeUrl,
               result.nodeCheckpointId,
               result.signature
             );
             await updateNodeCheckpointStatus(
-              crunchName,
+              result.coordinatorNodeUrl,
               result.nodeCheckpointId,
               "CLAIMABLE"
             );
@@ -130,7 +136,7 @@ export function useSubmitNodeCheckpoint() {
         }
 
         queryClient.invalidateQueries({
-          queryKey: ["node-checkpoints", crunchName],
+          queryKey: ["node-checkpoints"],
         });
         queryClient.invalidateQueries({ queryKey: ["checkpoints"] });
 

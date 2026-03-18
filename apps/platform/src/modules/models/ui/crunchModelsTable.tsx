@@ -2,21 +2,26 @@
 
 import { useRef } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Button, Input } from "@crunch-ui/core";
-import { DataTable } from "@coordinator/ui/src/data-table";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { Button, Input, DataTable } from "@crunch-ui/core";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
-import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { useGetModelStates } from "@/modules/models/application/hooks/useGetModelStates";
 import { ModelState } from "@/modules/models/domain/types";
 
 interface CrunchModelsTableProps {
+  crunchName: string;
+  network?: WalletAdapterNetwork;
   onAddModel: (modelId: string, prize: number) => void;
 }
 
-export function CrunchModelsTable({ onAddModel }: CrunchModelsTableProps) {
-  const { crunchName } = useCrunchContext();
+export function CrunchModelsTable({
+  crunchName,
+  network,
+  onAddModel,
+}: CrunchModelsTableProps) {
   const { modelStates, modelStatesLoading } = useGetModelStates({
     crunchNames: [crunchName],
+    network,
   });
   const prizesRef = useRef<Record<string, string>>({});
 

@@ -1,5 +1,12 @@
 import z from "zod";
-import { Slice, SliceType } from "@crunchdao/slices";
+import {
+  Slice,
+  SliceType,
+  ContentNativeConfiguration,
+  KeyMetricsNativeConfiguration,
+  TimelineNativeConfiguration,
+  TeamNativeConfiguration,
+} from "@crunchdao/slices";
 import { pitchFormSchema } from "../application/schemas/pitch";
 import { Season } from "@/modules/season/domain/types";
 
@@ -11,7 +18,12 @@ export {
   type TeamMember,
 } from "@crunchdao/slices";
 
-export { Locale } from "@/modules/common/types";
+type SliceNativeConfiguration =
+  | ContentNativeConfiguration
+  | KeyMetricsNativeConfiguration
+  | TimelineNativeConfiguration
+  | TeamNativeConfiguration;
+
 export { type Season, SeasonStatus } from "@/modules/season/domain/types";
 
 export type PitchSlice = Slice & {
@@ -23,9 +35,9 @@ export type PitchSlicesListResponse = PitchSlice[];
 
 export interface CreatePitchSliceBody {
   name: string;
-  displayName: string;
+  displayName?: string;
   type: SliceType;
-  nativeConfiguration: Record<string, unknown>;
+  nativeConfiguration: SliceNativeConfiguration;
   order: number;
 }
 
@@ -33,7 +45,7 @@ export interface UpdatePitchSliceBody {
   name?: string;
   displayName?: string;
   type?: SliceType;
-  nativeConfiguration?: Record<string, unknown>;
+  nativeConfiguration?: SliceNativeConfiguration;
   order?: number;
 }
 

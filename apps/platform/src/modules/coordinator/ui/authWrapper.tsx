@@ -10,7 +10,8 @@ interface AuthWrapperProps {
 }
 
 export function AuthWrapper({ children }: AuthWrapperProps) {
-  const { isAuthenticated, isLoading, isCheckingCoordinator } = useCoordinatorAuth();
+  const { isAuthenticated, isLoading, isCheckingCoordinator } =
+    useCoordinatorAuth();
   const router = useRouter();
 
   useEffect(() => {

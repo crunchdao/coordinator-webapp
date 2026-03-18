@@ -7,15 +7,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
-    "@coordinator/utils": "workspace:*",
-    "@coordinator/ui": "workspace:*",
     "@coordinator/leaderboard": "workspace:*",
     "@coordinator/metrics": "workspace:*",
-    "@crunch-ui/core": "^1.3.2",
-    "@crunch-ui/icons": "^1.1.1",
+    "@crunch-ui/core": "^1.6.0",
+    "@crunch-ui/icons": "^1.3.0",
     "@crunch-ui/tailwind-config": "^1.1.1",
     "@crunch-ui/utils": "^1.2.1",
     "@hookform/resolvers": "^5.2.2",

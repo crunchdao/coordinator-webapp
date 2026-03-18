@@ -1,10 +1,15 @@
 "use client";
 
-import { Alert, AlertDescription, Badge, Button } from "@crunch-ui/core";
+import {
+  Alert,
+  AlertDescription,
+  Badge,
+  Button,
+  LoadingOverlay,
+} from "@crunch-ui/core";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { PublicKey } from "@solana/web3.js";
 import { useStartCrunch } from "../application/hooks/useStartCrunch";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 import { InfoCircle } from "@crunch-ui/icons";
 
 interface StartCrunchFormProps {

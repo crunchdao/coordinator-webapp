@@ -43,7 +43,8 @@ export const GaugeFields: React.FC<GaugeFieldsProps> = ({ form }) => {
                   <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  When enabled, the gauge value will be displayed as a percentage (0-100%)
+                  When enabled, the gauge value will be displayed as a
+                  percentage (0-100%)
                 </TooltipContent>
               </Tooltip>
             </FormLabel>
@@ -69,7 +70,8 @@ export const GaugeFields: React.FC<GaugeFieldsProps> = ({ form }) => {
                   <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  Custom message displayed when no data is available for this gauge. Defaults to &quot;No data available&quot;
+                  Custom message displayed when no data is available for this
+                  gauge. Defaults to &quot;No data available&quot;
                 </TooltipContent>
               </Tooltip>
             </FormLabel>

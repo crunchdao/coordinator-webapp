@@ -23,17 +23,20 @@ Monorepo for CrunchDAO coordinator web applications.
 ### Installation
 
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/crunchdao/coordinator-webapp.git
    cd coordinator-webapp
    ```
 
 2. Install dependencies:
+
    ```bash
    pnpm install
    ```
 
 3. Start a development server:
+
    ```bash
    # Starter app (single-node dashboard)
    pnpm dev:starter

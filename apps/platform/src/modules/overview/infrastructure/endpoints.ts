@@ -1,6 +1,6 @@
 export const overviewEndpoints = {
-  slices: (crunchAddress: string) =>
-    `/v1/competitions/onchain:${crunchAddress}/slices`,
-  slice: (crunchAddress: string, sliceName: string) =>
-    `/v1/competitions/onchain:${crunchAddress}/slices/${sliceName}`,
+  slices: (competitionIdentifier: string) =>
+    `/v1/competitions/${competitionIdentifier}/slices`,
+  slice: (competitionIdentifier: string, sliceName: string) =>
+    `/v1/competitions/${competitionIdentifier}/slices/${sliceName}`,
 };

@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@crunch-ui/core";
-import { Locale } from "../domain/types";
+import { Locale } from "@/modules/common/types";
 
 interface OverviewSliceHeaderProps {
   locale: Locale;

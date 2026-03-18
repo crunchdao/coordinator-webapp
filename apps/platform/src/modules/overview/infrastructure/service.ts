@@ -1,56 +1,84 @@
 import hubApiClient from "@/utils/api/hubApiClient";
+import { hubRequestConfig } from "@/utils/api/hubRequestConfig";
+import type { Environment } from "@/config";
+import { Locale } from "@/modules/common/types";
 import {
   OverviewSliceItemResponse,
   OverviewSlicesListResponse,
   CreateOverviewSliceBody,
   UpdateOverviewSliceBody,
-  Locale,
 } from "../domain/types";
 import { overviewEndpoints } from "./endpoints";
 
 export const getOverviewSlices = async (
-  crunchAddress: string,
-  locale?: Locale
+  competitionIdentifier: string,
+  locale?: Locale,
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<OverviewSlicesListResponse> => {
-  const response = await hubApiClient.get(overviewEndpoints.slices(crunchAddress), {
-    params: { locale },
-  });
+  const config =
+    hubBaseUrl && hubEnv
+      ? hubRequestConfig(hubBaseUrl, hubEnv, { params: { locale } })
+      : { params: { locale } };
+  const response = await hubApiClient.get(
+    overviewEndpoints.slices(competitionIdentifier),
+    config
+  );
   return response.data;
 };
 
 export const createOverviewSlice = async (
-  crunchAddress: string,
+  competitionIdentifier: string,
   body: CreateOverviewSliceBody,
-  locale?: Locale
+  locale?: Locale,
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<OverviewSliceItemResponse> => {
+  const config =
+    hubBaseUrl && hubEnv
+      ? hubRequestConfig(hubBaseUrl, hubEnv, { params: { locale } })
+      : { params: { locale } };
   const response = await hubApiClient.post(
-    overviewEndpoints.slices(crunchAddress),
+    overviewEndpoints.slices(competitionIdentifier),
     body,
-    { params: { locale } }
+    config
   );
   return response.data;
 };
 
 export const updateOverviewSlice = async (
-  crunchAddress: string,
+  competitionIdentifier: string,
   sliceName: string,
   body: UpdateOverviewSliceBody,
-  locale?: Locale
+  locale?: Locale,
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<OverviewSliceItemResponse> => {
+  const config =
+    hubBaseUrl && hubEnv
+      ? hubRequestConfig(hubBaseUrl, hubEnv, { params: { locale } })
+      : { params: { locale } };
   const response = await hubApiClient.patch(
-    overviewEndpoints.slice(crunchAddress, sliceName),
+    overviewEndpoints.slice(competitionIdentifier, sliceName),
     body,
-    { params: { locale } }
+    config
   );
   return response.data;
 };
 
 export const deleteOverviewSlice = async (
-  crunchAddress: string,
+  competitionIdentifier: string,
   sliceName: string,
-  locale?: Locale
+  locale?: Locale,
+  hubBaseUrl?: string,
+  hubEnv?: Environment
 ): Promise<void> => {
-  await hubApiClient.delete(overviewEndpoints.slice(crunchAddress, sliceName), {
-    params: { locale },
-  });
+  const config =
+    hubBaseUrl && hubEnv
+      ? hubRequestConfig(hubBaseUrl, hubEnv, { params: { locale } })
+      : { params: { locale } };
+  await hubApiClient.delete(
+    overviewEndpoints.slice(competitionIdentifier, sliceName),
+    config
+  );
 };

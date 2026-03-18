@@ -47,9 +47,13 @@ export const FeedMonitor: React.FC = () => {
   // Once we know the interval, this hook takes over (first result is
   // already cached by the initial fetch via the same query key).
   const { feeds, feedsLoading, feedsRefetching } = useGetFeeds(feedsPollMs);
-  
+
   // Debug logging
-  console.log("FeedMonitor state:", { feeds: feeds.length, feedsLoading, feedsRefetching });
+  console.log("FeedMonitor state:", {
+    feeds: feeds.length,
+    feedsLoading,
+    feedsRefetching,
+  });
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
@@ -83,12 +87,8 @@ export const FeedMonitor: React.FC = () => {
   );
 
   const isRefetching = feedsRefetching || recordsRefetching;
-  const pollLabel = feedsPollMs
-    ? formatInterval(feedsPollMs)
-    : null;
-  const tailPollLabel = tailPollMs
-    ? formatInterval(tailPollMs)
-    : null;
+  const pollLabel = feedsPollMs ? formatInterval(feedsPollMs) : null;
+  const tailPollLabel = tailPollMs ? formatInterval(tailPollMs) : null;
 
   const feedsCountdown = useCountdown(feedsPollMs, feedsRefetching);
   const tailCountdown = useCountdown(tailPollMs, recordsRefetching);
@@ -110,7 +110,10 @@ export const FeedMonitor: React.FC = () => {
                         : "bg-green-500"
                     )}
                   />
-                  <span>Live · every {pollLabel}{feedsCountdown !== null ? ` · ${feedsCountdown}s` : ""}</span>
+                  <span>
+                    Live · every {pollLabel}
+                    {feedsCountdown !== null ? ` · ${feedsCountdown}s` : ""}
+                  </span>
                 </div>
               )}
             </div>
@@ -137,7 +140,10 @@ export const FeedMonitor: React.FC = () => {
             <TableBody>
               {feedsLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={5}
+                    className="h-24 text-center text-muted-foreground"
+                  >
                     <div className="inline-flex items-center gap-2">
                       <Spinner />
                       <span>Loading feed index...</span>
@@ -146,7 +152,10 @@ export const FeedMonitor: React.FC = () => {
                 </TableRow>
               ) : feeds.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={5}
+                    className="h-24 text-center text-muted-foreground"
+                  >
                     No feed data indexed yet.
                   </TableCell>
                 </TableRow>
@@ -159,7 +168,10 @@ export const FeedMonitor: React.FC = () => {
                   return (
                     <TableRow
                       key={key}
-                      className={cn("cursor-pointer", isSelected && "bg-muted/50")}
+                      className={cn(
+                        "cursor-pointer",
+                        isSelected && "bg-muted/50"
+                      )}
                       onClick={() => setSelectedKey(key)}
                     >
                       <TableCell>
@@ -174,11 +186,18 @@ export const FeedMonitor: React.FC = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {feed.source}:{feed.subject}:{feed.kind}:{feed.granularity}
+                        {feed.source}:{feed.subject}:{feed.kind}:
+                        {feed.granularity}
                       </TableCell>
-                      <TableCell>{feed.record_count.toLocaleString()}</TableCell>
-                      <TableCell>{feed.oldest_ts ? formatDate(feed.oldest_ts) : "-"}</TableCell>
-                      <TableCell>{feed.newest_ts ? formatDate(feed.newest_ts) : "-"}</TableCell>
+                      <TableCell>
+                        {feed.record_count.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {feed.oldest_ts ? formatDate(feed.oldest_ts) : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {feed.newest_ts ? formatDate(feed.newest_ts) : "-"}
+                      </TableCell>
                     </TableRow>
                   );
                 })
@@ -202,21 +221,28 @@ export const FeedMonitor: React.FC = () => {
                       : "bg-green-500"
                   )}
                 />
-                <span>Polling every {tailPollLabel}{tailCountdown !== null ? ` · ${tailCountdown}s` : ""}</span>
+                <span>
+                  Polling every {tailPollLabel}
+                  {tailCountdown !== null ? ` · ${tailCountdown}s` : ""}
+                </span>
               </div>
             )}
           </div>
         </CardHeader>
         <CardContent>
           {!selectedFeed ? (
-            <p className="text-muted-foreground">Pick a feed row to inspect latest records.</p>
+            <p className="text-muted-foreground">
+              Pick a feed row to inspect latest records.
+            </p>
           ) : recordsLoading ? (
             <div className="inline-flex items-center gap-2 text-muted-foreground">
               <Spinner />
               <span>Loading records...</span>
             </div>
           ) : records.length === 0 ? (
-            <p className="text-muted-foreground">No records available for this feed yet.</p>
+            <p className="text-muted-foreground">
+              No records available for this feed yet.
+            </p>
           ) : (
             <div className="space-y-2">
               {records.map((record, idx) => (
@@ -252,7 +278,10 @@ export const FeedMonitor: React.FC = () => {
  * Resets whenever `isRefetching` transitions from true → false (i.e. a
  * fetch just completed). Returns null when paused / no interval.
  */
-function useCountdown(intervalMs: number | false, isRefetching: boolean): number | null {
+function useCountdown(
+  intervalMs: number | false,
+  isRefetching: boolean
+): number | null {
   const [remaining, setRemaining] = useState<number | null>(null);
   const lastFetchRef = useRef<number>(Date.now());
 

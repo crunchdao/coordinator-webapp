@@ -1,8 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@crunch-ui/core";
-import { DataTable } from "@coordinator/ui/src/data-table";
+import { Badge, DataTable } from "@crunch-ui/core";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
 import { ModelState } from "../domain/types";
 

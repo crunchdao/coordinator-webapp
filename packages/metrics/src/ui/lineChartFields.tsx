@@ -16,7 +16,7 @@ import {
 import { Plus, SmallCross, InfoCircle } from "@crunch-ui/icons";
 import { WidgetFormData } from "../application/schemas/widgetFormSchema";
 import { FilterConfigEditor } from "./filterConfigEditor";
-import { FormatSelect } from "@coordinator/ui/src/format-select";
+import { FormatSelect } from "@coordinator/leaderboard/src/ui/formatSelect";
 
 interface LineChartFieldsProps {
   form: UseFormReturn<WidgetFormData>;
@@ -265,7 +265,8 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
               <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
             </TooltipTrigger>
             <TooltipContent>
-              Configure alerts based on data points. When alert conditions are met, the chart will highlight affected areas
+              Configure alerts based on data points. When alert conditions are
+              met, the chart will highlight affected areas
             </TooltipContent>
           </Tooltip>
         </h4>
@@ -282,7 +283,8 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
                       <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      Field containing alert status (e.g., "score_success"). When false/0, triggers visual alert
+                      Field containing alert status (e.g., "score_success").
+                      When false/0, triggers visual alert
                     </TooltipContent>
                   </Tooltip>
                 </FormLabel>
@@ -306,7 +308,8 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
                       <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      Field containing the reason for the alert (e.g., "score_failed_reason")
+                      Field containing the reason for the alert (e.g.,
+                      "score_failed_reason")
                     </TooltipContent>
                   </Tooltip>
                 </FormLabel>
@@ -333,7 +336,8 @@ export const LineChartFields: React.FC<LineChartFieldsProps> = ({ form }) => {
                   <InfoCircle className="min-w-4 inline-block pl-1 mb-1 body-xs" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  Custom message displayed when no data is available for this chart. Defaults to &quot;No data available&quot;
+                  Custom message displayed when no data is available for this
+                  chart. Defaults to &quot;No data available&quot;
                 </TooltipContent>
               </Tooltip>
             </FormLabel>

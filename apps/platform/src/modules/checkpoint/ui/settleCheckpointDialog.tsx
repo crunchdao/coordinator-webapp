@@ -8,17 +8,14 @@ import {
   AlertDialogTitle,
   Badge,
   Button,
+  DataTable,
+  LoadingOverlay,
 } from "@crunch-ui/core";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@coordinator/ui/src/data-table";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
-import { NodeCheckpoint, NodeRankedEntry } from "../domain/nodeTypes";
+import { NodeCheckpoint } from "../domain/nodeTypes";
 import { FRAC64_MULTIPLIER } from "../domain/constants";
 import { useSubmitNodeCheckpoint } from "../application/hooks/useSubmitNodeCheckpoint";
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString();
-}
+import { formatDate } from "@/utils/formatDate";
 
 interface PrizeRow {
   rank: number;
@@ -40,7 +37,7 @@ function buildPrizeRows(
   checkpoint: NodeCheckpoint,
   payoutAmount: number
 ): PrizeRow[] {
-  const emission = checkpoint.entries[0];
+  const emission = checkpoint.entries?.[0];
   if (!emission) return [];
 
   const ranking = checkpoint.meta.ranking ?? [];
@@ -55,7 +52,8 @@ function buildPrizeRows(
 
     return {
       rank: entry?.rank ?? reward.cruncher_index + 1,
-      model: entry?.model_name ?? entry?.model_id ?? `#${reward.cruncher_index}`,
+      model:
+        entry?.model_name ?? entry?.model_id ?? `#${reward.cruncher_index}`,
       cruncher: entry?.cruncher_name ?? "-",
       share: (pct * 100).toFixed(2) + "%",
       amount: amount.toFixed(2) + " USDC",
@@ -68,6 +66,7 @@ interface SettleCheckpointDialogProps {
   onOpenChange: (open: boolean) => void;
   checkpoint: NodeCheckpoint;
   payoutAmount: number;
+  coordinatorNodeUrl: string;
 }
 
 export function SettleCheckpointDialog({
@@ -75,13 +74,18 @@ export function SettleCheckpointDialog({
   onOpenChange,
   checkpoint,
   payoutAmount,
+  coordinatorNodeUrl,
 }: SettleCheckpointDialogProps) {
   const { submitNodeCheckpoint, submitLoading } = useSubmitNodeCheckpoint();
   const prizeRows = buildPrizeRows(checkpoint, payoutAmount);
   const payoutUsdc = payoutAmount / 10 ** 6;
 
   const handleSettle = async () => {
-    await submitNodeCheckpoint({ checkpoint, payoutAmount });
+    await submitNodeCheckpoint({
+      checkpoint,
+      payoutAmount,
+      coordinatorNodeUrl,
+    });
     onOpenChange(false);
   };
 
@@ -126,8 +130,9 @@ export function SettleCheckpointDialog({
             <Badge variant="outline">{checkpoint.status}</Badge>
           </div>
 
-          <DataTable columns={prizeColumns} data={prizeRows} />
-
+          <div>
+            <DataTable columns={prizeColumns} data={prizeRows} />
+          </div>
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"

@@ -9,7 +9,8 @@ import { useEffect } from "react";
 import { INTERNAL_LINKS } from "@/utils/routes";
 
 export function LoginCard() {
-  const { isAuthenticated, isLoading, coordinatorStatus } = useCoordinatorAuth();
+  const { isAuthenticated, isLoading, coordinatorStatus } =
+    useCoordinatorAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -17,7 +18,7 @@ export function LoginCard() {
       if (coordinatorStatus === CoordinatorStatus.UNREGISTERED) {
         router.push(INTERNAL_LINKS.ONBOARDING);
       } else {
-        router.push(INTERNAL_LINKS.DASHBOARD);
+        router.push(INTERNAL_LINKS.ONCHAIN_EXPLORER);
       }
     }
   }, [isAuthenticated, isLoading, coordinatorStatus, router]);

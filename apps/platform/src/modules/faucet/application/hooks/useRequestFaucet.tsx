@@ -1,16 +1,15 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "@crunch-ui/core";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { getConfig } from "@/config";
 
 export const useRequestFaucet = () => {
-  const queryClient = useQueryClient();
   const { anchorProvider } = useAnchorProvider();
   const { publicKey } = useWallet();
 
   const mutation = useMutation({
-    mutationFn: async (amount: number) => {
+    mutationFn: async (_amount: number) => {
       if (!anchorProvider || !publicKey) {
         throw new Error("Wallet not connected");
       }
@@ -30,7 +29,7 @@ export const useRequestFaucet = () => {
         description: `Received ${result} CRNCH from faucet`,
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Faucet error:", error);
       toast({
         title: "Failed to request CRNCH",

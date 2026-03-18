@@ -1,4 +1,4 @@
-import configApiClient from "@coordinator/utils/src/config-api";
+import configApiClient from "@/utils/api/configApiClient";
 import { LogEntry } from "../domain/types";
 import { logEndpoints } from "./endpoints";
 

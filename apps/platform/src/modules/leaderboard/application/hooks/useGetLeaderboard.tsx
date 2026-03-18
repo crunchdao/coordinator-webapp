@@ -1,15 +1,14 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
-import { getLeaderboard } from "../../infrastructure/services";
+import { proxyGet } from "@/utils/api/proxyApiClient";
+import type { Leaderboard } from "@coordinator/leaderboard/src/domain/types";
 
-export function useGetLeaderboard() {
-  const { crunchName } = useCrunchContext();
-
+export function useGetLeaderboard(coordinatorNodeUrl?: string) {
   const query = useQuery({
-    queryKey: ["leaderboard", crunchName],
-    queryFn: () => getLeaderboard(crunchName),
-    enabled: !!crunchName,
+    queryKey: ["leaderboard", coordinatorNodeUrl],
+    queryFn: () =>
+      proxyGet<Leaderboard>(`${coordinatorNodeUrl}/reports/leaderboard`),
+    enabled: !!coordinatorNodeUrl,
     retry: false,
     refetchOnWindowFocus: false,
   });

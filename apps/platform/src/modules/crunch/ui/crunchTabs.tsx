@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@crunch-ui/core";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@crunch-ui/core";
 import { useCrunchContext } from "../application/context/crunchContext";
 import { CrunchOverview } from "./crunchOverview";
 import { CompetitionSettingsTab } from "@/modules/competition/ui/competitionSettingsTab";

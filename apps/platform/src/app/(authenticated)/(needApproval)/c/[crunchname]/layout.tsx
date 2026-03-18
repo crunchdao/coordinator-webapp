@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import { RestrictedWrapper } from "@/modules/coordinator/ui/restrictedWrapper";
-import { BasicNavbar } from "@/ui/navigation/basicNavbar";
+import { CompetitionWorkspaceNavbar } from "@/modules/config/ui/competitionWorkspaceNavbar";
 import { CrunchProvider } from "@/modules/crunch/application/context/crunchContext";
-import { HubAuthProvider } from "@/modules/hub/application/context/hubAuthContext";
 
 type Props = {
   params: Promise<{ crunchname: string }>;
@@ -26,12 +25,10 @@ export default function CrunchLayout({
 }) {
   return (
     <CrunchProvider>
-      <HubAuthProvider>
-        <RestrictedWrapper showDefaultMessage={false}>
-          <BasicNavbar />
-        </RestrictedWrapper>
-        <div className="space-y-3">{children}</div>
-      </HubAuthProvider>
+      <RestrictedWrapper showDefaultMessage={false}>
+        <CompetitionWorkspaceNavbar />
+      </RestrictedWrapper>
+      <div className="space-y-3">{children}</div>
     </CrunchProvider>
   );
 }

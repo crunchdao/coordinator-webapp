@@ -12,7 +12,9 @@ interface OnboardingFundCrunchFormProps {
   onSuccess?: () => void;
 }
 
-export function OnboardingFundCrunchForm({ onSuccess }: OnboardingFundCrunchFormProps) {
+export function OnboardingFundCrunchForm({
+  onSuccess,
+}: OnboardingFundCrunchFormProps) {
   const { coordinator, coordinatorLoading } = useGetCoordinator();
   const { crunches, crunchesLoading } = useGetCrunches(
     coordinator?.address ? { coordinator: coordinator.address } : undefined

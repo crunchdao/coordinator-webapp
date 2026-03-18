@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 @source "../../../../packages/*/src/**/*.{ts,tsx}";
+@source inline("bg-orange-700 bg-yellow-700 bg-green-400 bg-red-700 bg-gray-700");
 @source "../../node_modules/@crunchdao/staking/src/**/*.{ts,tsx}";
 
 @theme inline {

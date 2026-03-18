@@ -33,11 +33,7 @@ export const DeleteColumnButton: React.FC<DeleteColumnButtonProps> = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="destructive"
-          size="icon-sm"
-          disabled={loading}
-        >
+        <Button variant="destructive" size="icon-sm" disabled={loading}>
           <Trash className="h-3 w-3" />
         </Button>
       </AlertDialogTrigger>

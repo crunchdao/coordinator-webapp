@@ -1,6 +1,7 @@
 import type {
   GaugeConfiguration,
   LineChartConfiguration,
+  MatrixConfiguration,
 } from "@crunchdao/chart";
 
 export type MetricType = "CHART" | "IFRAME";
@@ -22,12 +23,21 @@ export type GaugeDefinition = BaseDefinition & {
   nativeConfiguration: GaugeConfiguration;
 };
 
+export type MatrixDefinition = BaseDefinition & {
+  nativeConfiguration: MatrixConfiguration;
+};
+
 export type IframeChartDefinition = BaseDefinition;
 
 export type Widget =
   | LineChartDefinition
   | GaugeDefinition
+  | MatrixDefinition
   | IframeChartDefinition;
+
+export type LocalMetricsConfig = {
+  widgets: Widget[];
+};
 
 export interface GetMetricDataParams {
   modelIds: string[];

@@ -19,31 +19,29 @@ Next.js 16 monorepo with two apps and shared packages for managing CrunchDAO coo
 
 ### Two Apps, Different Concerns
 
-| | Starter (`apps/starter/`) | Platform (`apps/platform/`) |
-|---|---|---|
-| Node connection | Single fixed node via `NEXT_PUBLIC_API_URL` | Configurable URL per crunch, multi-node |
-| Network/wallet | None — no devnet/testnet, no wallet | Full — network validation, Solana wallet |
-| Auth | None | Login required |
-| Checkpoints | Read-only (settle → "switch to Platform" dialog) | Full on-chain settlement |
-| API routing | Next.js rewrites proxy `/api/*` → node | Direct calls via configurable node URL |
+|                 | Starter (`apps/starter/`)                        | Platform (`apps/platform/`)              |
+| --------------- | ------------------------------------------------ | ---------------------------------------- |
+| Node connection | Single fixed node via `NEXT_PUBLIC_API_URL`      | Configurable URL per crunch, multi-node  |
+| Network/wallet  | None — no devnet/testnet, no wallet              | Full — network validation, Solana wallet |
+| Auth            | None                                             | Login required                           |
+| Checkpoints     | Read-only (settle → "switch to Platform" dialog) | Full on-chain settlement                 |
+| API routing     | Next.js rewrites proxy `/api/*` → node           | Direct calls via configurable node URL   |
 
 **Rule:** Starter has zero network/wallet awareness. If a feature needs on-chain interaction, show a "switch to Platform" upgrade prompt instead.
 
 ### Shared Packages (`packages/`)
 
-| Package | Contains |
-|---|---|
-| `@coordinator/leaderboard` | LeaderboardTable, ColumnSettingsTable, column types/schemas |
-| `@coordinator/metrics` | MetricsDashboard, MetricSettingsTable, widget types, `useMetricData` |
-| `@coordinator/ui` | DataTable, LogsList, FormatSelect, MultiSelectDropdown |
-| `@coordinator/utils` | `apiClient` (baseURL `/api`), `configApiClient` (no baseURL), number formatter |
+| Package                    | Contains                                                             |
+| -------------------------- | -------------------------------------------------------------------- |
+| `@coordinator/leaderboard` | LeaderboardTable, ColumnSettingsTable, column types/schemas          |
+| `@coordinator/metrics`     | MetricsDashboard, MetricSettingsTable, widget types, `useMetricData` |
 
-Import shared components as: `import { DataTable } from "@coordinator/ui/src/data-table"`
 Import shared types as: `import { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types"`
 
 ### UI Components
 
 Use `@crunch-ui/core` for primitives — not raw HTML or custom Tailwind components:
+
 ```
 Card, CardHeader, CardTitle, CardDescription, CardContent
 Table, TableHeader, TableRow, TableHead, TableBody, TableCell
@@ -94,17 +92,15 @@ modules/
 ### API Patterns
 
 **Starter app** — proxies through Next.js rewrites:
+
 ```ts
 // next.config.ts rewrites /api/* → NEXT_PUBLIC_API_URL/*
 // So apiClient (baseURL: "/api") calls like:
-apiClient.get("/reports/checkpoints")  // → http://localhost:8000/reports/checkpoints
+apiClient.get("/reports/checkpoints"); // → http://localhost:8000/reports/checkpoints
 ```
 
-**Two API clients:**
-- `apiClient` (`@coordinator/utils/src/api`) — baseURL `/api`, for proxied node calls
-- `configApiClient` (`@coordinator/utils/src/config-api`) — no baseURL, for local Next.js API routes (`/api/settings`, `/api/leaderboard/columns`)
-
 **Local config routes** (Next.js API routes that read/write JSON files in `config/`):
+
 - `/api/settings` — global settings (endpoints, container names)
 - `/api/leaderboard/columns` — column config with report schema merge
 - `/api/metrics/widgets` — widget config with report schema merge
@@ -118,7 +114,7 @@ export function useGetThings(filter?: string) {
     queryKey: ["things", filter],
     queryFn: () => getThings(filter),
     retry: false,
-    refetchInterval: 30_000,  // or conditional: (query) => hasActive ? 5_000 : 30_000
+    refetchInterval: 30_000, // or conditional: (query) => hasActive ? 5_000 : 30_000
   });
   return {
     things: query.data ?? [],
@@ -132,7 +128,9 @@ export function useCreateThing() {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (body: CreateThingRequest) => createThing(body),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["things"] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["things"] });
+    },
   });
   return {
     createThing: mutation.mutate,
@@ -198,7 +196,6 @@ When adding new schema-driven features, the backend schema is the source of trut
 - Use `@crunch-ui/core` components, not raw HTML
 - Use `cn()` for conditional classes
 - Card with `displayCorners` prop for featured sections
-- Tables: use `@crunch-ui/core` Table components or `@coordinator/ui` DataTable
 - Status indicators: `Badge` with variant (`success`, `destructive`, `outline`, `secondary`)
 - Loading: `Spinner` component, not custom spinners
 

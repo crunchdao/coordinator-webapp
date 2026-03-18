@@ -1,7 +1,7 @@
-import { config } from "@/config";
+import { getConfig } from "@/config";
 
 export const endpoints = {
-  getCheckpoints: () => `${config.cpiBaseUrl}/checkpoints`,
+  getCheckpoints: () => `${getConfig().cpiBaseUrl}/checkpoints`,
   getCheckpoint: (address: string) =>
-    `${config.cpiBaseUrl}/checkpoints/${address}`,
+    `${getConfig().cpiBaseUrl}/checkpoints/${address}`,
 };

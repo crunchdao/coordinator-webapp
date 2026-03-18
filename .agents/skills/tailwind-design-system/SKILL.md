@@ -252,7 +252,7 @@ export function Button({
 
 ```typescript
 // components/ui/card.tsx
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
 // React 19: ref is a regular prop, no forwardRef
 export function Card({
@@ -264,12 +264,12 @@ export function Card({
     <div
       ref={ref}
       className={cn(
-        'rounded-lg border border-border bg-card text-card-foreground shadow-sm',
+        "rounded-lg border border-border bg-card text-card-foreground shadow-sm",
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 export function CardHeader({
@@ -280,38 +280,45 @@ export function CardHeader({
   return (
     <div
       ref={ref}
-      className={cn('flex flex-col space-y-1.5 p-6', className)}
+      className={cn("flex flex-col space-y-1.5 p-6", className)}
       {...props}
     />
-  )
+  );
 }
 
 export function CardTitle({
   className,
   ref,
   ...props
-}: React.HTMLAttributes<HTMLHeadingElement> & { ref?: React.Ref<HTMLHeadingElement> }) {
+}: React.HTMLAttributes<HTMLHeadingElement> & {
+  ref?: React.Ref<HTMLHeadingElement>;
+}) {
   return (
     <h3
       ref={ref}
-      className={cn('text-2xl font-semibold leading-none tracking-tight', className)}
+      className={cn(
+        "text-2xl font-semibold leading-none tracking-tight",
+        className
+      )}
       {...props}
     />
-  )
+  );
 }
 
 export function CardDescription({
   className,
   ref,
   ...props
-}: React.HTMLAttributes<HTMLParagraphElement> & { ref?: React.Ref<HTMLParagraphElement> }) {
+}: React.HTMLAttributes<HTMLParagraphElement> & {
+  ref?: React.Ref<HTMLParagraphElement>;
+}) {
   return (
     <p
       ref={ref}
-      className={cn('text-sm text-muted-foreground', className)}
+      className={cn("text-sm text-muted-foreground", className)}
       {...props}
     />
-  )
+  );
 }
 
 export function CardContent({
@@ -319,9 +326,7 @@ export function CardContent({
   ref,
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { ref?: React.Ref<HTMLDivElement> }) {
-  return (
-    <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
-  )
+  return <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />;
 }
 
 export function CardFooter({
@@ -332,10 +337,10 @@ export function CardFooter({
   return (
     <div
       ref={ref}
-      className={cn('flex items-center p-6 pt-0', className)}
+      className={cn("flex items-center p-6 pt-0", className)}
       {...props}
     />
-  )
+  );
 }
 
 // Usage
@@ -350,18 +355,19 @@ export function CardFooter({
   <CardFooter>
     <Button>Save</Button>
   </CardFooter>
-</Card>
+</Card>;
 ```
 
 ### Pattern 3: Form Components
 
 ```typescript
 // components/ui/input.tsx
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  error?: string
-  ref?: React.Ref<HTMLInputElement>
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  error?: string;
+  ref?: React.Ref<HTMLInputElement>;
 }
 
 export function Input({ className, type, error, ref, ...props }: InputProps) {
@@ -370,8 +376,8 @@ export function Input({ className, type, error, ref, ...props }: InputProps) {
       <input
         type={type}
         className={cn(
-          'flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
-          error && 'border-destructive focus-visible:ring-destructive',
+          "flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          error && "border-destructive focus-visible:ring-destructive",
           className
         )}
         ref={ref}
@@ -389,40 +395,46 @@ export function Input({ className, type, error, ref, ...props }: InputProps) {
         </p>
       )}
     </div>
-  )
+  );
 }
 
 // components/ui/label.tsx
-import { cva, type VariantProps } from 'class-variance-authority'
+import { cva, type VariantProps } from "class-variance-authority";
 
 const labelVariants = cva(
-  'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-)
+  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+);
 
 export function Label({
   className,
   ref,
   ...props
-}: React.LabelHTMLAttributes<HTMLLabelElement> & { ref?: React.Ref<HTMLLabelElement> }) {
+}: React.LabelHTMLAttributes<HTMLLabelElement> & {
+  ref?: React.Ref<HTMLLabelElement>;
+}) {
   return (
     <label ref={ref} className={cn(labelVariants(), className)} {...props} />
-  )
+  );
 }
 
 // Usage with React Hook Form + Zod
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 const schema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-})
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 
 function LoginForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(schema),
-  })
+  });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -431,7 +443,7 @@ function LoginForm() {
         <Input
           id="email"
           type="email"
-          {...register('email')}
+          {...register("email")}
           error={errors.email?.message}
         />
       </div>
@@ -440,13 +452,15 @@ function LoginForm() {
         <Input
           id="password"
           type="password"
-          {...register('password')}
+          {...register("password")}
           error={errors.password?.message}
         />
       </div>
-      <Button type="submit" className="w-full">Sign In</Button>
+      <Button type="submit" className="w-full">
+        Sign In
+      </Button>
     </form>
-  )
+  );
 }
 ```
 
@@ -454,32 +468,32 @@ function LoginForm() {
 
 ```typescript
 // components/ui/grid.tsx
-import { cn } from '@/lib/utils'
-import { cva, type VariantProps } from 'class-variance-authority'
+import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
 
-const gridVariants = cva('grid', {
+const gridVariants = cva("grid", {
   variants: {
     cols: {
-      1: 'grid-cols-1',
-      2: 'grid-cols-1 sm:grid-cols-2',
-      3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-      4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-      5: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
-      6: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6',
+      1: "grid-cols-1",
+      2: "grid-cols-1 sm:grid-cols-2",
+      3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+      4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+      5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5",
+      6: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
     },
     gap: {
-      none: 'gap-0',
-      sm: 'gap-2',
-      md: 'gap-4',
-      lg: 'gap-6',
-      xl: 'gap-8',
+      none: "gap-0",
+      sm: "gap-2",
+      md: "gap-4",
+      lg: "gap-6",
+      xl: "gap-8",
     },
   },
   defaultVariants: {
     cols: 3,
-    gap: 'md',
+    gap: "md",
   },
-})
+});
 
 interface GridProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -488,25 +502,25 @@ interface GridProps
 export function Grid({ className, cols, gap, ...props }: GridProps) {
   return (
     <div className={cn(gridVariants({ cols, gap, className }))} {...props} />
-  )
+  );
 }
 
 // Container component
-const containerVariants = cva('mx-auto w-full px-4 sm:px-6 lg:px-8', {
+const containerVariants = cva("mx-auto w-full px-4 sm:px-6 lg:px-8", {
   variants: {
     size: {
-      sm: 'max-w-screen-sm',
-      md: 'max-w-screen-md',
-      lg: 'max-w-screen-lg',
-      xl: 'max-w-screen-xl',
-      '2xl': 'max-w-screen-2xl',
-      full: 'max-w-full',
+      sm: "max-w-screen-sm",
+      md: "max-w-screen-md",
+      lg: "max-w-screen-lg",
+      xl: "max-w-screen-xl",
+      "2xl": "max-w-screen-2xl",
+      full: "max-w-full",
     },
   },
   defaultVariants: {
-    size: 'xl',
+    size: "xl",
   },
-})
+});
 
 interface ContainerProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -515,7 +529,7 @@ interface ContainerProps
 export function Container({ className, size, ...props }: ContainerProps) {
   return (
     <div className={cn(containerVariants({ size, className }))} {...props} />
-  )
+  );
 }
 
 // Usage
@@ -525,7 +539,7 @@ export function Container({ className, size, ...props }: ContainerProps) {
       <ProductCard key={product.id} product={product} />
     ))}
   </Grid>
-</Container>
+</Container>;
 ```
 
 ### Pattern 5: Native CSS Animations (v4)
@@ -561,10 +575,7 @@ export function Container({ className, size, ...props }: ContainerProps) {
 
 /* Native popover animations using @starting-style */
 [popover] {
-  transition:
-    opacity 0.2s,
-    transform 0.2s,
-    display 0.2s allow-discrete;
+  transition: opacity 0.2s, transform 0.2s, display 0.2s allow-discrete;
   opacity: 0;
   transform: scale(0.95);
 }
@@ -584,29 +595,29 @@ export function Container({ className, size, ...props }: ContainerProps) {
 
 ```typescript
 // components/ui/dialog.tsx - Using native popover API
-import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { cn } from '@/lib/utils'
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
 
-const DialogPortal = DialogPrimitive.Portal
+const DialogPortal = DialogPrimitive.Portal;
 
 export function DialogOverlay({
   className,
   ref,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay> & {
-  ref?: React.Ref<HTMLDivElement>
+  ref?: React.Ref<HTMLDivElement>;
 }) {
   return (
     <DialogPrimitive.Overlay
       ref={ref}
       className={cn(
-        'fixed inset-0 z-50 bg-black/80',
-        'data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out',
+        "fixed inset-0 z-50 bg-black/80",
+        "data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out",
         className
       )}
       {...props}
     />
-  )
+  );
 }
 
 export function DialogContent({
@@ -615,7 +626,7 @@ export function DialogContent({
   ref,
   ...props
 }: React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
-  ref?: React.Ref<HTMLDivElement>
+  ref?: React.Ref<HTMLDivElement>;
 }) {
   return (
     <DialogPortal>
@@ -623,8 +634,8 @@ export function DialogContent({
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
-          'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border border-border bg-background p-6 shadow-lg sm:rounded-lg',
-          'data-[state=open]:animate-dialog-in data-[state=closed]:animate-dialog-out',
+          "fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border border-border bg-background p-6 shadow-lg sm:rounded-lg",
+          "data-[state=open]:animate-dialog-in data-[state=closed]:animate-dialog-out",
           className
         )}
         {...props}
@@ -632,7 +643,7 @@ export function DialogContent({
         {children}
       </DialogPrimitive.Content>
     </DialogPortal>
-  )
+  );
 }
 ```
 
@@ -640,93 +651,101 @@ export function DialogContent({
 
 ```typescript
 // providers/ThemeProvider.tsx - Simplified for v4
-'use client'
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = 'dark' | 'light' | 'system'
+type Theme = "dark" | "light" | "system";
 
 interface ThemeContextType {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-  resolvedTheme: 'dark' | 'light'
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  resolvedTheme: "dark" | "light";
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
-  storageKey = 'theme',
+  defaultTheme = "system",
+  storageKey = "theme",
 }: {
-  children: React.ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
+  children: React.ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
 }) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme)
-  const [resolvedTheme, setResolvedTheme] = useState<'dark' | 'light'>('light')
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("light");
 
   useEffect(() => {
-    const stored = localStorage.getItem(storageKey) as Theme | null
-    if (stored) setTheme(stored)
-  }, [storageKey])
+    const stored = localStorage.getItem(storageKey) as Theme | null;
+    if (stored) setTheme(stored);
+  }, [storageKey]);
 
   useEffect(() => {
-    const root = document.documentElement
-    root.classList.remove('light', 'dark')
+    const root = document.documentElement;
+    root.classList.remove("light", "dark");
 
-    const resolved = theme === 'system'
-      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-      : theme
+    const resolved =
+      theme === "system"
+        ? window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light"
+        : theme;
 
-    root.classList.add(resolved)
-    setResolvedTheme(resolved)
+    root.classList.add(resolved);
+    setResolvedTheme(resolved);
 
     // Update meta theme-color for mobile browsers
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', resolved === 'dark' ? '#09090b' : '#ffffff')
+      metaThemeColor.setAttribute(
+        "content",
+        resolved === "dark" ? "#09090b" : "#ffffff"
+      );
     }
-  }, [theme])
+  }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{
-      theme,
-      setTheme: (newTheme) => {
-        localStorage.setItem(storageKey, newTheme)
-        setTheme(newTheme)
-      },
-      resolvedTheme,
-    }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        setTheme: (newTheme) => {
+          localStorage.setItem(storageKey, newTheme);
+          setTheme(newTheme);
+        },
+        resolvedTheme,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
-  )
+  );
 }
 
 export const useTheme = () => {
-  const context = useContext(ThemeContext)
-  if (!context) throw new Error('useTheme must be used within ThemeProvider')
-  return context
-}
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used within ThemeProvider");
+  return context;
+};
 
 // components/ThemeToggle.tsx
-import { Moon, Sun } from 'lucide-react'
-import { useTheme } from '@/providers/ThemeProvider'
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "@/providers/ThemeProvider";
 
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme();
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
       <Sun className="size-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
       <Moon className="absolute size-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <span className="sr-only">Toggle theme</span>
     </Button>
-  )
+  );
 }
 ```
 
@@ -744,7 +763,7 @@ export function cn(...inputs: ClassValue[]) {
 // Focus ring utility
 export const focusRing = cn(
   "focus-visible:outline-none focus-visible:ring-2",
-  "focus-visible:ring-ring focus-visible:ring-offset-2",
+  "focus-visible:ring-ring focus-visible:ring-offset-2"
 );
 
 // Disabled utility

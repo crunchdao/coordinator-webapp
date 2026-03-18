@@ -5,10 +5,13 @@ import { CoordinatorCpi, GetCoordinatorsParams } from "../domain/types";
 export const getCoordinators = async (
   params?: GetCoordinatorsParams
 ): Promise<CoordinatorCpi[]> => {
-  const response = await cpiApiClient.get(coordinatorEndpoints.getCoordinators(), {
-    params: {
-      owner: params?.owner,
-    },
-  });
+  const response = await cpiApiClient.get(
+    coordinatorEndpoints.getCoordinators(),
+    {
+      params: {
+        owner: params?.owner,
+      },
+    }
+  );
   return response.data;
 };

@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useGlobalSettings } from "@/modules/settings/application/hooks/useGlobalSettings";
 import { initialSettings } from "@/modules/settings/domain/initial-config";
-import apiClient from "@coordinator/utils/src/api";
+import apiClient from "@/utils/api/apiClient";
 
 export type ModelListItem = {
   model_id: string;
