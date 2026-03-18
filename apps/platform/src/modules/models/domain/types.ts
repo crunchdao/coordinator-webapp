@@ -1,3 +1,5 @@
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+
 export type DesiredState = "START" | "STOP";
 export type HardwareType = "CPU" | "GPU";
 export type ModelHost = "PHALA" | "AWSECS";
@@ -35,8 +37,6 @@ export interface ModelState {
   coordinatorWalletPubkey: string | null;
   coordinatorCertificate: CoordinatorCertificate | null;
 }
-
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 
 export interface GetModelStatesParams {
   crunchNames?: string[];

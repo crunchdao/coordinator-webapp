@@ -35,9 +35,7 @@ Next.js 16 monorepo with two apps and shared packages for managing CrunchDAO coo
 | -------------------------- | -------------------------------------------------------------------- |
 | `@coordinator/leaderboard` | LeaderboardTable, ColumnSettingsTable, column types/schemas          |
 | `@coordinator/metrics`     | MetricsDashboard, MetricSettingsTable, widget types, `useMetricData` |
-| `@coordinator/ui`          | DataTable, LogsList, FormatSelect, MultiSelectDropdown               |
 
-Import shared components as: `import { DataTable } from "@coordinator/ui/src/data-table"`
 Import shared types as: `import { LeaderboardColumn } from "@coordinator/leaderboard/src/domain/types"`
 
 ### UI Components
@@ -198,7 +196,6 @@ When adding new schema-driven features, the backend schema is the source of trut
 - Use `@crunch-ui/core` components, not raw HTML
 - Use `cn()` for conditional classes
 - Card with `displayCorners` prop for featured sections
-- Tables: use `@crunch-ui/core` Table components or `@coordinator/ui` DataTable
 - Status indicators: `Badge` with variant (`success`, `destructive`, `outline`, `secondary`)
 - Loading: `Spinner` component, not custom spinners
 
