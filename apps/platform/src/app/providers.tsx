@@ -6,12 +6,9 @@ import { WalletProvider } from "@/modules/wallet/application/context/walletConte
 import { CoordinatorAuthProvider } from "@/modules/coordinator/application/context/coordinatorAuthContext";
 import { MultisigProposalTrackerProvider } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
 import { MultisigProposalTrackerDialog } from "@/modules/wallet/ui/multisigProposalTrackerDialog";
-import {
-  EnvironmentProvider,
-  useEnvironment,
-} from "@/modules/environment/application/context/environmentContext";
+import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
-function InnerProviders({ children }: { children: ReactNode }) {
+export default function Providers({ children }: { children: ReactNode }) {
   const { environment } = useEnvironment();
 
   return (
@@ -25,13 +22,5 @@ function InnerProviders({ children }: { children: ReactNode }) {
         </MultisigProposalTrackerProvider>
       </CoordinatorAuthProvider>
     </WalletProvider>
-  );
-}
-
-export default function Providers({ children }: { children: ReactNode }) {
-  return (
-    <EnvironmentProvider>
-      <InnerProviders>{children}</InnerProviders>
-    </EnvironmentProvider>
   );
 }

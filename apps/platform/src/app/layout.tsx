@@ -4,6 +4,7 @@ import { cn } from "@crunch-ui/utils";
 import { Legals, Toaster } from "@crunch-ui/core";
 import localFont from "next/font/local";
 import { TopNavbar } from "@/ui/navigation/topNavbar";
+import { EnvironmentProvider } from "@/modules/environment/application/context/environmentContext";
 import "./globals.css";
 import ReactQuery from "./react-query";
 import Providers from "./providers";
@@ -44,12 +45,14 @@ export default async function RootLayout({
         )}
       >
         <ReactQuery>
-          <Providers>
-            <TopNavbar />
-            {children}
-            <Legals className="min-w-full px-6 pt-12 mt-auto" />
-            <Toaster />
-          </Providers>
+          <EnvironmentProvider>
+            <Providers>
+              <TopNavbar />
+              {children}
+              <Legals className="min-w-full px-6 pt-12 mt-auto" />
+              <Toaster />
+            </Providers>
+          </EnvironmentProvider>
         </ReactQuery>
       </body>
     </html>
