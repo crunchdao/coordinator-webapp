@@ -1,25 +1,28 @@
 import { LeaderboardColumn } from "./types";
 
-export const FIXED_COLUMNS_DEFAULTS = {
-  MODEL: {
-    type: "MODEL" as const,
+type ColumnDefaults = Omit<LeaderboardColumn, "id">;
+
+export const FIXED_COLUMNS_DEFAULTS: Record<string, ColumnDefaults> = {
+  PROJECT: {
+    type: "PROJECT",
+    property: "model_id",
     displayName: "Model",
     order: 0,
     format: null,
     tooltip: null,
     nativeConfiguration: {
-      type: "model" as const,
+      type: "model",
       statusProperty: "status",
     },
   },
   USERNAME: {
-    type: "USERNAME" as const,
+    type: "USERNAME",
+    property: "cruncher_name",
     displayName: "Username",
     order: -10,
     format: null,
     tooltip: null,
     nativeConfiguration: null,
-    property: "cruncher_name",
   },
 };
 
@@ -31,7 +34,7 @@ export const initialColumns: LeaderboardColumn[] = [
   },
   {
     id: 2,
-    ...FIXED_COLUMNS_DEFAULTS.MODEL,
+    ...FIXED_COLUMNS_DEFAULTS.PROJECT,
     property: "model_id",
   },
   {

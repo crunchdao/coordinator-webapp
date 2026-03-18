@@ -14,14 +14,15 @@ import {
   SheetTitle,
   SheetTrigger,
   Textarea,
+  DataTable,
+  LoadingOverlay,
 } from "@crunch-ui/core";
-import { DataTable } from "@coordinator/ui/src/data-table";
 import { PreparedPrize, Prize } from "@crunchdao/sdk";
 import { SolanaAddressLink } from "@crunchdao/solana-utils";
+import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
 import { prizesSchema } from "../application/schemas/prizesSchema";
 import { usePreparePrizes } from "../application/hooks/usePreparePrizes";
 import { ZodError } from "zod";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 import { CrunchModelsTable } from "@/modules/models/ui/crunchModelsTable";
 
 const EXAMPLE_JSON = `[{ "prizeId": "round-1-model-abc", "timestamp": 1700000000, "model": "model-id", "prize": 1000000 }]`;
@@ -64,6 +65,7 @@ export function PrizesInput({
   createCheckpointButton,
   createCheckpointLoading,
 }: PrizesInputProps) {
+  const { crunchName } = useCrunchContext();
   const { preparePrizes, preparePrizesLoading } = usePreparePrizes();
   const [preparedPrizes, setPreparedPrizes] = useState<PreparedPrize[] | null>(
     null
@@ -154,7 +156,10 @@ export function PrizesInput({
                   <SheetTitle>Select a model</SheetTitle>
                 </SheetHeader>
                 <div className="mt-4">
-                  <CrunchModelsTable onAddModel={handleAddModel} />
+                  <CrunchModelsTable
+                    crunchName={crunchName}
+                    onAddModel={handleAddModel}
+                  />
                 </div>
               </SheetContent>
             </Sheet>

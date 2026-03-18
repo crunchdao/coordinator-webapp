@@ -17,6 +17,7 @@ import {
   Input,
   Skeleton,
   toast,
+  LoadingOverlay,
 } from "@crunch-ui/core";
 import { Check } from "@crunch-ui/icons";
 import {
@@ -29,7 +30,6 @@ import {
 import { CrunchValue } from "@crunchdao/solana-utils";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { useOnboarding } from "../application/onboardingContext";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 
 const schema = z.object({
   amount: z.number().positive("Amount must be greater than 0"),

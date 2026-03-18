@@ -22,16 +22,9 @@ import {
   TooltipTrigger,
 } from "@crunch-ui/core";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  Plus,
-  Trash,
-  Folder,
-  Chart,
-  Percentage,
-  InfoCircle,
-} from "@crunch-ui/icons";
+import { Plus, Trash, Folder, Percentage, InfoCircle } from "@crunch-ui/icons";
 import { z } from "zod";
 import {
   createLeaderboardColumnSchema,
@@ -40,7 +33,7 @@ import {
 import { ColumnType, LeaderboardColumn } from "../domain/types";
 import { isFixedColumnType } from "../application/utils";
 import { FIXED_COLUMNS_DEFAULTS } from "../domain/initial-config";
-import { FormatSelect } from "@coordinator/ui/src/format-select";
+import { FormatSelect } from "./formatSelect";
 
 type ColumnFormData = z.infer<typeof createLeaderboardColumnSchema>;
 type FixedColumnFormData = z.infer<typeof editFixedColumnSchema>;
@@ -56,13 +49,7 @@ const columnTypes = [
     value: "VALUE",
     label: "Value",
     icon: Percentage,
-    description: "Numeric metrics",
-  },
-  {
-    value: "CHART",
-    label: "Chart",
-    icon: Chart,
-    description: "Data visualizations",
+    description: "Numeric metrics & charts",
   },
 ] as const;
 
@@ -155,7 +142,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
         type: value,
       };
 
-      if (value === "MODEL") {
+      if (value === "PROJECT") {
         resetData.nativeConfiguration = {
           type: "model",
           statusProperty: undefined,
@@ -384,7 +371,7 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
                 />
               )}
 
-              {columnType === "MODEL" && (
+              {columnType === "PROJECT" && (
                 <FormField
                   control={form.control}
                   name="nativeConfiguration.statusProperty"
@@ -416,45 +403,38 @@ export const AddColumnForm: React.FC<AddColumnFormProps> = ({
               )}
             </div>
 
-            {columnType === "CHART" && (
+            {columnType === "VALUE" && (
               <>
                 <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="nativeConfiguration.type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Chart Type</FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            field.onChange(value);
-                            if (value === "gauge") {
-                              form.setValue(
-                                "nativeConfiguration",
-                                {
-                                  type: "gauge",
-                                  percentage: false,
-                                  seriesConfig: [],
-                                },
-                                { shouldValidate: true }
-                              );
-                            }
-                          }}
-                          value={field.value || ""}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select chart type..." />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="gauge">Gauge</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="flex items-center space-x-2 col-span-2">
+                    <Checkbox
+                      id="enable-gauge"
+                      checked={
+                        form.watch("nativeConfiguration.type") === "gauge"
+                      }
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          form.setValue(
+                            "nativeConfiguration",
+                            {
+                              type: "gauge",
+                              percentage: false,
+                              seriesConfig: [],
+                            },
+                            { shouldValidate: true }
+                          );
+                        } else {
+                          form.setValue("nativeConfiguration", null, {
+                            shouldValidate: true,
+                          });
+                        }
+                      }}
+                      className="w-4 h-4"
+                    />
+                    <FormLabel htmlFor="enable-gauge">
+                      Display as gauge chart
+                    </FormLabel>
+                  </div>
 
                   {form.watch("nativeConfiguration.type") === "gauge" && (
                     <FormField

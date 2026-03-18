@@ -25,8 +25,8 @@ export const useGetCoordinatorPoolConfig = () => {
       }
 
       const coordinatorPoolProgram = getCoordinatorPoolProgram(anchorProvider);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const config = await getCoordinatorPoolConfig(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         coordinatorPoolProgram as any
       );
 

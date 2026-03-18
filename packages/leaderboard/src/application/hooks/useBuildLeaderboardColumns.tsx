@@ -11,7 +11,7 @@ import {
 } from "@crunch-ui/core";
 import { InfoCircle } from "@crunch-ui/icons";
 import { Gauge } from "@crunchdao/chart";
-import { formatNumber } from "@coordinator/utils/src/number-formatter";
+import { formatNumber } from "../../utils/number-formatter";
 import { LeaderboardColumn, LeaderboardPosition } from "../../domain/types";
 
 export const useBuildLeaderboardColumns = (
@@ -21,7 +21,7 @@ export const useBuildLeaderboardColumns = (
     if (!leaderboardColumns) return [];
 
     return leaderboardColumns.map((column) => {
-      if (column.type === "MODEL") {
+      if (column.type === "PROJECT") {
         return {
           id: `column_${column.id}`,
           accessorKey: "model_name",
@@ -104,20 +104,23 @@ export const useBuildLeaderboardColumns = (
             )
           : column.displayName || "",
         meta: {
-          className: column.type === "CHART" ? "text-left" : "text-right",
+          className:
+            column.nativeConfiguration?.type === "gauge"
+              ? "text-left"
+              : "text-right",
         },
         cell: ({ row }) => {
           const value = row.original[column.property];
 
-          if (
-            column.type === "CHART" &&
-            column.nativeConfiguration?.type === "gauge"
-          ) {
+          if (column.nativeConfiguration?.type === "gauge") {
+            const seriesData = Object.fromEntries(
+              (column.nativeConfiguration.seriesConfig ?? [])
+                .filter((s) => s.name)
+                .map((s) => [s.name!, Number(row.original[s.name!]) || 0])
+            );
+
             return (
-              <Gauge
-                config={column.nativeConfiguration}
-                data={value as Record<string, number>}
-              />
+              <Gauge config={column.nativeConfiguration} data={seriesData} />
             );
           }
 

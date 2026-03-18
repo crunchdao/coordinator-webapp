@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { PublicKey } from "@solana/web3.js";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { createMultisigService } from "@crunchdao/sdk";
 import { useWallet } from "../context/walletContext";

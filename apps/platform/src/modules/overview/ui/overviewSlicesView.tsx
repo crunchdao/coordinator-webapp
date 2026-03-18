@@ -1,100 +1,68 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { Button, Card, CardContent, Spinner, toast } from "@crunch-ui/core";
-import {
-  SliceManager,
-  useSlicesBatch,
-  type CreateSliceData,
-  type UpdateSliceData,
-} from "@crunchdao/slices";
-import { Download } from "@crunch-ui/icons";
+import { SliceManager, useSlicesBatch } from "@crunchdao/slices";
+import type { Slice } from "@crunchdao/slices";
 import { useCrunchContext } from "@/modules/crunch/application/context/crunchContext";
-import { Locale } from "../domain/types";
-import { useGetOverviewSlices } from "../application/hooks/useGetOverviewSlices";
-import { useCreateOverviewSlice } from "../application/hooks/useCreateOverviewSlice";
-import { useUpdateOverviewSlice } from "../application/hooks/useUpdateOverviewSlice";
-import { useDeleteOverviewSlice } from "../application/hooks/useDeleteOverviewSlice";
+import {
+  useConfigFile,
+  useSaveConfigFile,
+} from "@/modules/config/application/hooks/useConfigFile";
+import { HubSyncButtons } from "@/modules/hub/ui/hubSyncButtons";
+import { Locale } from "@/modules/common/types";
+import type { Environment } from "@/config";
+import { useOverviewHubSync } from "../application/hooks/useOverviewHubSync";
 import { OverviewSliceHeader } from "./overviewSliceHeader";
 
 export const OverviewSlicesView: React.FC = () => {
-  const queryClient = useQueryClient();
-  const { crunchData, isLoading: crunchLoading } = useCrunchContext();
-  const crunchAddress = crunchData?.address;
-
+  const { crunchName } = useCrunchContext();
   const [locale, setLocale] = useState<Locale>(Locale.ENGLISH);
+  const { pullFromHub, pushToHub, isPulling, isPushing } =
+    useOverviewHubSync(locale);
 
-  const { slices: serverSlices, slicesLoading } = useGetOverviewSlices(
-    crunchAddress,
-    locale
-  );
+  const configPath = `crunches/${crunchName}/overview-slices.json`;
 
-  const { createSliceAsync } = useCreateOverviewSlice(
-    crunchAddress || "",
-    locale
-  );
-  const { updateSliceAsync } = useUpdateOverviewSlice(
-    crunchAddress || "",
-    locale
-  );
-  const { deleteSlice } = useDeleteOverviewSlice(crunchAddress || "", locale);
+  const { data: savedSlices, isLoading: slicesLoading } = useConfigFile<
+    Slice[]
+  >(configPath, { defaultValue: [] });
 
-  const onCreate = useCallback(
-    async (data: CreateSliceData) => {
-      await createSliceAsync(data);
-    },
-    [createSliceAsync]
+  const { saveAsync, isSaving: isSavingFile } = useSaveConfigFile<Slice[]>(
+    configPath,
+    { successMessage: "Slices saved successfully" }
   );
-
-  const onUpdate = useCallback(
-    async (data: UpdateSliceData) => {
-      await updateSliceAsync({
-        sliceName: data.sliceName,
-        body: data.body,
-        locale,
-      });
-    },
-    [updateSliceAsync, locale]
-  );
-
-  const onDeleteSlice = useCallback(
-    async (name: string) => {
-      await deleteSlice(name);
-    },
-    [deleteSlice]
-  );
-
-  const onBatchSuccess = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["overviewSlices", crunchAddress],
-    });
-    toast({ title: "Changes saved successfully" });
-  }, [queryClient, crunchAddress]);
 
   const {
     slices,
-    isDirty,
-    isSaving,
+    isSaving: isBatchSaving,
     handleCreate,
     handleUpdate,
     handleDelete,
     saveChanges,
-    resetChanges,
   } = useSlicesBatch({
-    serverSlices,
-    onCreate,
-    onUpdate,
-    onDelete: onDeleteSlice,
-    onSuccess: onBatchSuccess,
+    serverSlices: savedSlices,
   });
 
+  const saving = isSavingFile || isBatchSaving;
+
   const handleSaveChanges = async () => {
+    await saveAsync(slices);
+    await saveChanges();
+  };
+
+  const handlePullFromHub = async (
+    envName: string,
+    address: string,
+    hubUrl: string,
+    hubEnv: Environment
+  ) => {
     try {
-      await saveChanges();
+      const hubSlices = await pullFromHub(address, hubUrl, hubEnv);
+      await saveAsync(hubSlices);
+      toast({ title: `Slices pulled from "${envName}" successfully` });
     } catch (error) {
       toast({
-        title: "Failed to save changes",
+        title: "Failed to pull slices",
         description:
           error instanceof Error ? error.message : "An error occurred",
         variant: "destructive",
@@ -102,20 +70,28 @@ export const OverviewSlicesView: React.FC = () => {
     }
   };
 
-  const handleDownloadJson = () => {
-    const json = JSON.stringify(slices, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `overview-${crunchData?.name || "slices"}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handlePushToHub = async (
+    envName: string,
+    address: string,
+    hubUrl: string,
+    hubEnv: Environment
+  ) => {
+    try {
+      await pushToHub(address, hubUrl, hubEnv, slices);
+      await saveAsync(slices);
+      await saveChanges();
+      toast({ title: `Slices pushed to "${envName}" successfully` });
+    } catch (error) {
+      toast({
+        title: "Failed to push slices",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+        variant: "destructive",
+      });
+    }
   };
 
-  if (crunchLoading || slicesLoading) {
+  if (slicesLoading) {
     return <Spinner className="mx-auto" />;
   }
 
@@ -130,24 +106,15 @@ export const OverviewSlicesView: React.FC = () => {
           onDelete={handleDelete}
         />
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="outline" onClick={handleDownloadJson}>
-            <Download />
-            Export JSON
+          <HubSyncButtons
+            isPulling={isPulling}
+            isPushing={isPushing}
+            onPull={handlePullFromHub}
+            onPush={handlePushToHub}
+          />
+          <Button onClick={handleSaveChanges} loading={saving}>
+            Save Local
           </Button>
-          {isDirty && (
-            <>
-              <Button
-                variant="outline"
-                onClick={resetChanges}
-                disabled={isSaving}
-              >
-                Reset
-              </Button>
-              <Button onClick={handleSaveChanges} disabled={isSaving}>
-                Save Changes
-              </Button>
-            </>
-          )}
         </div>
       </CardContent>
     </Card>

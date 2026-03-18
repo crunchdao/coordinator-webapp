@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@crunch-ui/core";
-import { Locale } from "../domain/types";
+import { Locale } from "@/modules/common/types";
 import { Season } from "@/modules/season/domain/types";
 
 interface PitchSliceHeaderProps {
@@ -44,7 +44,7 @@ export const PitchSliceHeader: React.FC<PitchSliceHeaderProps> = ({
             <SelectContent>
               {seasons.map((season) => (
                 <SelectItem key={season.number} value={String(season.number)}>
-                  {season.displayName}
+                  #{season.number} - {season.displayName}
                 </SelectItem>
               ))}
             </SelectContent>

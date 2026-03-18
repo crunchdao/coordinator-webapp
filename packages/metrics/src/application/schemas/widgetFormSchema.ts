@@ -1,5 +1,11 @@
 import { z } from "zod";
-import { formatTypeSchema } from "@coordinator/utils/src/number-formatter";
+const formatTypeSchema = z.union([
+  z.literal("percentage"),
+  z.literal("integer"),
+  z.literal("compact"),
+  z.literal("number"),
+  z.string().regex(/^decimal-\d+$/),
+]);
 
 const filterConfigSchema = z.object({
   property: z.string().min(1, "Property is required"),
@@ -21,6 +27,21 @@ const yAxisSeriesSchema = z.object({
   color: z.string().optional(),
 });
 
+const matrixValueConfigSchema = z.object({
+  property: z.string().min(1, "Property is required"),
+  format: z.string().optional(),
+  label: z.string().optional(),
+});
+
+const matrixSectionSchema = z.object({
+  title: z.string().optional(),
+  scopeFilter: z.string().optional(),
+  rowProperty: z.string().min(1, "Row property is required"),
+  columnProperty: z.string().optional(),
+  displayValues: z.array(matrixValueConfigSchema),
+  tooltipValues: z.array(matrixValueConfigSchema).optional(),
+});
+
 export const widgetFormDataSchema = z
   .object({
     type: z.enum(["CHART", "IFRAME"]),
@@ -30,7 +51,7 @@ export const widgetFormDataSchema = z
     endpointUrl: z.string().min(2),
 
     // Chart specific fields
-    chartType: z.enum(["line", "gauge"]).optional(),
+    chartType: z.enum(["line", "gauge", "matrix"]).optional(),
 
     // Line chart fields
     xAxisName: z.string().optional(),
@@ -50,6 +71,10 @@ export const widgetFormDataSchema = z
 
     // Gauge series config
     gaugeSeriesConfig: z.array(gaugeSeriesConfigSchema).optional(),
+
+    // Matrix fields
+    scopeProperty: z.string().optional(),
+    matrixSections: z.array(matrixSectionSchema).optional(),
 
     // Common chart fields
     noDataMessage: z.string().optional(),

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateModel } from "../../infrastructure/services";
 import { UpdateModelBody, Model } from "../../domain/types";
-import { showApiErrorToast } from "@coordinator/utils/src/api";
+import { showApiErrorToast } from "@/utils/api/apiClient";
 
 export const useUpdateModel = () => {
   const queryClient = useQueryClient();

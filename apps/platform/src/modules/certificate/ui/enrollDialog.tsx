@@ -6,10 +6,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  LoadingOverlay,
 } from "@crunch-ui/core";
 import { useEnrollCertificate } from "../application/hooks/useEnrollCertificate";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
-import LoadingOverlay from "@coordinator/ui/src/loading-overlay";
 
 interface EnrollDialogProps {
   open: boolean;

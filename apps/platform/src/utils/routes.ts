@@ -1,11 +1,12 @@
 export const INTERNAL_LINKS = {
   ROOT: "/",
   LOGIN: "/login",
-  DASHBOARD: "/dashboard",
   ONBOARDING: "/get-started",
   CREATE_CRUNCH: "/create-crunch",
+  CREATE_LOCAL_CRUNCH: "/c/new",
   CERTIFICATE_ENROLL: "/certificate-enrollment",
   HUB_OAUTH: "/hub-oauth",
+  COMPETITIONS: "/c",
   CRUNCH: "/c/:crunchname",
   CRUNCH_OVERVIEW: "/c/:crunchname/overview",
   MODELS: "/c/:crunchname/models",
@@ -14,14 +15,19 @@ export const INTERNAL_LINKS = {
   LEADERBOARD: "/c/:crunchname/leaderboard",
   METRICS: "/c/:crunchname/metrics",
   SETTINGS: "/c/:crunchname/settings",
+  ENVIRONMENTS: "/c/:crunchname/environments",
   PITCH: "/c/:crunchname/pitch",
+  ORGANIZERS: "/organizers",
+  ONCHAIN_EXPLORER: "/onchain-explorer",
 } as const;
 
 export const PAGE_LABELS: Record<string, string> = {
   "get-started": "Get Started",
-  dashboard: "Dashboard",
   "create-crunch": "Create Crunch",
   "certificate-enrollment": "Certificate",
+  c: "Crunches",
+  organizers: "Organizers",
+  "onchain-explorer": "Onchain Explorer",
 };
 
 type RouteConfig = {
@@ -31,12 +37,16 @@ type RouteConfig = {
 
 export const ROUTE_CONFIG: RouteConfig[] = [
   {
-    path: INTERNAL_LINKS.CRUNCH,
-    label: "General",
+    path: INTERNAL_LINKS.ENVIRONMENTS,
+    label: "Environments",
   },
   {
     path: INTERNAL_LINKS.CRUNCH_OVERVIEW,
     label: "Overview",
+  },
+  {
+    path: INTERNAL_LINKS.SETTINGS,
+    label: "Settings",
   },
   {
     path: INTERNAL_LINKS.MODELS,

@@ -2,13 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getModelStates } from "../../infrastructure/service";
-import { GetModelStatesParams } from "../../domain/types";
+import { GetModelStatesOptions } from "../../domain/types";
 
-export function useGetModelStates(params?: GetModelStatesParams) {
+export function useGetModelStates(options?: GetModelStatesOptions) {
   const query = useQuery({
-    queryKey: ["model-states", params],
-    queryFn: () => getModelStates(params),
-    enabled: !params?.crunchNames || params.crunchNames.length > 0,
+    queryKey: ["model-states", options],
+    queryFn: () => getModelStates(options),
+    enabled: !!options?.crunchNames && options.crunchNames.length > 0,
   });
 
   return {

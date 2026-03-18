@@ -20,7 +20,13 @@ import {
   TooltipTrigger,
 } from "@crunch-ui/core";
 import { Chart, Link, InfoCircle } from "@crunch-ui/icons";
-import { Widget, LineChartDefinition, GaugeDefinition } from "../domain/types";
+import { normalizeYAxisConfig } from "@crunchdao/chart";
+import {
+  Widget,
+  LineChartDefinition,
+  GaugeDefinition,
+  MatrixDefinition,
+} from "../domain/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,6 +35,7 @@ import {
 } from "../application/schemas/widgetFormSchema";
 import { LineChartFields } from "./lineChartFields";
 import { GaugeFields } from "./gaugeFields";
+import { MatrixFields } from "./matrixFields";
 
 interface AddWidgetFormProps {
   onSubmit: () => void;
@@ -73,15 +80,25 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             filterConfig: config.filterConfig,
             noDataMessage: config.noDataMessage,
           };
+        } else if (config.type === "matrix") {
+          return {
+            ...base,
+            chartType: "matrix",
+            scopeProperty: config.scopeProperty,
+            matrixSections: config.sections,
+            filterConfig: config.filterConfig,
+            noDataMessage: config.noDataMessage,
+          };
         } else if (config.type === "line") {
+          const normalizedYAxis = normalizeYAxisConfig(config.yAxis);
           return {
             ...base,
             chartType: "line",
             xAxisName: config.xAxis.name,
-            yAxisSeries: config.yAxis.series,
+            yAxisSeries: normalizedYAxis.series,
             displayEvolution: config.displayEvolution,
             displayLegend: config.displayLegend,
-            yAxisFormat: config.yAxis.format,
+            yAxisFormat: normalizedYAxis.format,
             groupByProperty: config.groupByProperty,
             alertField: config.alertConfig?.field,
             alertReasonField: config.alertConfig?.reasonField,
@@ -139,6 +156,21 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
             noDataMessage: data.noDataMessage,
           },
         } as Omit<GaugeDefinition, "id">;
+      } else if (data.chartType === "matrix") {
+        widgetData = {
+          type: "CHART",
+          displayName: data.displayName,
+          tooltip: data.tooltip || null,
+          order: data.order,
+          endpointUrl: data.endpointUrl,
+          nativeConfiguration: {
+            type: "matrix",
+            scopeProperty: data.scopeProperty,
+            sections: data.matrixSections || [],
+            filterConfig: data.filterConfig,
+            noDataMessage: data.noDataMessage,
+          },
+        } as Omit<MatrixDefinition, "id">;
       } else if (data.chartType === "line") {
         widgetData = {
           type: "CHART",
@@ -245,6 +277,7 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
                   <SelectContent>
                     <SelectItem value="line">Line Chart</SelectItem>
                     <SelectItem value="gauge">Gauge</SelectItem>
+                    <SelectItem value="matrix">Matrix</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -376,6 +409,11 @@ export const AddWidgetForm: React.FC<AddWidgetFormProps> = ({
         {/* Gauge Configuration */}
         {widgetType === "CHART" && chartType === "gauge" && (
           <GaugeFields form={form} />
+        )}
+
+        {/* Matrix Configuration */}
+        {widgetType === "CHART" && chartType === "matrix" && (
+          <MatrixFields form={form} />
         )}
 
         <div className="flex justify-end gap-3 pt-6">
