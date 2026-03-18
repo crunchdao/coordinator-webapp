@@ -1,6 +1,7 @@
 "use client";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -15,6 +16,61 @@ import type {
 } from "@coordinator/metrics/src/domain/types";
 import { useMetricData } from "../application/hooks/useMetricData";
 
+const DEFAULT_POLL_MS = 30_000;
+
+function readModelsFromHash(): string[] | null {
+  if (typeof window === "undefined") return null;
+  const hash = window.location.hash.slice(1);
+  const params = new URLSearchParams(hash);
+  const raw = params.get("models");
+  if (!raw) return null;
+  const ids = raw.split(",").filter(Boolean);
+  return ids.length > 0 ? ids : null;
+}
+
+function writeModelsToHash(ids: string[]) {
+  if (typeof window === "undefined") return;
+  const hash = window.location.hash.slice(1);
+  const params = new URLSearchParams(hash);
+  params.set("models", ids.join(","));
+  window.history.replaceState(null, "", `#${params.toString()}`);
+}
+
+function useCountdown(
+  intervalMs: number | false,
+  isRefetching: boolean
+): number | null {
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const lastFetchRef = useRef<number>(Date.now());
+
+  const prevRefetching = useRef(isRefetching);
+  useEffect(() => {
+    if (prevRefetching.current && !isRefetching) {
+      lastFetchRef.current = Date.now();
+    }
+    prevRefetching.current = isRefetching;
+  }, [isRefetching]);
+
+  useEffect(() => {
+    if (!intervalMs) {
+      setRemaining(null);
+      return;
+    }
+
+    const tick = () => {
+      const elapsed = Date.now() - lastFetchRef.current;
+      const left = Math.max(0, Math.ceil((intervalMs - elapsed) / 1000));
+      setRemaining(left);
+    };
+
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [intervalMs]);
+
+  return remaining;
+}
+
 export interface MetricsModelItem {
   model_id: string | number;
   model_name: string;
@@ -26,6 +82,7 @@ export interface MetricsDashboardProps {
   modelsLoading?: boolean;
   widgets?: Widget[];
   widgetsLoading?: boolean;
+  pollInterval?: number;
 }
 
 export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
@@ -33,10 +90,12 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   modelsLoading = false,
   widgets = [],
   widgetsLoading = false,
+  pollInterval = DEFAULT_POLL_MS,
 }) => {
   const [selectedModelIds, setSelectedModelIds] = useState<string[] | null>(
     null
   );
+  const [paused, setPaused] = useState(false);
 
   const modelIdToName = useMemo(() => {
     if (!models) return {};
@@ -59,10 +118,20 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   );
 
   useEffect(() => {
-    if (models && models.length > 0 && selectedModelIds === null) {
-      const firstModelId = String(models[0].model_id || "");
-      setSelectedModelIds([firstModelId]);
+    if (!models || models.length === 0 || selectedModelIds !== null) return;
+
+    const fromHash = readModelsFromHash();
+    if (fromHash) {
+      const validIds = fromHash.filter((id) =>
+        models.some((m) => String(m.model_id) === id)
+      );
+      if (validIds.length > 0) {
+        setSelectedModelIds(validIds);
+        return;
+      }
     }
+
+    setSelectedModelIds(models.map((m) => String(m.model_id || "")));
   }, [models, selectedModelIds]);
 
   const selectedModels = useMemo(() => {
@@ -80,6 +149,7 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
   const handleSelectionChange = (models: MetricsModelItem[]) => {
     const ids = models.map((item) => String(item.model_id || ""));
     setSelectedModelIds(ids);
+    writeModelsToHash(ids);
   };
 
   const metricParams = useMemo<GetMetricDataParams>(() => {
@@ -87,21 +157,21 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
       .map((item) => String(item.model_id || ""))
       .filter(Boolean);
 
-    const end = new Date();
-    const start = new Date();
-    start.setDate(start.getDate() - 30);
-
     return {
       modelIds,
-      start: start.toISOString(),
-      end: end.toISOString(),
+      windowDays: 30,
     };
   }, [selectedModels]);
 
-  const { widgets: widgetsWithData, isLoading: dataLoading } = useMetricData(
-    widgets,
-    metricParams
-  );
+  const refetchInterval = paused ? false : pollInterval;
+
+  const {
+    widgets: widgetsWithData,
+    isLoading: dataLoading,
+    isRefetching,
+  } = useMetricData(widgets, metricParams, refetchInterval);
+
+  const countdown = useCountdown(refetchInterval, isRefetching);
 
   if (widgetsLoading || modelsLoading || dataLoading) {
     return (
@@ -117,23 +187,50 @@ export const MetricsDashboard: React.FC<MetricsDashboardProps> = ({
     );
   }
 
+  const pollLabel = `${Math.round(pollInterval / 1000)}s`;
+
   return (
     <Card displayCorners>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Metrics Dashboard</CardTitle>
-          {models && models.length > 0 && (
-            <MultiSelectDropdown
-              items={models}
-              values={selectedModels}
-              onValuesChange={handleSelectionChange}
-              triggerLabel="Models"
-              getItemKey={(item) => item.model_id || ""}
-              getItemLabel={(item) =>
-                item.cruncher_name + "/" + item.model_name || "Unknown"
-              }
-            />
-          )}
+          <div className="flex items-center gap-3">
+            <CardTitle>Metrics Dashboard</CardTitle>
+            {!paused && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <span
+                  className={
+                    "inline-block h-2 w-2 rounded-full bg-green-500" +
+                    (isRefetching ? " animate-pulse" : "")
+                  }
+                />
+                <span>
+                  Live · every {pollLabel}
+                  {countdown !== null ? ` · ${countdown}s` : ""}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPaused((p) => !p)}
+            >
+              {paused ? "▶ Resume" : "⏸ Pause"}
+            </Button>
+            {models && models.length > 0 && (
+              <MultiSelectDropdown
+                items={models}
+                values={selectedModels}
+                onValuesChange={handleSelectionChange}
+                triggerLabel="Models"
+                getItemKey={(item) => item.model_id || ""}
+                getItemLabel={(item) =>
+                  item.cruncher_name + "/" + item.model_name || "Unknown"
+                }
+              />
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-8">

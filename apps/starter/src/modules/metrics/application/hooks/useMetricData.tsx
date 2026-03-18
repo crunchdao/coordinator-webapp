@@ -8,23 +8,32 @@ import type {
   GetMetricDataParams,
 } from "@coordinator/metrics/src/domain/types";
 
-export function useMetricData(widgets: Widget[], params: GetMetricDataParams) {
-  const { dataByWidgetId, isLoading } = useQueries({
+export function useMetricData(
+  widgets: Widget[],
+  params: GetMetricDataParams,
+  refetchInterval: number | false = false
+) {
+  const { dataByWidgetId, isLoading, isRefetching } = useQueries({
     queries: widgets
       .filter((w) => w.type === "CHART")
       .map((widget) => ({
         queryKey: ["metricData", widget.id, widget.endpointUrl, params],
         queryFn: async () => {
+          const end = new Date();
+          const start = new Date();
+          start.setDate(start.getDate() - params.windowDays);
+
           const response = await apiClient.get(widget.endpointUrl, {
             params: {
               projectIds: params.modelIds.join(","),
-              start: params.start,
-              end: params.end,
+              start: start.toISOString(),
+              end: end.toISOString(),
             },
           });
           return { widgetId: widget.id, data: response.data };
         },
         enabled: !!widget.endpointUrl && !!params.modelIds.length,
+        refetchInterval,
       })),
     combine: (results) => {
       const map: Record<number, unknown[]> = {};
@@ -36,6 +45,7 @@ export function useMetricData(widgets: Widget[], params: GetMetricDataParams) {
       return {
         dataByWidgetId: map,
         isLoading: results.some((r) => r.isLoading),
+        isRefetching: results.some((r) => r.isRefetching),
       };
     },
   });
@@ -87,5 +97,6 @@ export function useMetricData(widgets: Widget[], params: GetMetricDataParams) {
   return {
     widgets: transformedWidgets,
     isLoading,
+    isRefetching,
   };
 }
