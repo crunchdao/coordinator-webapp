@@ -7,7 +7,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -20,6 +19,7 @@ import {
   CardTitle,
 } from "@crunch-ui/core";
 import { EnvironmentSwitcher } from "@/modules/environment/ui/environmentSwitcher";
+import { WalletConnection } from "@/modules/wallet/ui/walletConnection";
 import { useCrunchContext } from "../application/context/crunchContext";
 import { useEndCrunch } from "../application/hooks/useEndCrunch";
 import { FundCrunchDialog } from "./fundCrunchDialog";
@@ -65,14 +65,17 @@ export function CrunchActionsCard() {
                 start accepting submissions, or end the current round.
               </CardDescription>
             </div>
-            <EnvironmentSwitcher />
+            <div className="flex items-center gap-2">
+              <EnvironmentSwitcher />
+              <WalletConnection />
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-3">
             <ActionItem
               title="Fund Crunch"
-              description="Deposit USDC into the reward vault. You can fund multiple times to top up the balance."
+              description="Deposit USDC into the reward vault."
               button={
                 <Button
                   variant="outline"
@@ -99,7 +102,7 @@ export function CrunchActionsCard() {
             />
             <ActionItem
               title="End Crunch"
-              description="Stop the current round and pay out the margin. No more submissions will be accepted."
+              description="No more submissions will be accepted."
               button={
                 <AlertDialog
                   open={endDialogOpen}
@@ -115,14 +118,7 @@ export function CrunchActionsCard() {
                   </Button>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        End "{crunchName}"?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will stop accepting submissions and pay out the
-                        margin. You can restart the crunch later with a new
-                        round.
-                      </AlertDialogDescription>
+                      <AlertDialogTitle>End "{crunchName}"?</AlertDialogTitle>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
