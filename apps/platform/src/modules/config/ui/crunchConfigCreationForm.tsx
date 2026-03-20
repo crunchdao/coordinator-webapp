@@ -2,7 +2,7 @@
 
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { generateLink } from "@crunch-ui/utils";
 import {
   Form,
@@ -28,9 +28,13 @@ import { EnvironmentFields, DEFAULT_ENVIRONMENT } from "./environmentFields";
 
 export function CrunchConfigCreationForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { slugs } = useLocalCompetitionList();
   const { createCompetition, createCompetitionLoading } =
     useCreateLocalCompetition();
+
+  const prefillName = searchParams.get("name") || "";
+  const prefillAddress = searchParams.get("address") || "";
 
   const form = useForm<CrunchConfigCreationFormData>({
     resolver: zodResolver(
@@ -40,11 +44,12 @@ export function CrunchConfigCreationForm() {
       })
     ),
     defaultValues: {
-      slug: "",
+      slug: prefillName,
       environments: [
         {
           ...DEFAULT_ENVIRONMENT,
           name: "staging",
+          address: prefillAddress,
         },
       ],
     },

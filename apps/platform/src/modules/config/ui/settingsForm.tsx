@@ -162,7 +162,7 @@ export function SettingsForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Settings</CardTitle>
+        <CardTitle>Hub Settings</CardTitle>
         <CardDescription>
           Configure the competition metadata displayed on the Hub.
         </CardDescription>
