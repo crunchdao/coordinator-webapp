@@ -30,9 +30,7 @@ export default function Providers({ children }: { children: ReactNode }) {
     <WalletProvider key={environment}>
       <MultisigWrapper>
         <CoordinatorAuthProvider>
-          <TooltipProvider delayDuration={50}>
-            {children}
-          </TooltipProvider>
+          <TooltipProvider delayDuration={50}>{children}</TooltipProvider>
         </CoordinatorAuthProvider>
       </MultisigWrapper>
     </WalletProvider>
