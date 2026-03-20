@@ -74,6 +74,8 @@ export function CoordinatorCrunches() {
                   name={crunch.name}
                   address={crunch.address}
                   badge={crunch.state ? STATE_BADGES[crunch.state] : undefined}
+                  crunchersCount={crunch.crunchers?.length}
+                  payoutAmount={crunch.payoutAmount}
                   href={
                     slug
                       ? generateLink(INTERNAL_LINKS.CRUNCH, {

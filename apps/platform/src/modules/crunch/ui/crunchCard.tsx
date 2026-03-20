@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Badge, Card } from "@crunch-ui/core";
+import { Badge, Card, toast } from "@crunch-ui/core";
+import { Copy } from "@crunch-ui/icons";
 
 const DEFAULT_CARD_IMAGE = "/images/competition-card-generic.webp";
 
@@ -31,6 +32,26 @@ interface CrunchCardProps {
   address?: string;
   environments?: CrunchCardEnvironment[];
   href?: string;
+  crunchersCount?: number;
+  payoutAmount?: string;
+}
+
+function CopyableAddress({ address }: { address: string }) {
+  return (
+    <button
+      type="button"
+      className="inline-flex items-center gap-1 text-xs text-muted-foreground font-mono hover:text-foreground transition-colors"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        navigator.clipboard.writeText(address);
+        toast({ title: "Copied", description: address });
+      }}
+    >
+      {address.slice(0, 4)}...{address.slice(-4)}
+      <Copy className="w-3 h-3" />
+    </button>
+  );
 }
 
 export function CrunchCard({
@@ -41,10 +62,12 @@ export function CrunchCard({
   address,
   environments,
   href,
+  crunchersCount,
+  payoutAmount,
 }: CrunchCardProps) {
   const cardContent = (
     <>
-      <div className="relative h-64">
+      <div className="relative h-48">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageUrl || DEFAULT_CARD_IMAGE}
@@ -65,7 +88,7 @@ export function CrunchCard({
           <h3 className="text-lg font-bold">{displayName || name}</h3>
         </div>
       </div>
-      <div className="px-4 pb-3 pt-1 space-y-1">
+      <div className="px-4 pb-3 pt-2 space-y-2">
         {environments && environments.length > 0
           ? environments.map((env) => (
               <div
@@ -73,16 +96,37 @@ export function CrunchCard({
                 className="flex items-center justify-between text-xs"
               >
                 <span className="font-medium">{env.name}</span>
-                <span className="text-muted-foreground font-mono">
-                  {env.address.slice(0, 4)}...{env.address.slice(-4)}
-                </span>
+                <CopyableAddress address={env.address} />
               </div>
             ))
           : address && (
-              <p className="text-xs text-muted-foreground font-mono">
-                {address.slice(0, 6)}...{address.slice(-6)}
-              </p>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Address</span>
+                <CopyableAddress address={address} />
+              </div>
             )}
+        {(crunchersCount !== undefined || payoutAmount) && (
+          <div className="flex items-center gap-3 text-xs text-muted-foreground pt-1 border-t border-border">
+            {crunchersCount !== undefined && (
+              <span>
+                <span className="text-foreground font-medium">
+                  {crunchersCount}
+                </span>{" "}
+                cruncher{crunchersCount !== 1 ? "s" : ""}
+              </span>
+            )}
+            {payoutAmount && (
+              <span>
+                <span className="text-foreground font-medium">
+                  {Number(
+                    (Number(payoutAmount) / 1_000_000).toFixed(2)
+                  ).toLocaleString()}
+                </span>{" "}
+                USDC
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
