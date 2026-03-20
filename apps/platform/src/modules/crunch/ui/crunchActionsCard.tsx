@@ -43,9 +43,9 @@ export function CrunchActionsCard() {
 
   if (isLoading || !crunchData) return null;
 
-  const isStarted = crunchState === "started";
   const isCreated = crunchState === "created";
-  const canStart = !isStarted;
+  const isStarted = crunchState === "started";
+  const canStart = isCreated;
   const canEnd = isStarted;
 
   return (
@@ -93,7 +93,7 @@ export function CrunchActionsCard() {
                   disabled={!canStart}
                   onClick={() => setStartDialogOpen(true)}
                 >
-                  {isCreated ? "Start" : "Restart"}
+                  Start
                 </Button>
               }
             />
