@@ -4,7 +4,7 @@ import { cn } from "@crunch-ui/utils";
 import { Legals, Toaster } from "@crunch-ui/core";
 import localFont from "next/font/local";
 import { TopNavbar } from "@/ui/navigation/topNavbar";
-import { MultisigProposalTrackerDialog } from "@/modules/wallet/ui/multisigProposalTrackerDialog";
+import { MultisigProposalTrackerDialog } from "@crunchdao/solana-utils";
 import { EnvironmentProvider } from "@/modules/environment/application/context/environmentContext";
 import "./globals.css";
 import ReactQuery from "./react-query";

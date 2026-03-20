@@ -6,7 +6,7 @@ import {
 } from "@crunchdao/sdk";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
-import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
+import { useMultisigProposalTracker } from "@crunchdao/solana-utils";
 
 interface StartCrunchParams {
   crunchName: string;

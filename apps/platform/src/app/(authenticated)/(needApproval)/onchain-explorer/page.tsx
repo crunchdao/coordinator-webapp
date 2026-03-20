@@ -20,8 +20,7 @@ export default function OnchainExplorerPage() {
   return (
     <StakingWrapper>
       <div className="p-6 flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Onchain Explorer</h1>
+        <div className="flex items-center justify-end">
           <div className="flex gap-4 items-center">
             <EnvironmentSwitcher />
             <WalletConnection />

@@ -20,7 +20,7 @@
     "@crunchdao/programs": "^12.0.0",
     "@crunchdao/sdk": "^9.0.0",
     "@crunchdao/slices": "^0.4.5",
-    "@crunchdao/solana-utils": "^0.2.0",
+    "@crunchdao/solana-utils": "^0.2.2",
     "@crunchdao/staking": "^0.2.1",
     "@hookform/resolvers": "^5.2.2",
     "@solana/wallet-adapter-base": "^0.9.27",

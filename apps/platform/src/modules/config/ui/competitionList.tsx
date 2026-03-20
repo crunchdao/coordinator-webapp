@@ -20,7 +20,9 @@ export function CompetitionList() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Your Local Crunches</CardTitle>
+        <div>
+          <CardTitle>Your Local Crunches</CardTitle>
+        </div>
         {!competitionsLoading && (
           <Link href={INTERNAL_LINKS.CREATE_LOCAL_CRUNCH}>
             <Button size="sm">

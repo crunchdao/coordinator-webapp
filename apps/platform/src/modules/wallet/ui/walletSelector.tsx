@@ -28,8 +28,7 @@ import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { useWallet } from "../application/context/walletContext";
 import { useEffectiveAuthority } from "../application/hooks/useEffectiveAuthority";
-import { SolanaAddressLink } from "@crunchdao/solana-utils";
-import { MultisigDialog } from "./multisigDialog";
+import { SolanaAddressLink, MultisigDialog } from "@crunchdao/solana-utils";
 
 export function WalletSelector() {
   const { publicKey, disconnect, connected, connecting } = useWallet();
