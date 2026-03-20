@@ -39,19 +39,27 @@ interface CrunchCardProps {
 
 function CopyableAddress({ address }: { address: string }) {
   return (
-    <button
-      type="button"
-      className="inline-flex items-center gap-1 text-xs text-muted-foreground font-mono hover:text-foreground transition-colors"
-      onClick={(e) => {
+    <span
+      role="button"
+      tabIndex={0}
+      className="inline-flex items-center gap-1 text-xs text-muted-foreground font-mono hover:text-foreground transition-colors cursor-pointer"
+      onClick={async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        navigator.clipboard.writeText(address);
-        toast({ title: "Copied", description: address });
+        try {
+          await navigator.clipboard.writeText(address);
+          toast({ title: "Copied", description: address });
+        } catch {
+          toast({ title: "Copy failed", variant: "destructive" });
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") e.currentTarget.click();
       }}
     >
       {address.slice(0, 4)}...{address.slice(-4)}
       <Copy className="w-3 h-3" />
-    </button>
+    </span>
   );
 }
 

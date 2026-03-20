@@ -62,7 +62,7 @@ export function CrunchActionsCard() {
               </CardTitle>
               <CardDescription>
                 Manage your crunch lifecycle on-chain — fund the reward vault,
-                start accepting submissions, or end the current round.
+                start accepting submissions, or end the crunch.
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
