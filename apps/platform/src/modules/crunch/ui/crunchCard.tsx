@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Badge, Card, toast } from "@crunch-ui/core";
+import { Badge, Button, Card, toast } from "@crunch-ui/core";
 import { Copy } from "@crunch-ui/icons";
 
 const DEFAULT_CARD_IMAGE = "/images/competition-card-generic.webp";
@@ -32,6 +32,7 @@ interface CrunchCardProps {
   address?: string;
   environments?: CrunchCardEnvironment[];
   href?: string;
+  configureHref?: string;
   crunchersCount?: number;
   payoutAmount?: string;
 }
@@ -62,6 +63,7 @@ export function CrunchCard({
   address,
   environments,
   href,
+  configureHref,
   crunchersCount,
   payoutAmount,
 }: CrunchCardProps) {
@@ -141,5 +143,18 @@ export function CrunchCard({
     );
   }
 
-  return <Card className="overflow-hidden bg-background">{cardContent}</Card>;
+  return (
+    <Card className="overflow-hidden bg-background">
+      {cardContent}
+      {configureHref && (
+        <div className="px-4 pb-3">
+          <Link href={configureHref}>
+            <Button variant="outline" size="sm" className="w-full">
+              Configure Locally
+            </Button>
+          </Link>
+        </div>
+      )}
+    </Card>
+  );
 }

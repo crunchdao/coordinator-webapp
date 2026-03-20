@@ -83,6 +83,11 @@ export function CoordinatorCrunches() {
                         })
                       : undefined
                   }
+                  configureHref={
+                    !slug
+                      ? `${INTERNAL_LINKS.CREATE_LOCAL_CRUNCH}?name=${encodeURIComponent(crunch.name)}&address=${encodeURIComponent(crunch.address)}`
+                      : undefined
+                  }
                 />
               );
             })}
