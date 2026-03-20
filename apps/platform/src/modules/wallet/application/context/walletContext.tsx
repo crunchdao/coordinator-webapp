@@ -1,57 +1,23 @@
 "use client";
-import {
-  FC,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FC, useMemo } from "react";
 import {
   ConnectionProvider,
   WalletProvider as SolanaWalletProvider,
 } from "@solana/wallet-adapter-react";
 import { LedgerWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { clusterApiUrl, PublicKey } from "@solana/web3.js";
+import { clusterApiUrl } from "@solana/web3.js";
+import { useMultisig } from "@crunchdao/solana-utils";
+import { useWallet as useSolanaWallet } from "@solana/wallet-adapter-react";
 import { getConfig } from "@/config";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
-import { useWallet as useSolanaWallet } from "@solana/wallet-adapter-react";
-
-const MULTISIG_STORAGE_KEY = "multisig-address";
-
-const isValidPublicKey = (value: string): boolean => {
-  try {
-    new PublicKey(value);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-const readMultisigFromStorage = (): string => {
-  if (typeof window === "undefined") return "";
-  return localStorage.getItem(MULTISIG_STORAGE_KEY) || "";
-};
-
-interface MultisigContextValue {
-  multisigAddress: string;
-  setMultisigAddress: (address: string) => boolean;
-  clearMultisigAddress: () => void;
-  isMultisigMode: boolean;
-}
-
-const MultisigContext = createContext<MultisigContextValue>({
-  multisigAddress: "",
-  setMultisigAddress: () => false,
-  clearMultisigAddress: () => {},
-  isMultisigMode: false,
-});
-
+/**
+ * Unified wallet hook that merges Solana wallet-adapter with
+ * the multisig context from @crunchdao/solana-utils (single source of truth).
+ */
 export const useWallet = () => {
-  const multisig = useContext(MultisigContext);
+  const multisig = useMultisig();
 
   try {
     const solana = useSolanaWallet();
@@ -85,38 +51,6 @@ interface WalletProviderProps {
 }
 
 export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
-  const [multisigAddress, setAddress] = useState<string>(
-    readMultisigFromStorage
-  );
-
-  useEffect(() => {
-    setAddress(readMultisigFromStorage());
-  }, []);
-
-  const setMultisigAddress = useCallback((address: string): boolean => {
-    if (address && !isValidPublicKey(address)) {
-      return false;
-    }
-    localStorage.setItem(MULTISIG_STORAGE_KEY, address);
-    setAddress(address);
-    return true;
-  }, []);
-
-  const clearMultisigAddress = useCallback(() => {
-    localStorage.removeItem(MULTISIG_STORAGE_KEY);
-    setAddress("");
-  }, []);
-
-  const multisigValue = useMemo(
-    () => ({
-      multisigAddress,
-      setMultisigAddress,
-      clearMultisigAddress,
-      isMultisigMode: Boolean(multisigAddress),
-    }),
-    [multisigAddress, setMultisigAddress, clearMultisigAddress]
-  );
-
   const { solana } = getConfig();
   const network = solana.network;
 
@@ -132,12 +66,10 @@ export const WalletProvider: FC<WalletProviderProps> = ({ children }) => {
   const wallets = useMemo(() => [new LedgerWalletAdapter()], []);
 
   return (
-    <MultisigContext.Provider value={multisigValue}>
-      <ConnectionProvider endpoint={endpoint}>
-        <SolanaWalletProvider wallets={wallets} autoConnect={true}>
-          <WalletModalProvider>{children}</WalletModalProvider>
-        </SolanaWalletProvider>
-      </ConnectionProvider>
-    </MultisigContext.Provider>
+    <ConnectionProvider endpoint={endpoint}>
+      <SolanaWalletProvider wallets={wallets} autoConnect={true}>
+        <WalletModalProvider>{children}</WalletModalProvider>
+      </SolanaWalletProvider>
+    </ConnectionProvider>
   );
 };
