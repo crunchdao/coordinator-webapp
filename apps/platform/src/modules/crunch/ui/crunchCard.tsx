@@ -54,7 +54,10 @@ function CopyableAddress({ address }: { address: string }) {
         }
       }}
       onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") e.currentTarget.click();
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.currentTarget.click();
+        }
       }}
     >
       {address.slice(0, 4)}...{address.slice(-4)}

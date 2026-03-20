@@ -8,6 +8,7 @@ import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogFooter,
+  AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTitle,
   Badge,
@@ -119,6 +120,11 @@ export function CrunchActionsCard() {
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>End "{crunchName}"?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will stop accepting submissions and pay out the
+                        margin. This action requires an on-chain transaction and
+                        cannot be undone.
+                      </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
