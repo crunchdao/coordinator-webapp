@@ -1,84 +1,29 @@
-import { useMemo } from "react";
-import { useConnection } from "@solana/wallet-adapter-react";
-import { createMultisigService } from "@crunchdao/sdk";
+"use client";
+import { useEffectiveAuthority as useEffectiveAuthorityBase } from "@crunchdao/solana-utils";
 import { useWallet } from "../context/walletContext";
+import { useWalletAdapter } from "./useWalletAdapter";
 
 /**
- * Returns the effective authority based on multisig settings.
- * - Multisig mode: returns the multisig vault PDA (the actual signer/owner)
- * - Direct mode: returns the connected wallet's publicKey
+ * Wrapper that provides the wallet adapter context
+ * to @crunchdao/solana-utils's useEffectiveAuthority.
  *
- * Use this hook whenever you need to:
- * - Query on-chain data for the coordinator (e.g., fetch crunches)
- * - Build transaction instructions that require a signer/authority
+ * Falls back to the raw publicKey when the full wallet adapter
+ * isn't ready yet (e.g., signTransaction not available during initial load).
  */
 export const useEffectiveAuthority = () => {
-  const { connection } = useConnection();
-  const {
-    publicKey,
-    multisigAddress,
-    isMultisigMode,
-    signTransaction,
-    signAllTransactions,
-  } = useWallet();
+  const { walletAdapter, connection } = useWalletAdapter();
+  const { publicKey, connected } = useWallet();
 
-  const { authority, multisigService } = useMemo(() => {
-    // Direct mode: use connected wallet
-    if (!isMultisigMode || !publicKey) {
-      return {
-        authority: publicKey,
-        multisigService: null,
-      };
-    }
-
-    // Multisig mode: use vault PDA
-    try {
-      // Pass the full wallet interface with signing capabilities
-      const wallet = {
-        publicKey,
-        signTransaction,
-        signAllTransactions,
-      };
-      const service = createMultisigService(
-        connection,
-        multisigAddress,
-        wallet
-      );
-      const vaultPDA = service.getVaultPDA();
-
-      return {
-        authority: vaultPDA,
-        multisigService: service,
-      };
-    } catch (error) {
-      console.error("Failed to create multisig service:", error);
-      // Fallback to wallet if multisig service fails
-      return {
-        authority: publicKey,
-        multisigService: null,
-      };
-    }
-  }, [
-    isMultisigMode,
+  const result = useEffectiveAuthorityBase({
     connection,
-    multisigAddress,
-    publicKey,
-    signTransaction,
-    signAllTransactions,
-  ]);
+    wallet: walletAdapter,
+  });
 
   return {
-    /** The effective authority - vault PDA in multisig mode, wallet otherwise */
-    authority,
-    /** The connected wallet's public key (proposer in multisig mode) */
-    walletPublicKey: publicKey,
-    /** Whether multisig mode is active */
-    isMultisigMode,
-    /** The multisig address from settings (null if not configured) */
-    multisigAddress: isMultisigMode ? multisigAddress : null,
-    /** The multisig service instance (null in direct mode) */
-    multisigService,
-    /** Whether the hook is ready (wallet connected) */
-    ready: Boolean(publicKey),
+    ...result,
+    // If walletAdapter isn't ready yet but we have a publicKey,
+    // use it as the authority so read-only queries can still work
+    authority: result.authority ?? publicKey,
+    ready: result.ready || (connected && !!publicKey),
   };
 };

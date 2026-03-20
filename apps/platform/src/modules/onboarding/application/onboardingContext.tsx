@@ -29,7 +29,7 @@ import { useGetStakingInfo } from "@/modules/staking/application/hooks/useGetSta
 import { useGetCoordinatorPoolConfig } from "@/modules/staking/application/hooks/useGetCoordinatorPoolConfig";
 import { useGetRewardVaultBalance } from "@/modules/crunch/application/hooks/useGetRewardVaultBalance";
 import { CoordinatorStatus } from "@/modules/coordinator/domain/types";
-import { MultisigForm } from "@/modules/wallet/ui/multisigForm";
+import { MultisigForm } from "@crunchdao/solana-utils";
 import { RegistrationForm } from "@/modules/coordinator/ui/registrationForm";
 import { CrunchCreationForm } from "@/modules/crunch/ui/crunchCreationForm";
 import { OnboardingStakeForm } from "../ui/onboardingStakeForm";

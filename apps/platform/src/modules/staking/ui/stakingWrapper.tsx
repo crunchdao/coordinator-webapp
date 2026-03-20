@@ -3,11 +3,11 @@
 import { ReactNode, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { StakingProvider } from "@crunchdao/staking";
-import type { TransactionExecutor } from "@crunchdao/solana-utils";
+import type { ExecuteTransactionParams, ExecuteTransactionResult } from "@crunchdao/solana-utils";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { useEffectiveAuthority } from "@/modules/wallet/application/hooks/useEffectiveAuthority";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
-import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
+import { useMultisigProposalTracker } from "@crunchdao/solana-utils";
 import { useEnvironment } from "@/modules/environment/application/context/environmentContext";
 
 export function StakingWrapper({ children }: { children: ReactNode }) {
@@ -19,6 +19,8 @@ export function StakingWrapper({ children }: { children: ReactNode }) {
 
   const { config } = useEnvironment();
   const cluster = config.solana.cluster;
+
+  type TransactionExecutor = (params: ExecuteTransactionParams) => Promise<ExecuteTransactionResult>;
 
   const stakingTransactionExecutor: TransactionExecutor =
     useCallback<TransactionExecutor>(

@@ -1,22 +1,15 @@
 "use client";
-import { useConnection } from "@solana/wallet-adapter-react";
 import { useAnchorProvider as useAnchorProviderBase } from "@crunchdao/solana-utils";
 import { useWallet } from "../context/walletContext";
+import { useWalletAdapter } from "./useWalletAdapter";
 
 export const useAnchorProvider = () => {
-  const { connection } = useConnection();
-  const wallet = useWallet();
+  const { walletAdapter, connection } = useWalletAdapter();
+  const { connected } = useWallet();
 
   return useAnchorProviderBase({
     connection,
-    wallet:
-      wallet.publicKey && wallet.signTransaction && wallet.signAllTransactions
-        ? {
-            publicKey: wallet.publicKey,
-            signTransaction: wallet.signTransaction,
-            signAllTransactions: wallet.signAllTransactions,
-          }
-        : null,
-    ready: wallet.connected,
+    wallet: walletAdapter,
+    ready: connected,
   });
 };

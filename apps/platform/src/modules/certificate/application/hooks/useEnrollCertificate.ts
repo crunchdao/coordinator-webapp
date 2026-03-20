@@ -9,7 +9,7 @@ import {
 } from "@crunchdao/sdk";
 import { useWallet } from "@/modules/wallet/application/context/walletContext";
 import { useTransactionExecutor } from "@/modules/wallet/application/hooks/useTransactionExecutor";
-import { useMultisigProposalTracker } from "@/modules/wallet/application/context/multisigProposalTrackerContext";
+import { useMultisigProposalTracker } from "@crunchdao/solana-utils";
 import { useAnchorProvider } from "@/modules/wallet/application/hooks/useAnchorProvider";
 import { CertificateData, EnrollmentResult } from "../../domain/types";
 import { createCertificateZip, downloadBlob } from "../utils/createZip";
