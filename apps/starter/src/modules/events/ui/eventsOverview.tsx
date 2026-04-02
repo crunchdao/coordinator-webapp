@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Badge,
   Button,
@@ -27,6 +27,8 @@ type Filter = "all" | "resolved" | "pending";
 
 export const EventsOverviewPage: React.FC = () => {
   const [filter, setFilter] = useState<Filter>("all");
+  const [selectedModels, setSelectedModels] = useState<Set<string>>(new Set());
+  const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
 
   const { events, total, resolvedCount, pendingCount, loading, refetching } =
     useGetEventsOverview({
@@ -35,8 +37,8 @@ export const EventsOverviewPage: React.FC = () => {
       pending_only: filter === "pending",
     });
 
-  // Collect unique model names across all events for column headers
-  const modelColumns = useMemo(() => {
+  // Collect all unique models across events
+  const allModels = useMemo(() => {
     const models = new Map<string, string>();
     for (const event of events) {
       for (const pred of event.predictions) {
@@ -46,19 +48,30 @@ export const EventsOverviewPage: React.FC = () => {
       }
     }
     return Array.from(models.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
+      .sort(([, a], [, b]) => a.localeCompare(b))
       .map(([id, name]) => ({ id, name }));
   }, [events]);
+
+  // Show selected models, or all if none selected
+  const visibleModels = useMemo(() => {
+    if (selectedModels.size === 0) return allModels;
+    return allModels.filter((m) => selectedModels.has(m.id));
+  }, [allModels, selectedModels]);
+
+  const toggleModel = useCallback((modelId: string) => {
+    setSelectedModels((prev) => {
+      const next = new Set(prev);
+      if (next.has(modelId)) next.delete(modelId);
+      else next.add(modelId);
+      return next;
+    });
+  }, []);
 
   return (
     <div className="grid gap-6">
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-4">
-        <SummaryCard
-          label="Total Events"
-          value={total}
-          loading={loading}
-        />
+        <SummaryCard label="Total Events" value={total} loading={loading} />
         <SummaryCard
           label="Resolved"
           value={resolvedCount}
@@ -86,25 +99,40 @@ export const EventsOverviewPage: React.FC = () => {
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-1">
-              <FilterButton
-                active={filter === "all"}
-                onClick={() => setFilter("all")}
-              >
-                All
-              </FilterButton>
-              <FilterButton
-                active={filter === "resolved"}
-                onClick={() => setFilter("resolved")}
-              >
-                Resolved
-              </FilterButton>
-              <FilterButton
-                active={filter === "pending"}
-                onClick={() => setFilter("pending")}
-              >
-                Pending
-              </FilterButton>
+            <div className="flex items-center gap-2">
+              {/* Model filter */}
+              {allModels.length > 0 && (
+                <ModelFilterDropdown
+                  models={allModels}
+                  selected={selectedModels}
+                  onToggle={toggleModel}
+                  onClear={() => setSelectedModels(new Set())}
+                  open={modelDropdownOpen}
+                  setOpen={setModelDropdownOpen}
+                />
+              )}
+
+              {/* Status filter */}
+              <div className="flex items-center gap-1">
+                <FilterButton
+                  active={filter === "all"}
+                  onClick={() => setFilter("all")}
+                >
+                  All
+                </FilterButton>
+                <FilterButton
+                  active={filter === "resolved"}
+                  onClick={() => setFilter("resolved")}
+                >
+                  Resolved
+                </FilterButton>
+                <FilterButton
+                  active={filter === "pending"}
+                  onClick={() => setFilter("pending")}
+                >
+                  Pending
+                </FilterButton>
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -124,8 +152,10 @@ export const EventsOverviewPage: React.FC = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="min-w-[320px]">Question</TableHead>
-                    <TableHead className="text-center w-[80px]">Market</TableHead>
-                    {modelColumns.map((col) => (
+                    <TableHead className="text-center w-[80px]">
+                      Market
+                    </TableHead>
+                    {visibleModels.map((col) => (
                       <TableHead
                         key={col.id}
                         className="text-center w-[100px]"
@@ -133,7 +163,9 @@ export const EventsOverviewPage: React.FC = () => {
                         <span className="text-xs">{col.name}</span>
                       </TableHead>
                     ))}
-                    <TableHead className="text-center w-[90px]">Outcome</TableHead>
+                    <TableHead className="text-center w-[90px]">
+                      Outcome
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -141,7 +173,7 @@ export const EventsOverviewPage: React.FC = () => {
                     <EventRow
                       key={event.event_id}
                       event={event}
-                      modelColumns={modelColumns}
+                      modelColumns={visibleModels}
                     />
                   ))}
                 </TableBody>
@@ -153,6 +185,123 @@ export const EventsOverviewPage: React.FC = () => {
     </div>
   );
 };
+
+// ── Model Filter Dropdown ───────────────────────────────────────────
+
+function ModelFilterDropdown({
+  models,
+  selected,
+  onToggle,
+  onClear,
+  open,
+  setOpen,
+}: {
+  models: { id: string; name: string }[];
+  selected: Set<string>;
+  onToggle: (id: string) => void;
+  onClear: () => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}) {
+  return (
+    <div className="relative">
+      <Button
+        variant={selected.size > 0 ? "primary" : "outline"}
+        size="sm"
+        onClick={() => setOpen(!open)}
+        className="text-xs gap-1.5"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+        </svg>
+        Models
+        {selected.size > 0 && (
+          <Badge variant="secondary" size="sm" className="ml-0.5 text-[10px] px-1.5 py-0">
+            {selected.size}
+          </Badge>
+        )}
+      </Button>
+
+      {open && (
+        <>
+          {/* Backdrop to close on outside click */}
+          <div
+            className="fixed inset-0 z-30"
+            onClick={() => setOpen(false)}
+          />
+
+          <div className="absolute right-0 top-full mt-1 z-40 bg-popover border border-border rounded-lg shadow-xl py-1 min-w-[220px] max-h-80 overflow-y-auto">
+            {selected.size > 0 && (
+              <button
+                onClick={() => {
+                  onClear();
+                  setOpen(false);
+                }}
+                className="w-full text-left px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent/50 border-b border-border"
+              >
+                Show all models
+              </button>
+            )}
+            {models.map((m) => {
+              const checked = selected.has(m.id);
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => onToggle(m.id)}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-accent/50 flex items-center gap-2.5 transition-colors"
+                >
+                  <span
+                    className={cn(
+                      "w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors",
+                      checked
+                        ? "bg-primary border-primary"
+                        : "border-muted"
+                    )}
+                  >
+                    {checked && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-primary-foreground"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-sm",
+                      checked ? "text-foreground font-medium" : "text-muted-foreground"
+                    )}
+                  >
+                    {m.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 // ── Event Row ───────────────────────────────────────────────────────
 
@@ -251,7 +400,11 @@ function EventRow({
         {event.resolved ? (
           <OutcomeBadge outcome={event.outcome} />
         ) : (
-          <Badge variant="secondary" size="sm" className="text-yellow-600 dark:text-yellow-400">
+          <Badge
+            variant="secondary"
+            size="sm"
+            className="text-yellow-600 dark:text-yellow-400"
+          >
             Pending
           </Badge>
         )}
@@ -370,14 +523,22 @@ function ProbabilityBadge({
 function OutcomeBadge({ outcome }: { outcome: number | null }) {
   if (outcome === 1) {
     return (
-      <Badge variant="secondary" size="sm" className="text-green-600 dark:text-green-400 font-semibold">
+      <Badge
+        variant="secondary"
+        size="sm"
+        className="text-green-600 dark:text-green-400 font-semibold"
+      >
         Yes
       </Badge>
     );
   }
   if (outcome === 0) {
     return (
-      <Badge variant="secondary" size="sm" className="text-red-600 dark:text-red-400 font-semibold">
+      <Badge
+        variant="secondary"
+        size="sm"
+        className="text-red-600 dark:text-red-400 font-semibold"
+      >
         No
       </Badge>
     );

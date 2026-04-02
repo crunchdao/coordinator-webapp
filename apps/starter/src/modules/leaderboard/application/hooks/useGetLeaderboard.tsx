@@ -1,34 +1,22 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useGlobalSettings } from "@/modules/settings/application/hooks/useGlobalSettings";
-import { initialSettings } from "@/modules/settings/domain/initial-config";
 import { getLeaderboard, getModelList } from "../../infrastructure/services";
 
-export function useGetLeaderboard() {
-  const { settings } = useGlobalSettings();
+const DEFAULT_LEADERBOARD_ENDPOINT = "/reports/leaderboard";
+const DEFAULT_MODELS_ENDPOINT = "/reports/models";
 
+export function useGetLeaderboard() {
   const leaderboardQuery = useQuery({
-    queryKey: ["leaderboard", settings?.endpoints?.leaderboard],
-    queryFn: async () => {
-      const endpoint =
-        settings?.endpoints?.leaderboard ||
-        initialSettings.endpoints.leaderboard;
-      return getLeaderboard(endpoint);
-    },
-    enabled: !!settings,
+    queryKey: ["leaderboard", DEFAULT_LEADERBOARD_ENDPOINT],
+    queryFn: () => getLeaderboard(DEFAULT_LEADERBOARD_ENDPOINT),
     retry: false,
     refetchOnWindowFocus: false,
   });
 
   const modelsQuery = useQuery({
-    queryKey: ["modelList", settings?.endpoints?.models],
-    queryFn: async () => {
-      const endpoint =
-        settings?.endpoints?.models || initialSettings.endpoints.models;
-      return getModelList(endpoint);
-    },
-    enabled: !!settings,
+    queryKey: ["modelList", DEFAULT_MODELS_ENDPOINT],
+    queryFn: () => getModelList(DEFAULT_MODELS_ENDPOINT),
   });
 
   const leaderboard = useMemo(() => {
@@ -60,9 +48,6 @@ export function useGetLeaderboard() {
 
   return {
     leaderboard,
-    leaderboardLoading:
-      leaderboardQuery.isLoading ||
-      leaderboardQuery.isFetching ||
-      modelsQuery.isLoading,
+    leaderboardLoading: leaderboardQuery.isLoading || leaderboardQuery.isFetching || modelsQuery.isLoading,
   };
 }

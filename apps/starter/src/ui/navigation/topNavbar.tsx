@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { INTERNAL_LINKS } from "@/utils/routes";
 import { NavigationItems } from "./navigationItems";
-import { Badge } from "@crunch-ui/core";
 
 export const TopNavbar: React.FC = () => {
   return (
@@ -18,13 +17,9 @@ export const TopNavbar: React.FC = () => {
               height={14}
             />
           </Link>
-          <Badge size="sm" variant="secondary">
-            Starter
-          </Badge>
         </div>
         <div className="flex items-center gap-3">
           <NavigationItems />
-          {/*<SwitchToPlatformDialog />*/}
         </div>
       </nav>
       <div className="bg-border/30 min-h-px w-full" />
