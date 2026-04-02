@@ -27,6 +27,9 @@ import type { EventOverview, ModelPrediction } from "../domain/types";
 
 type Filter = "all" | "resolved" | "pending";
 
+type SortField = "title" | "cutoff" | "outcome";
+type SortDir = "asc" | "desc";
+
 type ModelInfo = {
   model_id: string;
   model_name: string;
@@ -51,6 +54,8 @@ export const EventsOverviewPage: React.FC = () => {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [sortField, setSortField] = useState<SortField>("cutoff");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const { events, total, resolvedCount, pendingCount, loading, refetching } =
     useGetEventsOverview({
@@ -113,18 +118,60 @@ export const EventsOverviewPage: React.FC = () => {
   const visibleModels = useMemo(() => {
     let models = allModels;
 
-    // Apply model filter
     if (selectedModels.size > 0) {
       models = models.filter((m) => selectedModels.has(m.id));
     }
 
-    // Apply user filter
     if (modelIdsForSelectedUsers) {
       models = models.filter((m) => modelIdsForSelectedUsers.has(m.id));
     }
 
     return models;
   }, [allModels, selectedModels, modelIdsForSelectedUsers]);
+
+  // Sort events
+  const sortedEvents = useMemo(() => {
+    const sorted = [...events];
+    sorted.sort((a, b) => {
+      let cmp = 0;
+      switch (sortField) {
+        case "title":
+          cmp = (a.title || "").localeCompare(b.title || "");
+          break;
+        case "cutoff":
+          cmp = (a.cutoff || "").localeCompare(b.cutoff || "");
+          break;
+        case "outcome":
+          // resolved first, then by outcome value
+          cmp =
+            (a.resolved ? 0 : 1) - (b.resolved ? 0 : 1) ||
+            (a.outcome ?? -1) - (b.outcome ?? -1);
+          break;
+      }
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+    return sorted;
+  }, [events, sortField, sortDir]);
+
+  // Compute average Brier score per visible model
+  const avgBrierByModel = useMemo(() => {
+    const map = new Map<string, { sum: number; count: number }>();
+    for (const event of events) {
+      for (const pred of event.predictions) {
+        if (pred.scored && pred.brier_score != null) {
+          const entry = map.get(pred.model_id) || { sum: 0, count: 0 };
+          entry.sum += pred.brier_score;
+          entry.count += 1;
+          map.set(pred.model_id, entry);
+        }
+      }
+    }
+    const result = new Map<string, number>();
+    for (const [id, { sum, count }] of map) {
+      result.set(id, sum / count);
+    }
+    return result;
+  }, [events]);
 
   const toggleModel = useCallback((modelId: string) => {
     setSelectedModels((prev) => {
@@ -143,6 +190,18 @@ export const EventsOverviewPage: React.FC = () => {
       return next;
     });
   }, []);
+
+  const toggleSort = useCallback(
+    (field: SortField) => {
+      if (sortField === field) {
+        setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+      } else {
+        setSortField(field);
+        setSortDir(field === "title" ? "asc" : "desc");
+      }
+    },
+    [sortField]
+  );
 
   return (
     <div className="grid gap-6">
@@ -246,36 +305,88 @@ export const EventsOverviewPage: React.FC = () => {
               No events found.
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto custom-scrollbar">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="min-w-[320px]">Question</TableHead>
+                    <TableHead className="min-w-[320px]">
+                      <SortableHeader
+                        label="Question"
+                        field="title"
+                        activeField={sortField}
+                        direction={sortDir}
+                        onToggle={toggleSort}
+                      />
+                    </TableHead>
+                    <TableHead className="text-center w-[80px]">
+                      <SortableHeader
+                        label="Cutoff"
+                        field="cutoff"
+                        activeField={sortField}
+                        direction={sortDir}
+                        onToggle={toggleSort}
+                        center
+                      />
+                    </TableHead>
                     <TableHead className="text-center w-[80px]">
                       Market
                     </TableHead>
-                    {visibleModels.map((col) => (
-                      <TableHead
-                        key={col.id}
-                        className="text-center w-[100px]"
-                      >
-                        <div className="flex flex-col items-center gap-0.5">
-                          <span className="text-xs">{col.name}</span>
-                          {modelToUser.get(col.id) && (
-                            <span className="text-[10px] text-muted-foreground">
-                              {modelToUser.get(col.id)}
-                            </span>
-                          )}
-                        </div>
-                      </TableHead>
-                    ))}
+                    {visibleModels.map((col) => {
+                      const avg = avgBrierByModel.get(col.id);
+                      return (
+                        <TableHead
+                          key={col.id}
+                          className="text-center w-[100px]"
+                        >
+                          <div className="flex flex-col items-center gap-0.5">
+                            <span className="text-xs">{col.name}</span>
+                            {modelToUser.get(col.id) && (
+                              <span className="text-[10px] text-muted-foreground">
+                                {modelToUser.get(col.id)}
+                              </span>
+                            )}
+                            {avg != null && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span
+                                    className={cn(
+                                      "text-[10px] font-mono",
+                                      avg <= 0.15
+                                        ? "text-green-600 dark:text-green-400"
+                                        : avg <= 0.3
+                                          ? "text-muted-foreground"
+                                          : "text-red-600 dark:text-red-400"
+                                    )}
+                                  >
+                                    Ø {avg.toFixed(3)}
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  side="top"
+                                  className="text-xs"
+                                >
+                                  Avg Brier score (lower = better)
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </div>
+                        </TableHead>
+                      );
+                    })}
                     <TableHead className="text-center w-[90px]">
-                      Outcome
+                      <SortableHeader
+                        label="Outcome"
+                        field="outcome"
+                        activeField={sortField}
+                        direction={sortDir}
+                        onToggle={toggleSort}
+                        center
+                      />
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {events.map((event) => (
+                  {sortedEvents.map((event) => (
                     <EventRow
                       key={event.event_id}
                       event={event}
@@ -291,6 +402,41 @@ export const EventsOverviewPage: React.FC = () => {
     </div>
   );
 };
+
+// ── Sortable Header ─────────────────────────────────────────────────
+
+function SortableHeader({
+  label,
+  field,
+  activeField,
+  direction,
+  onToggle,
+  center,
+}: {
+  label: string;
+  field: SortField;
+  activeField: SortField;
+  direction: SortDir;
+  onToggle: (field: SortField) => void;
+  center?: boolean;
+}) {
+  const isActive = activeField === field;
+  return (
+    <button
+      onClick={() => onToggle(field)}
+      className={cn(
+        "inline-flex items-center gap-1 hover:text-foreground transition-colors",
+        center && "justify-center w-full",
+        isActive ? "text-foreground" : "text-muted-foreground"
+      )}
+    >
+      <span>{label}</span>
+      <span className="text-[10px]">
+        {isActive ? (direction === "asc" ? "▲" : "▼") : "⇅"}
+      </span>
+    </button>
+  );
+}
 
 // ── Reusable Checkbox Filter Dropdown ───────────────────────────────
 
@@ -370,7 +516,7 @@ function CheckboxFilterDropdown({
             onClick={() => setOpen(false)}
           />
 
-          <div className="absolute right-0 top-full mt-1 z-40 bg-popover border border-border rounded-lg shadow-xl py-1 min-w-[220px] max-h-80 overflow-y-auto">
+          <div className="absolute right-0 top-full mt-1 z-40 bg-popover border border-border rounded-lg shadow-xl py-1 min-w-[220px] max-h-80 overflow-y-auto custom-scrollbar">
             {selected.size > 0 && (
               <button
                 onClick={() => {
@@ -460,12 +606,47 @@ function EventRow({
           <span className="font-medium text-sm leading-tight">
             {event.title || `Event ${event.event_id}`}
           </span>
-          {event.cutoff && (
-            <span className="text-xs text-muted-foreground">
-              Cutoff: {formatCutoff(event.cutoff)}
+          {event.description && event.description !== event.title && (
+            <span className="text-xs text-muted-foreground line-clamp-2">
+              {event.description}
             </span>
           )}
+          <div className="flex items-center gap-2 mt-0.5">
+            {event.source && (
+              <SourceBadge source={event.source} />
+            )}
+            {event.performed_at && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-[10px] text-muted-foreground">
+                    Predicted {formatRelativeTime(event.performed_at)}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  {formatFullDateTime(event.performed_at)}
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
+      </TableCell>
+
+      {/* Cutoff date */}
+      <TableCell className="text-center">
+        {event.cutoff ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                {formatShortDate(event.cutoff)}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs">
+              {formatFullDateTime(event.cutoff)}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
       </TableCell>
 
       {/* Market price */}
@@ -517,6 +698,11 @@ function EventRow({
                       <span className="font-mono">
                         {pred.brier_score.toFixed(4)}
                       </span>
+                    </div>
+                  )}
+                  {!pred.scored && event.outcome == null && (
+                    <div className="text-muted-foreground italic">
+                      Awaiting resolution
                     </div>
                   )}
                 </div>
@@ -679,19 +865,99 @@ function OutcomeBadge({ outcome }: { outcome: number | null }) {
   );
 }
 
+function SourceBadge({ source }: { source: string }) {
+  // Check if source looks like a URL
+  const isUrl = /^https?:\/\//.test(source);
+  // Extract short display name from URL or use raw value
+  const displayName = isUrl
+    ? new URL(source).hostname.replace(/^www\./, "")
+    : source;
+
+  const badge = (
+    <Badge variant="outline" size="sm" className="text-[10px] gap-1">
+      {isUrl && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="10"
+          height="10"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+          <polyline points="15 3 21 3 21 9" />
+          <line x1="10" y1="14" x2="21" y2="3" />
+        </svg>
+      )}
+      {displayName}
+    </Badge>
+  );
+
+  if (isUrl) {
+    return (
+      <a href={source} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+        {badge}
+      </a>
+    );
+  }
+
+  return badge;
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────
 
-function formatCutoff(cutoff: string): string {
-  if (!cutoff) return "";
+function formatShortDate(dateStr: string): string {
+  if (!dateStr) return "";
   try {
-    const date = new Date(cutoff);
-    if (Number.isNaN(date.getTime())) return cutoff;
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return dateStr;
     return date.toLocaleDateString("en-US", {
-      year: "numeric",
       month: "short",
       day: "numeric",
     });
   } catch {
-    return cutoff;
+    return dateStr;
+  }
+}
+
+function formatFullDateTime(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return dateStr;
+    return date.toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZoneName: "short",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+function formatRelativeTime(dateStr: string): string {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return dateStr;
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60_000);
+    const diffHours = Math.floor(diffMs / 3_600_000);
+    const diffDays = Math.floor(diffMs / 86_400_000);
+
+    if (diffMins < 1) return "just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return formatShortDate(dateStr);
+  } catch {
+    return dateStr;
   }
 }
