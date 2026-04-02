@@ -21,7 +21,7 @@ import {
 } from "@crunch-ui/core";
 import { cn } from "@crunch-ui/utils";
 import { useQuery } from "@tanstack/react-query";
-import apiClient from "@coordinator/utils/src/api";
+import apiClient from "@/utils/api/apiClient";
 import { useGetEventsOverview } from "../application/hooks/useGetEventsOverview";
 import type { EventOverview, ModelPrediction } from "../domain/types";
 
