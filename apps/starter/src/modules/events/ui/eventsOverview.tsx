@@ -20,15 +20,37 @@ import {
   TooltipTrigger,
 } from "@crunch-ui/core";
 import { cn } from "@crunch-ui/utils";
+import { useQuery } from "@tanstack/react-query";
+import apiClient from "@coordinator/utils/src/api";
 import { useGetEventsOverview } from "../application/hooks/useGetEventsOverview";
 import type { EventOverview, ModelPrediction } from "../domain/types";
 
 type Filter = "all" | "resolved" | "pending";
 
+type ModelInfo = {
+  model_id: string;
+  model_name: string;
+  cruncher_name: string;
+};
+
+function useModelList() {
+  return useQuery<ModelInfo[]>({
+    queryKey: ["modelList", "/reports/models"],
+    queryFn: async () => {
+      const res = await apiClient.get("/reports/models");
+      return res.data;
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+}
+
 export const EventsOverviewPage: React.FC = () => {
   const [filter, setFilter] = useState<Filter>("all");
   const [selectedModels, setSelectedModels] = useState<Set<string>>(new Set());
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   const { events, total, resolvedCount, pendingCount, loading, refetching } =
     useGetEventsOverview({
@@ -36,6 +58,18 @@ export const EventsOverviewPage: React.FC = () => {
       resolved_only: filter === "resolved",
       pending_only: filter === "pending",
     });
+
+  // Fetch model list (model_id → cruncher_name mapping)
+  const { data: modelList } = useModelList();
+  const modelToUser = useMemo(() => {
+    const map = new Map<string, string>();
+    if (modelList) {
+      for (const m of modelList) {
+        map.set(String(m.model_id), m.cruncher_name || "");
+      }
+    }
+    return map;
+  }, [modelList]);
 
   // Collect all unique models across events
   const allModels = useMemo(() => {
@@ -52,17 +86,60 @@ export const EventsOverviewPage: React.FC = () => {
       .map(([id, name]) => ({ id, name }));
   }, [events]);
 
-  // Show selected models, or all if none selected
+  // Collect all unique usernames
+  const allUsers = useMemo(() => {
+    const users = new Set<string>();
+    for (const m of allModels) {
+      const user = modelToUser.get(m.id);
+      if (user) users.add(user);
+    }
+    return Array.from(users).sort((a, b) => a.localeCompare(b));
+  }, [allModels, modelToUser]);
+
+  // Determine which model_ids pass the user filter
+  const modelIdsForSelectedUsers = useMemo(() => {
+    if (selectedUsers.size === 0) return null; // no user filter active
+    const ids = new Set<string>();
+    for (const m of allModels) {
+      const user = modelToUser.get(m.id);
+      if (user && selectedUsers.has(user)) {
+        ids.add(m.id);
+      }
+    }
+    return ids;
+  }, [allModels, modelToUser, selectedUsers]);
+
+  // Show selected models, or all if none selected — intersect with user filter
   const visibleModels = useMemo(() => {
-    if (selectedModels.size === 0) return allModels;
-    return allModels.filter((m) => selectedModels.has(m.id));
-  }, [allModels, selectedModels]);
+    let models = allModels;
+
+    // Apply model filter
+    if (selectedModels.size > 0) {
+      models = models.filter((m) => selectedModels.has(m.id));
+    }
+
+    // Apply user filter
+    if (modelIdsForSelectedUsers) {
+      models = models.filter((m) => modelIdsForSelectedUsers.has(m.id));
+    }
+
+    return models;
+  }, [allModels, selectedModels, modelIdsForSelectedUsers]);
 
   const toggleModel = useCallback((modelId: string) => {
     setSelectedModels((prev) => {
       const next = new Set(prev);
       if (next.has(modelId)) next.delete(modelId);
       else next.add(modelId);
+      return next;
+    });
+  }, []);
+
+  const toggleUser = useCallback((username: string) => {
+    setSelectedUsers((prev) => {
+      const next = new Set(prev);
+      if (next.has(username)) next.delete(username);
+      else next.add(username);
       return next;
     });
   }, []);
@@ -100,15 +177,37 @@ export const EventsOverviewPage: React.FC = () => {
               )}
             </div>
             <div className="flex items-center gap-2">
+              {/* User filter */}
+              {allUsers.length > 0 && (
+                <CheckboxFilterDropdown
+                  label="Users"
+                  items={allUsers.map((u) => ({ id: u, name: u }))}
+                  selected={selectedUsers}
+                  onToggle={toggleUser}
+                  onClear={() => setSelectedUsers(new Set())}
+                  open={userDropdownOpen}
+                  setOpen={(v) => {
+                    setUserDropdownOpen(v);
+                    if (v) setModelDropdownOpen(false);
+                  }}
+                  icon="user"
+                />
+              )}
+
               {/* Model filter */}
               {allModels.length > 0 && (
-                <ModelFilterDropdown
-                  models={allModels}
+                <CheckboxFilterDropdown
+                  label="Models"
+                  items={allModels}
                   selected={selectedModels}
                   onToggle={toggleModel}
                   onClear={() => setSelectedModels(new Set())}
                   open={modelDropdownOpen}
-                  setOpen={setModelDropdownOpen}
+                  setOpen={(v) => {
+                    setModelDropdownOpen(v);
+                    if (v) setUserDropdownOpen(false);
+                  }}
+                  icon="filter"
                 />
               )}
 
@@ -160,7 +259,14 @@ export const EventsOverviewPage: React.FC = () => {
                         key={col.id}
                         className="text-center w-[100px]"
                       >
-                        <span className="text-xs">{col.name}</span>
+                        <div className="flex flex-col items-center gap-0.5">
+                          <span className="text-xs">{col.name}</span>
+                          {modelToUser.get(col.id) && (
+                            <span className="text-[10px] text-muted-foreground">
+                              {modelToUser.get(col.id)}
+                            </span>
+                          )}
+                        </div>
                       </TableHead>
                     ))}
                     <TableHead className="text-center w-[90px]">
@@ -186,22 +292,26 @@ export const EventsOverviewPage: React.FC = () => {
   );
 };
 
-// ── Model Filter Dropdown ───────────────────────────────────────────
+// ── Reusable Checkbox Filter Dropdown ───────────────────────────────
 
-function ModelFilterDropdown({
-  models,
+function CheckboxFilterDropdown({
+  label,
+  items,
   selected,
   onToggle,
   onClear,
   open,
   setOpen,
+  icon,
 }: {
-  models: { id: string; name: string }[];
+  label: string;
+  items: { id: string; name: string }[];
   selected: Set<string>;
   onToggle: (id: string) => void;
   onClear: () => void;
   open: boolean;
   setOpen: (open: boolean) => void;
+  icon: "filter" | "user";
 }) {
   return (
     <div className="relative">
@@ -211,22 +321,43 @@ function ModelFilterDropdown({
         onClick={() => setOpen(!open)}
         className="text-xs gap-1.5"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-        </svg>
-        Models
+        {icon === "filter" ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        )}
+        {label}
         {selected.size > 0 && (
-          <Badge variant="secondary" size="sm" className="ml-0.5 text-[10px] px-1.5 py-0">
+          <Badge
+            variant="secondary"
+            size="sm"
+            className="ml-0.5 text-[10px] px-1.5 py-0"
+          >
             {selected.size}
           </Badge>
         )}
@@ -234,7 +365,6 @@ function ModelFilterDropdown({
 
       {open && (
         <>
-          {/* Backdrop to close on outside click */}
           <div
             className="fixed inset-0 z-30"
             onClick={() => setOpen(false)}
@@ -249,15 +379,15 @@ function ModelFilterDropdown({
                 }}
                 className="w-full text-left px-3 py-1.5 text-xs text-muted-foreground hover:bg-accent/50 border-b border-border"
               >
-                Show all models
+                Clear filter
               </button>
             )}
-            {models.map((m) => {
-              const checked = selected.has(m.id);
+            {items.map((item) => {
+              const checked = selected.has(item.id);
               return (
                 <button
-                  key={m.id}
-                  onClick={() => onToggle(m.id)}
+                  key={item.id}
+                  onClick={() => onToggle(item.id)}
                   className="w-full text-left px-3 py-2 text-sm hover:bg-accent/50 flex items-center gap-2.5 transition-colors"
                 >
                   <span
@@ -288,10 +418,12 @@ function ModelFilterDropdown({
                   <span
                     className={cn(
                       "text-sm",
-                      checked ? "text-foreground font-medium" : "text-muted-foreground"
+                      checked
+                        ? "text-foreground font-medium"
+                        : "text-muted-foreground"
                     )}
                   >
-                    {m.name}
+                    {item.name}
                   </span>
                 </button>
               );
@@ -312,7 +444,6 @@ function EventRow({
   event: EventOverview;
   modelColumns: { id: string; name: string }[];
 }) {
-  // Build a lookup: model_id → prediction
   const predByModel = useMemo(() => {
     const map = new Map<string, ModelPrediction>();
     for (const pred of event.predictions) {
@@ -487,7 +618,6 @@ function ProbabilityBadge({
 }) {
   const pct = (value * 100).toFixed(0);
 
-  // Color by accuracy when scored
   let colorClass = "text-foreground";
   if (muted) {
     colorClass = "text-muted-foreground";
@@ -500,7 +630,6 @@ function ProbabilityBadge({
       colorClass = "text-red-600 dark:text-red-400";
     }
   } else if (outcome != null) {
-    // Show directional correctness for unscored predictions
     const correct =
       (outcome === 1 && value > 0.5) || (outcome === 0 && value < 0.5);
     colorClass = correct
