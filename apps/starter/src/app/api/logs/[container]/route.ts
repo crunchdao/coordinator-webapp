@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
-import { spawn } from "child_process";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export async function GET(
   req: NextRequest,
@@ -7,68 +8,27 @@ export async function GET(
 ) {
   const { container } = await params;
 
-  const headers = {
-    "Content-Type": "text/event-stream; charset=utf-8",
-    "Cache-Control": "no-cache, no-transform",
-    Connection: "keep-alive",
-  };
+  const upstreamUrl = `${API_URL}/logs/${encodeURIComponent(container)}?follow=true&tail=200`;
 
-  const stream = new ReadableStream({
-    start(controller) {
-      const proc = spawn("docker", ["logs", "-f", container]);
-      let closed = false;
-
-      const closeStream = () => {
-        if (!closed) {
-          closed = true;
-          try {
-            controller.close();
-          } catch {
-            // Controller already closed
-          }
-        }
-      };
-
-      proc.stdout.on("data", (data: Buffer) => {
-        if (closed) return;
-        try {
-          const log = {
-            timestamp: new Date().toISOString(),
-            message: data.toString().trim(),
-          };
-          controller.enqueue(`data: ${JSON.stringify(log)}\n\n`);
-        } catch {
-          // Controller already closed
-        }
-      });
-
-      proc.stderr.on("data", (data: Buffer) => {
-        if (closed) return;
-        try {
-          const log = {
-            timestamp: new Date().toISOString(),
-            message: data.toString().trim(),
-          };
-          controller.enqueue(`data: ${JSON.stringify(log)}\n\n`);
-        } catch {
-          // Controller already closed
-        }
-      });
-
-      proc.on("close", closeStream);
-      proc.on("error", (error) => {
-        console.error("Docker process error:", error);
-        closeStream();
-      });
-
-      const cancel = () => {
-        proc.kill();
-        closeStream();
-      };
-
-      req.signal.addEventListener("abort", cancel);
-    },
+  const upstreamResponse = await fetch(upstreamUrl, {
+    signal: req.signal,
+    headers: { Accept: "text/event-stream" },
   });
 
-  return new Response(stream, { headers });
+  if (!upstreamResponse.ok) {
+    const body = await upstreamResponse.text().catch(() => "upstream error");
+    return new Response(body, { status: upstreamResponse.status });
+  }
+
+  if (!upstreamResponse.body) {
+    return new Response("No response body from upstream", { status: 502 });
+  }
+
+  return new Response(upstreamResponse.body, {
+    headers: {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+    },
+  });
 }

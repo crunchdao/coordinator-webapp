@@ -7,10 +7,10 @@ export const initialSettings: GlobalSettings = {
   },
   logs: {
     containerNames: [
-      "condorgame-backend-score-worker-1",
-      "condorgame-backend-predict-worker-1",
-      "condorgame-backend-report-worker-1",
-      "model-orchestrator-local",
+      "vanta-score-worker",
+      "vanta-predict-worker",
+      "vanta-report-worker",
+      "model-orchestrator",
     ],
   },
 };
